@@ -1,0 +1,81 @@
+.App {
+	font-family: sans-serif;
+}
+.base-container {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.base-container .header {
+	font-size: 24px;
+	font-family: "Open Sans", sans-serif;
+}
+.base-container .content {
+	display: flex;
+	flex-direction: column;
+}
+.base-container .content .image {
+	width: 21em;
+}
+.base-container .content .image img {
+	width: 100%;
+	height: 100%;
+}
+.base-container .content .form {
+	margin-top: 2em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.base-container .content .form .form-group {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	width: fit-content;
+}
+.base-container .content .form .form-group label {
+	font-size: 20px;
+}
+.base-container .content .form .form-group input {
+	margin-top: 6px;
+	min-width: 18em;
+	height: 37px;
+	padding: 0px 10px;
+	font-size: 16px;
+	font-family: "Open Sans", sans-serif;
+	background-color: #f3f3f3;
+	border: 0;
+	border-radius: 4px;
+	margin-bottom: 10px;
+	transition: all 250ms ease-in-out;
+	display: inline-block;
+}
+.base-container .content .form .form-group input:focus {
+	outline: none;
+	box-shadow: 0px 0px 12px 0.8px #3474db b2;
+}
+.base-container .alert {
+	background-color: #f44336;
+	color: white;
+	margin-bottom: 15px;
+	text-align: center;
+	border-radius: 20%;
+	padding: 5px;
+}
+.base-container .input {
+	display: block;
+	width: 100%;
+}
+.base-container input.error {
+	border-color: red;
+}
+.base-container .input-feedback {
+	color: #eb3636;
+	margin-top: -15px;
+	font-size: 14px;
+	margin-bottom: 20px;
+}
+.base-container .footer {
+	margin-top: 3em;
+}
