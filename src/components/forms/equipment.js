@@ -44,6 +44,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import SearchIcon from '@material-ui/icons/Search';
 
+import api from '../../axios/Api';
+
 const plusButtonStyles = makeStyles((theme) => ({
   fab: {
     margin: theme.spacing(2),
@@ -188,7 +190,13 @@ const itemMenuStyles = makeStyles((theme) => ({
   };
 
 
-export default function FormPropsTextFields() {
+export default function FormPropsTextFields(props) {
+
+  const [equipments, setEquipments] = React.useState([]);
+
+  const handleEquipmentsChange = (event) => {
+    setEquipments(event.target.value);
+  };
 
     const componentDidMount = async () => {
 		
@@ -209,6 +217,18 @@ export default function FormPropsTextFields() {
 
   const handleBarTagMenuChange = (event) => {
     setNumOfBarTags(event.target.value);
+  };
+
+  const [hraId, setHraID] = React.useState('');
+
+  const handleHraIdChange = (event) => {
+    setHraID(event.target.value);
+  };
+
+  const [bartagNum, setBartagNum] = React.useState('');
+
+  const handleBartagNumChange = (event) => {
+    setBartagNum(event.target.value);
   };
 
   // dates
@@ -387,7 +407,27 @@ const handleDateChange = (date) => {
  const plusButtonClasses = plusButtonStyles();
 
  const handleSearch = () => {
-   
+
+  console.log('equipmentbyHraCall')
+		api.post(`equipment/search`,{hraId:hraId,bartagNum:bartagNum}).then((response) => response.data).then((data) => {
+      console.log(data)
+      setEquipments(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+    }).catch(function (error) {
+      setEquipments([])
+    });
+    
+  
+  // const tempProps = {...props};
+  //  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+  //  if(!searchResult.error){
+  //   equipments = searchResult.data
+  //  }
  }
 
  const form = () => {
@@ -819,8 +859,8 @@ const renderData = eng4900s.map((product) => {
             <div className={classesGrid.options}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                            <TextField id="outlined-search" label="Search by HRA Number" type="search" variant="outlined"/> 
-                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" /> 
+                            <TextField id="outlined-search" label="Search by HRA Number" type="search" variant="outlined" value={hraId} onChange={handleHraIdChange}/> 
+                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/> 
                             <FormControl variant="outlined" className={classesItemMenu.formControl}>
                         <InputLabel id="demo-simple-select-outlined-label">Sort By</InputLabel>
                         <Select
@@ -843,6 +883,9 @@ const renderData = eng4900s.map((product) => {
                             <SearchIcon style={{ fontSize: 40 }}/>
                         </IconButton>
                     </Grid>
+                    <Grid item xs={12}>
+                    {equipments.length > 0 ? props.EquipmentTablePrint(equipments) : null}
+                    </Grid>
                 </Grid>
             </div>
         </form>
@@ -859,8 +902,6 @@ const renderData = eng4900s.map((product) => {
       
       <div className={classesGrid.root}>
       <Grid container spacing={3}>
-        
-						
 
 
       

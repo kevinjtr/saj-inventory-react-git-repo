@@ -16,7 +16,8 @@ import Register from './Register';
 // import Query from './Query';
 
 import axios from 'axios';
-import Category from './categories/Category';
+//import Equipment from './equipments/Equipment';
+//import Category from './categories/Category';
 
 function App() {
 	axios.defaults.baseURL = 'http://localhost:8080';
@@ -52,7 +53,7 @@ function App() {
 			<Route exact path="/eng4900" component={Header} />
 			<Route path="/eng4900" component={Eng4900} />
 			
-			<Route path="/categories" component={Category} />
+			{/* <Route path="/categories" component={Category} /> */}
 
 			<Route path="/login" component={HomePage} />
 			<Route path="/login" component={Login} />

@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import qs from 'querystring';
+import EquipmentList from './equipments/ListEquipment';
+//import AddEquipmentForm from './addEquipment';
+//import EditEquipmentForm from './EditEquipment';
 import Box from '@material-ui/core/Box';
 // import API from "../axios/Api";
 // import Header from "./Header";Box
@@ -14,6 +18,9 @@ export class AddProduct extends Component {
 		super(props);
 
 		this.state = {
+			equipments: [],
+			currentEquipment: { id: null, item_type: '' },
+			editing: false,
 			product_name: '',
 			description: '',
 			image: '',
@@ -24,54 +31,160 @@ export class AddProduct extends Component {
 	}
 
 	componentDidMount() {
-		this.refreshCategoryTable();
+		//this.refreshCategoryTable();
+		this.refreshEquipmentList();
 	}
 
-	refreshCategoryTable() {
-		this.categoriesData = api.get('categories', this.state).then((response) => response.data).then((data) => {
-			this.setState({
-				categories: data.status != 400 ? data.values: data,
-				setCategories: data
-			});
-			//console.log(this.state.categories.values);
+	refreshEquipmentList() {
+		console.log('equipmentDataCALL')
+		this.equipmentData = api.get('equipment', this.state).then((response) => response.data).then((data) => {
+			console.log(data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
 			// console.log(this.props, this.state);
 		});
 	}
 
-	handlerChange = (e) => {
-		this.setState({ [e.target.name]: e.target.value });
+	getEquipmentByHraID(hraID) {
+		this.equipmentData = api.get(`/equipment/hra/${hraID}`, this.state).then((response) => response.data).then((data) => {
+			console.log(data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			return(data.status != 400 ? data.values: data)
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+		});
+	}
+
+	addEquipment = (equipment) => {
+		api.post('equipment', qs.stringify(equipment)).then((res) => {
+			this.refreshEquipmentList();
+		});
 	};
+
+	deleteEquipment = (id) => {
+		api.delete(`equipment/${id}`).then((res) => {
+			this.refreshEquipmentList();
+		});
+	};
+
+	updateEquipment = (id, equipment) => {
+
+		console.log(`equipment/${id}`,qs.stringify(equipment))
+		api.patch(`equipment/${id}`, qs.stringify(equipment)).then((res) => {
+			this.refreshEquipmentList();
+		});
+
+		this.setState({
+			currentEquipment: { id: null, item_type: '' }
+		});
+
+		this.setEditing(false);
+	};
+
+	editRow = (equipment) => {
+		console.log(equipment)
+		this.setState({
+			currentEquipment: { id: equipment.id, item_type: equipment.item_type }
+		});
+
+		this.setEditing(true);
+	};
+
+	setEditing = (isEditing) => {
+		this.setState({ editing: isEditing });
+	};
+
+	// refreshCategoryTable() {
+	// 	this.categoriesData = api.get('categories', this.state).then((response) => response.data).then((data) => {
+	// 		this.setState({
+	// 			categories: data.status != 400 ? data.values: data,
+	// 			setCategories: data
+	// 		});
+	// 		//console.log(this.state.categories.values);
+	// 		// console.log(this.props, this.state);
+	// 	});
+	// }
+
+	// handlerChange = (e) => {
+	// 	this.setState({ [e.target.name]: e.target.value });
+	// };
 
 	handlerSubmit = async () => {
-		window.event.preventDefault();
-		await this.props.dispatch(addProduct(this.state));
-		this.props.history.push('/products');
+		//window.event.preventDefault();
+		//await this.props.dispatch(addProduct(this.state));
+		//this.props.history.push('/products');
 	};
 
+	EquipmentTablePrint = (equipments) => {
+		return(			
+				<div classitem_type="container">
+				<div classitem_type="row">
+					{this.state.editing ? (
+						null
+						// <div classitem_type="col s12 l6">
+						// 	<h4>Edit Equipment</h4>
+						// 	<br />
+						// 	<EditEquipmentForm
+						// 		editing={this.state.editing}
+						// 		setEditing={this.setEditing}
+						// 		currentEquipment={this.state.currentEquipment}
+						// 		updateEquipment={this.updateEquipment}
+						// 	/>
+						// </div>
+					) : (
+						null
+						// <div classitem_type="col s12 l6">
+						// 	<br />
+						// 	<h4>Add Equipment</h4>
+						// 	<AddEquipmentForm addEquipment={this.addEquipment} />
+						// </div>
+					)}
+
+					<div classitem_type="col s12 l6">
+						<br />
+						<h5 style={{ justifyContent: 'center' }}>Equipment</h5>
+						<EquipmentList
+							equipments={equipments}
+							editRow={this.editRow}
+							deleteEquipment={this.deleteEquipment}
+						/>
+					</div>
+				</div>
+				</div>
+		)
+	}
+
+
 	render() {
-		const {categories} = this.state
-		let categoriesDropDownItems = null
+		const { equipments } = this.state;
+		//let categoriesDropDownItems = null
 
-		console.log(this.props)
+		//console.log(this.props)
 
-		const requestedActions = ["Issue","Transfer","Repair","Excess","FOI"]
-		const requestedActionDropDownItems = requestedActions.map((c, i)=>{
-			return(
-				<option value={c} name="requested_action">
-				{c}
-				</option>
-			)
-		  })
+		// const requestedActions = ["Issue","Transfer","Repair","Excess","FOI"]
+		// const requestedActionDropDownItems = requestedActions.map((c, i)=>{
+		// 	return(
+		// 		<option value={c} name="requested_action">
+		// 		{c}
+		// 		</option>
+		// 	)
+		//   })
 
-		if(categories.length > 0 && categories != undefined){
-			categoriesDropDownItems = categories.map((c, i)=>{
-				return(
-					<option value={c.id} name="id_category">
-					{c.name}
-					</option>
-				)
-			  })
-		}
+		// if(categories.length > 0 && categories != undefined){
+		// 	categoriesDropDownItems = categories.map((c, i)=>{
+		// 		return(
+		// 			<option value={c.id} name="id_category">
+		// 			{c.name}
+		// 			</option>
+		// 		)
+		// 	  })
+		// }
 
 		//work in progress
 		function ReturnTextField(name){
@@ -93,8 +206,14 @@ export class AddProduct extends Component {
 			)
 		}
 
-		return(
-			<FormPropsTextFields/>
+		return(<>
+			<FormPropsTextFields
+			equipments={equipments}
+			getEquipmentByHraID={this.getEquipmentByHraID}
+			EquipmentTablePrint={this.EquipmentTablePrint}
+			/>
+			
+			</>
 		);
 		
 		// return (
