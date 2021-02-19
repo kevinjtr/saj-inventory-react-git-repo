@@ -13,6 +13,7 @@ import Equipment from './Equipment';
 import Login from './Login';
 import EditProduct from './EditProduct';
 import Register from './Register';
+import Eng4844 from './Eng4844';
 // import Query from './Query';
 
 import axios from 'axios';
@@ -49,6 +50,9 @@ function App() {
 
 			<Route exact path="/equipment" component={Header} />
 			<Route path="/equipment" component={Equipment} />
+			
+			<Route exact path="/eng4844" component={Header} />
+			<Route path="/eng4844" component={Eng4844} />
 
 			<Route exact path="/eng4900" component={Header} />
 			<Route path="/eng4900" component={Eng4900} />
