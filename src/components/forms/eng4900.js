@@ -44,6 +44,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import SearchIcon from '@material-ui/icons/Search';
 
+import api from '../../axios/Api';
+
 const plusButtonStyles = makeStyles((theme) => ({
   fab: {
     margin: theme.spacing(2),
@@ -197,6 +199,12 @@ export default function FormPropsTextFields() {
 	};
     //text fields
   const classesTextField = texFieldStyles();
+
+  const [eng4900s, setEng4900s] = React.useState([]);
+
+  const handle4900sChange = (event) => {
+    setEng4900s(event.target.value);
+  };
 
   const classesItemMenu = itemMenuStyles();
   const [reqAction, setReqAction] = React.useState('');
@@ -363,6 +371,30 @@ const handleDateChange = (date) => {
  //plus button
 
  const plusButtonClasses = plusButtonStyles();
+
+ const handle4900Search = () => {
+
+  console.log('4900ByHraCall')
+		api.post(`eng4900/search`,{}).then((response) => response.data).then((data) => {
+      console.log(data)
+      setEng4900s(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+    }).catch(function (error) {
+      setEng4900s([])
+    });
+    
+  
+  // const tempProps = {...props};
+  //  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+  //  if(!searchResult.error){
+  //   equipments = searchResult.data
+  //  }
+ }
 
  const form = () => {
     return(
@@ -743,40 +775,75 @@ const handleDateChange = (date) => {
     )
 }
 
-const eng4900s = [{hraName:"Anderson, Thomas",
-category: "hard disk drive",
-date_added: "2020-11-18T18:49:24.000Z",
-date_updated: "2020-11-18T18:49:27.000Z",
-description: "Seagate",
-id: 2,
-image: "eng4900.png",
-barTags:["77701","77702","77703"],
-product_name: "External Hard Drive",
-quantity: 9},
-{hraName:"Smith, John",
-category: "laptop",
-date_added: null,
-date_updated: "2020-11-30T19:33:52.000Z",
-description: null,
-id: 1,
-image: "eng4900.png",
-barTags:["66601","66602","66603"],
-product_name: "iphone",
-quantity: 5},
-{hraName:"Gates, Richard",
-category: "hard disk drive",
-date_added: null,
-date_updated: "2020-11-24T20:45:02.000Z",
-description: null,
-id: 3,
-image: "eng4900.png",
-barTags:["55501","55502","55503"],
-product_name: "laptopcilla",
-quantity: 56}]
+// const eng4900s = [{hraName:"Anderson, Thomas",
+// category: "hard disk drive",
+// date_added: "2020-11-18T18:49:24.000Z",
+// date_updated: "2020-11-18T18:49:27.000Z",
+// description: "Seagate",
+// id: 2,
+// image: "eng4900.png",
+// barTags:["77701","77702","77703"],
+// product_name: "External Hard Drive",
+// quantity: 9},
+// {hraName:"Smith, John",
+// category: "laptop",
+// date_added: null,
+// date_updated: "2020-11-30T19:33:52.000Z",
+// description: null,
+// id: 1,
+// image: "eng4900.png",
+// barTags:["66601","66602","66603"],
+// product_name: "iphone",
+// quantity: 5},
+// {hraName:"Gates, Richard",
+// category: "hard disk drive",
+// date_added: null,
+// date_updated: "2020-11-24T20:45:02.000Z",
+// description: null,
+// id: 3,
+// image: "eng4900.png",
+// barTags:["55501","55502","55503"],
+// product_name: "laptopcilla",
+// quantity: 56}]
 
-const renderData = eng4900s.map((product) => {
-    return <Card4900 product={product} key={product.id} refresh={componentDidMount} />;
+function CardProduct(form){
+	return (
+		<div className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
+			<div className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
+            <div style={{display:'inline'}}>
+            {/* <img src={product.image} alt="" style={{height:"25%",width:"25%",display:'inline'}} /> */}
+				<h4 style={{ marginTop: '20px' }}>ENG4900 - Doc Num:</h4>
+                <h4 >{form[0].FORM_ID}</h4>
+            </div>
+            
+				<hr />
+				
+				<h6>Bar Tags Quantity: {form.length}</h6>
+                <small>Losing HRA: {form[0].LOSING_HRA}</small>
+				<small>Gaining HRA: {form[0].GAINING_HRA}</small>
+                {/* <small>Bar Tags: </small>
+                <small>{btPrint} </small> */}
+				<div className="row" style={{ margin: 3,marginTop:'10px' }}>
+					{/* <Link to={'/edit/' + product.id} style={{ margin: 2 }}>
+						<input type="submit" value="View" className="btn btn-primary" />
+					</Link> */}
+					{/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
+						<input type="submit" value="Edit" className="btn btn-warning" />
+					</Link> */}
+				</div>
+				<br />
+			</div>
+		</div>
+	);
+}
+
+const cards = eng4900s.map((form) => {
+    return CardProduct(form);
 });
+
+let showForm = false
+
+console.log(eng4900s)
 
   return (
     <div>
@@ -826,7 +893,7 @@ const renderData = eng4900s.map((product) => {
                         <MenuItem value={40}>Sort By - HRA NUMBER</MenuItem>
                         </Select>
                     </FormControl>
-                    <IconButton aria-label="search" color="primary">
+                    <IconButton aria-label="search" color="primary" onClick={handle4900Search}>
                             <SearchIcon style={{ fontSize: 40 }}/>
                         </IconButton>
                     </Grid>
@@ -835,12 +902,12 @@ const renderData = eng4900s.map((product) => {
         </form>
     </div>
 
-    <div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
+    {cards ? <div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
         <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
         <div className="card-title">
-            <div style={{ justifyContent: 'center' }}>{renderData}</div>
+            <div style={{ justifyContent: 'center' }}>{cards}</div>
         </div>
-    </div>
+    </div> : null}
 
     <form className={classesTextField.root} noValidate autoComplete="off">
       
@@ -852,7 +919,7 @@ const renderData = eng4900s.map((product) => {
 
       
           {/* <Paper className={classesGrid.paper}> */}
-          {form()}
+          {showForm ? form() : null}
           
           
           {/* </Paper> */}

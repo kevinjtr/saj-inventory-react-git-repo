@@ -6,7 +6,7 @@ import Header from './Header';
 import Logout from './Logout';
 import HomePage from './HomePage';
 import ListProduct from './ListProduct';
-import ListProductHome from './ListProductHome';
+import Home from './Home';
 import AddProduct from './AddProduct';
 import Eng4900 from './Eng4900';
 import Equipment from './Equipment';
@@ -33,8 +33,8 @@ function App() {
 			/>
 			{/* <Route path="/home" component={HomePage} /> */}
 			<Route exact path="/home" component={Header} />
-			<Route path="/home" component={ListProductHome} />
-			{/* <Route path="/home" component={ListProductHome} /> */}
+			<Route path="/home" component={Home} />
+			{/* <Route path="/home" component={Home} /> */}
 			{/* <Route exact path={'/products'}
               render={() => {
                 return window.localStorage.getItem('token') !== 'undefined'
@@ -42,7 +42,7 @@ function App() {
                   : <Redirect to='./login' />
               }} /> */}
 			<Route exact path="/products" component={Header} />
-			<Route exact path="/products" exact component={ListProductHome} />
+			<Route exact path="/products" exact component={Home} />
 
 			<Route path="/add" component={Header} />
 			<Route path="/add" component={AddProduct} />
