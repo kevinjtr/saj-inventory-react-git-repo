@@ -500,7 +500,7 @@ const handleDateChange = (date) => {
      <Grid item xs={12}>
      <Paper className={classesGrid.paper}>
      <FormControl className={classesItemMenu.formControl}>
-             <InputLabel id="demo-simple-select-label-bt">Number of Equipments</InputLabel>
+             <InputLabel id="demo-simple-select-label-bt">Number of Equipment Items</InputLabel>
              <Select
              labelId="demo-simple-select-label-bt"
              id="demo-simple-select-bt"

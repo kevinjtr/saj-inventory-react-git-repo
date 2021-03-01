@@ -252,7 +252,7 @@ const handleDateChange = (date) => {
 
   //simpleMenu
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl, bothButton, button44841] = React.useState(null);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -262,7 +262,85 @@ const handleDateChange = (date) => {
     setAnchorEl(null);
   };
 
+  const handleButtonBothClick = (event) => {
+    bothButton(true);
+  }
 
+  const handleButton48441Click = (event) => {
+    button44841(true);
+  }
+  
+  const [formSelection, setForm] = React.useState("4844");
+
+  const handleFormMenuChange = (event) => {
+    setForm(event.target.value);
+  };
+
+  const formView = (n) => {
+    const returnSelection = null;
+    if(formSelection == "4844"){
+      return(
+        <div> 
+          <div style={{textAlign: 'center'}}>
+            <h2 >ENG 4844 Form</h2>
+            <br/>
+          </div>
+          <form className={classesTextField.root} noValidate autoComplete="off">
+             <div className={classesGrid.root}>
+                <Grid container spacing={3}>
+                 {form4844()}
+                 </Grid>
+           </div>
+          </form>
+        </div>
+      );
+    }
+    else if(formSelection == "48441"){
+      return(
+        <div> 
+          <div style={{textAlign: 'center'}}>
+            <h2 >ENG 4844-1 Form</h2>
+            <br/>
+          </div>
+          <form className={classesTextField.root} noValidate autoComplete="off">
+             <div className={classesGrid.root}>
+                <Grid container spacing={3}>
+                 {form4844_1()}
+                 </Grid>
+           </div>
+          </form>
+        </div>
+      );
+    }
+    else{
+      return(
+        <div>
+        <div style={{textAlign: 'center'}}>
+          <h2 >ENG 4844 Form</h2>
+          <br/>
+        </div>
+            <form className={classesTextField.root} noValidate autoComplete="off">
+            <div className={classesGrid.root}>
+             <Grid container spacing={3}>
+                {form4844()}
+                <br/>
+                <br/>
+              </Grid>
+                <div style={{textAlign: 'center'}}>
+                  <br/>
+                  <br/>
+                  <h2 >ENG 4844-1 Form</h2>
+                  <br/>
+                </div>
+                <Grid container spacing={3}>
+                {form4844_1()}
+                </Grid>
+             </div>
+           </form>
+       </div>
+      );
+    }
+  }
  //Avatars
 
  const avatarClasses = AvatarStyles();
@@ -275,14 +353,14 @@ const handleDateChange = (date) => {
 
  const plusButtonClasses = plusButtonStyles();
 
- const form = () => {
+ const form4844 = () => {
     return(
         <>
       <Grid item xs={6}>
        <Paper className={classesGrid.paper}>
        <TextField
        label="1. Document Number"
-       style={{ width: 300 }}
+       style={{ width: 640 }}
      />
        </Paper>
      </Grid>
@@ -301,6 +379,7 @@ const handleDateChange = (date) => {
                 KeyboardButtonProps={{
                     'aria-label': 'change date',
                 }}
+                style={{ width: 640 }}
                 />
             </MuiPickersUtilsProvider>
             </Paper>
@@ -309,7 +388,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="3. Purchase Order Number"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -317,7 +396,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="4. From (Vendor)"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -325,7 +404,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="5. Cost Account"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -333,7 +412,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="6. Remarks"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -365,7 +444,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="10. Noun/Nomenclature"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -373,7 +452,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="11. Serial Number"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -429,7 +508,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="18. Utilization"
-       style={{ width: 300 }}
+       style={{ width: 640}}
      />{/* This needs to be a drop down populated from the database*/}
       </Paper>
      </Grid>
@@ -437,7 +516,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="19. Value"
-       style={{ width: 300 }}
+       style={{ width: 640 }}
      />
        </Paper>
      </Grid>
@@ -450,7 +529,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="21. Nomenclature"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -458,7 +537,7 @@ const handleDateChange = (date) => {
        <Paper className={classesGrid.paper}>
        <TextField
        label="22. Value"
-       style={{ width: 300 }}
+       style={{ width: 1600 }}
      />
        </Paper>
      </Grid>
@@ -510,6 +589,150 @@ const handleDateChange = (date) => {
     )
 }
 
+{/*Start of ENG4844-1*/}
+const form4844_1 = () => {
+  return(
+      <>
+    <Grid item xs={12}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="1. Catalog Number )NSN or Management Control Number"
+     style={{ width: 1600 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={12}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="2. Major Noun"
+     style={{ width: 1600 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={12}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="3. Nomenclature"
+     style={{ width: 1600 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={12}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="4. Manufacturer"
+     style={{ width: 1600 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={12}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="5. Part Number"
+     style={{ width: 1600 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="6. Model"
+     style={{ width: 640 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="7. Color"
+     style={{ width: 640 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={4}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="8. Length"
+     style={{ width: 300 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={4}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="9. Width"
+     style={{ width: 300 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={4}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="10. Height"
+     style={{ width: 300 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="11. Value"
+     style={{ width: 640 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="12. Classification"
+     style={{ width: 640 }}
+   />{/* This needs to be a drop down populated from the database*/}
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="13. Pilerable Code"
+     style={{ width: 640 }}
+   />{/* This needs to be a drop down populated from the database*/}
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="14. Reportable Item Control Code (RICC)"
+     style={{ width: 640 }}
+   />{/* This needs to be a drop down populated from the database*/}
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="15. Equipment Control Code, See AR 738-750 For Code"
+     style={{ width: 640 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={6}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="16. Line Item Number (LIN), See SB 700-20 For Code"
+     style={{ width: 640 }}
+   />
+     </Paper>
+   </Grid>
+   <Grid item xs={12}>
+     <Paper className={classesGrid.paper}>
+     <TextField
+     label="17. Logistics Control Code (LCC)"
+     style={{ width: 1600 }}
+   />{/* This needs to be a drop down populated from the database*/}
+    </Paper>
+   </Grid>
+   </>
+  )
+}
+
 const eng4900s = [{hraName:"Anderson, Thomas",
 category: "hard disk drive",
 date_added: "2020-11-18T18:49:24.000Z",
@@ -547,9 +770,48 @@ const renderData = eng4900s.map((product) => {
 
   return (
     <div>
+      <br/>
+      <Grid container style={{ padding: 20 }}>
+     <Paper className={classesGrid.paper}>
+     <FormControl className={classesItemMenu.formControl}>
+             <InputLabel id="demo-simple-select-label-bt">Forms to view</InputLabel>
+             <Select
+             labelId="demo-simple-select-label-bt"
+             id="demo-simple-select-bt"
+             value={formSelection}
+             onChange={handleFormMenuChange}
+             >
+             <MenuItem value={"4844"}>ENG 4844</MenuItem>
+             <MenuItem value={"48441"}>ENG 4844-1</MenuItem>
+             <MenuItem value={"Both"}>Both Forms</MenuItem>
+             </Select>
+     </FormControl>
+     </Paper>
+      </Grid>
+      {formView(formSelection)}
+       {/* <div>
         <div style={{textAlign: 'center'}}>
-      <h2 >Eng 4900 Form</h2>
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
+          <h2 >Eng 4844 Form</h2>
+          <br/>
+        </div>
+            <form className={classesTextField.root} noValidate autoComplete="off">
+            <div className={classesGrid.root}>
+             <Grid container spacing={3}>
+                {form4844()}
+               <br/>
+                <br/>
+                <div style={{textAlign: 'center'}}>
+                    <h2 >Eng 4844-1 Form</h2>
+                </div>
+                {form4844_1()}
+              </Grid>
+             </div>
+       </form>
+       </div>
+        <div style={{textAlign: 'center'}}>
+      <h2 >Eng 4844 Form</h2>
+      <br/>*/}
+     {/* <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
                 Open Menu - Search
             </Button>
             <Menu
@@ -563,7 +825,7 @@ const renderData = eng4900s.map((product) => {
                 <MenuItem onClick={handleMenuClose}>Open Menu - Update</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Create</MenuItem>
             </Menu>
-            
+ 
       </div>
       <div style={{textAlign: 'center'}}>
       
@@ -603,240 +865,30 @@ const renderData = eng4900s.map((product) => {
     </div>
 
     <div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
-        <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
-        <div className="card-title">
+       {/* <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
+      }  <div className="card-title">
             <div style={{ justifyContent: 'center' }}>{renderData}</div>
-        </div>
-    </div>
-
-    <form className={classesTextField.root} noValidate autoComplete="off">
+  </div>*/}
+ 
+   {/* <form className={classesTextField.root} noValidate autoComplete="off">
       
       <div className={classesGrid.root}>
       <Grid container spacing={3}>
-        
-						
-
-
-      
-          {/* <Paper className={classesGrid.paper}> */}
-          {form()}
-          
-          
-          {/* </Paper> */}
-        {/* </Grid> */}
-        
-        {/* <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid> */}
+         {form4844()}
+         <br/>
+         <br/>
+         <div style={{textAlign: 'center'}}>
+            <h2 >Eng 4844-1 Form</h2>
+         </div>
+         {form4844_1()}
       </Grid>
-
-      
-      {/* <div className={classesPhoneTextField.root}>
-      <FormControl>
-        <InputLabel htmlFor="formatted-text-mask-input">react-text-mask</InputLabel>
-        <Input
-          value={values.textmask}
-          onChange={handlePhoneTextFieldChange}
-          name="textmask"
-          id="formatted-text-mask-input"
-          inputComponent={TextMaskCustom}
-        />
-      </FormControl>
-      { <TextField
-        label="react-number-format"
-        value={values.numberformat}
-        onChange={handlePhoneTextFieldChange}
-        name="numberformat"
-        id="formatted-numberformat-input"
-        InputProps={{
-          inputComponent: NumberFormatCustom,
-        }}
-      /> }
-    </div> */}
-      {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container justify="space-around">
-        <KeyboardDatePicker
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          label="Date picker inline"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-         <KeyboardDatePicker
-          margin="normal"
-          id="date-picker-dialog"
-          label="Date picker dialog"
-          format="MM/dd/yyyy"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        <KeyboardTimePicker
-          margin="normal"
-          id="time-picker"
-          label="Time picker"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
-          }}
-        /> 
-      </Grid>
-    </MuiPickersUtilsProvider> */}
-{/*       
-        <TextField required id="standard-required" label="Required" defaultValue="Hello World" />
-        <TextField disabled id="standard-disabled" label="Disabled" defaultValue="Hello World" />
-        <TextField
-          id="standard-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-        />
-        <TextField
-          id="standard-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        <TextField
-          id="standard-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField id="standard-search" label="Search field" type="search" />
-        <TextField
-          id="standard-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-        /> */}
       </div>
-      {/* <div>
-        <TextField
-          required
-          id="filled-required"
-          label="Required"
-          defaultValue="Hello World"
-          variant="filled"
-        />
-        <TextField
-          disabled
-          id="filled-disabled"
-          label="Disabled"
-          defaultValue="Hello World"
-          variant="filled"
-        />
-        <TextField
-          id="filled-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          variant="filled"
-        />
-        <TextField
-          id="filled-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-          variant="filled"
-        />
-        <TextField
-          id="filled-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="filled"
-        />
-        <TextField id="filled-search" label="Search field" type="search" variant="filled" />
-        <TextField
-          id="filled-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-          variant="filled"
-        />
-      </div> */}
-      {/* <div>
-        <TextField
-          required
-          id="outlined-required"
-          label="Required"
-          defaultValue="Hello World"
-          variant="outlined"
-        />
-        <TextField
-          disabled
-          id="outlined-disabled"
-          label="Disabled"
-          defaultValue="Hello World"
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-        />
-        <TextField id="outlined-search" label="Search field" type="search" variant="outlined" />
-        <TextField
-          id="outlined-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-          variant="outlined"
-        />
-      </div> */}
-    </form>
-    <Tooltip title="Add" aria-label="add">
+</form>*/}
+    {/*<Tooltip title="Add" aria-label="add">
         <Fab color="secondary" className={plusButtonClasses.absolute}>
           <AddIcon />
         </Fab>
-      </Tooltip>
+</Tooltip>*/}
     </div>
   );
 }
