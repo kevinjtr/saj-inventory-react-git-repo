@@ -10,8 +10,8 @@ const EquipmentList = (props) =>
 				<th>HRA Name</th>
 				<th>HRA ID</th>
 				<th>Item Type</th>
-				<th>Bar Tag Number</th>
-				<th>Employee Holding Equipment</th>
+				<th>Bar Tag</th>
+				<th>Equipment Holder</th>
 				{/* <th>Actions</th> */}
 			</tr>
 		</thead>
