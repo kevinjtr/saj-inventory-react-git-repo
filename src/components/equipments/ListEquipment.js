@@ -7,9 +7,11 @@ const EquipmentList = (props) =>
 	<table className="table">
 		<thead>
 			<tr>
-				<th>ID</th>
+				<th>HRA Name</th>
+				<th>HRA ID</th>
 				<th>Item Type</th>
 				<th>Bar Tag Number</th>
+				<th>Employee Holding Equipment</th>
 				{/* <th>Actions</th> */}
 			</tr>
 		</thead>
@@ -17,9 +19,11 @@ const EquipmentList = (props) =>
 			{props.equipments && props.equipments.length > 0 ? (
 				props.equipments.map((equipment) => (
 					<tr key={equipment.id}>
-						<td>{equipment.id}</td>
+						<td>{equipment.hra_full_name}</td>
+						<td>{equipment.hra_num}</td>
 						<td>{equipment.item_type}</td>
 						<td>{equipment.bar_tag_num}</td>
+						<td>{equipment.employee_full_name}</td>
 						{/* <td className="center-align">
 							<button
 								className="waves-effect waves-light btn-small"
