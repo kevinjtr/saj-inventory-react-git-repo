@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import './eng4900.css';
 
@@ -24,8 +23,6 @@ import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import Input from '@material-ui/core/Input';
 
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import Paper from '@material-ui/core/Paper';
@@ -43,6 +40,30 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import SearchIcon from '@material-ui/icons/Search';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+import MaterialTable from 'material-table'
+import AddBox from '@material-ui/icons/AddBox';
+import ArrowDownward from '@material-ui/icons/ArrowDownward';
+import Check from '@material-ui/icons/Check';
+import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import Clear from '@material-ui/icons/Clear';
+import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import Edit from '@material-ui/icons/Edit';
+import FilterList from '@material-ui/icons/FilterList';
+import FirstPage from '@material-ui/icons/FirstPage';
+import LastPage from '@material-ui/icons/LastPage';
+import Remove from '@material-ui/icons/Remove';
+import SaveAlt from '@material-ui/icons/SaveAlt';
+import Search from '@material-ui/icons/Search';
+import ViewColumn from '@material-ui/icons/ViewColumn';
+
+import Switch from '@material-ui/core/Switch';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
 
 import api from '../../axios/Api';
 
@@ -85,6 +106,16 @@ const texFieldStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
       width: '25ch',
       textAlign: 'center',
+    },
+  },
+}));
+
+const loadingCircleStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    '& > * + *': {
+      marginLeft: theme.spacing(2),
+      textAlign:'center',
     },
   },
 }));
@@ -192,10 +223,47 @@ const itemMenuStyles = makeStyles((theme) => ({
 
 export default function FormPropsTextFields(props) {
 
+  const tableIcons = {
+    Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+    Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+    DetailPanel: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+    Export: React.forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+    Filter: React.forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: React.forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: React.forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: React.forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: React.forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: React.forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: React.forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: React.forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+  };
+
+  const [loading, setLoading] = React.useState(false);
+
   const [equipments, setEquipments] = React.useState([]);
 
   const handleEquipmentsChange = (event) => {
     setEquipments(event.target.value);
+  };
+
+  const [unknowns, setUnknowns] = React.useState({
+    hraName:false,
+    hraNum:false,
+    itemType:false,
+    bartagNum:false,
+    employee:false
+  });
+
+  const handleUnknownsSwitch = (event) => {
+    const temp_unknown = unknowns
+    temp_unknown[event.target.value] = !unknowns[event.target.value]
+    console.log(temp_unknown[event.target.value])
+    setUnknowns(temp_unknown);
   };
 
     const componentDidMount = async () => {
@@ -219,11 +287,30 @@ export default function FormPropsTextFields(props) {
     setNumOfBarTags(event.target.value);
   };
 
+  const [hraName, setHraName] = React.useState('');
+
+  const handleHraNameChange = (event) => {
+    setHraName(event.target.value);
+  };
+
   const [hraId, setHraID] = React.useState('');
 
   const handleHraIdChange = (event) => {
     setHraID(event.target.value);
   };
+
+  const [employeeName, setEmployeeName] = React.useState('');
+
+  const handleEmployeeNameChange = (event) => {
+    setEmployeeName(event.target.value);
+  };
+
+  const [itemType, setItemType] = React.useState('');
+
+  const handleItemTypeChange = (event) => {
+    setItemType(event.target.value);
+  };
+
 
   const [bartagNum, setBartagNum] = React.useState('');
 
@@ -292,8 +379,31 @@ const handleDateChange = (date) => {
 				</MenuItem>
 			)
           })
+  //loading circles
+  const loadingCircleClasses = loadingCircleStyles();
 
           const tags = [<></>,<div></div>]
+
+const LoadingCircle = () => {
+  return (
+      <CircularProgress />
+  );
+}
+
+const FormControlLabelPosition = () => {
+  return (
+    <FormControl component="fieldset" id="" key="">
+      <FormGroup aria-label="position" row>
+        <FormControlLabel
+          value="hraNum"
+          control={<Switch size="small" color="primary" onChange={handleUnknownsSwitch}/>}
+          label="remove unknown"
+          labelPlacement="top"
+        />
+      </FormGroup>
+    </FormControl>
+  );
+}
           
  const bartagsData = (n) => {
      const returnArray = [];
@@ -409,8 +519,10 @@ const handleDateChange = (date) => {
  const handleSearch = () => {
 
   console.log('equipmentbyHraCall')
-		api.post(`equipment/search`,{hraId:hraId,bartagNum:bartagNum}).then((response) => response.data).then((data) => {
+  setLoading(true)
+		api.post(`equipment/search`,{hraId:hraId,bartagNum:bartagNum,hraName:hraName,employeeName:employeeName,itemType:itemType}).then((response) => response.data).then((data) => {
       console.log(data)
+      setLoading(false)
       setEquipments(data.status != 400 ? data.data : data)
 			// this.setState({
 			// 	equipments: data.status != 400 ? data.values: data,
@@ -419,6 +531,7 @@ const handleDateChange = (date) => {
 			//console.log(this.state.equipment.values);
 			// console.log(this.props, this.state);
     }).catch(function (error) {
+      setLoading(false)
       setEquipments([])
     });
     
@@ -796,46 +909,11 @@ const handleDateChange = (date) => {
     )
 }
 
-const eng4900s = [{hraName:"Anderson, Thomas",
-category: "hard disk drive",
-date_added: "2020-11-18T18:49:24.000Z",
-date_updated: "2020-11-18T18:49:27.000Z",
-description: "Seagate",
-id: 2,
-image: "eng4900.png",
-barTags:["77701","77702","77703"],
-product_name: "External Hard Drive",
-quantity: 9},
-{hraName:"Smith, John",
-category: "laptop",
-date_added: null,
-date_updated: "2020-11-30T19:33:52.000Z",
-description: null,
-id: 1,
-image: "eng4900.png",
-barTags:["66601","66602","66603"],
-product_name: "iphone",
-quantity: 5},
-{hraName:"Gates, Richard",
-category: "hard disk drive",
-date_added: null,
-date_updated: "2020-11-24T20:45:02.000Z",
-description: null,
-id: 3,
-image: "eng4900.png",
-barTags:["55501","55502","55503"],
-product_name: "laptopcilla",
-quantity: 56}]
-
-const renderData = eng4900s.map((product) => {
-    return <Card4900 product={product} key={product.id} refresh={componentDidMount} />;
-});
-
   return (
     <div>
         <div style={{textAlign: 'center'}}>
       <h2 >Equipment</h2>
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
+      {/* <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
                 Open Menu - Search
             </Button>
             <Menu
@@ -843,13 +921,11 @@ const renderData = eng4900s.map((product) => {
                 anchorEl={anchorEl}
                 keepMounted
                 open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-            >
+                onClose={handleMenuClose}>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Search</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Update</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Create</MenuItem>
-            </Menu>
-            
+            </Menu>  */}
       </div>
       <div style={{textAlign: 'center'}}>
       
@@ -859,38 +935,60 @@ const renderData = eng4900s.map((product) => {
             <div className={classesGrid.options}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
-                            <TextField id="outlined-search" label="Search by HRA Number" type="search" variant="outlined" value={hraId} onChange={handleHraIdChange}/> 
-                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/> 
-                            <FormControl variant="outlined" className={classesItemMenu.formControl}>
-                        <InputLabel id="demo-simple-select-outlined-label">Sort By</InputLabel>
-                        <Select
-                        labelId="demo-simple-select-outlined-label"
-                        id="demo-simple-select-outlined"
-                        value={""}
-                        //onChange={handleChange}
-                        label="Sort By"
-                        >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={10}>Sort By - HRA NAME</MenuItem>
-                        <MenuItem value={20}>Sort By - HOLDER NAME</MenuItem>
-                        <MenuItem value={30}>Sort By - BARTAG NUMBER</MenuItem>
-                        <MenuItem value={40}>Sort By - HRA NUMBER</MenuItem>
-                        </Select>
-                    </FormControl>
+                            <TextField id="outlined-search" label="Search by HRA Name" type="search" variant="outlined" value={hraName} onChange={handleHraNameChange}/>
+                            {/* {FormControlLabelPosition()} */}
+                            <TextField id="outlined-search" label="Search by HRA Number" type="search" variant="outlined" value={hraId} onChange={handleHraIdChange}/>
+                            <TextField id="outlined-search" label="Search by Item Name" type="search" variant="outlined" value={itemType} onChange={handleItemTypeChange}/> 
+                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/>
+                            <TextField id="outlined-search" label="Search by Employee Holder" type="search" variant="outlined" value={employeeName} onChange={handleEmployeeNameChange}/>  
+                            {/* <FormControl variant="outlined" className={classesItemMenu.formControl}>
+                              <InputLabel id="demo-simple-select-outlined-label">Sort By</InputLabel>
+                              <Select
+                              labelId="demo-simple-select-outlined-label"
+                              id="demo-simple-select-outlined"
+                              value={""}
+                              //onChange={handleChange}
+                              label="Sort By"
+                              >
+                              <MenuItem value="">
+                                  <em>None</em>
+                              </MenuItem>
+                              <MenuItem value={10}>Sort By - HRA NAME</MenuItem>
+                              <MenuItem value={20}>Sort By - HOLDER NAME</MenuItem>
+                              <MenuItem value={30}>Sort By - BARTAG NUMBER</MenuItem>
+                              <MenuItem value={40}>Sort By - HRA NUMBER</MenuItem>
+                              </Select>
+                            </FormControl> */}
                     <IconButton aria-label="search" color="primary" onClick={handleSearch}>
                             <SearchIcon style={{ fontSize: 40 }}/>
                         </IconButton>
                     </Grid>
                     <Grid item xs={12}>
-                    {equipments.length > 0 ? props.EquipmentTablePrint(equipments) : null}
+                    {loading ? LoadingCircle() : null}
+                    {equipments.length > 0 ? <div style={{ maxWidth: '100%' }}>
+        <MaterialTable
+        icons={tableIcons}
+          columns={[
+            { title: 'HRA Name', field: 'hra_full_name' },
+            { title: 'HRA Number', field: 'hra_num', type: 'numeric' },
+            { title: 'Item Type', field: 'item_type' },
+            { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric'},
+            { title: 'Employee Holding Equipment', field: 'employee_full_name' }
+          ]}
+          data={equipments}
+          options={{
+            exportButton: true,
+            exportAllData: true
+          }}
+          title=""
+        />
+    </div> : null}
                     </Grid>
                 </Grid>
             </div>
         </form>
     </div>
-
+    
     {/* <div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
         <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
         <div className="card-title">
