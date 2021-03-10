@@ -7,9 +7,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import './eng4900.css';
-
 import Card4900 from '../Card4900';
-
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -18,34 +16,29 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import Input from '@material-ui/core/Input';
-
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
 import Paper from '@material-ui/core/Paper';
-
 import Avatar from '@material-ui/core/Avatar';
 import { deepOrange, deepPurple } from '@material-ui/core/colors';
-
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
-
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-
 import SearchIcon from '@material-ui/icons/Search';
-
-
 import api from '../../axios/Api';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormLabel from '@material-ui/core/FormLabel';
+
 
 const plusButtonStyles = makeStyles((theme) => ({
   fab: {
@@ -58,11 +51,6 @@ const plusButtonStyles = makeStyles((theme) => ({
     alignSelf: 'flex-end'
   },
 }));
-
-//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-//import CheckBoxIcon from '@material-ui/icons/CheckBox';
-//import Favorite from '@material-ui/icons/Favorite';
-//import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 
 const textFieldSizes = {
     input1: {
@@ -169,11 +157,11 @@ const itemMenuStyles = makeStyles((theme) => ({
       <NumberFormat
         {...other}
         getInputRef={inputRef}
-        onValueChange={(values) => {
+        onValueChange={(phoneNumbers) => {
           onChange({
             target: {
               name: props.name,
-              value: values.value,
+              value: phoneNumbers.value,
             },
           });
         }}
@@ -192,76 +180,78 @@ const itemMenuStyles = makeStyles((theme) => ({
 
 
 export default function FormPropsTextFields() {
+  
+  //Constants Declarations.
+  //const requestedActions = ["Issue","Transfer","Repair","Excess","FOI"]
+  const reqActionsReset = {
+    Issue: false,
+    Transfer: false,
+    Repair: false,
+    Excess: false,
+    Foi: false,
+    TemporaryLoan: false
+  };
+    
+  //Variables Declarations.
+  let showForm = false
 
-    const componentDidMount = async () => {
-		
-		// );
-		// console.log(this.state);
-	};
-    //text fields
+  //Styles Declarations.
   const classesTextField = texFieldStyles();
+  const classesItemMenu = itemMenuStyles();
+  const classesPhoneTextField = phoneTextFieldStyles();
+  const classesGrid = gridStyles();
+  const avatarClasses = AvatarStyles();
+  const plusButtonClasses = plusButtonStyles();
 
+  //Hooks Declarations.
   const [eng4900s, setEng4900s] = React.useState([]);
+  const [numOfBarTags, setNumOfBarTags] = React.useState(1);
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [phoneNumbers, setPhoneNumbers] = React.useState({
+    gaining_hra_work_phone: '(   )    -    ',
+    losing_hra_work_phone: '(   )    -    ',
+    numberformat: '1320',
+  });
+  const [reqActions, setReqActions] = React.useState({
+    Issue: false,
+    Transfer: false,
+    Repair: false,
+    Excess: false,
+    Foi: false,
+    TemporaryLoan: false
+  });
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [id_, setId] = React.useState('');
+  const [selectedForm, setSelectedForm] = React.useState(null);
 
+  
+  //Events Declarations.
   const handle4900sChange = (event) => {
     setEng4900s(event.target.value);
   };
 
-  const classesItemMenu = itemMenuStyles();
-  const [reqAction, setReqAction] = React.useState('');
-
-  const handleItemMenuChange = (event) => {
-    setReqAction(event.target.value);
-  };
-
-  const [numOfBarTags, setNumOfBarTags] = React.useState(1);
+  // const handleItemMenuChange = (event) => {
+  //   setReqAction(event.target.value);
+  // };
 
   const handleBarTagMenuChange = (event) => {
     setNumOfBarTags(event.target.value);
   };
 
-  // dates
-const [selectedDate, setSelectedDate] = React.useState(new Date());
-
-const handleDateChange = (date) => {
-  setSelectedDate(date);
-};
-//phone numbers
-  const classesPhoneTextField = phoneTextFieldStyles();
-  const [values, setValues] = React.useState({
-    textmaskghr: '(   )    -    ',
-    textmasklhr: '(   )    -    ',
-    numberformat: '1320',
-  });
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
 
   const handlePhoneTextFieldChange = (event) => {
-    setValues({
-      ...values,
+    setPhoneNumbers({
+      ...phoneNumbers,
       [event.target.name]: event.target.value,
     });
   };
 
-  //check box 
-
-  const [state, setState] = React.useState({
-    issue: false,
-    transfer: false,
-    repair: false,
-    excess: false,
-    foi: false,
-    temporaryLoan: false
-  });
-
   const handleCheckBoxChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
+    setReqActions({ ...reqActions, [event.target.name]: event.target.checked });
   };
-
-  //grids
-  const classesGrid = gridStyles();
-
-  //simpleMenu
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -270,587 +260,818 @@ const handleDateChange = (date) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+  
+  const handleIdChange = (event) => {
+    setId(event.target.value);
+    // if(event.target.value == ''){
+    //   setIncludes({...includes_,  [event.target.name]: 'includes'})
+    // }
+  };
 
-  //menu items
+  const handleViewFormFromCard = (event) => {
+    const eId = (event.target.id).split('-')[1]
+    setSelectedForm(eng4900s[eId]);
+    setPhoneNumbers({
+      ...phoneNumbers,
+      ["losing_hra_work_phone"]: eng4900s[eId][0].losing_hra_work_phone,
+      ["gaining_hra_work_phone"]: eng4900s[eId][0].gaining_hra_work_phone,
+    });
+    // if(event.target.value == ''){
+    //   setIncludes({...includes_,  [event.target.name]: 'includes'})
+    // }
+  };
 
-  const requestedActions = ["Issue","Transfer","Repair","Excess","FOI"]
-		const RequestedActionDropDownItems = requestedActions.map((c, i)=>{
-			return(
-				<MenuItem value={c}>
-				{c}
-				</MenuItem>
-			)
-          })
+  
 
-          const tags = [<></>,<div></div>]
-          
- const bartagsData = (n) => {
-     const returnArray = [];
-    for(let x=0; x<n;x++){
+  //Function Declarations.
+  const bartagsData = (f) => {
+    const returnArray = [];
+    for(let i=0; i<f.length;i++){
+      const b_key = i+1
         returnArray.push(
             <>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
                 <Paper className={classesGrid.paper}>
-                <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
+                <Avatar className={avatarClasses.orange}>{i+1}</Avatar>
                     <TextField
-                    id= {`item_no_${x}`}
-                    label="Item No."
+                    id={`item_no_${b_key}`}
+                    key={`item_no_${b_key}`}
+                    label={"Item No. " + b_key}
                     style={{ width: 200 }}
                     />
                     <TextField
-                    id= {`bar_tag_no_${x}`}
-                    label="Bar Tag No."
+                    id={`bar_tag_no_${b_key}`}
+                    key={`bar_tag_no_${b_key}`}
+                    label={"Bar Tag No. " + b_key}
+                    value={f[i].bar_tag_num ? f[i].bar_tag_num : ""}
                     style={{ width: 200 }}
                     />
                     <TextField
-                    id= {`catalog_${x}`}
-                    label="Catalog"
+                    id={`catalog_${b_key}`}
+                    key={`catalog_${b_key}`}
+                    label={"Catalog " + b_key}
+                    value={f[i].catalog_num}
                     style={{ width: 200 }}
                     />
                     <TextField
-                    id= {`nomenclature_${x}`}
-                    label="Nomenclature (include make, model)"
+                    id={`nomenclature_${b_key}`}
+                    key={`nomenclature_${b_key}`}
+                    label={"Nomenclature (include make, model) " + b_key}
+                    value={f[i].item_type ? f[i].item_type : ""}
                     style={{ width: 200 }}
                     />
-                    </Paper>
+                    {/* </Paper>
                     </Grid>
                     <Grid item xs={6}>
                     <Paper className={classesGrid.paper}>
-                    <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
+                    <Avatar className={avatarClasses.orange}>{i+1}</Avatar> */}
                     <TextField
-                    id= {`cond_code_${x}`}
-                    label="Cond Code"
+                    id={`cond_code_${b_key}`}
+                    key={`cond_code_${b_key}`}
+                    label={"Cond Code " + b_key}
+                    value={f[i].condition ? f[i].condition : ""}
                     style={{ width: 150 }}
                     />
                     <TextField
-                    id= {`serial_number_${x}`}
-                    label="Serial Number"
+                    id={`serial_number_${b_key}`}
+                    key={`serial_number_${b_key}`}
+                    label={"Serial Number " + b_key}
+                    value={f[i].serial_num ? f[i].serial_num : ""}
+                    style={{ width: 150 }}
+                    />
+                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                        <KeyboardDatePicker
+                        disableToolbar
+                        variant="inline"
+                        format="MM/dd/yyyy"
+                        margin="normal"
+                        id={`date-picker-inline-acq-date-${b_key}`}
+                        key={`date-picker-inline-acq-date-${b_key}`}
+                        label={"ACQ. Date " + b_key}
+                        value={f[i].acquisition_date ? f[i].acquisition_date : ""}
+                        //onChange={handleDateChange}
+                        KeyboardButtonProps={{
+                            'aria-label': 'change date',
+                        }}
+                        style={{ width: 150 }}/>
+                    </MuiPickersUtilsProvider>
+                    {/* <TextField
+                    id={`acq_date_${i}`}
+                    key={`acq_date_${i}`}
+                    label={"ACQ. Date " + (i+1)}
+                    value={f[i].acquisition_date ? f[i].acquisition_date : ""}
+                    style={{ width: 150 }}
+                    /> */}
+                    <TextField
+                    id={`acq_price_${b_key}`}
+                    key={`acq_price_${b_key}`}
+                    label={"ACQ. Price " + b_key}
+                    value={f[i].acquisition_price ? f[i].acquisition_price : ""}
                     style={{ width: 150 }}
                     />
                     <TextField
-                    id= {`acq_date_${x}`}
-                    label="ACQ. Date"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`acq_price_${x}`}
-                    label="ACQ. Price"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`document_number_${x}`}
-                    label="Document Number/Control ID#"
+                    id={`document_number_${b_key}`}
+                    key={`document_number_${b_key}`}
+                    label={"Document Number/Control ID# " + b_key}
+                    value={f[i].document_num ? f[i].document_num : ""}
                     style={{ width: 175 }}
                     />
                 </Paper>
             </Grid>
-         </>
+        </>
         );
     }
-     return(returnArray)
- }
+    return(returnArray)
+}
 
- const menuItemsBarTags = () => {
-     const returnArray = []
-     for(let i=0; i < 10;i++){
-        returnArray.push(<><MenuItem value={i}>{i}</MenuItem></>)
-     }
-     return(returnArray);
- }
 
- //Avatars
+  const menuItemsBarTags = () => {
+      const returnArray = []
+      for(let i=0; i < 10;i++){
+          returnArray.push(<><MenuItem value={i}>{i}</MenuItem></>)
+      }
+      return(returnArray);
+  }
 
- const avatarClasses = AvatarStyles();
+  const handle4900Search = async () => {
 
- const disableFields = {
-     PBO: true,
-     logistics: true,
-     HRA: false,
-     user: false
- }
+    setSelectedForm(null)
+    console.log('4900SearchCall')
+      await api.post(`eng4900/search`,{fields:{id:id_}}).then((response) => response.data).then((data) => {
+        console.log(data)
+        setEng4900s(data.status != 400 ? data.data : data)
+        // this.setState({
+        // 	equipments: data.status != 400 ? data.values: data,
+        // 	setequipment: data
+        // });
+        //console.log(this.state.equipment.values);
+        // console.log(this.props, this.state);
+      }).catch(function (error) {
+        setEng4900s([])
+      });
+  }
 
- //plus button
+  const form = (f) => {
 
- const plusButtonClasses = plusButtonStyles();
+    const {form_id, requested_action, individual_ror_prop,
+      losing_hra_num, losing_hra_first_name, losing_hra_last_name, losing_hra_os_alias,
+      gaining_hra_num, gaining_hra_first_name, gaining_hra_last_name, gaining_hra_os_alias,
+    } = f[0]
 
- const handle4900Search = () => {
-
-  console.log('4900ByHraCall')
-		api.post(`eng4900/search`,{}).then((response) => response.data).then((data) => {
-      console.log(data)
-      setEng4900s(data.status != 400 ? data.data : data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
-    }).catch(function (error) {
-      setEng4900s([])
-    });
+    console.log(f[0])
+    // const lwp = f[0].losing_hra_work_phone
+    // const gwp = f[0].gaining_hra_work_phone
     
-  
-  // const tempProps = {...props};
-  //  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-  //  if(!searchResult.error){
-  //   equipments = searchResult.data
-  //  }
- }
+    // if(lwp){
+    //   setPhoneNumbers({
+    //     ...phoneNumbers,
+    //     ["losing_hra_work_phone"]: `(${lwp[0]}${lwp[1]}${lwp[2]}) ${lwp[3]}${lwp[4]}${lwp[5]}-${lwp[6]}${lwp[7]}${lwp[8]}${lwp[9]}`,
+    //   });
+    // }
 
- const form = () => {
-    return(
-        <>
-       <Grid item xs={12}>
-            <Paper className={classesGrid.paper}>
-            {/* <FormControl className={classesItemMenu.formControl}>
-             <InputLabel id="demo-simple-select-label">Req Action</InputLabel>
-             <Select
-             labelId="demo-simple-select-label"
-             id="demo-simple-select"
-             value={reqAction}
-             onChange={handleItemMenuChange}
-             >
-             <MenuItem value={"Issue"}>Issue</MenuItem>
-             <MenuItem value={"Transfer"}>Transfer</MenuItem>
-             <MenuItem value={"Repair"}>Repair</MenuItem>
-             <MenuItem value={"Excess"}>Excess</MenuItem>
-             <MenuItem value={"FOI"}>FOI</MenuItem>
-             </Select>
-         </FormControl> */}
-
-
+    // if(gwp){
+    //   setPhoneNumbers({
+    //     ...phoneNumbers,
+    //     ["gaining_hra_work_phone"]: `(${gwp[0]}${gwp[1]}${gwp[2]}) ${gwp[3]}${gwp[4]}${gwp[5]}-${gwp[6]}${gwp[7]}${gwp[8]}${gwp[9]}`,
+    //   }); 
+    // }
+    
+      return(
+          <>
+        <Grid item xs={12}>
+          <Paper className={classesGrid.paper}>
+            <p>{`Form - ${form_id}`}</p>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Requested Action:</FormLabel>
+              <RadioGroup row aria-label="position" name="position" defaultValue={requested_action}>
+                <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
+                <FormControlLabel id="radio-transfer" key="radio-transfer" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
+                <FormControlLabel id="radio-end" key="radio-end" value="End" control={<Radio color="primary" />} label="Repair" />
+                <FormControlLabel id="radio-excess" key="radio-excess" value="Excess" control={<Radio color="primary" />} label="Excess" />
+                <FormControlLabel id="radio-foi" key="radio-foi" value="FOI" control={<Radio color="primary" />} label="FOI" />
+                {/* <FormControlLabel value="Temporary Loan" control={<Radio color="primary" />} label="Repair" /> */}
+              </RadioGroup>
+            </FormControl>
+            {/* <FormControlLabel
+                control={<Checkbox checked={reqActions["Issue"] } onChange={handleCheckBoxChange} name="issue" />}
+                label="Issue"/>
             <FormControlLabel
-                control={<Checkbox checked={state.issue} onChange={handleCheckBoxChange} name="issue" />}
-                label="Issue"
-            />
-            
+                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="transfer" />}
+                label="Transfer"/>
             <FormControlLabel
-                control={<Checkbox checked={state.transfer} onChange={handleCheckBoxChange} name="transfer" />}
-                label="Transfer"
-            />
-            
+                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="repair" />}
+                label="Repair"/>
             <FormControlLabel
-                control={<Checkbox checked={state.repair} onChange={handleCheckBoxChange} name="repair" />}
-                label="Repair"
-            />
-            
+                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="excess" />}
+                label="Excess"/>
             <FormControlLabel
-                control={<Checkbox checked={state.excess} onChange={handleCheckBoxChange} name="excess" />}
-                label="Excess"
-            />
-            
+                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="foi" />}
+                label="FOI"/>*/}
             <FormControlLabel
-                control={<Checkbox checked={state.foi} onChange={handleCheckBoxChange} name="foi" />}
-                label="FOI"
-            />
-
-            <FormControlLabel
-                control={<Checkbox checked={state.temporaryLoan} onChange={handleCheckBoxChange} name="temporaryLoan" />}
-                label="Temporary Loan"
-            />
+                control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={reqActions["TemporaryLoan"]} onChange={handleCheckBoxChange} name="TemporaryLoan" />}
+                label="Temporary Loan"/> 
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                 disableToolbar
                 variant="inline"
                 format="MM/dd/yyyy"
                 margin="normal"
-                id="date-picker-inline"
+                id="date-picker-inline-expiration-date"
+                key="date-picker-inline-expiration-date"
                 label="Expiration Date"
                 value={selectedDate}
                 onChange={handleDateChange}
                 KeyboardButtonProps={{
                     'aria-label': 'change date',
-                }}
-                />
+                }}/>
             </MuiPickersUtilsProvider>
-         
-            </Paper>
+        </Paper>
+      </Grid>
+      
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <p>LOSING HAND RECEIPT HOLDER</p>
+          <TextField
+            id="standard-helperText-l-name"
+            key="standard-helperText-l-name"
+            label="2a. Name"
+            value={losing_hra_first_name + ' ' + losing_hra_last_name}
+            style={{ width: 300 }}/>
+          <TextField
+            id="standard-helperText-l-os"
+            key="standard-helperText-l-os"
+            label="b. Office Symbol"
+            value={losing_hra_os_alias}
+            style={{ width: 300 }}/>
+          <TextField
+            id="standard-helperText-l-hra-num"
+            key="standard-helperText-l-hra-num"
+            label="c. Hand Receipt Account Number"
+            value={losing_hra_num}
+            style={{ width: 300 }}/>
+          <FormControl>
+            <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
+            <Input 
+              style={{ height: 40,width:300 }}
+              value={phoneNumbers.losing_hra_work_phone}
+              onChange={handlePhoneTextFieldChange}
+              name="losing_hra_work_phone"
+              id="formatted-text-mask-input-l-work-phone"
+              key="formatted-text-mask-input-l-work-phone"
+              inputComponent={TextMaskCustom}/>
+          </FormControl>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <p>GAINING HAND RECEIPT HOLDER</p>
+          <TextField
+            id="standard-helperText-g-name"
+            key="standard-helperText-g-name"
+            label="3a. Name"
+            value={gaining_hra_first_name + ' ' + gaining_hra_last_name}
+            style={{ width: 300 }}/>
+          <TextField
+            id="standard-helperText-g-os"
+            key="standard-helperText-g-os"
+            label="b. Office Symbol"
+            value={gaining_hra_os_alias}
+            style={{ width: 300 }}/>
+          <TextField
+            id="standard-helperText-g-hra-num"
+            key="standard-helperText-g-hra-num"
+            label="c. Hand Receipt Account Number"
+            value={gaining_hra_num}
+            style={{ width: 300 }}/>
+          <FormControl>
+            <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
+              <Input 
+                style={{ height: 40,width:300 }}
+                value={phoneNumbers.gaining_hra_work_phone}
+                onChange={handlePhoneTextFieldChange}
+                name="gaining_hra_work_phone"
+                id="formatted-text-mask-input-g-work-phone"
+                key="formatted-text-mask-input-g-work-phone"
+                inputComponent={TextMaskCustom}/>
+          </FormControl>
+        </Paper>
+      </Grid>
+      {/* <Grid item xs={12}>
+        <Paper className={classesGrid.paper}>
+          <FormControl className={classesItemMenu.formControl}>
+            <InputLabel id="demo-simple-select-label-bt">Number of Equipment Items</InputLabel>
+              <Select
+              labelId="demo-simple-select-label-bt"
+              id="demo-simple-select-bt"
+              value={numOfBarTags}
+              onChange={handleBarTagMenuChange}>
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+              </Select>
+          </FormControl>
+        </Paper>
+      </Grid> */}
+      {bartagsData(f)}
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-ror-prop"
+            key="standard-helperText-ror-prop"
+            label="13a. Individual/Vendor Removing or Recieving Property"
+            value={individual_ror_prop ? individual_ror_prop : ""}
+            style={{ width: 600 }}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-ror-prop-sign-date"
+            key="standard-helperText-ror-prop-sign-date"
+            label="b. Date"
+            style={{ width: 120 }}/>
+          <TextField
+            id="standard-helperText-ror-prop-sign"
+            key="standard-helperText-ror-prop-sign"
+            label="c. Signature"
+            style={{ width: 120 }}/>
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-l-hra-sign"
+            key="standard-helperText-l-hra-sign"
+            label="14a. Losing HRH Signature"
+            style={{ width: 300 }}/>
+          <TextField
+            id="standard-helperText-l-hra-sign-date"
+            key="standard-helperText-l-hra-sign-date"
+            label="b. Date"
+            style={{ width: 120 }}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-g-hra-sign"
+            key="standard-helperText-g-hra-sign"
+            label="15a. Gaining HRH Signature"
+            style={{ width: 300 }}/>
+          <TextField
+            id="standard-helperText-g-hra-sign-date"
+            key="standard-helperText-g-hra-sign-date"
+            label="b. Date"
+            style={{ width: 120 }}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={12}>
+        <Paper className={classesGrid.paper}>
+          <p>Transfer (PBO use only)</p>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-l-command"
+            key="standard-helperText-l-command"
+            label="16a. Losing Command"
+            style={{ width: 250 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+          <TextField
+            id="standard-helperText-l-uic"
+            key="standard-helperText-l-uic"
+            label="b. UIC"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-g-command"
+            key="standard-helperText-g-command"
+            label="17a. Gaining Command"
+            style={{ width: 250 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+          <TextField
+            id="standard-helperText-g-uic"
+            key="standard-helperText-g-uic"
+            label="b. UIC"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+        <TextField
+          id="standard-helperText-ship-from"
+          key="standard-helperText-ship-from"
+          label="c. Ship From"
+          style={{ width: 120 }}
+          InputProps={{
+            readOnly: disableFields.PBO,
+          }}
+          {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-ship-to"
+            key="standard-helperText-ship-to"
+            label="c. Ship To:"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-l-pbo"
+            key="standard-helperText-l-pbo"
+            label="d. PBO"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-g-pbo"
+            key="standard-helperText-g-pbo"
+            label="d. PBO"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-l-command-sign"
+            key="standard-helperText-l-command-sign"
+            label="e. Losing Command Signature"
+            style={{ width: 300 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+          <TextField
+            id="standard-helperText-l-command-sign-date"
+            key="standard-helperText-l-command-sign-date"
+            label="f. Date"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-g-command-sign"
+            key="standard-helperText-g-command-sign"
+            label="e. Gaining Command Signature"
+            style={{ width: 300 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+          <TextField
+            id="standard-helperText-g-command-sign-date"
+            key="standard-helperText-g-command-sign-date"
+            label="f. Date"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.PBO,
+            }}
+            {...(disableFields.PBO && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={12}>
+        <Paper className={classesGrid.paper}>
+          <p>Logistics (supply use only)</p>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+          <TextField
+            id="standard-helperText-received-by"
+            key="standard-helperText-received-by"
+            label="18a. Received By"
+            style={{ width: 300 }}
+            InputProps={{
+              readOnly: disableFields.logistics,
+            }}
+            {...(disableFields.logistics && {variant:"filled"})}/>
+          <TextField
+            id="standard-helperText-received-by-date"
+            key="standard-helperText-received-by-date"
+            label="b. Date"
+            style={{ width: 120 }}
+            InputProps={{
+              readOnly: disableFields.logistics,
+            }}
+            {...(disableFields.logistics && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+        <TextField
+          id="standard-helperText-posted-by"
+          key="standard-helperText-posted-by"
+          label="19a. Posted By"
+          style={{ width: 300 }}
+          InputProps={{
+            readOnly: disableFields.logistics,
+          }}
+          {...(disableFields.logistics && {variant:"filled"})}/>
+        <TextField
+          id="standard-helperText-posted-by-date"
+          key="standard-helperText-posted-by-date"
+          label="b. Date"
+          style={{ width: 120 }}
+          InputProps={{
+            readOnly: disableFields.logistics,
+          }}
+          {...(disableFields.logistics && {variant:"filled"})}/>
+        </Paper>
+      </Grid>
+      </>
+      )
+  }
 
-     </Grid>
-     
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <p>LOSING HAND RECEIPT HOLDER</p>
-       <TextField
-       label="2a. Name"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="b. Office Symbol"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="c. Hand Receipt Account Number"
-       style={{ width: 300 }}
-     />
-     
-   <FormControl>
-     <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-     <Input 
-     
-       style={{ height: 40,width:300 }}
-       value={values.textmasklhr}
-       onChange={handlePhoneTextFieldChange}
-       name="textmasklhr"
-       id="formatted-text-mask-input"
-       inputComponent={TextMaskCustom}
-     />
-   </FormControl>
-       </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <p>GAINING HAND RECEIPT HOLDER</p>
-       <TextField
-       label="3a. Name"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="b. Office Symbol"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="c. Hand Receipt Account Number"
-       style={{ width: 300 }}
-     />
-     <FormControl>
-     <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-     <Input 
-       style={{ height: 40,width:300 }}
-       value={values.textmaskghr}
-       onChange={handlePhoneTextFieldChange}
-       name="textmaskghr"
-       id="formatted-text-mask-input"
-       inputComponent={TextMaskCustom}
-     />
-   </FormControl>
-       </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-     <FormControl className={classesItemMenu.formControl}>
-             <InputLabel id="demo-simple-select-label-bt">Number of Equipments</InputLabel>
-             <Select
-             labelId="demo-simple-select-label-bt"
-             id="demo-simple-select-bt"
-             value={numOfBarTags}
-             onChange={handleBarTagMenuChange}
-             >
-             <MenuItem value={1}>1</MenuItem>
-             <MenuItem value={2}>2</MenuItem>
-             <MenuItem value={3}>3</MenuItem>
-             <MenuItem value={4}>4</MenuItem>
-             <MenuItem value={5}>5</MenuItem>
-             </Select>
-     </FormControl>
-     </Paper>
-     </Grid>
-     {bartagsData(numOfBarTags)}
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="13a. Individual/Vendor Removing or Recieving Property"
-       style={{ width: 600 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-       <TextField
-       label="c. Signature"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="14a. Losing HRH Signature"
-       style={{ width: 300 }}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="15a. Gaining HRH Signature"
-       style={{ width: 300 }}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-       <p>Transfer (PBO use only)</p>
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="16a. Losing Command"
-       style={{ width: 250 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="b. UIC"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="17a. Gaining Command"
-       style={{ width: 250 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="b. UIC"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="c. Ship From"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="c. Ship To:"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="d. PBO"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="d. PBO"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="e. Losing Command Signature"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="f. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="e. Gaining Command Signature"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="f. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-       <p>Logistics (supply use only)</p>
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="18a. Received By"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="19a. Posted By"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     </>
-    )
-}
+  function CardProduct(form){
 
-// const eng4900s = [{hraName:"Anderson, Thomas",
-// category: "hard disk drive",
-// date_added: "2020-11-18T18:49:24.000Z",
-// date_updated: "2020-11-18T18:49:27.000Z",
-// description: "Seagate",
-// id: 2,
-// image: "eng4900.png",
-// barTags:["77701","77702","77703"],
-// product_name: "External Hard Drive",
-// quantity: 9},
-// {hraName:"Smith, John",
-// category: "laptop",
-// date_added: null,
-// date_updated: "2020-11-30T19:33:52.000Z",
-// description: null,
-// id: 1,
-// image: "eng4900.png",
-// barTags:["66601","66602","66603"],
-// product_name: "iphone",
-// quantity: 5},
-// {hraName:"Gates, Richard",
-// category: "hard disk drive",
-// date_added: null,
-// date_updated: "2020-11-24T20:45:02.000Z",
-// description: null,
-// id: 3,
-// image: "eng4900.png",
-// barTags:["55501","55502","55503"],
-// product_name: "laptopcilla",
-// quantity: 56}]
+    const {form_id} = form[0]
+    let bartags = ''
 
-function CardProduct(form){
-	return (
-		<div className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
-			<div className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
-            <div style={{display:'inline'}}>
-            {/* <img src={product.image} alt="" style={{height:"25%",width:"25%",display:'inline'}} /> */}
-				<h4 style={{ marginTop: '20px' }}>ENG4900 - Doc Num:</h4>
-                <h4 >{form[0].FORM_ID}</h4>
-            </div>
-            
-				<hr />
-				
-				<h6>Bar Tags Quantity: {form.length}</h6>
-                <small>Losing HRA: {form[0].LOSING_HRA}</small>
-				<small>Gaining HRA: {form[0].GAINING_HRA}</small>
-                {/* <small>Bar Tags: </small>
-                <small>{btPrint} </small> */}
-				<div className="row" style={{ margin: 3,marginTop:'10px' }}>
-					{/* <Link to={'/edit/' + product.id} style={{ margin: 2 }}>
-						<input type="submit" value="View" className="btn btn-primary" />
-					</Link> */}
-					{/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
-						<input type="submit" value="Edit" className="btn btn-warning" />
-					</Link> */}
-				</div>
-				<br />
-			</div>
-		</div>
-	);
-}
+    Object.keys(form).map(function(key) {
+      bartags = bartags + (bartags ? ', ':'') + form[key].bar_tag_num
+    });
 
-const cards = eng4900s.map((form) => {
-    return CardProduct(form);
-});
+    return (
+      <div  id={"container-"+form_id} key={"container-"+form_id} className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
+        <div id={"card-"+form_id} key={"card-"+form_id} className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
+              <div style={{display:'inline'}}>
+                <h4 style={{ marginTop: '20px' }}>ENG4900 - ID: {form_id}</h4>
+              </div>
+              <div style={{display:'inline',textAlign:'center'}}>
+                  { <img src={'./ENG4900.PNG'} alt="" style={{height:"100%",width:"100%",display:'inline'}} />}
+              </div>           
+          <hr />
+          
+          <h6>Bar Tags Quantity: {form.length}</h6>
+          <small>Losing HRA: {form[0].losing_hra_num + ' - ' + form[0].losing_hra_first_name + ' ' + form[0].losing_hra_last_name }</small>
+          <small>Gaining HRA: {form[0].gaining_hra_num + ' - ' + form[0].gaining_hra_first_name + ' ' + form[0].gaining_hra_last_name}</small>
+          <small>Bar Tags: {bartags}</small>
+                  {/* <small>Bar Tags: </small>
+                  <small>{btPrint} </small> */}
+          <div id={"row-"+form_id} key={"row-"+form_id} className="row" style={{ margin: 3,marginTop:'10px' }}>
+              <input id={"bnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={handleViewFormFromCard}/>
+            {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
+              <input type="submit" value="Edit" className="btn btn-warning" />
+            </Link> */}
+          </div>
+          <br />
+        </div>
+      </div>
+    );
+  }
 
-let showForm = false
+  //Render Variables
+  const textFieldsLosingHandConfig1 = [
+    {label:'2a. Name', width:300},
+    {label:'b. Office Symbol', width:300},
+    {label:'c. Hand Receipt Account Number', width:300},
+  ]
 
-console.log(eng4900s)
+  const textFieldsGainingHandConfig1 = [
+    {label:'a. Name', width:300},
+    {label:'b. Office Symbol', width:300},
+    {label:'c. Hand Receipt Account Number', width:300},
+  ]
 
+  const textFieldsGainingHandConfig2 = [
+    {label:'13a. Individual/Vendor Removing or Recieving Property', width:600},
+
+  ]
+
+  const textFieldsGainingHandConfig3 = [
+    {label:'b. Date', width:120},
+    {label:'c. Signature', width:120},
+  ]
+
+  const textFieldsGainingHandConfig4 = [
+    {label:'13a. Individual/Vendor Removing or Recieving Property', width:600},
+
+  ]
+
+  const textFieldsGainingHandConfig5 = [
+    {label:'14a. Losing HRH Signature', width:300},
+    {label:'b. Date', width:120},
+  ]
+
+  const textFieldsGainingHandConfig6 = [
+    {label:'15a. Gaining HRH Signature', width:300},
+    {label:'b. Date', width:120},
+  ]
+
+  const textFieldsGainingHandConfig7 = [
+    {label:'16a. Losing Command', width:250},
+    {label:'b. UIC', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }},
+    // {...(disableFields.PBO && {variant:"filled"})}}
+    }
+  ]
+
+  const textFieldsGainingHandConfig8 = [
+    {label:'17a. Gaining Command', width:250
+    // style={{ width: 250 }}
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+  
+  },
+    {label:'b. UIC', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig9 = [
+    {label:'c. Ship From', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig10 = [
+    {label:'c. Ship To:', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig11 = [
+    {label:'c. Ship To:', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig12 = [
+    {label:'d. PBO', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig13 = [
+    {label:'d. PBO', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig14 = [
+    {label:'e. Losing Command Signature', width:300
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    },
+    {label:'f. Date', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig15 = [
+    {label:'e. Gaining Command Signature', width:300
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    },
+    {label:'f. Date', width:120
+    // InputProps={{
+    //   readOnly: disableFields.PBO,
+    // }}
+    // {...(disableFields.PBO && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig16 = [
+    {label:'18a. Received By', width:300
+    // InputProps={{
+    //   readOnly: disableFields.logistics,
+    // }}
+    // {...(disableFields.logistics && {variant:"filled"})}
+    },
+    {label:'b. Date', width:120
+    // InputProps={{
+    //   readOnly: disableFields.logistics,
+    // }}
+    // {...(disableFields.logistics && {variant:"filled"})}
+    }
+  ]
+
+  const textFieldsGainingHandConfig17 = [
+    {label:'19a. Posted By', width:300
+    // InputProps={{
+    //   readOnly: disableFields.logistics,
+    // }}
+    // {...(disableFields.logistics && {variant:"filled"})}
+    },
+    {label:'b. Date', width:120
+    // InputProps={{
+    //   readOnly: disableFields.logistics,
+    // }}
+    // {...(disableFields.logistics && {variant:"filled"})}
+    }
+  ]
+
+  // const textFields = textFieldsConfig.map((f, i)=>{
+  //   return(
+  //     <TextField
+  //       id="standard-helperText"
+  //       label={f.label}
+  //       style={{ width: f.width }}
+  //     />
+  //   )
+  //       })
+
+  // const RequestedActionDropDownItems = requestedActions.map((c, i)=>{
+  //   return(
+  //     <MenuItem value={c}>
+  //     {c}
+  //     </MenuItem>
+  //   )
+  //       })
+
+  const cards = Object.keys(eng4900s).map(function(key) {
+    return CardProduct(eng4900s[key]);
+  });
+
+  // const cards = eng4900s.map((form) => {
+  //   return CardProduct(form);
+  // });
+
+  const disableFields = {
+    PBO: true,
+    logistics: true,
+    HRA: false,
+    user: false
+  }
+console.log(phoneNumbers)
+//Render return.
   return (
     <div>
-        <div style={{textAlign: 'center'}}>
+      <div style={{textAlign: 'center'}}>
       <h2 >Eng 4900 Form</h2>
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
+      {/* <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
                 Open Menu - Search
             </Button>
             <Menu
@@ -863,281 +1084,43 @@ console.log(eng4900s)
                 <MenuItem onClick={handleMenuClose}>Open Menu - Search</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Update</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Create</MenuItem>
-            </Menu>
+            </Menu> */}
             
       </div>
       <div style={{textAlign: 'center'}}>
       
-    </div>
-    <div style={{textAlign: 'center'}}>
-        <form className={classesTextField.root} noValidate autoComplete="off">
-            <div className={classesGrid.options}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                            <TextField id="outlined-search" label="Search by HRA" type="search" variant="outlined"/> 
-                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" /> 
-                            <FormControl variant="outlined" className={classesItemMenu.formControl}>
-                        <InputLabel id="demo-simple-select-outlined-label">Sort By</InputLabel>
-                        <Select
-                        labelId="demo-simple-select-outlined-label"
-                        id="demo-simple-select-outlined"
-                        value={""}
-                        //onChange={handleChange}
-                        label="Sort By"
-                        >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={10}>Sort By - HRA NAME</MenuItem>
-                        <MenuItem value={20}>Sort By - HOLDER NAME</MenuItem>
-                        <MenuItem value={30}>Sort By - BARTAG NUMBER</MenuItem>
-                        <MenuItem value={40}>Sort By - HRA NUMBER</MenuItem>
-                        </Select>
-                    </FormControl>
-                    <IconButton aria-label="search" color="primary" onClick={handle4900Search}>
-                            <SearchIcon style={{ fontSize: 40 }}/>
-                    </IconButton>
-                    </Grid>
-                </Grid>
-            </div>
-        </form>
-    </div>
-
-    {cards ? <div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
-        <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
-        <div className="card-title">
-            <div style={{ justifyContent: 'center' }}>{cards}</div>
-        </div>
-    </div> : null}
-
-    <form className={classesTextField.root} noValidate autoComplete="off">
-      
-      <div className={classesGrid.root}>
-      <Grid container spacing={3}>
-        
-						
-
-
-      
-          {/* <Paper className={classesGrid.paper}> */}
-          {showForm ? form() : null}
-          
-          
-          {/* </Paper> */}
-        {/* </Grid> */}
-        
-        {/* <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid> */}
-      </Grid>
-
-      
-      {/* <div className={classesPhoneTextField.root}>
-      <FormControl>
-        <InputLabel htmlFor="formatted-text-mask-input">react-text-mask</InputLabel>
-        <Input
-          value={values.textmask}
-          onChange={handlePhoneTextFieldChange}
-          name="textmask"
-          id="formatted-text-mask-input"
-          inputComponent={TextMaskCustom}
-        />
-      </FormControl>
-      { <TextField
-        label="react-number-format"
-        value={values.numberformat}
-        onChange={handlePhoneTextFieldChange}
-        name="numberformat"
-        id="formatted-numberformat-input"
-        InputProps={{
-          inputComponent: NumberFormatCustom,
-        }}
-      /> }
-    </div> */}
-      {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container justify="space-around">
-        <KeyboardDatePicker
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          label="Date picker inline"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-         <KeyboardDatePicker
-          margin="normal"
-          id="date-picker-dialog"
-          label="Date picker dialog"
-          format="MM/dd/yyyy"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        <KeyboardTimePicker
-          margin="normal"
-          id="time-picker"
-          label="Time picker"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
-          }}
-        /> 
-      </Grid>
-    </MuiPickersUtilsProvider> */}
-{/*       
-        <TextField required id="standard-required" label="Required" defaultValue="Hello World" />
-        <TextField disabled id="standard-disabled" label="Disabled" defaultValue="Hello World" />
-        <TextField
-          id="standard-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-        />
-        <TextField
-          id="standard-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        <TextField
-          id="standard-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField id="standard-search" label="Search field" type="search" />
-        <TextField
-          id="standard-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-        /> */}
       </div>
-      {/* <div>
-        <TextField
-          required
-          id="filled-required"
-          label="Required"
-          defaultValue="Hello World"
-          variant="filled"
-        />
-        <TextField
-          disabled
-          id="filled-disabled"
-          label="Disabled"
-          defaultValue="Hello World"
-          variant="filled"
-        />
-        <TextField
-          id="filled-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          variant="filled"
-        />
-        <TextField
-          id="filled-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-          variant="filled"
-        />
-        <TextField
-          id="filled-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="filled"
-        />
-        <TextField id="filled-search" label="Search field" type="search" variant="filled" />
-        <TextField
-          id="filled-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-          variant="filled"
-        />
-      </div> */}
-      {/* <div>
-        <TextField
-          required
-          id="outlined-required"
-          label="Required"
-          defaultValue="Hello World"
-          variant="outlined"
-        />
-        <TextField
-          disabled
-          id="outlined-disabled"
-          label="Disabled"
-          defaultValue="Hello World"
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-        />
-        <TextField id="outlined-search" label="Search field" type="search" variant="outlined" />
-        <TextField
-          id="outlined-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-          variant="outlined"
-        />
-      </div> */}
-    </form>
-    <Tooltip title="Add" aria-label="add">
-        <Fab color="secondary" className={plusButtonClasses.absolute}>
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      <div style={{textAlign: 'center'}}>
+          <form className={classesTextField.root} noValidate autoComplete="off">
+              <div className={classesGrid.options}>
+                  <Grid container spacing={3}>
+                      <Grid item xs={12}>
+                              <TextField id="outlined-search-id" name="id" label="Search by ID" type="search" variant="outlined" value={id_} onChange={handleIdChange}/> 
+                              {/* <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" /> 
+                              <TextField id="outlined-search" label="Search by HRA" type="search" variant="outlined"/> 
+                              <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" />  */}
+
+                      <IconButton id="search-4900" aria-label="search" color="primary" onClick={handle4900Search}>
+                              <SearchIcon style={{ fontSize: 40 }}/>
+                      </IconButton>
+                      </Grid>
+                  </Grid>
+              </div>
+          </form>
+      </div>
+
+      {cards.length > 0 && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
+          <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
+              <div style={{ justifyContent: 'center' }}>{cards}</div>
+      </div>) : null}
+
+      <form className={classesTextField.root} noValidate autoComplete="off">
+        <div className={classesGrid.root}>
+        <Grid container spacing={3}>
+          {selectedForm ? form(selectedForm) : null}
+        </Grid>
+        </div>
+      </form>
     </div>
   );
 }

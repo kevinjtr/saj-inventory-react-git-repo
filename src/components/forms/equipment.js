@@ -3,96 +3,22 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
-import './eng4900.css';
-
-import Card4900 from '../Card4900';
-
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
-
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
-import Input from '@material-ui/core/Input';
-
-import Checkbox from '@material-ui/core/Checkbox';
-
-import Paper from '@material-ui/core/Paper';
-
-import Avatar from '@material-ui/core/Avatar';
-import { deepOrange, deepPurple } from '@material-ui/core/colors';
-
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
-import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-
 import SearchIcon from '@material-ui/icons/Search';
-
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import MaterialTable from 'material-table'
-import AddBox from '@material-ui/icons/AddBox';
-import ArrowDownward from '@material-ui/icons/ArrowDownward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
-
-import Switch from '@material-ui/core/Switch';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import {tableIcons} from '../material-table/config'
 import FormControl from '@material-ui/core/FormControl';
-
+import {Autocomplete,Alert} from '@material-ui/lab';
 import api from '../../axios/Api';
-
-const plusButtonStyles = makeStyles((theme) => ({
-  fab: {
-    margin: theme.spacing(2),
-  },
-  absolute: {
-    position: 'absolute',
-    bottom: theme.spacing(2),
-    right: theme.spacing(3),
-    alignSelf: 'flex-end'
-  },
-}));
-
-//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-//import CheckBoxIcon from '@material-ui/icons/CheckBox';
-//import Favorite from '@material-ui/icons/Favorite';
-//import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
-
-const textFieldSizes = {
-    input1: {
-      height: 50
-    },
-    input2: {
-      height: 200,
-      fontSize: "3em"
-    }
-  };
+import orderBy from 'lodash/orderBy'
+import findIndex from 'lodash/findIndex'
 
 const texFieldStyles = makeStyles((theme) => ({
   root: {
@@ -106,16 +32,6 @@ const texFieldStyles = makeStyles((theme) => ({
       margin: theme.spacing(1),
       width: '25ch',
       textAlign: 'center',
-    },
-  },
-}));
-
-const loadingCircleStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    '& > * + *': {
-      marginLeft: theme.spacing(2),
-      textAlign:'center',
     },
   },
 }));
@@ -142,33 +58,6 @@ const itemMenuStyles = makeStyles((theme) => ({
     },
     selectEmpty: {
       marginTop: theme.spacing(2),
-    },
-  }));
-
-  const phoneTextFieldStyles = makeStyles((theme) => ({
-    root: {
-      '& > *': {
-        margin: theme.spacing(1),
-      },
-    },
-  }));
-
-  const AvatarStyles = makeStyles((theme) => ({
-    root: {
-      display: 'flex',
-      '& > *': {
-        margin: theme.spacing(1),
-      },
-    },
-    orange: {
-      color: theme.palette.getContrastText(deepOrange[500]),
-      backgroundColor: deepOrange[500],
-      height:20,
-      width:20
-    },
-    purple: {
-      color: theme.palette.getContrastText(deepPurple[500]),
-      backgroundColor: deepPurple[500],
     },
   }));
   
@@ -222,1006 +111,601 @@ const itemMenuStyles = makeStyles((theme) => ({
 
 
 export default function FormPropsTextFields(props) {
-
-  const tableIcons = {
-    Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: React.forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: React.forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: React.forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: React.forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: React.forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: React.forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: React.forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: React.forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: React.forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-  };
-
+  
+  //React Hooks Declarations.
   const [loading, setLoading] = React.useState(false);
-
+  const [alertUser,setAlertUser] = React.useState({success:{active:false,text:''},error:{active:false,text:''}});
   const [equipments, setEquipments] = React.useState([]);
-
-  const handleEquipmentsChange = (event) => {
-    setEquipments(event.target.value);
-  };
-
-  const [unknowns, setUnknowns] = React.useState({
-    hraName:false,
-    hraNum:false,
-    itemType:false,
-    bartagNum:false,
-    employee:false
+  const [hras, setHras] = React.useState([]);
+  const [employees, setEmployees] = React.useState([]);
+  const [hraName, setHraName] = React.useState('');
+  const [hraNum, sethraNum] = React.useState('');
+  const [employeeName, setEmployeeName] = React.useState('');
+  const [itemType, setItemType] = React.useState('');
+  const [bartagNum, setBartagNum] = React.useState('');
+  const [includes_, setIncludes] = React.useState({
+    hraName:"includes",
+    hraNum:"includes",
+    itemType:"includes",
+    bartagNum:"includes",
+    employeeName:"includes"
+  });
+  const [blanks_, setBlanks] = React.useState({
+    hraName:"includeBlanks",
+    hraNum:"includeBlanks",
+    itemType:"includeBlanks",
+    bartagNum:"includeBlanks",
+    employeeName:"includeBlanks"
   });
 
-  const handleUnknownsSwitch = (event) => {
-    const temp_unknown = unknowns
-    temp_unknown[event.target.value] = !unknowns[event.target.value]
-    console.log(temp_unknown[event.target.value])
-    setUnknowns(temp_unknown);
-  };
-
-    const componentDidMount = async () => {
-		
-		// );
-		// console.log(this.state);
-	};
-    //text fields
+  
+  // Style Declarations.
   const classesTextField = texFieldStyles();
-
   const classesItemMenu = itemMenuStyles();
-  const [reqAction, setReqAction] = React.useState('');
+  const classesGrid = gridStyles();
 
-  const handleItemMenuChange = (event) => {
-    setReqAction(event.target.value);
-  };
-
-  const [numOfBarTags, setNumOfBarTags] = React.useState(1);
-
-  const handleBarTagMenuChange = (event) => {
-    setNumOfBarTags(event.target.value);
-  };
-
-  const [hraName, setHraName] = React.useState('');
-
+  //Event Handlers.
   const handleHraNameChange = (event) => {
     setHraName(event.target.value);
+    if(event.target.value == ''){
+      setIncludes({...includes_,  [event.target.name]: 'includes'})
+    }
   };
 
-  const [hraId, setHraID] = React.useState('');
-
-  const handleHraIdChange = (event) => {
-    setHraID(event.target.value);
+  const handlehraNumChange = (event) => {
+    sethraNum(event.target.value);
+    if(event.target.value == ''){
+      setIncludes({...includes_,  [event.target.name]: 'includes'})
+    }
   };
-
-  const [employeeName, setEmployeeName] = React.useState('');
 
   const handleEmployeeNameChange = (event) => {
     setEmployeeName(event.target.value);
+    if(event.target.value == ''){
+      setIncludes({...includes_,  [event.target.name]: 'includes'})
+    }
   };
-
-  const [itemType, setItemType] = React.useState('');
 
   const handleItemTypeChange = (event) => {
     setItemType(event.target.value);
+    if(event.target.value == ''){
+      setIncludes({...includes_,  [event.target.name]: 'includes'})
+    }
   };
-
-
-  const [bartagNum, setBartagNum] = React.useState('');
 
   const handleBartagNumChange = (event) => {
     setBartagNum(event.target.value);
-  };
-
-  // dates
-const [selectedDate, setSelectedDate] = React.useState(new Date());
-
-const handleDateChange = (date) => {
-  setSelectedDate(date);
-};
-//phone numbers
-  const classesPhoneTextField = phoneTextFieldStyles();
-  const [values, setValues] = React.useState({
-    textmaskghr: '(   )    -    ',
-    textmasklhr: '(   )    -    ',
-    numberformat: '1320',
-  });
-
-  const handlePhoneTextFieldChange = (event) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  //check box 
-
-  const [state, setState] = React.useState({
-    issue: false,
-    transfer: false,
-    repair: false,
-    excess: false,
-    foi: false,
-    temporaryLoan: false
-  });
-
-  const handleCheckBoxChange = (event) => {
-    setState({ ...state, [event.target.name]: event.target.checked });
-  };
-
-  //grids
-  const classesGrid = gridStyles();
-
-  //simpleMenu
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  //menu items
-
-  const requestedActions = ["Issue","Transfer","Repair","Excess","FOI"]
-		const RequestedActionDropDownItems = requestedActions.map((c, i)=>{
-			return(
-				<MenuItem value={c}>
-				{c}
-				</MenuItem>
-			)
-          })
-  //loading circles
-  const loadingCircleClasses = loadingCircleStyles();
-
-          const tags = [<></>,<div></div>]
-
-const LoadingCircle = () => {
-  return (
-      <CircularProgress />
-  );
-}
-
-const FormControlLabelPosition = () => {
-  return (
-    <FormControl component="fieldset" id="" key="">
-      <FormGroup aria-label="position" row>
-        <FormControlLabel
-          value="hraNum"
-          control={<Switch size="small" color="primary" onChange={handleUnknownsSwitch}/>}
-          label="remove unknown"
-          labelPlacement="top"
-        />
-      </FormGroup>
-    </FormControl>
-  );
-}
-          
- const bartagsData = (n) => {
-     const returnArray = [];
-     const textWidth = 220;
-    for(let x=0; x<n;x++){
-        returnArray.push(
-            <>
-            <Grid item xs={12}>
-                <Paper className={classesGrid.paper}>
-                <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
-                
-                    <TextField
-                    id= {`item_no_${x}`}
-                    label="Item No."
-                    style={{ width: textWidth }}
-                    />
-                    <TextField
-                    id= {`bar_tag_no_${x}`}
-                    label="Bar Tag No."
-                    style={{ width: textWidth }}
-                    />
-                    <TextField
-                    id= {`catalog_${x}`}
-                    label="Catalog"
-                    style={{ width: textWidth }}
-                    />
-                    <TextField
-                    id= {`nomenclature_${x}`}
-                    label="Nomenclature (include make, model)"
-                    style={{ width: textWidth }}
-                    />
-                    <TextField
-                    id= {`catalog_${x}`}
-                    label="Catalog"
-                    style={{ width: textWidth }}
-                    />
-                    <TextField
-                    id= {`nomenclature_${x}`}
-                    label="Nomenclature (include make, model)"
-                    style={{ width: textWidth }}
-                    />
-                    <TextField
-                    id= {`catalog_${x}`}
-                    label="Catalog"
-                    style={{ width: textWidth }}
-                    />
-                    <TextField
-                    id= {`nomenclature_${x}`}
-                    label="Nomenclature (include make, model)"
-                    style={{ width: textWidth }}
-                    />
-                    </Paper>
-                    </Grid>
-                    {/* <Grid item xs={6}>
-                    <Paper className={classesGrid.paper}>
-                    <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
-                    <TextField
-                    id= {`cond_code_${x}`}
-                    label="Cond Code"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`serial_number_${x}`}
-                    label="Serial Number"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`acq_date_${x}`}
-                    label="ACQ. Date"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`acq_price_${x}`}
-                    label="ACQ. Price"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`document_number_${x}`}
-                    label="Document Number/Control ID#"
-                    style={{ width: 175 }}
-                    />
-                </Paper>
-            </Grid> */}
-         </>
-        );
+    if(event.target.value == ''){
+      setIncludes({...includes_,  [event.target.name]: 'includes'})
     }
-     return(returnArray)
- }
+  };
 
- const menuItemsBarTags = () => {
-     const returnArray = []
-     for(let i=0; i < 10;i++){
-        returnArray.push(<><MenuItem value={i}>{i}</MenuItem></>)
-     }
-     return(returnArray);
- }
+  const handleIncludes = (event) => {
+    setIncludes({...includes_,  [event.target.name]: event.target.value})
+  };
 
- //Avatars
+  const handleBlanks = (event) => {
+    console.log(event.target)
+    //console.log(event.target.name,(event.target.value == "Includes" ? true : false))
+    setBlanks({...blanks_,  [event.target.name]: event.target.value})
+  };
 
- const avatarClasses = AvatarStyles();
-
- const disableFields = {
-     PBO: true,
-     logistics: true,
-     HRA: false,
-     user: false
- }
-
- //plus button
-
- const plusButtonClasses = plusButtonStyles();
-
- const handleSearch = () => {
+  const handleSearch = () => {
 
   console.log('equipmentbyHraCall')
   setLoading(true)
-		api.post(`equipment/search`,{hraId:hraId,bartagNum:bartagNum,hraName:hraName,employeeName:employeeName,itemType:itemType}).then((response) => response.data).then((data) => {
+  setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
+    api.post(`equipment/search`,{
+      'fields':{hraNum:hraNum,
+      bartagNum:bartagNum,
+      hraName:hraName,
+      employeeName:employeeName,
+      itemType:itemType},
+      'options':{'includes':includes_,'blanks':blanks_}
+
+    }).then((response) => response.data).then((data) => {
       console.log(data)
       setLoading(false)
       setEquipments(data.status != 400 ? data.data : data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
+      // this.setState({
+      // 	equipments: data.status != 400 ? data.values: data,
+      // 	setequipment: data
+      // });
+      //console.log(this.state.equipment.values);
+      // console.log(this.props, this.state);
     }).catch(function (error) {
       setLoading(false)
       setEquipments([])
     });
     
-  
+
   // const tempProps = {...props};
-  //  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+  //  const searchResult = await tempProps.getEquipmentByhraNum(hraNum)
   //  if(!searchResult.error){
   //   equipments = searchResult.data
   //  }
- }
+  }
 
- const form = () => {
+  const handleUpdate = async (rowData) => {
 
-    const bt = false;
+    let result = {}
+  console.log('equipmentbyHraCall')
+  //setLoading(true)
+    await api.post(`equipment/update`,{params:rowData}).then((response) => response.data).then((data) => {
+      result = data.columnErrors
+      //setLoading(false)
+      //setEquipments(data.status != 400 ? data.data : data)
+      // this.setState({
+      // 	equipments: data.status != 400 ? data.values: data,
+      // 	setequipment: data
+      // });
+      //console.log(this.state.equipment.values);
+      // console.log(this.props, this.state);
+    }).catch(function (error) {
+      //setLoading(false)
+      //setEquipments([])
+    });
 
-    return(
-        <>
-       {/* <Grid item xs={12}>
-            <Paper className={classesGrid.paper}>
+    return(result)
+  }
 
-            <FormControlLabel
-                control={<Checkbox checked={state.issue} onChange={handleCheckBoxChange} name="issue" />}
-                label="Issue"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.transfer} onChange={handleCheckBoxChange} name="transfer" />}
-                label="Transfer"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.repair} onChange={handleCheckBoxChange} name="repair" />}
-                label="Repair"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.excess} onChange={handleCheckBoxChange} name="excess" />}
-                label="Excess"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.foi} onChange={handleCheckBoxChange} name="foi" />}
-                label="FOI"
-            />
+  const handleDelete = (rowData) => {
 
-            <FormControlLabel
-                control={<Checkbox checked={state.temporaryLoan} onChange={handleCheckBoxChange} name="temporaryLoan" />}
-                label="Temporary Loan"
-            />
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="MM/dd/yyyy"
-                margin="normal"
-                id="date-picker-inline"
-                label="Expiration Date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                KeyboardButtonProps={{
-                    'aria-label': 'change date',
-                }}
-                />
-            </MuiPickersUtilsProvider>
-         
-            </Paper>
+  //console.log('equipmentbyHraCall')
+  //setLoading(true)
+    api.post(`equipment/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+      console.log(data)
+      //setLoading(false)
+      //setEquipments(data.status != 400 ? data.data : data)
+      // this.setState({
+      // 	equipments: data.status != 400 ? data.values: data,
+      // 	setequipment: data
+      // });
+      //console.log(this.state.equipment.values);
+      // console.log(this.props, this.state);
+    }).catch(function (error) {
+      //setLoading(false)
+      //setEquipments([])
+    });
+    
+  }
 
-     </Grid> */}
-{/*      
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <p>LOSING HAND RECEIPT HOLDER</p>
-       <TextField
-       label="2a. Name"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="b. Office Symbol"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="c. Hand Receipt Account Number"
-       style={{ width: 300 }}
-     />
-     
-   <FormControl>
-     <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-     <Input 
-     
-       style={{ height: 40,width:300 }}
-       value={values.textmasklhr}
-       onChange={handlePhoneTextFieldChange}
-       name="textmasklhr"
-       id="formatted-text-mask-input"
-       inputComponent={TextMaskCustom}
-     />
-   </FormControl>
-       </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <p>GAINING HAND RECEIPT HOLDER</p>
-       <TextField
-       label="3a. Name"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="b. Office Symbol"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="c. Hand Receipt Account Number"
-       style={{ width: 300 }}
-     />
-     <FormControl>
-     <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-     <Input 
-       style={{ height: 40,width:300 }}
-       value={values.textmaskghr}
-       onChange={handlePhoneTextFieldChange}
-       name="textmaskghr"
-       id="formatted-text-mask-input"
-       inputComponent={TextMaskCustom}
-     />
-   </FormControl>
-       </Paper>
-     </Grid> */}
-     {/* <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-     <FormControl className={classesItemMenu.formControl}>
-             <InputLabel id="demo-simple-select-label-bt">Number of Equipments</InputLabel>
-             <Select
-             labelId="demo-simple-select-label-bt"
-             id="demo-simple-select-bt"
-             value={numOfBarTags}
-             onChange={handleBarTagMenuChange}
-             >
-             <MenuItem value={1}>1</MenuItem>
-             <MenuItem value={2}>2</MenuItem>
-             <MenuItem value={3}>3</MenuItem>
-             <MenuItem value={4}>4</MenuItem>
-             <MenuItem value={5}>5</MenuItem>
-             </Select>
-     </FormControl>
-     </Paper>
-     </Grid> */}
-     {bt ? bartagsData(numOfBarTags) : null}
-     {/* <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="13a. Individual/Vendor Removing or Recieving Property"
-       style={{ width: 600 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-       <TextField
-       label="c. Signature"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="14a. Losing HRH Signature"
-       style={{ width: 300 }}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="15a. Gaining HRH Signature"
-       style={{ width: 300 }}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-       <p>Transfer (PBO use only)</p>
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="16a. Losing Command"
-       style={{ width: 250 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="b. UIC"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="17a. Gaining Command"
-       style={{ width: 250 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="b. UIC"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="c. Ship From"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="c. Ship To:"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="d. PBO"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="d. PBO"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="e. Losing Command Signature"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="f. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="e. Gaining Command Signature"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="f. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-       <p>Logistics (supply use only)</p>
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="18a. Received By"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="19a. Posted By"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid> */}
-     </>
-    )
-}
+  const handleAdd = (rowData) => {
 
+  //console.log('equipmentbyHraCall')
+  //setLoading(true)
+    api.post(`equipment/add`,{params:rowData}).then((response) => response.data).then((data) => {
+      console.log(data)
+      //setLoading(false)
+      //setEquipments(data.status != 400 ? data.data : data)
+      // this.setState({
+      // 	equipments: data.status != 400 ? data.values: data,
+      // 	setequipment: data
+      // });
+      //console.log(this.state.equipment.values);
+      // console.log(this.props, this.state);
+    }).catch(function (error) {
+      //setLoading(false)
+      //setEquipments([])
+    });
+    
+  }
+
+
+  //Functions.
+  const LoadingCircle = () => {
   return (
-    <div>
-        <div style={{textAlign: 'center'}}>
-      <h2 >Equipment</h2>
-      {/* <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
-                Open Menu - Search
-            </Button>
-            <Menu
-                id="simple-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}>
-                <MenuItem onClick={handleMenuClose}>Open Menu - Search</MenuItem>
-                <MenuItem onClick={handleMenuClose}>Open Menu - Update</MenuItem>
-                <MenuItem onClick={handleMenuClose}>Open Menu - Create</MenuItem>
-            </Menu>  */}
-      </div>
-      <div style={{textAlign: 'center'}}>
+    <CircularProgress />
+  );
+  }
+
+  const SearchCriteriaOptions = (val,text="Options") => {
+  return (
+  <FormControl variant="outlined" className={classesItemMenu.formControl}>
+                      <InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
+                      <Select
+                      labelId="demo-simple-select-outlined-label"
+                      id="demo-simple-select-outlined"
+                      value={includes_[val] ? includes_[val] : null}
+                      name={val}
+                      onChange={handleIncludes}
+                      label="Sort By"
+                      >
+                      <MenuItem value={"includes"}>Includes</MenuItem>
+                      <MenuItem value={"excludes"}>Excludes</MenuItem>
+                      <MenuItem value={"equals"}>Equals</MenuItem>
+                      <MenuItem value={"notEquals"}>Not Equals</MenuItem>
+                      </Select>
+                  </FormControl>
+  );
+  }
+
+  const SearchBlanksOptions = (val,text="Blanks Options") => {
+    return (
+    <FormControl variant="outlined" className={classesItemMenu.formControl}>
+                        <InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
+                        <Select
+                        labelId="demo-simple-select-outlined-label"
+                        id="demo-simple-select-outlined"
+                        value={blanks_[val] ? blanks_[val] : null}
+                        name={val}
+                        onChange={handleBlanks}
+                        //label="Sort By"
+                        style={{width:200}}
+                        >
+                        <MenuItem value={"includeBlanks"}>Include Blanks</MenuItem>
+                        <MenuItem value={"excludeBlanks"}>Exclude Blanks</MenuItem>
+                        <MenuItem value={"onlyBlanks"}>Only Blanks</MenuItem>
+                        
+                        </Select>
+                    </FormControl>
+    );
+    }
+
+  const AlertUser = (x) => {
+    
+    if(x.error.active){
+      return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+    }else if(x.success.active){
+      return(<Alert variant="filled" severity="success">Sucessfully added data to database!</Alert>)
+    }
+
+    setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
+    return(null)
+  }
+
+  const materialTableSelect = () => {
+  const type = "simple"
+
+  const dataIsOnDatabase = {
+    bar_tag_num:false
+  }
+
+  let columns = [
+    //{ title: 'HRA Name', field: 'hra_full_name',col_id:2,hidden:isEditingTable },
+    { title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0,
+    editComponent: x => {
+      //console.log(x);
+      let idx = -1
+
+      if(x.rowData.hra_num){
+        idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
+      }
+
+      return(
+        <Autocomplete
+        //onChange={e => x.onChange(e)}
+        id={`combo-box-employee`}
+        size="small"
+        options={hras}
+        getOptionLabel={(option) => option.hra_num + ' - ' + option.first_name + ' ' + option.last_name}
+        value={idx != -1 ? hras[idx] : null}
+        //defaultValue={idx != -1 ? employees[idx] : null}
+        onChange ={e => {
+          const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+          console.log(hraNum_);
+          x.onChange(hraNum_)
+        }}
+        //style={{ verticalAlign: 'top' }}
+        renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
+      />
+      )
+    }
+  },
+    { title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
+    { title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
+    { title: 'Item Type', field: 'item_type',col_id:4  },
+    { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: rowData => {
+      if(rowData.bar_tag_num.toString().length > 5){
+        return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
+      }else if(dataIsOnDatabase.bar_tag_num){
+        dataIsOnDatabase.bar_tag_num = false
+        return({ isValid: false, helperText: 'bar tag exists in database.' })
+      }
       
-    </div>
-    <div style={{textAlign: 'center'}}>
-        <form className={classesTextField.root} noValidate autoComplete="off">
-            <div className={classesGrid.options}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                            <TextField id="outlined-search" label="Search by HRA Name" type="search" variant="outlined" value={hraName} onChange={handleHraNameChange}/>
-                            {/* {FormControlLabelPosition()} */}
-                            <TextField id="outlined-search" label="Search by HRA Number" type="search" variant="outlined" value={hraId} onChange={handleHraIdChange}/>
-                            <TextField id="outlined-search" label="Search by Item Name" type="search" variant="outlined" value={itemType} onChange={handleItemTypeChange}/> 
-                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/>
-                            <TextField id="outlined-search" label="Search by Employee Holder" type="search" variant="outlined" value={employeeName} onChange={handleEmployeeNameChange}/>  
-                            {/* <FormControl variant="outlined" className={classesItemMenu.formControl}>
-                              <InputLabel id="demo-simple-select-outlined-label">Sort By</InputLabel>
-                              <Select
-                              labelId="demo-simple-select-outlined-label"
-                              id="demo-simple-select-outlined"
-                              value={""}
-                              //onChange={handleChange}
-                              label="Sort By"
-                              >
-                              <MenuItem value="">
-                                  <em>None</em>
-                              </MenuItem>
-                              <MenuItem value={10}>Sort By - HRA NAME</MenuItem>
-                              <MenuItem value={20}>Sort By - HOLDER NAME</MenuItem>
-                              <MenuItem value={30}>Sort By - BARTAG NUMBER</MenuItem>
-                              <MenuItem value={40}>Sort By - HRA NUMBER</MenuItem>
-                              </Select>
-                            </FormControl> */}
-                    <IconButton aria-label="search" color="primary" onClick={handleSearch}>
-                            <SearchIcon style={{ fontSize: 40 }}/>
-                        </IconButton>
-                    </Grid>
-                    <Grid item xs={12}>
-                    {loading ? LoadingCircle() : null}
-                    {equipments.length > 0 ? <div style={{ maxWidth: '100%' }}>
+      return(true)
+    }},
+    { title: 'Employee ID', field: 'employee_id', type:'numeric',col_id:6.0,
+    editComponent: x => {
+      //console.log(x);
+      let idx = -1
+
+      if(x.rowData.employee_id){
+        idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.employee_id)); })
+      }
+
+      return(
+        <Autocomplete
+        //onChange={e => x.onChange(e)}
+        id="combo-box-employee"
+        size="small"
+        options={employees}
+        getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
+        value={idx != -1 ? employees[idx] : null}
+        //defaultValue={idx != -1 ? employees[idx] : null}
+        onChange ={e => {
+
+          const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+          console.log(id_);
+          x.onChange(id_)
+        }}
+        //style={{ verticalAlign: 'top' }}
+        renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
+      />
+      )
+    }},
+    //{ title: 'Employee Holding Equipment', field: 'employee_full_name',col_id:6,hidden:isEditingTable  },
+    { title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
+    { title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  }]
+
+  const extended_columns = [
+    {title:'acquisition_date',field:'acquisition_date',  type: 'date',col_id:1 },
+    {title:'acquisition_price',field:'acquisition_price',type: 'numeric',col_id:7 },
+    {title:'catalog_num',field:'catalog_num',col_id:8 },
+    {title:'serial_num',field:'serial_num',col_id:9 },
+    {title:'manufacturer',field:'manufacturer',col_id:10 },
+    {title:'model',field:'model',col_id:11 },
+    {title:'condition',field:'condition',col_id:12 }]
+
+  if(type != "simple"){
+    columns = [...columns,...extended_columns]
+    columns = orderBy(columns,'col_id','asc')
+  }
+
+  return(
+    <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
         <MaterialTable
         icons={tableIcons}
-          columns={[
-            { title: 'HRA Name', field: 'hra_full_name' },
-            { title: 'HRA Number', field: 'hra_num', type: 'numeric' },
-            { title: 'Item Type', field: 'item_type' },
-            { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric'},
-            { title: 'Employee Holding Equipment', field: 'employee_full_name' }
-          ]}
+          columns={columns}
           data={equipments}
           options={{
             exportButton: true,
-            exportAllData: true
+            exportAllData: true,
+            headerStyle: {
+              backgroundColor: "#969696",
+              color: "#FFF",
+              fontWeight: 'bold',
+          }
           }}
           title=""
+          
+          editable={{
+            
+            // isEditable: rowData => rowData.name === 'a', // only name(a) rows would be editable
+            //isEditHidden: rowData => rowData.name === 'x',
+            // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
+            // isDeleteHidden: rowData => rowData.name === 'y',
+            onBulkUpdate: async (changes) => {
+              let errorResult = await handleUpdate({changes:changes})
+              let {errorFound} = errorResult
+              return(
+                new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                      /* setEquipments([...equipments, newData]); */
+                      console.log('bulk update')
+                      //console.log(changes)
+                      const keys = Object.keys(changes)//0 ,1,2
+                      let alert_ = ''
+
+                      for(const key of keys){
+                        const {newData,oldData} = changes[key]
+                        const errorStatus = errorResult.rows[key]
+
+                        console.log(newData,errorStatus)
+                        if(!errorFound){
+                          //no error
+                          const dataUpdate = [...equipments];
+                          const index = oldData.tableData.id;
+                          dataUpdate[index] = newData;
+                          setEquipments([...dataUpdate]);
+                        }else{
+                          //error found.
+                          console.log('error found')
+                          //dataIsOnDatabase[Object.keys(errorStatus)[0]] = true
+                          const col_name = Object.keys(errorStatus)[0]
+                          const errorText = errorStatus[col_name]
+                          alert_ = alert_ + `row ${Number(key)+1}: ${col_name} - ${errorText}\n`
+                        }
+
+                        
+                        //console.log(errorStatus,newData)
+                        //const dataUpdate = [...equipments];
+                        //const index = oldData.tableData.id;
+                        //dataUpdate[index] = newData;
+                        //setEquipments([...dataUpdate]);
+                        //resolve();
+                      }
+
+                      if(alert_){
+                        setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
+                        reject();
+                      }else{
+                        setAlertUser({success:{active:true,text:''},error:{active:false,text:''}})
+                        resolve();
+                      }
+                      //for(const rowid of errorResult){}
+                      // if(Object.keys(errorResult).length > 0){
+                      //   console.log(errorResult)
+                      //   dataIsOnDatabase[Object.keys(errorResult)[0]] = true
+                      //   reject();
+                      // }else{
+                      //   for(const {newData,oldData} of changes){
+                      //     const dataUpdate = [...equipments];
+                      //     const index = oldData.tableData.id;
+                      //     dataUpdate[index] = newData;
+                      //     setEquipments([...dataUpdate]);
+                      //     resolve();
+                      //   }
+                      // }
+                  }, 1000);
+              }))
+            },
+            onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+            onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+            onRowAdd: newData =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        handleAdd({changes:{'0':{newData:newData, oldData:null}}})
+                        setEquipments([...equipments, newData]);
+                        resolve();
+                    }, 1000);
+                }),
+            onRowUpdate: async (newData, oldData) => {
+              let errorResult = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                  return (new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                      
+                      if(errorResult.errorFound){
+                        const col_name = Object.keys(errorResult.rows[0])[0]
+                        dataIsOnDatabase[col_name] = true
+                        reject();
+                      }else{
+                        const dataUpdate = [...equipments];
+                        const index = oldData.tableData.id;
+                        dataUpdate[index] = newData;
+                        setEquipments([...dataUpdate]);
+                        resolve();
+                      }
+                    }, 1000);
+                }))
+              }
+                
+                ,
+            onRowDelete: oldData =>
+                new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                      handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
+                        const dataDelete = [...equipments];
+                        const index = oldData.tableData.id;
+                        dataDelete.splice(index, 1);
+                        setEquipments([...dataDelete]);
+                        resolve();
+                    }, 1000);
+                })
+        }}
         />
-    </div> : null}
-                    </Grid>
-                </Grid>
+  </div>
+  )
+  }
+
+  //will run once.
+  React.useEffect(() => {
+    //setLoading(true)
+
+    console.log('employeeCall')
+    api.get(`employee`,{}).then((response) => response.data).then((data) => {
+        console.log(data)
+      // setLoading(false)
+        setEmployees(data.status != 400 ? data.data : data)
+        // this.setState({
+        // 	equipments: data.status != 400 ? data.values: data,
+        // 	setequipment: data
+        // });
+        //console.log(this.state.equipment.values);
+        // console.log(this.props, this.state);
+      }).catch(function (error) {
+        //setLoading(false)
+        setEmployees([])
+      });
+
+    console.log('hraCall')
+    api.get(`hra`,{}).then((response) => response.data).then((data) => {
+        console.log(data)
+        //setLoading(false)
+        setHras(data.status != 400 ? data.data : data)
+        // this.setState({
+        // 	equipments: data.status != 400 ? data.values: data,
+        // 	setequipment: data
+        // });
+        //console.log(this.state.equipment.values);
+        // console.log(this.props, this.state);
+      }).catch(function (error) {
+        //setLoading(false)
+        setHras([])
+      });
+
+      console.log('equipmentCall')
+    //setLoading(true)
+    api.get(`equipment`,{}).then((response) => response.data).then((data) => {
+        console.log(data)
+        //setLoading(false)
+        setEquipments(data.status != 400 ? data.data : data)
+        // this.setState({
+        // 	equipments: data.status != 400 ? data.values: data,
+        // 	setequipment: data
+        // });
+        //console.log(this.state.equipment.values);
+        // console.log(this.props, this.state);
+      }).catch(function (error) {
+        //setLoading(false)
+        setEquipments([])
+      });
+      
+    //setLoading(false)
+  }, []);
+
+  //Render return.
+  return (
+    <div>
+      <div style={{textAlign: 'center'}}>
+        <h2 >Equipment</h2>
+      </div>
+      <div style={{textAlign: 'center'}}>
+        <form className={classesTextField.root} noValidate autoComplete="off">
+            <div className={classesGrid.options}>
+                <Grid container spacing={3}>
+                    {/* <Grid item xs={12}> */}
+                      <Grid item xs={Math.floor(12/5)}>
+                        <TextField id="outlined-search-hraName" name="hraName" label="Search by HRA Name" type="search" variant="outlined" value={hraName} onChange={handleHraNameChange}/>
+                        {hraName ? <><br/>{SearchCriteriaOptions("hraName","HRA Name Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("hraName","HRA Name Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/5)}>
+                        <TextField id="outlined-search-hraNum" name="hraNum" label="Search by HRA Number" type="search" variant="outlined" value={hraNum} onChange={handlehraNumChange}/>
+                        {hraNum ? <><br/> {SearchCriteriaOptions("hraNum","HRA Number Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("hraNum","HRA Number Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/5)}>
+                        <TextField id="outlined-search-itemType" name="itemType" label="Search by Item Description" type="search" variant="outlined" value={itemType} onChange={handleItemTypeChange}/>
+                        {itemType ? <><br/>{SearchCriteriaOptions("itemType","Item Description Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("itemType","Item Description Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/5)}>
+                        <TextField id="outlined-search-bartagNum" name="bartagNum" label="Search by Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/>
+                        {bartagNum ? <><br/>{SearchCriteriaOptions("bartagNum","Bartag Options")}</>: null}
+                        <br/>
+                        {SearchBlanksOptions("bartagNum","Bartag Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/5)}>
+                        <TextField style={{width:250}}id="outlined-search-employeeName" name="employeeName" label="Search by Employee Holder" type="search" variant="outlined" value={employeeName} onChange={handleEmployeeNameChange}/>
+                        {employeeName ? <><br/>{SearchCriteriaOptions("employeeName","Employee Holder Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("employeeName","Employee Holder Blanks Options")} 
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/5)}>
+                        <IconButton aria-label="search" color="primary" onClick={handleSearch}>
+                          <SearchIcon style={{ fontSize: 40 }}/>
+                        </IconButton>
+                      </Grid>
+                    {/* </Grid> */}
+
+                </Grid>                    
             </div>
         </form>
-    </div>
-    
-    {/* <div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
-        <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
-        <div className="card-title">
-            <div style={{ justifyContent: 'center' }}>{renderData}</div>
-        </div>
-    </div> */}
-
-    <form className={classesTextField.root} noValidate autoComplete="off">
-      
-      <div className={classesGrid.root}>
-      <Grid container spacing={3}>
-
-
-      
-          {/* <Paper className={classesGrid.paper}> */}
-          {form()}
-          
-          
-          {/* </Paper> */}
-        {/* </Grid> */}
-        
-        {/* <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid>
-        <Grid item xs={3}>
-          <Paper className={classesGrid.paper}>xs=3</Paper>
-        </Grid> */}
-      </Grid>
-
-      
-      {/* <div className={classesPhoneTextField.root}>
-      <FormControl>
-        <InputLabel htmlFor="formatted-text-mask-input">react-text-mask</InputLabel>
-        <Input
-          value={values.textmask}
-          onChange={handlePhoneTextFieldChange}
-          name="textmask"
-          id="formatted-text-mask-input"
-          inputComponent={TextMaskCustom}
-        />
-      </FormControl>
-      { <TextField
-        label="react-number-format"
-        value={values.numberformat}
-        onChange={handlePhoneTextFieldChange}
-        name="numberformat"
-        id="formatted-numberformat-input"
-        InputProps={{
-          inputComponent: NumberFormatCustom,
-        }}
-      /> }
-    </div> */}
-      {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-      <Grid container justify="space-around">
-        <KeyboardDatePicker
-          disableToolbar
-          variant="inline"
-          format="MM/dd/yyyy"
-          margin="normal"
-          id="date-picker-inline"
-          label="Date picker inline"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-         <KeyboardDatePicker
-          margin="normal"
-          id="date-picker-dialog"
-          label="Date picker dialog"
-          format="MM/dd/yyyy"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change date',
-          }}
-        />
-        <KeyboardTimePicker
-          margin="normal"
-          id="time-picker"
-          label="Time picker"
-          value={selectedDate}
-          onChange={handleDateChange}
-          KeyboardButtonProps={{
-            'aria-label': 'change time',
-          }}
-        /> 
-      </Grid>
-    </MuiPickersUtilsProvider> */}
-{/*       
-        <TextField required id="standard-required" label="Required" defaultValue="Hello World" />
-        <TextField disabled id="standard-disabled" label="Disabled" defaultValue="Hello World" />
-        <TextField
-          id="standard-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-        />
-        <TextField
-          id="standard-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-        />
-        <TextField
-          id="standard-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <TextField id="standard-search" label="Search field" type="search" />
-        <TextField
-          id="standard-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-        /> */}
       </div>
-      {/* <div>
-        <TextField
-          required
-          id="filled-required"
-          label="Required"
-          defaultValue="Hello World"
-          variant="filled"
-        />
-        <TextField
-          disabled
-          id="filled-disabled"
-          label="Disabled"
-          defaultValue="Hello World"
-          variant="filled"
-        />
-        <TextField
-          id="filled-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          variant="filled"
-        />
-        <TextField
-          id="filled-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-          variant="filled"
-        />
-        <TextField
-          id="filled-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="filled"
-        />
-        <TextField id="filled-search" label="Search field" type="search" variant="filled" />
-        <TextField
-          id="filled-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-          variant="filled"
-        />
-      </div> */}
-      {/* <div>
-        <TextField
-          required
-          id="outlined-required"
-          label="Required"
-          defaultValue="Hello World"
-          variant="outlined"
-        />
-        <TextField
-          disabled
-          id="outlined-disabled"
-          label="Disabled"
-          defaultValue="Hello World"
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-password-input"
-          label="Password"
-          type="password"
-          autoComplete="current-password"
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-read-only-input"
-          label="Read Only"
-          defaultValue="Hello World"
-          InputProps={{
-            readOnly: true,
-          }}
-          variant="outlined"
-        />
-        <TextField
-          id="outlined-number"
-          label="Number"
-          type="number"
-          InputLabelProps={{
-            shrink: true,
-          }}
-          variant="outlined"
-        />
-        <TextField id="outlined-search" label="Search field" type="search" variant="outlined" />
-        <TextField
-          id="outlined-helperText"
-          label="Helper text"
-          defaultValue="Default Value"
-          helperText="Some important text"
-          variant="outlined"
-        />
-      </div> */}
-    </form>
-    {/* <Tooltip title="Add" aria-label="add">
-        <Fab color="secondary" className={plusButtonClasses.absolute}>
-          <AddIcon />
-        </Fab>
-      </Tooltip> */}
+      {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
+      <div style={{textAlign: 'center'}}>
+        {loading ? LoadingCircle() : null}
+        {equipments.length > 0 ? materialTableSelect() : null}
+      </div>
     </div>
   );
 }

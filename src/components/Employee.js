@@ -3,7 +3,7 @@ import qs from 'querystring';
 import { connect } from 'react-redux';
 import { addProduct } from '../publics/actions/eng4900s';
 import api from '../axios/Api';
-import EquipmentForm from './forms/equipment';
+import EmployeeForm from './forms/employee';
 
 export class AddProduct extends Component {
 
@@ -30,7 +30,7 @@ export class AddProduct extends Component {
 
 	refreshEquipmentList() {
 		console.log('equipmentDataCALL')
-		this.equipmentData = api.get('equipment', this.state).then((response) => response.data).then((data) => {
+		this.equipmentData = api.get('employee', this.state).then((response) => response.data).then((data) => {
 			console.log(data)
 			// this.setState({
 			// 	equipments: data.status != 400 ? data.values: data,
@@ -115,8 +115,11 @@ export class AddProduct extends Component {
 	};
 
 	render() {
+		//const { equipments } = this.state;
+
 		return(
-			<EquipmentForm/>
+			<EmployeeForm
+			/>
 		);
 	}
 }

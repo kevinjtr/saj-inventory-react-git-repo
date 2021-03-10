@@ -10,9 +10,12 @@ import Home from './Home';
 import AddProduct from './AddProduct';
 import Eng4900 from './Eng4900';
 import Equipment from './Equipment';
+import Hra from './Hra';
+import Employee from './Employee';
 import Login from './Login';
 import EditProduct from './EditProduct';
 import Register from './Register';
+import Eng4844 from './Eng4844';
 // import Query from './Query';
 
 import axios from 'axios';
@@ -49,9 +52,18 @@ function App() {
 
 			<Route exact path="/equipment" component={Header} />
 			<Route path="/equipment" component={Equipment} />
+			
+			<Route exact path="/eng4844" component={Header} />
+			<Route path="/eng4844" component={Eng4844} />
 
 			<Route exact path="/eng4900" component={Header} />
 			<Route path="/eng4900" component={Eng4900} />
+
+			<Route exact path="/hra" component={Header} />
+			<Route path="/hra" component={Hra} />
+
+			<Route exact path="/employee" component={Header} />
+			<Route path="/employee" component={Employee} />
 			
 			{/* <Route path="/categories" component={Category} /> */}
 
