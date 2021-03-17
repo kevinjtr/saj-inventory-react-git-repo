@@ -45,6 +45,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import SearchIcon from '@material-ui/icons/Search';
 
 import api from '../../axios/Api';
+import axios from 'axios';
 
 const plusButtonStyles = makeStyles((theme) => ({
   fab: {
@@ -62,6 +63,15 @@ const plusButtonStyles = makeStyles((theme) => ({
 //import CheckBoxIcon from '@material-ui/icons/CheckBox';
 //import Favorite from '@material-ui/icons/Favorite';
 //import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+const dropDownStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+})); 
 
 const textFieldSizes = {
     input1: {
@@ -191,6 +201,7 @@ const itemMenuStyles = makeStyles((theme) => ({
 
 
 export default function FormPropsTextFields() {
+  const dropDownClasses = dropDownStyles (); 
   const ENG4844Data = {
 
     id: "",
@@ -325,6 +336,19 @@ const handleDateChange = (date) => {
     setForm(event.target.value);
   };
 
+  const [fundingSelection, setFunding] = React.useState("");
+  
+ const fundingSelectionChange = (event) =>{
+  setFunding(event.target.value);
+ }
+
+ const [reportableSelection, setReportable] = React.useState("");
+  
+ const reportableSelectionChange = (event) =>{
+  setReportable(event.target.value);
+ }
+  
+      
   const formView = (n) => {
     const returnSelection = null;
     if(formSelection == "4844"){
@@ -553,11 +577,18 @@ const handleDateChange = (date) => {
      </Grid>
      <Grid item xs={4}>
        <Paper className={classesGrid.paper}>
-       <TextField
-       label="16. Funding"
-       style={{ width: 300 }}
-       value={ENG4844Data.funding}
-     />{/* This needs to be a drop down populated from the database*/}
+       <FormControl className={dropDownClasses.formControl}>
+        <InputLabel id="demo-simple-select-label">16. Funding</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="16. Funding"
+          value={fundingSelection}
+          onChange={fundingSelectionChange}
+          style={{ width: 300 }}
+        >
+        {fundingDropDownItems}
+        </Select>
+      </FormControl> {/* This needs to be a drop down populated from the database*/}
        </Paper>
      </Grid>
      <Grid item xs={4}>
@@ -780,13 +811,20 @@ const form4844_1 = () => {
      </Paper>
    </Grid>
    <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-     label="14. Reportable Item Control Code (RICC)"
-     style={{ width: 640 }}
-     value={ENG4844Data.reportableItemControlCode}
-   />{/* This needs to be a drop down populated from the database*/}
-     </Paper>
+   <Paper className={classesGrid.paper}>
+       <FormControl className={dropDownClasses.formControl}>
+        <InputLabel id="demo-simple-select-label">14. Reportable Item Control Code</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="14. Reportable Item Control Code"
+          value={reportableSelection}
+          onChange={reportableSelectionChange}
+          style={{ width: 640 }}
+        >
+        {reportableDropDownItems}
+        </Select>
+      </FormControl> {/* This needs to be a drop down populated from the database*/}
+       </Paper>
    </Grid>
    <Grid item xs={6}>
      <Paper className={classesGrid.paper}>
@@ -853,6 +891,62 @@ quantity: 56}]
 const renderData = eng4900s.map((product) => {
     return <Card4900 product={product} key={product.id} refresh={componentDidMount} />;
 });
+const [items, setItems] = React.useState([]);
+//will run once.
+React.useEffect(() => {
+  //setLoading(true)
+      console.log('4844Fundingall')
+      api.get(`eng4844/funding`,{}).then((response) => response.data).then((data) => {
+      console.log(data)
+      if(data.status != 400){
+        setItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
+
+      }
+      console.log(items);
+    }).catch(function (error) {
+      setItems([])
+    }) 
+  }, []); 
+
+  const fundingDropDownItems = items.map((c, i)=>{
+    console.log(c);
+    return(
+     
+      <MenuItem value={c.value} name= {c.label} >
+      {c.value + '.' + c.label}
+      </MenuItem>
+
+    )
+    })
+
+    const [reportableItems, setReportableItems] = React.useState([]);
+//will run once.
+React.useEffect(() => {
+  //setLoading(true)
+      console.log('4844Reportable')
+      api.get(`eng4844/reportableControlCode`,{}).then((response) => response.data).then((data) => {
+      console.log(data)
+      if(data.status != 400){
+        setReportableItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
+
+      }
+      console.log(reportableItems);
+    }).catch(function (error) {
+      setReportableItems([])
+    }) 
+  }, []); 
+
+  const reportableDropDownItems = reportableItems.map((c, i)=>{
+    console.log(c);
+    return(
+     
+      <MenuItem value={c.value} name= {c.label} >
+      {c.value + '.' + c.label}
+      </MenuItem>
+
+    )
+    })
+
 
   return (
     <div>

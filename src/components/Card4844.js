@@ -63,15 +63,15 @@ function CardProduct({ form, refresh }) {
 			<div className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
             <div style={{display:'inline'}}>
             {/* <img src={product.image} alt="" style={{height:"25%",width:"25%",display:'inline'}} /> */}
-				<h4 style={{ marginTop: '20px' }}>ENG4900 - Doc Num:</h4>
-                <h4 >{form[0].FORM_ID}</h4>
+				<h4 style={{ marginTop: '20px' }}>ENG44844 - Doc Num:</h4>
+                <h4 >{form[0].DOCUMENT_NUM}</h4>
             </div>
             
 				<hr />
 				
-				<h6>Bar Tags Quantity: {form.length}</h6>
-                <small>Losing HRA: {form[0].LOSING_HRA}</small>
-				<small>Gaining HRA: {form[0].GAINING_HRA}</small>
+                <small>Acquisition Date: {form[0].ACQUISITION_DATE}</small>
+				<small>Nomenclature: {form[0].NOMENCLATURE}</small>
+				<small>Serial Number: {form[0].SERIAL_NUM}</small>
                 {/* <small>Bar Tags: </small>
                 <small>{btPrint} </small> */}
 				<div className="row" style={{ margin: 3,marginTop:'10px' }}>
