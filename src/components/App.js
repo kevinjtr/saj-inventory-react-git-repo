@@ -10,6 +10,8 @@ import Home from './Home';
 import AddProduct from './AddProduct';
 import Eng4900 from './Eng4900';
 import Equipment from './Equipment';
+import Hra from './Hra';
+import Employee from './Employee';
 import Login from './Login';
 import EditProduct from './EditProduct';
 import Register from './Register';
@@ -60,6 +62,12 @@ function App() {
 
 			<Route exact path="/eng4900" component={Header} />
 			<Route path="/eng4900" component={Eng4900} />
+
+			<Route exact path="/hra" component={Header} />
+			<Route path="/hra" component={Hra} />
+
+			<Route exact path="/employee" component={Header} />
+			<Route path="/employee" component={Employee} />
 			
 			{/* <Route path="/categories" component={Category} /> */}
 

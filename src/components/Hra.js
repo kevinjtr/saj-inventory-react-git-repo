@@ -3,7 +3,7 @@ import qs from 'querystring';
 import { connect } from 'react-redux';
 import { addProduct } from '../publics/actions/eng4900s';
 import api from '../axios/Api';
-import EquipmentForm from './forms/equipment';
+import HraForm from './forms/hra';
 
 export class AddProduct extends Component {
 
@@ -30,7 +30,7 @@ export class AddProduct extends Component {
 
 	refreshEquipmentList() {
 		console.log('equipmentDataCALL')
-		this.equipmentData = api.get('equipment', this.state).then((response) => response.data).then((data) => {
+		this.equipmentData = api.get('employee', this.state).then((response) => response.data).then((data) => {
 			console.log(data)
 			// this.setState({
 			// 	equipments: data.status != 400 ? data.values: data,
@@ -93,30 +93,15 @@ export class AddProduct extends Component {
 		this.setState({ editing: isEditing });
 	};
 
-	// refreshCategoryTable() {
-	// 	this.categoriesData = api.get('categories', this.state).then((response) => response.data).then((data) => {
-	// 		this.setState({
-	// 			categories: data.status != 400 ? data.values: data,
-	// 			setCategories: data
-	// 		});
-	// 		//console.log(this.state.categories.values);
-	// 		// console.log(this.props, this.state);
-	// 	});
-	// }
-
-	// handlerChange = (e) => {
-	// 	this.setState({ [e.target.name]: e.target.value });
-	// };
-
 	handlerSubmit = async () => {
 		//window.event.preventDefault();
 		//await this.props.dispatch(addProduct(this.state));
 		//this.props.history.push('/products');
 	};
-
+	
 	render() {
 		return(
-			<EquipmentForm/>
+			<HraForm/>
 		);
 	}
 }

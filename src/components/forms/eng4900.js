@@ -7,9 +7,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import './eng4900.css';
-
 import Card4900 from '../Card4900';
-
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -18,33 +16,24 @@ import {
   KeyboardTimePicker,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
-
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import Input from '@material-ui/core/Input';
-
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
 import Paper from '@material-ui/core/Paper';
-
 import Avatar from '@material-ui/core/Avatar';
 import { deepOrange, deepPurple } from '@material-ui/core/colors';
-
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
-
 import AddIcon from '@material-ui/icons/Add';
 import Fab from '@material-ui/core/Fab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-
 import SearchIcon from '@material-ui/icons/Search';
-
-
 import api from '../../axios/Api';
 
 const plusButtonStyles = makeStyles((theme) => ({
@@ -58,11 +47,6 @@ const plusButtonStyles = makeStyles((theme) => ({
     alignSelf: 'flex-end'
   },
 }));
-
-//import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-//import CheckBoxIcon from '@material-ui/icons/CheckBox';
-//import Favorite from '@material-ui/icons/Favorite';
-//import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
 
 const textFieldSizes = {
     input1: {
@@ -192,57 +176,31 @@ const itemMenuStyles = makeStyles((theme) => ({
 
 
 export default function FormPropsTextFields() {
+  
+  //Constants Declarations.
+  const requestedActions = ["Issue","Transfer","Repair","Excess","FOI"]
+    
+  //Variables Declarations.
+  let showForm = false
 
-    const componentDidMount = async () => {
-		
-		// );
-		// console.log(this.state);
-	};
-    //text fields
+  //Styles Declarations.
   const classesTextField = texFieldStyles();
-
-  const [eng4900s, setEng4900s] = React.useState([]);
-
-  const handle4900sChange = (event) => {
-    setEng4900s(event.target.value);
-  };
-
   const classesItemMenu = itemMenuStyles();
-  const [reqAction, setReqAction] = React.useState('');
-
-  const handleItemMenuChange = (event) => {
-    setReqAction(event.target.value);
-  };
-
-  const [numOfBarTags, setNumOfBarTags] = React.useState(1);
-
-  const handleBarTagMenuChange = (event) => {
-    setNumOfBarTags(event.target.value);
-  };
-
-  // dates
-const [selectedDate, setSelectedDate] = React.useState(new Date());
-
-const handleDateChange = (date) => {
-  setSelectedDate(date);
-};
-//phone numbers
   const classesPhoneTextField = phoneTextFieldStyles();
+  const classesGrid = gridStyles();
+  const avatarClasses = AvatarStyles();
+  const plusButtonClasses = plusButtonStyles();
+
+  //Hooks Declarations.
+  const [eng4900s, setEng4900s] = React.useState([]);
+  const [reqAction, setReqAction] = React.useState('');
+  const [numOfBarTags, setNumOfBarTags] = React.useState(1);
+  const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [values, setValues] = React.useState({
     textmaskghr: '(   )    -    ',
     textmasklhr: '(   )    -    ',
     numberformat: '1320',
   });
-
-  const handlePhoneTextFieldChange = (event) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  //check box 
-
   const [state, setState] = React.useState({
     issue: false,
     transfer: false,
@@ -251,17 +209,38 @@ const handleDateChange = (date) => {
     foi: false,
     temporaryLoan: false
   });
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [id_, setId] = React.useState('');
+  const [selectedForm, setSelectedForm] = React.useState(null);
+
+  
+  //Events Declarations.
+  const handle4900sChange = (event) => {
+    setEng4900s(event.target.value);
+  };
+
+  const handleItemMenuChange = (event) => {
+    setReqAction(event.target.value);
+  };
+
+  const handleBarTagMenuChange = (event) => {
+    setNumOfBarTags(event.target.value);
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+  const handlePhoneTextFieldChange = (event) => {
+    setValues({
+      ...values,
+      [event.target.name]: event.target.value,
+    });
+  };
 
   const handleCheckBoxChange = (event) => {
     setState({ ...state, [event.target.name]: event.target.checked });
   };
-
-  //grids
-  const classesGrid = gridStyles();
-
-  //simpleMenu
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -270,587 +249,563 @@ const handleDateChange = (date) => {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
-  //menu items
-
-  const requestedActions = ["Issue","Transfer","Repair","Excess","FOI"]
-		const RequestedActionDropDownItems = requestedActions.map((c, i)=>{
-			return(
-				<MenuItem value={c}>
-				{c}
-				</MenuItem>
-			)
-          })
-
-          const tags = [<></>,<div></div>]
-          
- const bartagsData = (n) => {
-     const returnArray = [];
-    for(let x=0; x<n;x++){
-        returnArray.push(
-            <>
-            <Grid item xs={6}>
-                <Paper className={classesGrid.paper}>
-                <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
-                    <TextField
-                    id= {`item_no_${x}`}
-                    label="Item No."
-                    style={{ width: 200 }}
-                    />
-                    <TextField
-                    id= {`bar_tag_no_${x}`}
-                    label="Bar Tag No."
-                    style={{ width: 200 }}
-                    />
-                    <TextField
-                    id= {`catalog_${x}`}
-                    label="Catalog"
-                    style={{ width: 200 }}
-                    />
-                    <TextField
-                    id= {`nomenclature_${x}`}
-                    label="Nomenclature (include make, model)"
-                    style={{ width: 200 }}
-                    />
-                    </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                    <Paper className={classesGrid.paper}>
-                    <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
-                    <TextField
-                    id= {`cond_code_${x}`}
-                    label="Cond Code"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`serial_number_${x}`}
-                    label="Serial Number"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`acq_date_${x}`}
-                    label="ACQ. Date"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`acq_price_${x}`}
-                    label="ACQ. Price"
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id= {`document_number_${x}`}
-                    label="Document Number/Control ID#"
-                    style={{ width: 175 }}
-                    />
-                </Paper>
-            </Grid>
-         </>
-        );
-    }
-     return(returnArray)
- }
-
- const menuItemsBarTags = () => {
-     const returnArray = []
-     for(let i=0; i < 10;i++){
-        returnArray.push(<><MenuItem value={i}>{i}</MenuItem></>)
-     }
-     return(returnArray);
- }
-
- //Avatars
-
- const avatarClasses = AvatarStyles();
-
- const disableFields = {
-     PBO: true,
-     logistics: true,
-     HRA: false,
-     user: false
- }
-
- //plus button
-
- const plusButtonClasses = plusButtonStyles();
-
- const handle4900Search = () => {
-
-  console.log('4900ByHraCall')
-		api.post(`eng4900/search`,{}).then((response) => response.data).then((data) => {
-      console.log(data)
-      setEng4900s(data.status != 400 ? data.data : data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
-    }).catch(function (error) {
-      setEng4900s([])
-    });
-    
   
-  // const tempProps = {...props};
-  //  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-  //  if(!searchResult.error){
-  //   equipments = searchResult.data
-  //  }
- }
+  const handleIdChange = (event) => {
+    setId(event.target.value);
+    // if(event.target.value == ''){
+    //   setIncludes({...includes_,  [event.target.name]: 'includes'})
+    // }
+  };
 
- const form = () => {
+  const handleViewFormFromCard = (event) => {
+    setSelectedForm(eng4900s[event.target.id]);
+    // if(event.target.value == ''){
+    //   setIncludes({...includes_,  [event.target.name]: 'includes'})
+    // }
+  };
+
+  
+
+  //Function Declarations.
+  const bartagsData = (n) => {
+      const returnArray = [];
+      for(let x=0; x<n;x++){
+          returnArray.push(
+              <>
+              <Grid item xs={6}>
+                  <Paper className={classesGrid.paper}>
+                  <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
+                      <TextField
+                      id= {`item_no_${x}`}
+                      label="Item No."
+                      style={{ width: 200 }}
+                      />
+                      <TextField
+                      id= {`bar_tag_no_${x}`}
+                      label="Bar Tag No."
+                      style={{ width: 200 }}
+                      />
+                      <TextField
+                      id= {`catalog_${x}`}
+                      label="Catalog"
+                      style={{ width: 200 }}
+                      />
+                      <TextField
+                      id= {`nomenclature_${x}`}
+                      label="Nomenclature (include make, model)"
+                      style={{ width: 200 }}
+                      />
+                      </Paper>
+                      </Grid>
+                      <Grid item xs={6}>
+                      <Paper className={classesGrid.paper}>
+                      <Avatar className={avatarClasses.orange}>{x+1}</Avatar>
+                      <TextField
+                      id= {`cond_code_${x}`}
+                      label="Cond Code"
+                      style={{ width: 150 }}
+                      />
+                      <TextField
+                      id= {`serial_number_${x}`}
+                      label="Serial Number"
+                      style={{ width: 150 }}
+                      />
+                      <TextField
+                      id= {`acq_date_${x}`}
+                      label="ACQ. Date"
+                      style={{ width: 150 }}
+                      />
+                      <TextField
+                      id= {`acq_price_${x}`}
+                      label="ACQ. Price"
+                      style={{ width: 150 }}
+                      />
+                      <TextField
+                      id= {`document_number_${x}`}
+                      label="Document Number/Control ID#"
+                      style={{ width: 175 }}
+                      />
+                  </Paper>
+              </Grid>
+          </>
+          );
+      }
+      return(returnArray)
+  }
+
+  const menuItemsBarTags = () => {
+      const returnArray = []
+      for(let i=0; i < 10;i++){
+          returnArray.push(<><MenuItem value={i}>{i}</MenuItem></>)
+      }
+      return(returnArray);
+  }
+
+  const handle4900Search = () => {
+
+    setSelectedForm(null)
+    console.log('4900SearchCall')
+      api.post(`eng4900/search`,{fields:{id:id_}}).then((response) => response.data).then((data) => {
+        console.log(data)
+        setEng4900s(data.status != 400 ? data.data : data)
+        // this.setState({
+        // 	equipments: data.status != 400 ? data.values: data,
+        // 	setequipment: data
+        // });
+        //console.log(this.state.equipment.values);
+        // console.log(this.props, this.state);
+      }).catch(function (error) {
+        setEng4900s([])
+      });
+  }
+
+  const form = (f) => {
+    //console.log(f)
+
+      return(
+          <>
+        <Grid item xs={12}>
+              <Paper className={classesGrid.paper}>
+              {/* <FormControl className={classesItemMenu.formControl}>
+              <InputLabel id="demo-simple-select-label">Req Action</InputLabel>
+              <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={reqAction}
+              onChange={handleItemMenuChange}
+              >
+              <MenuItem value={"Issue"}>Issue</MenuItem>
+              <MenuItem value={"Transfer"}>Transfer</MenuItem>
+              <MenuItem value={"Repair"}>Repair</MenuItem>
+              <MenuItem value={"Excess"}>Excess</MenuItem>
+              <MenuItem value={"FOI"}>FOI</MenuItem>
+              </Select>
+          </FormControl> */}
+          <p>{`Form - ${f[0].form_id}`}</p>
+              <FormControlLabel
+                  control={<Checkbox checked={state.issue} onChange={handleCheckBoxChange} name="issue" />}
+                  label="Issue"
+              />
+              
+              <FormControlLabel
+                  control={<Checkbox checked={state.transfer} onChange={handleCheckBoxChange} name="transfer" />}
+                  label="Transfer"
+              />
+              
+              <FormControlLabel
+                  control={<Checkbox checked={state.repair} onChange={handleCheckBoxChange} name="repair" />}
+                  label="Repair"
+              />
+              
+              <FormControlLabel
+                  control={<Checkbox checked={state.excess} onChange={handleCheckBoxChange} name="excess" />}
+                  label="Excess"
+              />
+              
+              <FormControlLabel
+                  control={<Checkbox checked={state.foi} onChange={handleCheckBoxChange} name="foi" />}
+                  label="FOI"
+              />
+
+              <FormControlLabel
+                  control={<Checkbox checked={state.temporaryLoan} onChange={handleCheckBoxChange} name="temporaryLoan" />}
+                  label="Temporary Loan"
+              />
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                  <KeyboardDatePicker
+                  disableToolbar
+                  variant="inline"
+                  format="MM/dd/yyyy"
+                  margin="normal"
+                  id="date-picker-inline"
+                  label="Expiration Date"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                  KeyboardButtonProps={{
+                      'aria-label': 'change date',
+                  }}
+                  />
+              </MuiPickersUtilsProvider>
+          
+              </Paper>
+
+      </Grid>
+      
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+        <p>LOSING HAND RECEIPT HOLDER</p>
+        <TextField
+        label="2a. Name"
+        style={{ width: 300 }}
+      />
+      <TextField
+        id="standard-helperText"
+        label="b. Office Symbol"
+        style={{ width: 300 }}
+      />
+      <TextField
+        id="standard-helperText"
+        label="c. Hand Receipt Account Number"
+        style={{ width: 300 }}
+      />
+      
+    <FormControl>
+      <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
+      <Input 
+      
+        style={{ height: 40,width:300 }}
+        value={values.textmasklhr}
+        onChange={handlePhoneTextFieldChange}
+        name="textmasklhr"
+        id="formatted-text-mask-input"
+        inputComponent={TextMaskCustom}
+      />
+    </FormControl>
+        </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+        <p>GAINING HAND RECEIPT HOLDER</p>
+        <TextField
+        label="3a. Name"
+        style={{ width: 300 }}
+      />
+      <TextField
+        id="standard-helperText"
+        label="b. Office Symbol"
+        style={{ width: 300 }}
+      />
+      <TextField
+        id="standard-helperText"
+        label="c. Hand Receipt Account Number"
+        style={{ width: 300 }}
+      />
+      <FormControl>
+      <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
+      <Input 
+        style={{ height: 40,width:300 }}
+        value={values.textmaskghr}
+        onChange={handlePhoneTextFieldChange}
+        name="textmaskghr"
+        id="formatted-text-mask-input"
+        inputComponent={TextMaskCustom}
+      />
+    </FormControl>
+        </Paper>
+      </Grid>
+      <Grid item xs={12}>
+      <Paper className={classesGrid.paper}>
+      <FormControl className={classesItemMenu.formControl}>
+              <InputLabel id="demo-simple-select-label-bt">Number of Equipment Items</InputLabel>
+              <Select
+              labelId="demo-simple-select-label-bt"
+              id="demo-simple-select-bt"
+              value={numOfBarTags}
+              onChange={handleBarTagMenuChange}
+              >
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={2}>2</MenuItem>
+              <MenuItem value={3}>3</MenuItem>
+              <MenuItem value={4}>4</MenuItem>
+              <MenuItem value={5}>5</MenuItem>
+              </Select>
+      </FormControl>
+      </Paper>
+      </Grid>
+      {bartagsData(numOfBarTags)}
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+        <TextField
+        label="13a. Individual/Vendor Removing or Recieving Property"
+        style={{ width: 600 }}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+        <TextField
+        label="b. Date"
+        style={{ width: 120 }}
+      />
+        <TextField
+        label="c. Signature"
+        style={{ width: 120 }}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+        <TextField
+        label="14a. Losing HRH Signature"
+        style={{ width: 300 }}
+      />
+        <TextField
+        label="b. Date"
+        style={{ width: 120 }}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+        <Paper className={classesGrid.paper}>
+        <TextField
+        label="15a. Gaining HRH Signature"
+        style={{ width: 300 }}
+      />
+        <TextField
+        label="b. Date"
+        style={{ width: 120 }}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={12}>
+      <Paper className={classesGrid.paper}>
+        <p>Transfer (PBO use only)</p>
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="16a. Losing Command"
+        style={{ width: 250 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+        <TextField
+        label="b. UIC"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="17a. Gaining Command"
+        style={{ width: 250 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+        <TextField
+        label="b. UIC"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="c. Ship From"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="c. Ship To:"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="d. PBO"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="d. PBO"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="e. Losing Command Signature"
+        style={{ width: 300 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+        <TextField
+        label="f. Date"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="e. Gaining Command Signature"
+        style={{ width: 300 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+        <TextField
+        label="f. Date"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.PBO,
+        }}
+        {...(disableFields.PBO && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={12}>
+      <Paper className={classesGrid.paper}>
+        <p>Logistics (supply use only)</p>
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="18a. Received By"
+        style={{ width: 300 }}
+        InputProps={{
+          readOnly: disableFields.logistics,
+        }}
+        {...(disableFields.logistics && {variant:"filled"})}
+      />
+        <TextField
+        label="b. Date"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.logistics,
+        }}
+        {...(disableFields.logistics && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      <Grid item xs={6}>
+      <Paper className={classesGrid.paper}>
+      <TextField
+        label="19a. Posted By"
+        style={{ width: 300 }}
+        InputProps={{
+          readOnly: disableFields.logistics,
+        }}
+        {...(disableFields.logistics && {variant:"filled"})}
+      />
+        <TextField
+        label="b. Date"
+        style={{ width: 120 }}
+        InputProps={{
+          readOnly: disableFields.logistics,
+        }}
+        {...(disableFields.logistics && {variant:"filled"})}
+      />
+      </Paper>
+      </Grid>
+      </>
+      )
+  }
+
+  function CardProduct(form){
+
+    let bartags = ''
+
+    Object.keys(form).map(function(key) {
+      bartags = bartags + (bartags ? ', ':'') + form[key].bar_tag_num
+    });
+
+    return (
+      <div className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
+        <div id={form[0].form_id} className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
+              <div style={{display:'inline'}}>
+              {/* <img src={product.image} alt="" style={{height:"25%",width:"25%",display:'inline'}} /> */}
+          <h4 style={{ marginTop: '20px' }}>ENG4900 - ID:</h4>
+                  <h4 >{form[0].form_id}</h4>
+              </div>
+              
+          <hr />
+          
+          <h6>Bar Tags Quantity: {form.length}</h6>
+          <small>Losing HRA: {form[0].losing_hra + ' - ' + form[0].losing_hra_first_name + ' ' + form[0].losing_hra_last_name }</small>
+          <small>Gaining HRA: {form[0].gaining_hra + ' - ' + form[0].gaining_hra_first_name + ' ' + form[0].gaining_hra_last_name}</small>
+          <small>Bar Tags: {bartags}</small>
+                  {/* <small>Bar Tags: </small>
+                  <small>{btPrint} </small> */}
+          <div className="row" style={{ margin: 3,marginTop:'10px' }}>
+              <input id={form[0].form_id} type="submit" value="View" className="btn btn-primary" onClick={handleViewFormFromCard}/>
+            {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
+              <input type="submit" value="Edit" className="btn btn-warning" />
+            </Link> */}
+          </div>
+          <br />
+        </div>
+      </div>
+    );
+  }
+
+  //Render Variables
+  const RequestedActionDropDownItems = requestedActions.map((c, i)=>{
     return(
-        <>
-       <Grid item xs={12}>
-            <Paper className={classesGrid.paper}>
-            {/* <FormControl className={classesItemMenu.formControl}>
-             <InputLabel id="demo-simple-select-label">Req Action</InputLabel>
-             <Select
-             labelId="demo-simple-select-label"
-             id="demo-simple-select"
-             value={reqAction}
-             onChange={handleItemMenuChange}
-             >
-             <MenuItem value={"Issue"}>Issue</MenuItem>
-             <MenuItem value={"Transfer"}>Transfer</MenuItem>
-             <MenuItem value={"Repair"}>Repair</MenuItem>
-             <MenuItem value={"Excess"}>Excess</MenuItem>
-             <MenuItem value={"FOI"}>FOI</MenuItem>
-             </Select>
-         </FormControl> */}
-
-
-            <FormControlLabel
-                control={<Checkbox checked={state.issue} onChange={handleCheckBoxChange} name="issue" />}
-                label="Issue"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.transfer} onChange={handleCheckBoxChange} name="transfer" />}
-                label="Transfer"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.repair} onChange={handleCheckBoxChange} name="repair" />}
-                label="Repair"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.excess} onChange={handleCheckBoxChange} name="excess" />}
-                label="Excess"
-            />
-            
-            <FormControlLabel
-                control={<Checkbox checked={state.foi} onChange={handleCheckBoxChange} name="foi" />}
-                label="FOI"
-            />
-
-            <FormControlLabel
-                control={<Checkbox checked={state.temporaryLoan} onChange={handleCheckBoxChange} name="temporaryLoan" />}
-                label="Temporary Loan"
-            />
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="MM/dd/yyyy"
-                margin="normal"
-                id="date-picker-inline"
-                label="Expiration Date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                KeyboardButtonProps={{
-                    'aria-label': 'change date',
-                }}
-                />
-            </MuiPickersUtilsProvider>
-         
-            </Paper>
-
-     </Grid>
-     
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <p>LOSING HAND RECEIPT HOLDER</p>
-       <TextField
-       label="2a. Name"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="b. Office Symbol"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="c. Hand Receipt Account Number"
-       style={{ width: 300 }}
-     />
-     
-   <FormControl>
-     <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-     <Input 
-     
-       style={{ height: 40,width:300 }}
-       value={values.textmasklhr}
-       onChange={handlePhoneTextFieldChange}
-       name="textmasklhr"
-       id="formatted-text-mask-input"
-       inputComponent={TextMaskCustom}
-     />
-   </FormControl>
-       </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <p>GAINING HAND RECEIPT HOLDER</p>
-       <TextField
-       label="3a. Name"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="b. Office Symbol"
-       style={{ width: 300 }}
-     />
-     <TextField
-       id="standard-helperText"
-       label="c. Hand Receipt Account Number"
-       style={{ width: 300 }}
-     />
-     <FormControl>
-     <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-     <Input 
-       style={{ height: 40,width:300 }}
-       value={values.textmaskghr}
-       onChange={handlePhoneTextFieldChange}
-       name="textmaskghr"
-       id="formatted-text-mask-input"
-       inputComponent={TextMaskCustom}
-     />
-   </FormControl>
-       </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-     <FormControl className={classesItemMenu.formControl}>
-             <InputLabel id="demo-simple-select-label-bt">Number of Equipment Items</InputLabel>
-             <Select
-             labelId="demo-simple-select-label-bt"
-             id="demo-simple-select-bt"
-             value={numOfBarTags}
-             onChange={handleBarTagMenuChange}
-             >
-             <MenuItem value={1}>1</MenuItem>
-             <MenuItem value={2}>2</MenuItem>
-             <MenuItem value={3}>3</MenuItem>
-             <MenuItem value={4}>4</MenuItem>
-             <MenuItem value={5}>5</MenuItem>
-             </Select>
-     </FormControl>
-     </Paper>
-     </Grid>
-     {bartagsData(numOfBarTags)}
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="13a. Individual/Vendor Removing or Recieving Property"
-       style={{ width: 600 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-       <TextField
-       label="c. Signature"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="14a. Losing HRH Signature"
-       style={{ width: 300 }}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-       <Paper className={classesGrid.paper}>
-       <TextField
-       label="15a. Gaining HRH Signature"
-       style={{ width: 300 }}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-       <p>Transfer (PBO use only)</p>
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="16a. Losing Command"
-       style={{ width: 250 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="b. UIC"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="17a. Gaining Command"
-       style={{ width: 250 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="b. UIC"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="c. Ship From"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="c. Ship To:"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="d. PBO"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="d. PBO"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="e. Losing Command Signature"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="f. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="e. Gaining Command Signature"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-       <TextField
-       label="f. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.PBO,
-       }}
-       {...(disableFields.PBO && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={12}>
-     <Paper className={classesGrid.paper}>
-       <p>Logistics (supply use only)</p>
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="18a. Received By"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-       label="19a. Posted By"
-       style={{ width: 300 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-       <TextField
-       label="b. Date"
-       style={{ width: 120 }}
-       InputProps={{
-         readOnly: disableFields.logistics,
-       }}
-       {...(disableFields.logistics && {variant:"filled"})}
-     />
-     </Paper>
-     </Grid>
-     </>
+      <MenuItem value={c}>
+      {c}
+      </MenuItem>
     )
-}
+        })
 
-// const eng4900s = [{hraName:"Anderson, Thomas",
-// category: "hard disk drive",
-// date_added: "2020-11-18T18:49:24.000Z",
-// date_updated: "2020-11-18T18:49:27.000Z",
-// description: "Seagate",
-// id: 2,
-// image: "eng4900.png",
-// barTags:["77701","77702","77703"],
-// product_name: "External Hard Drive",
-// quantity: 9},
-// {hraName:"Smith, John",
-// category: "laptop",
-// date_added: null,
-// date_updated: "2020-11-30T19:33:52.000Z",
-// description: null,
-// id: 1,
-// image: "eng4900.png",
-// barTags:["66601","66602","66603"],
-// product_name: "iphone",
-// quantity: 5},
-// {hraName:"Gates, Richard",
-// category: "hard disk drive",
-// date_added: null,
-// date_updated: "2020-11-24T20:45:02.000Z",
-// description: null,
-// id: 3,
-// image: "eng4900.png",
-// barTags:["55501","55502","55503"],
-// product_name: "laptopcilla",
-// quantity: 56}]
+  const cards = Object.keys(eng4900s).map(function(key) {
+    return CardProduct(eng4900s[key]);
+  });
 
-function CardProduct(form){
-	return (
-		<div className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
-			<div className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
-            <div style={{display:'inline'}}>
-            {/* <img src={product.image} alt="" style={{height:"25%",width:"25%",display:'inline'}} /> */}
-				<h4 style={{ marginTop: '20px' }}>ENG4900 - Doc Num:</h4>
-                <h4 >{form[0].FORM_ID}</h4>
-            </div>
-            
-				<hr />
-				
-				<h6>Bar Tags Quantity: {form.length}</h6>
-                <small>Losing HRA: {form[0].LOSING_HRA}</small>
-				<small>Gaining HRA: {form[0].GAINING_HRA}</small>
-                {/* <small>Bar Tags: </small>
-                <small>{btPrint} </small> */}
-				<div className="row" style={{ margin: 3,marginTop:'10px' }}>
-					{/* <Link to={'/edit/' + product.id} style={{ margin: 2 }}>
-						<input type="submit" value="View" className="btn btn-primary" />
-					</Link> */}
-					{/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
-						<input type="submit" value="Edit" className="btn btn-warning" />
-					</Link> */}
-				</div>
-				<br />
-			</div>
-		</div>
-	);
-}
+  // const cards = eng4900s.map((form) => {
+  //   return CardProduct(form);
+  // });
 
-const cards = eng4900s.map((form) => {
-    return CardProduct(form);
-});
+  const disableFields = {
+    PBO: true,
+    logistics: true,
+    HRA: false,
+    user: false
+  }
 
-let showForm = false
-
-console.log(eng4900s)
-
+//Render return.
   return (
     <div>
         <div style={{textAlign: 'center'}}>
       <h2 >Eng 4900 Form</h2>
-      <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
+      {/* <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuClick}>
                 Open Menu - Search
             </Button>
             <Menu
@@ -863,7 +818,7 @@ console.log(eng4900s)
                 <MenuItem onClick={handleMenuClose}>Open Menu - Search</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Update</MenuItem>
                 <MenuItem onClick={handleMenuClose}>Open Menu - Create</MenuItem>
-            </Menu>
+            </Menu> */}
             
       </div>
       <div style={{textAlign: 'center'}}>
@@ -874,27 +829,12 @@ console.log(eng4900s)
             <div className={classesGrid.options}>
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
+                            <TextField id="outlined-search-id" name="id" label="Search by ID" type="search" variant="outlined" value={id_} onChange={handleIdChange}/> 
+                            {/* <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" /> 
                             <TextField id="outlined-search" label="Search by HRA" type="search" variant="outlined"/> 
-                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" /> 
-                            <FormControl variant="outlined" className={classesItemMenu.formControl}>
-                        <InputLabel id="demo-simple-select-outlined-label">Sort By</InputLabel>
-                        <Select
-                        labelId="demo-simple-select-outlined-label"
-                        id="demo-simple-select-outlined"
-                        value={""}
-                        //onChange={handleChange}
-                        label="Sort By"
-                        >
-                        <MenuItem value="">
-                            <em>None</em>
-                        </MenuItem>
-                        <MenuItem value={10}>Sort By - HRA NAME</MenuItem>
-                        <MenuItem value={20}>Sort By - HOLDER NAME</MenuItem>
-                        <MenuItem value={30}>Sort By - BARTAG NUMBER</MenuItem>
-                        <MenuItem value={40}>Sort By - HRA NUMBER</MenuItem>
-                        </Select>
-                    </FormControl>
-                    <IconButton aria-label="search" color="primary" onClick={handle4900Search}>
+                            <TextField id="outlined-search" label="Search by Bar Tag" type="search" variant="outlined" />  */}
+
+                    <IconButton id="search-4900" aria-label="search" color="primary" onClick={handle4900Search}>
                             <SearchIcon style={{ fontSize: 40 }}/>
                     </IconButton>
                     </Grid>
@@ -903,12 +843,10 @@ console.log(eng4900s)
         </form>
     </div>
 
-    {cards ? <div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
+    {cards.length > 0 && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
         <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
-        <div className="card-title">
             <div style={{ justifyContent: 'center' }}>{cards}</div>
-        </div>
-    </div> : null}
+    </div>) : null}
 
     <form className={classesTextField.root} noValidate autoComplete="off">
       
@@ -920,7 +858,7 @@ console.log(eng4900s)
 
       
           {/* <Paper className={classesGrid.paper}> */}
-          {showForm ? form() : null}
+          {selectedForm ? form(selectedForm) : null}
           
           
           {/* </Paper> */}
@@ -1133,11 +1071,11 @@ console.log(eng4900s)
         />
       </div> */}
     </form>
-    <Tooltip title="Add" aria-label="add">
+    {/* <Tooltip title="Add" aria-label="add">
         <Fab color="secondary" className={plusButtonClasses.absolute}>
           <AddIcon />
         </Fab>
-      </Tooltip>
+      </Tooltip> */}
     </div>
   );
 }
