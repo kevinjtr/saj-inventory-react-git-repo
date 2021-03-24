@@ -44,6 +44,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 
 import SearchIcon from '@material-ui/icons/Search';
 
+import api from '../../axios/Api';
+import axios from 'axios';
+
 const plusButtonStyles = makeStyles((theme) => ({
   fab: {
     margin: theme.spacing(2),
@@ -60,6 +63,15 @@ const plusButtonStyles = makeStyles((theme) => ({
 //import CheckBoxIcon from '@material-ui/icons/CheckBox';
 //import Favorite from '@material-ui/icons/Favorite';
 //import FavoriteBorder from '@material-ui/icons/FavoriteBorder';
+const dropDownStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+})); 
 
 const textFieldSizes = {
     input1: {
@@ -189,7 +201,55 @@ const itemMenuStyles = makeStyles((theme) => ({
 
 
 export default function FormPropsTextFields() {
+  const dropDownClasses = dropDownStyles (); 
+  const ENG4844Data = {
 
+    id: "",
+    dateCreated: "",
+    documentNum: "",
+    acquisitionDate: "",
+    purchaseOrderNum: "",
+    vendor: "",
+    costAccount: "",
+    remarks: "",
+    barTagNum: "",
+    catalogNum: "",
+    oldTagNum: "",
+    barTagHistoryId: "",
+    serialNum: "",
+    location: "",
+    room: "",
+    HRA: "",
+    authorization: "",
+    funding: "",
+    condition: "",
+    utilization: "",
+    value: "",
+    accessoryNomenclature: "",
+    accessoryValue: "",
+    majorNoun: "",
+    nomenclature: "",
+    manufacturer: "",
+    partNum: "",
+    model: "",
+    color: "",
+    length: "",
+    lengthUnits: "",
+    width: "",
+    widthUnits: "",
+    height: "",
+    heightUnits: "",
+    classification: "",
+    reportableItemControlCode: "",
+    equipmentControlCode: "",
+    lineItemNum: "",
+    logisticsControlCode: "",
+    pilferableCode: "",
+    noun_nomenclature:"",
+    catalog_num_1:"",
+    value_1:""
+
+}
     const componentDidMount = async () => {
 		
 		// );
@@ -276,6 +336,19 @@ const handleDateChange = (date) => {
     setForm(event.target.value);
   };
 
+  const [fundingSelection, setFunding] = React.useState("");
+  
+ const fundingSelectionChange = (event) =>{
+  setFunding(event.target.value);
+ }
+
+ const [reportableSelection, setReportable] = React.useState("");
+  
+ const reportableSelectionChange = (event) =>{
+  setReportable(event.target.value);
+ }
+  
+      
   const formView = (n) => {
     const returnSelection = null;
     if(formSelection == "4844"){
@@ -361,6 +434,7 @@ const handleDateChange = (date) => {
        <TextField
        label="1. Document Number"
        style={{ width: 640 }}
+       value={ENG4844Data.documentNum}
      />
        </Paper>
      </Grid>
@@ -389,6 +463,7 @@ const handleDateChange = (date) => {
        <TextField
        label="3. Purchase Order Number"
        style={{ width: 1600 }}
+       value={ENG4844Data.purchaseOrderNum}
      />
        </Paper>
      </Grid>
@@ -397,6 +472,7 @@ const handleDateChange = (date) => {
        <TextField
        label="4. From (Vendor)"
        style={{ width: 1600 }}
+       value={ENG4844Data.vendor}
      />
        </Paper>
      </Grid>
@@ -405,6 +481,7 @@ const handleDateChange = (date) => {
        <TextField
        label="5. Cost Account"
        style={{ width: 1600 }}
+       value={ENG4844Data.costAccount}
      />
        </Paper>
      </Grid>
@@ -413,6 +490,7 @@ const handleDateChange = (date) => {
        <TextField
        label="6. Remarks"
        style={{ width: 1600 }}
+       value={ENG4844Data.remarks}
      />
        </Paper>
      </Grid>
@@ -421,6 +499,7 @@ const handleDateChange = (date) => {
        <TextField
        label="7. Bar Tag Number"
        style={{ width: 300 }}
+       value={ENG4844Data.barTagNum}
      />
        </Paper>
      </Grid>
@@ -429,6 +508,7 @@ const handleDateChange = (date) => {
        <TextField
        label="8. Catalog Number (NSN or MCN)"
        style={{ width: 300 }}
+       value={ENG4844Data.catalogNum}
      />
        </Paper>
      </Grid>
@@ -437,6 +517,7 @@ const handleDateChange = (date) => {
        <TextField
        label="9. Old Tag Number"
        style={{ width: 300 }}
+       value={ENG4844Data.oldTagNum}
      />
        </Paper>
      </Grid>
@@ -445,6 +526,7 @@ const handleDateChange = (date) => {
        <TextField
        label="10. Noun/Nomenclature"
        style={{ width: 1600 }}
+       value={ENG4844Data.noun_nomenclature}
      />
        </Paper>
      </Grid>
@@ -453,6 +535,7 @@ const handleDateChange = (date) => {
        <TextField
        label="11. Serial Number"
        style={{ width: 1600 }}
+       value={ENG4844Data.serialNum}
      />
        </Paper>
      </Grid>
@@ -461,6 +544,7 @@ const handleDateChange = (date) => {
        <TextField
        label="12. Location"
        style={{ width: 300 }}
+       value={ENG4844Data.location}
      />
        </Paper>
      </Grid>
@@ -469,6 +553,7 @@ const handleDateChange = (date) => {
        <TextField
        label="13. Room"
        style={{ width: 300 }}
+       value={ENG4844Data.room}
      />
        </Paper>
      </Grid>
@@ -477,6 +562,7 @@ const handleDateChange = (date) => {
        <TextField
        label="14. HRA"
        style={{ width: 300 }}
+       value={ENG4844Data.HRA}
      />
        </Paper>
      </Grid>
@@ -485,15 +571,24 @@ const handleDateChange = (date) => {
        <TextField
        label="15. Authorization"
        style={{ width: 300 }}
+       value={ENG4844Data.authorization}
      />
        </Paper>
      </Grid>
      <Grid item xs={4}>
        <Paper className={classesGrid.paper}>
-       <TextField
-       label="16. Funding"
-       style={{ width: 300 }}
-     />{/* This needs to be a drop down populated from the database*/}
+       <FormControl className={dropDownClasses.formControl}>
+        <InputLabel id="demo-simple-select-label">16. Funding</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="16. Funding"
+          value={fundingSelection}
+          onChange={fundingSelectionChange}
+          style={{ width: 300 }}
+        >
+        {fundingDropDownItems}
+        </Select>
+      </FormControl> {/* This needs to be a drop down populated from the database*/}
        </Paper>
      </Grid>
      <Grid item xs={4}>
@@ -501,6 +596,7 @@ const handleDateChange = (date) => {
        <TextField
        label="17. Condition"
        style={{ width: 300 }}
+       value={ENG4844Data.condition}
      />{/* This needs to be a drop down populated from the database*/}
        </Paper>
      </Grid>
@@ -509,6 +605,7 @@ const handleDateChange = (date) => {
        <TextField
        label="18. Utilization"
        style={{ width: 640}}
+       value={ENG4844Data.utilization}
      />{/* This needs to be a drop down populated from the database*/}
       </Paper>
      </Grid>
@@ -517,6 +614,7 @@ const handleDateChange = (date) => {
        <TextField
        label="19. Value"
        style={{ width: 640 }}
+       value={ENG4844Data.value}
      />
        </Paper>
      </Grid>
@@ -530,6 +628,7 @@ const handleDateChange = (date) => {
        <TextField
        label="21. Nomenclature"
        style={{ width: 1600 }}
+       value={ENG4844Data.accessoryNomenclature}
      />
        </Paper>
      </Grid>
@@ -538,6 +637,7 @@ const handleDateChange = (date) => {
        <TextField
        label="22. Value"
        style={{ width: 1600 }}
+       value={ENG4844Data.accessoryValue}
      />
        </Paper>
      </Grid>
@@ -598,6 +698,7 @@ const form4844_1 = () => {
      <TextField
      label="1. Catalog Number )NSN or Management Control Number"
      style={{ width: 1600 }}
+     value={ENG4844Data.catalog_num_1}
    />
      </Paper>
    </Grid>
@@ -606,6 +707,7 @@ const form4844_1 = () => {
      <TextField
      label="2. Major Noun"
      style={{ width: 1600 }}
+     value={ENG4844Data.majorNoun}
    />
      </Paper>
    </Grid>
@@ -614,6 +716,7 @@ const form4844_1 = () => {
      <TextField
      label="3. Nomenclature"
      style={{ width: 1600 }}
+     value={ENG4844Data.nomenclature}
    />
      </Paper>
    </Grid>
@@ -622,6 +725,7 @@ const form4844_1 = () => {
      <TextField
      label="4. Manufacturer"
      style={{ width: 1600 }}
+     value={ENG4844Data.manufacturer}
    />
      </Paper>
    </Grid>
@@ -630,6 +734,7 @@ const form4844_1 = () => {
      <TextField
      label="5. Part Number"
      style={{ width: 1600 }}
+     value={ENG4844Data.partNum}
    />
      </Paper>
    </Grid>
@@ -638,6 +743,7 @@ const form4844_1 = () => {
      <TextField
      label="6. Model"
      style={{ width: 640 }}
+     value={ENG4844Data.model}
    />
      </Paper>
    </Grid>
@@ -646,6 +752,7 @@ const form4844_1 = () => {
      <TextField
      label="7. Color"
      style={{ width: 640 }}
+     value={ENG4844Data.color}
    />
      </Paper>
    </Grid>
@@ -654,6 +761,7 @@ const form4844_1 = () => {
      <TextField
      label="8. Length"
      style={{ width: 300 }}
+     value={ENG4844Data.length}
    />
      </Paper>
    </Grid>
@@ -662,6 +770,7 @@ const form4844_1 = () => {
      <TextField
      label="9. Width"
      style={{ width: 300 }}
+     value={ENG4844Data.width}
    />
      </Paper>
    </Grid>
@@ -670,6 +779,7 @@ const form4844_1 = () => {
      <TextField
      label="10. Height"
      style={{ width: 300 }}
+     value={ENG4844Data.height}
    />
      </Paper>
    </Grid>
@@ -678,6 +788,7 @@ const form4844_1 = () => {
      <TextField
      label="11. Value"
      style={{ width: 640 }}
+     value={ENG4844Data.value_1}
    />
      </Paper>
    </Grid>
@@ -686,6 +797,7 @@ const form4844_1 = () => {
      <TextField
      label="12. Classification"
      style={{ width: 640 }}
+     value={ENG4844Data.classification}
    />{/* This needs to be a drop down populated from the database*/}
      </Paper>
    </Grid>
@@ -694,22 +806,32 @@ const form4844_1 = () => {
      <TextField
      label="13. Pilerable Code"
      style={{ width: 640 }}
+     value={ENG4844Data.pilferableCode}
    />{/* This needs to be a drop down populated from the database*/}
      </Paper>
    </Grid>
    <Grid item xs={6}>
-     <Paper className={classesGrid.paper}>
-     <TextField
-     label="14. Reportable Item Control Code (RICC)"
-     style={{ width: 640 }}
-   />{/* This needs to be a drop down populated from the database*/}
-     </Paper>
+   <Paper className={classesGrid.paper}>
+       <FormControl className={dropDownClasses.formControl}>
+        <InputLabel id="demo-simple-select-label">14. Reportable Item Control Code</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="14. Reportable Item Control Code"
+          value={reportableSelection}
+          onChange={reportableSelectionChange}
+          style={{ width: 640 }}
+        >
+        {reportableDropDownItems}
+        </Select>
+      </FormControl> {/* This needs to be a drop down populated from the database*/}
+       </Paper>
    </Grid>
    <Grid item xs={6}>
      <Paper className={classesGrid.paper}>
      <TextField
      label="15. Equipment Control Code, See AR 738-750 For Code"
      style={{ width: 640 }}
+     value={ENG4844Data.equipmentControlCode}
    />
      </Paper>
    </Grid>
@@ -718,6 +840,7 @@ const form4844_1 = () => {
      <TextField
      label="16. Line Item Number (LIN), See SB 700-20 For Code"
      style={{ width: 640 }}
+     value={ENG4844Data.lineItemNum}
    />
      </Paper>
    </Grid>
@@ -726,6 +849,7 @@ const form4844_1 = () => {
      <TextField
      label="17. Logistics Control Code (LCC)"
      style={{ width: 1600 }}
+     value={ENG4844Data.logisticsControlCode}
    />{/* This needs to be a drop down populated from the database*/}
     </Paper>
    </Grid>
@@ -767,6 +891,62 @@ quantity: 56}]
 const renderData = eng4900s.map((product) => {
     return <Card4900 product={product} key={product.id} refresh={componentDidMount} />;
 });
+const [items, setItems] = React.useState([]);
+//will run once.
+React.useEffect(() => {
+  //setLoading(true)
+      console.log('4844Fundingall')
+      api.get(`eng4844/funding`,{}).then((response) => response.data).then((data) => {
+      console.log(data)
+      if(data.status != 400){
+        setItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
+
+      }
+      console.log(items);
+    }).catch(function (error) {
+      setItems([])
+    }) 
+  }, []); 
+
+  const fundingDropDownItems = items.map((c, i)=>{
+    console.log(c);
+    return(
+     
+      <MenuItem value={c.value} name= {c.label} >
+      {c.value + '.' + c.label}
+      </MenuItem>
+
+    )
+    })
+
+    const [reportableItems, setReportableItems] = React.useState([]);
+//will run once.
+React.useEffect(() => {
+  //setLoading(true)
+      console.log('4844Reportable')
+      api.get(`eng4844/reportableControlCode`,{}).then((response) => response.data).then((data) => {
+      console.log(data)
+      if(data.status != 400){
+        setReportableItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
+
+      }
+      console.log(reportableItems);
+    }).catch(function (error) {
+      setReportableItems([])
+    }) 
+  }, []); 
+
+  const reportableDropDownItems = reportableItems.map((c, i)=>{
+    console.log(c);
+    return(
+     
+      <MenuItem value={c.value} name= {c.label} >
+      {c.value + '.' + c.label}
+      </MenuItem>
+
+    )
+    })
+
 
   return (
     <div>

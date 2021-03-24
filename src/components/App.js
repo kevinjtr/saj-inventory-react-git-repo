@@ -16,6 +16,7 @@ import Login from './Login';
 import EditProduct from './EditProduct';
 import Register from './Register';
 import Eng4844 from './Eng4844';
+import FindEng4844 from './FindEng4844';
 // import Query from './Query';
 
 import axios from 'axios';
@@ -52,7 +53,10 @@ function App() {
 
 			<Route exact path="/equipment" component={Header} />
 			<Route path="/equipment" component={Equipment} />
-			
+				
+			<Route exact path="/findeng4844" component={Header} />
+			<Route path="/findeng4844" component={FindEng4844} />
+
 			<Route exact path="/eng4844" component={Header} />
 			<Route path="/eng4844" component={Eng4844} />
 
