@@ -42,11 +42,11 @@ import findIndex from 'lodash/findIndex'
       <NumberFormat
         {...other}
         getInputRef={inputRef}
-        onValueChange={(values) => {
+        onValueChange={(phoneNumbers) => {
           onChange({
             target: {
               name: props.name,
-              value: values.value,
+              value: phoneNumbers.value,
             },
           });
         }}
@@ -70,16 +70,15 @@ export default function FormPropsTextFields(props) {
   const [loading, setLoading] = React.useState(false);
   const [officesSymbol, setOfficesSymbol] = React.useState([]);
   const [employees, setEmployees] = React.useState([]);
-  const [values, setValues] = React.useState({
-    textmaskghr: '(   )    -    ',
-    textmasklhr: '(   )    -    ',
+  const [phoneNumbers, setPhoneNumbers] = React.useState({
+    textmask: '(   )    -    ',
     numberformat: '1320',
   });
 
   //Event Handlers.
   const handlePhoneTextFieldChange = (event) => {
-    setValues({
-      ...values,
+    setPhoneNumbers({
+      ...phoneNumbers,
       [event.target.name]: event.target.value,
     });
   };
@@ -183,6 +182,7 @@ export default function FormPropsTextFields(props) {
       { title: 'Title', field: 'title' },
       { title: 'Office Symbol ID', field: 'office_symbol',type:'numeric',
       editComponent: x => {
+        //const table_id = x.rowData.tableData.id
         console.log(x);
         let idx = -1
 
@@ -193,7 +193,7 @@ export default function FormPropsTextFields(props) {
         return(
           <Autocomplete
           //onChange={e => x.onChange(e)}
-          id={`combo-box-employee-${x.rowData.tableData.id}`}
+          id={`combo-box-employee-`}
           size="small"
           options={officesSymbol}
           getOptionLabel={(option) => option.id + ' - ' + option.alias}
@@ -213,41 +213,41 @@ export default function FormPropsTextFields(props) {
     {title: 'Office Symbol Alias',field:'office_symbol_alias',editable: 'never'},
     { title: 'Work Phone', field: 'work_phone',type:'numeric',validate: rowData => {
       if(rowData.work_phone){
-        return(rowData.work_phone.toString().length > 7 ? { isValid: false, helperText: 'phone number digits exceed 7.' } : true)
+        return(rowData.work_phone.toString().length > 10 ? { isValid: false, helperText: 'phone number digits exceed 10.' } : true)
       }
       return(true)
-  }
+  },
+        // editComponent: x => {
+        //   console.log(x.rowData)
+        // let idx = -1
 
-  
-    //     editComponent: x => {
-  //       console.log(x);
-  //       let idx = -1
+        // if(x.rowData.id){
+        //   idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.id));})
+        // }
 
-  //       if(x.rowData.work_phone){
-  //         idx = findIndex(employees,function(e){ return (e.work_phone && (e.work_phone == x.rowData.work_phone)); })
-  //       }
-
-  //       return(
-  //         <FormControl>
-  //   <InputLabel htmlFor="formatted-text-mask-input">Work Phone Number</InputLabel>
-  //   <Input 
-  //     style={{ height: 40,width:300 }}
-  //     //value={values.textmaskghr}
-  //     value={values.textmaskghr}
-  //     //onChange={handlePhoneTextFieldChange}
-  //     name="textmaskghr"
-  //     id={`formatted-text-mask-input-${x.rowData.tableData.id}`}
-  //     inputComponent={TextMaskCustom}
-  //     onChange ={e => {
-  //       handlePhoneTextFieldChange(e)
-  //       //const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-  //       console.log( e.target.textContent );
-  //       //x.onChange(id_)
-  //     }}
-  //   />
-  // </FormControl>
-  //       )
-  //     }
+        // return(
+        //   <FormControl>
+        //     <InputLabel htmlFor="formatted-text-mask-input">Work Phone Number</InputLabel>
+        //     <Input 
+        //       style={{ height: 40,width:300 }}
+        //       //value={values.textmaskghr}
+        //       value={idx != -1 ? employees[idx].work_phone : '(   )    -    '}
+        //       //onChange={handlePhoneTextFieldChange}
+        //       name={`workphone-${x.rowData.tableData.id}`}
+        //       id={`workphone-input-${x.rowData.tableData.id}`}
+        //       key={`workphone-input-${x.rowData.tableData.id}`}
+        //       inputComponent={TextMaskCustom}
+        //       onChange ={e => {
+        //         console.log(e.currentTarget)
+        //         //console.log(employees[idx].work_phone)
+        //         // const dataUpdate = [...employees];
+        //         // const index = x.rowData.id;
+        //         // dataUpdate[index] = newData;
+        //         // setEmployees([...dataUpdate]);
+        //        // x.onChange(phone)
+        //       }}/>
+        //   </FormControl>
+        // )}
     }]
 
     return(

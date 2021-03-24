@@ -194,7 +194,7 @@ export default function FormPropsTextFields(props) {
       { title: 'Employee First Name', field: 'first_name',editable: 'never' },
       { title: 'Employee Last name', field: 'last_name',editable: 'never' },
       { title: 'Title', field: 'title',editable: 'never' },
-      { title: 'Office Symbol', field: 'office_symbol',editable: 'never' },
+      { title: 'Office Symbol', field: 'office_symbol_alias',editable: 'never' },
       { title: 'Work Phone', field: 'work_phone',editable: 'never' }]
 
     return(

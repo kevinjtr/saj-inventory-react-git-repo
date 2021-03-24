@@ -194,6 +194,7 @@ export default function FormPropsTextFields(props) {
 
   console.log('equipmentbyHraCall')
   setLoading(true)
+  setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
     api.post(`equipment/search`,{
       'fields':{hraNum:hraNum,
       bartagNum:bartagNum,
@@ -357,7 +358,7 @@ export default function FormPropsTextFields(props) {
   const type = "simple"
 
   const dataIsOnDatabase = {
-    'bar_tag_num':false
+    bar_tag_num:false
   }
 
   let columns = [
@@ -374,7 +375,7 @@ export default function FormPropsTextFields(props) {
       return(
         <Autocomplete
         //onChange={e => x.onChange(e)}
-        id="combo-box-employee"
+        id={`combo-box-employee`}
         size="small"
         options={hras}
         getOptionLabel={(option) => option.hra_num + ' - ' + option.first_name + ' ' + option.last_name}
@@ -476,6 +477,7 @@ export default function FormPropsTextFields(props) {
             // isDeleteHidden: rowData => rowData.name === 'y',
             onBulkUpdate: async (changes) => {
               let errorResult = await handleUpdate({changes:changes})
+              let {errorFound} = errorResult
               return(
                 new Promise((resolve, reject) => {
                   setTimeout(() => {
@@ -487,10 +489,10 @@ export default function FormPropsTextFields(props) {
 
                       for(const key of keys){
                         const {newData,oldData} = changes[key]
-                        const errorStatus = errorResult[key]
+                        const errorStatus = errorResult.rows[key]
 
                         console.log(newData,errorStatus)
-                        if(Object.keys(errorStatus).length == 0){
+                        if(!errorFound){
                           //no error
                           const dataUpdate = [...equipments];
                           const index = oldData.tableData.id;
@@ -552,9 +554,10 @@ export default function FormPropsTextFields(props) {
               let errorResult = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
                   return (new Promise((resolve, reject) => {
                     setTimeout(() => {
-                      if(Object.keys(errorResult).length > 0){
-                        console.log(errorResult)
-                        dataIsOnDatabase[Object.keys(errorResult)[0]] = true
+                      
+                      if(errorResult.errorFound){
+                        const col_name = Object.keys(errorResult.rows[0])[0]
+                        dataIsOnDatabase[col_name] = true
                         reject();
                       }else{
                         const dataUpdate = [...equipments];
@@ -698,11 +701,11 @@ export default function FormPropsTextFields(props) {
             </div>
         </form>
       </div>
+      {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
       <div style={{textAlign: 'center'}}>
         {loading ? LoadingCircle() : null}
         {equipments.length > 0 ? materialTableSelect() : null}
       </div>
-      {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
     </div>
   );
 }
