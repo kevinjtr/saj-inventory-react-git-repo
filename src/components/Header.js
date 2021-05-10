@@ -17,6 +17,16 @@ function Header() {
 						Equipment
 					</Link>
 				</li>
+				<li className="nav-item">
+					<Link to="/hra" className="nav-link">
+						Hra
+					</Link>
+				</li>
+				<li className="nav-item">
+					<Link to="/employee" className="nav-link">
+						Employee
+					</Link>
+				</li>
 				 <li className="nav-item">
 					<Link to="/eng4900" className="nav-link">
 						Eng 4900
@@ -28,18 +38,13 @@ function Header() {
 					</Link>
 				</li>
 				<li className="nav-item">
-					<Link to="/hra" className="nav-link">
-						Hra
-					</Link>
-				</li>
-				<li className="nav-item">
-					<Link to="/employee" className="nav-link">
-						Employee
-					</Link>
-				</li>
-				<li className="nav-item">
 					<Link to="/findeng4844" className="nav-link">
 						Find Eng 4844
+					</Link>
+				</li>
+				<li className="nav-item">
+					<Link to="/changehistory" className="nav-link">
+						Change History
 					</Link>
 				</li>
 			</ul>

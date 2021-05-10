@@ -1,130 +1,833 @@
-import React, { Component } from 'react';
-import qs from 'querystring';
-import { connect } from 'react-redux';
-import { addProduct } from '../publics/actions/eng4900s';
+import React from 'react';
+import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel, FormGroup} from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import 'date-fns';
+import SearchIcon from '@material-ui/icons/Search';
+import {LoadingCircle, getQueryStringParams} from './tools/tools';
+import MaterialTable from 'material-table'
+import {tableIcons} from './material-table/config'
+import {Autocomplete, Alert} from '@material-ui/lab';
 import api from '../axios/Api';
-import EquipmentForm from './forms/equipment';
+import {orderBy, findIndex, filter} from 'lodash'
+import {texFieldStyles, gridStyles, itemMenuStyles } from './styles/material-ui';
+import Switch from '@material-ui/core/Switch';
+import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 
-export class AddProduct extends Component {
+const equipment_cols_config = [
+	{ title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0,
+	editComponent: (x,hras) => {
+	//console.log(x);
+	let idx = -1
 
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			equipments: [],
-			currentEquipment: { id: null, item_type: '' },
-			editing: false,
-			product_name: '',
-			description: '',
-			image: '',
-			id_category: '',
-			quantity: '',
-			categories: [],
-		};
+	if(x.rowData.hra_num){
+		idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
 	}
 
-	componentDidMount() {
-		//this.refreshCategoryTable();
-		//this.refreshEquipmentList();
+	return(
+		<Autocomplete
+		//onChange={e => x.onChange(e)}
+		id={`combo-box-employee`}
+		size="small"
+		options={hras}
+		getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
+		value={idx != -1 ? hras[idx] : null}
+		//defaultValue={idx != -1 ? employees[idx] : null}
+		onChange ={e => {
+		const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+		console.log(hraNum_);
+		x.onChange(hraNum_)
+		}}
+		//style={{ verticalAlign: 'top' }}
+		renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
+	/>
+	)
 	}
+	},
+	{ title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
+	{ title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
+	{ title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never' },
+	{ title: 'Item Type', field: 'item_type',col_id:4  },
+	{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData,dataIsOnDatabase) => {
+		try{
+		if(rowData.bar_tag_num.toString().length > 5){
+			return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
+		}else if(dataIsOnDatabase.bar_tag_num){
+			dataIsOnDatabase.bar_tag_num = false
+			return({ isValid: false, helperText: 'bar tag exists in database.' })
+		}
+		}catch(err){
 
-	refreshEquipmentList() {
-		console.log('equipmentDataCALL')
-		this.equipmentData = api.get('equipment', this.state).then((response) => response.data).then((data) => {
-			console.log(data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
-		});
-	}
+		}
+		
+		return(true)
+	}},
+	{ title: 'Employee ID', field: 'employee_id', type:'numeric',col_id:6.0,
+	editComponent: (x,employees) => {
+		//console.log(x);
+		let idx = -1
 
-	getEquipmentByHraID(hraID) {
-		this.equipmentData = api.get(`/equipment/hra/${hraID}`, this.state).then((response) => response.data).then((data) => {
-			console.log(data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			return(data.status != 400 ? data.values: data)
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
-		});
-	}
+		if(x.rowData.employee_id){
+		idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.employee_id)); })
+		}
 
-	addEquipment = (equipment) => {
-		api.post('equipment', qs.stringify(equipment)).then((res) => {
-			this.refreshEquipmentList();
-		});
-	};
-
-	deleteEquipment = (id) => {
-		api.delete(`equipment/${id}`).then((res) => {
-			this.refreshEquipmentList();
-		});
-	};
-
-	updateEquipment = (id, equipment) => {
-
-		console.log(`equipment/${id}`,qs.stringify(equipment))
-		api.patch(`equipment/${id}`, qs.stringify(equipment)).then((res) => {
-			this.refreshEquipmentList();
-		});
-
-		this.setState({
-			currentEquipment: { id: null, item_type: '' }
-		});
-
-		this.setEditing(false);
-	};
-
-	editRow = (equipment) => {
-		console.log(equipment)
-		this.setState({
-			currentEquipment: { id: equipment.id, item_type: equipment.item_type }
-		});
-
-		this.setEditing(true);
-	};
-
-	setEditing = (isEditing) => {
-		this.setState({ editing: isEditing });
-	};
-
-	// refreshCategoryTable() {
-	// 	this.categoriesData = api.get('categories', this.state).then((response) => response.data).then((data) => {
-	// 		this.setState({
-	// 			categories: data.status != 400 ? data.values: data,
-	// 			setCategories: data
-	// 		});
-	// 		//console.log(this.state.categories.values);
-	// 		// console.log(this.props, this.state);
-	// 	});
-	// }
-
-	// handlerChange = (e) => {
-	// 	this.setState({ [e.target.name]: e.target.value });
-	// };
-
-	handlerSubmit = async () => {
-		//window.event.preventDefault();
-		//await this.props.dispatch(addProduct(this.state));
-		//this.props.history.push('/products');
-	};
-
-	render() {
 		return(
-			<EquipmentForm/>
+		<Autocomplete
+		//onChange={e => x.onChange(e)}
+		id="combo-box-employee"
+		size="small"
+		options={employees}
+		getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
+		value={idx != -1 ? employees[idx] : null}
+		//defaultValue={idx != -1 ? employees[idx] : null}
+		onChange ={e => {
+
+			const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+			console.log(id_);
+			x.onChange(id_)
+		}}
+		//style={{ verticalAlign: 'top' }}
+		renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
+		/>
+		)
+	}},
+	{ title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
+	{ title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  }
+]
+
+const ext_equipment_cols_config = [			
+	{title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
+	{title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
+	{title:'Catalog Num',field:'catalog_num',col_id:8 },
+	{title:'Serial Num',field:'serial_num',col_id:9 },
+	{title:'Manufacturer',field:'manufacturer',col_id:10 },
+	{title:'Model',field:'model',col_id:11 },
+	{title:'Condition',field:'condition',col_id:12 }
+	]
+
+export default function Equipment(props) {
+
+	console.log(props)
+	//constants declarations
+	const search = getQueryStringParams(props.location.search)
+	const PAGE_URL = `/${EQUIPMENT}`
+
+	//React Hooks Declarations.
+	const [loading, setLoading] = React.useState(false);
+	const [alertUser, setAlertUser] = React.useState({success:{active:false,text:''},error:{active:false,text:''}});
+	const [equipments, setEquipments] = React.useState([]);
+	const [hras, setHras] = React.useState([]);
+	const [employees, setEmployees] = React.useState([]);
+	// const [includes_, setIncludes] = React.useState({...search_options_default});
+	// const [blanks_, setBlanks] = React.useState({...search_blanks_default});
+	const [searchView, setSearchView] = React.useState(BASIC_SEARCH);
+	const [searchFields, setSearchFields] = React.useState({
+		hraName: {label: 'HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+		hraNum: {label: 'HRA Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+		itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+		bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+		employeeName: {label: 'Employee Holder', value: '', width: 250, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT}
+	})
+	const [switches, setSwitches] = React.useState({
+		checkedView: false,
+	  });
+	const [windowSize, setWindowSize] = React.useState({
+	width: undefined,
+	height: undefined,
+	});
+
+	// Style Declarations.
+	const classesTextField = texFieldStyles();
+	const classesItemMenu = itemMenuStyles();
+	const classesGrid = gridStyles();
+
+	//Event Handlers.
+	const handleSearchFieldsChange = (event) => {
+		console.log(event.target.name,event.target.value)
+		
+		if(event.target.value == ''){
+			setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} })
+		}else{
+			setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
+		}
+	};
+
+	const handleSearchFieldsOptions = (event) => {
+		const opts = SEARCH_FIELD_OPTIONS.map(x=>x.value).includes(event.target.value) ? event.target.value : OPTIONS_DEFAULT
+		setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], options : opts} })
+	}
+
+	const handleSearchFieldsBlanks = (event) => {
+		const blks = SEARCH_FIELD_BLANKS.map(x=>x.value).includes(event.target.value) ? event.target.value : BLANKS_DEFAULT
+		setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], blanks : blks} })
+	}
+
+	const handleSearch = async (e=null,onLoad=false) => {
+	if(!onLoad) await UpdateUrl()
+
+	console.log(`${EQUIPMENT} Search`)
+	setLoading(true)
+	setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
+
+	let opts = {
+		includes: {},
+		blanks: {}
+	}
+
+	let fields_obj = {}
+
+	Object.keys(searchFields).map(key => {
+		fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[key].value
+
+		opts.includes[key] = searchView != BASIC_SEARCH ? searchFields[key].options : OPTIONS_DEFAULT
+		opts.blanks[key] = searchView != BASIC_SEARCH ? searchFields[key].blanks : BLANKS_DEFAULT
+	})
+
+	console.log(fields_obj)
+
+	api.post(`${EQUIPMENT}/search`,{
+		'fields': fields_obj,
+		'options':opts
+
+	}).then((response) => response.data).then((data) => {
+		console.log(data)
+		setLoading(false)
+		setEquipments(data.status != 400 ? data.data : data)
+
+	}).catch(function (error) {
+		setLoading(false)
+		setEquipments([])
+
+	});
+
+	}
+
+	const handleSearchView = (e) => {
+	setSearchView(e.target.value)
+	}
+
+	const handleUpdate = async (rowData) => {
+
+	let result = {}
+	console.log(`${EQUIPMENT} Call`)
+	//setLoading(true)
+	await api.post(`${EQUIPMENT}/update`,{params:rowData}).then((response) => response.data).then((data) => {
+		result = data.columnErrors
+		//setLoading(false)
+		//setEquipments(data.status != 400 ? data.data : data)
+		// this.setState({
+		// 	equipments: data.status != 400 ? data.values: data,
+		// 	setequipment: data
+		// });
+		//console.log(this.state.equipment.values);
+		// console.log(this.props, this.state);
+	}).catch(function (error) {
+		//setLoading(false)
+		//setEquipments([])
+	});
+
+	return(result)
+	}
+
+	const handleDelete = async (rowData) => {
+
+	//console.log('equipmentbyHraCall')
+	//setLoading(true)
+	await api.post(`${EQUIPMENT}/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+		console.log(data)
+		//setLoading(false)
+		//setEquipments(data.status != 400 ? data.data : data)
+		// this.setState({
+		// 	equipments: data.status != 400 ? data.values: data,
+		// 	setequipment: data
+		// });
+		//console.log(this.state.equipment.values);
+		// console.log(this.props, this.state);
+	}).catch(function (error) {
+		//setLoading(false)
+		//setEquipments([])
+	});
+
+	}
+
+	const handleAdd = async (rowData) => {
+
+	//console.log('equipmentbyHraCall')
+	//setLoading(true)
+	await api.post(`${EQUIPMENT}/add`,{params:rowData}).then((response) => response.data).then((data) => {
+		console.log(data)
+		//setLoading(false)
+		//setEquipments(data.status != 400 ? data.data : data)
+		// this.setState({
+		// 	equipments: data.status != 400 ? data.values: data,
+		// 	setequipment: data
+		// });
+		//console.log(this.state.equipment.values);
+		// console.log(this.props, this.state);
+	}).catch(function (error) {
+		//setLoading(false)
+		//setEquipments([])
+	});
+
+	}
+
+	const handleSwithcesChange = (event) => {
+		setSwitches({ ...switches, [event.target.name]: event.target.checked });
+	  };
+
+	const handleSearchKeyPress = (event) => {
+		if(event.key == "Enter"){//enter key pressed.
+		   handleSearch()
+		}
+	}
+
+	//Functions.
+	const SearchCriteriaOptions = (val,text="Options") => {
+
+		const menuItems = SEARCH_FIELD_OPTIONS.map(x => {
+			return(
+				<MenuItem value={x.value}>{x.label}</MenuItem>
+			)
+		})
+
+		return (
+		<FormControl variant="outlined" className={classesItemMenu.formControl}>
+			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
+			<Select
+				labelId="demo-simple-select-outlined-label"
+				id="demo-simple-select-outlined"
+				value={searchFields[val].options ? searchFields[val].options : OPTIONS_DEFAULT}
+				name={val}
+				onChange={handleSearchFieldsOptions}
+				
+				label="Sort By"
+				>
+				{menuItems}
+			</Select>
+		</FormControl>
 		);
 	}
+
+	const SearchBlanksOptions = (val,text="Blanks Options") => {
+
+		const menuItems = SEARCH_FIELD_BLANKS.map(x => {
+			return <MenuItem value={x.value}>{x.label}</MenuItem>
+		})
+
+		return (
+		<FormControl variant="outlined" className={classesItemMenu.formControl}>
+			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
+			<Select
+				labelId="demo-simple-select-outlined-label"
+				id="demo-simple-select-outlined"
+				value={searchFields[val].blanks ? searchFields[val].blanks : BLANKS_DEFAULT}
+				name={val}
+				onChange={handleSearchFieldsBlanks}
+				//label="Sort By"
+				style={{width:200}}
+				>
+				{menuItems}
+			</Select>
+		</FormControl>
+		);
+	}
+
+	const AlertUser = (x) => {
+
+	if(x.error.active){
+		return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+	}else if(x.success.active){
+		return(<Alert variant="filled" severity="success">Sucessfully added data to database!</Alert>)
+	}
+
+	setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
+	return(null)
+	}
+
+	const materialTableSelect = () => {
+		const cols = Object.keys(equipments[0])
+		let columns = []
+		const dataIsOnDatabase = {
+		bar_tag_num:false
+		}
+
+		for(const col_config of equipment_cols_config){
+			if(cols.includes(col_config.field)) columns.push(col_config)
+		}
+
+		if(switches.checkedView){
+			let extended_columns = []
+			
+			for(const col_config of ext_equipment_cols_config){
+				if(cols.includes(col_config.field)) extended_columns.push(col_config)
+			}
+
+			columns = [...columns,...extended_columns]
+			columns = orderBy(columns,'col_id','asc')
+		}
+
+		return(
+			<div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+				<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200'}}>
+					<FormGroup>
+						<FormControlLabel
+							control={<Switch color="primary" checked={switches.checkedView} onChange={handleSwithcesChange} name="checkedView" />}
+							label={switches.checkedView ? "Extended View" : "Normal View"}
+						/>
+					</FormGroup>
+				</Grid>
+				<MaterialTable
+				icons={tableIcons}
+				columns={columns}
+				data={equipments}
+				options={{
+					exportButton: true,
+					exportAllData: true,
+					headerStyle: {
+					backgroundColor: "#969696",
+					color: "#FFF",
+					fontWeight: 'bold',
+				}
+				}}
+				title=""
+				
+				editable={{
+					
+					// isEditable: rowData => rowData.name === 'a', // only name(a) rows would be editable
+					//isEditHidden: rowData => rowData.name === 'x',
+					// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
+					// isDeleteHidden: rowData => rowData.name === 'y',
+					onBulkUpdate: async (changes) => {
+					let errorResult = await handleUpdate({changes:changes})
+					let {errorFound} = errorResult
+					return(
+						new Promise((resolve, reject) => {
+						setTimeout(() => {
+							/* setEquipments([...equipments, newData]); */
+							console.log('bulk update')
+							//console.log(changes)
+							const keys = Object.keys(changes)//0 ,1,2
+							let alert_ = ''
+
+							for(const key of keys){
+								const {newData,oldData} = changes[key]
+								const errorStatus = errorResult.rows[key]
+
+								console.log(newData,errorStatus)
+								if(!errorFound){
+								//no error
+								resetEmployees()
+								//const dataUpdate = [...equipments];
+								//const index = oldData.tableData.id;
+								//dataUpdate[index] = newData;
+								//setEquipments([...dataUpdate]);
+								}else{
+								//error found.
+								console.log('error found')
+								//dataIsOnDatabase[Object.keys(errorStatus)[0]] = true
+								const col_name = Object.keys(errorStatus)[0]
+								const errorText = errorStatus[col_name]
+								alert_ = alert_ + `row ${Number(key)+1}: ${col_name} - ${errorText}\n`
+								}
+
+								
+								//console.log(errorStatus,newData)
+								//const dataUpdate = [...equipments];
+								//const index = oldData.tableData.id;
+								//dataUpdate[index] = newData;
+								//setEquipments([...dataUpdate]);
+								//resolve();
+							}
+
+							if(alert_){
+								setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
+								reject();
+							}else{
+								setAlertUser({success:{active:true,text:''},error:{active:false,text:''}})
+								resolve();
+							}
+							//for(const rowid of errorResult){}
+							// if(Object.keys(errorResult).length > 0){
+							//   console.log(errorResult)
+							//   dataIsOnDatabase[Object.keys(errorResult)[0]] = true
+							//   reject();
+							// }else{
+							//   for(const {newData,oldData} of changes){
+							//     const dataUpdate = [...equipments];
+							//     const index = oldData.tableData.id;
+							//     dataUpdate[index] = newData;
+							//     setEquipments([...dataUpdate]);
+							//     resolve();
+							//   }
+							// }
+						}, 1000);
+					}))
+					},
+					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+					onRowAdd: async (newData) => {
+					await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
+						new Promise((resolve, reject) => {
+							setTimeout(() => {
+							resetEmployees();
+								//setEquipments([...equipments, newData]);
+								resolve();
+							}, 1000);
+						})
+						},
+					onRowUpdate: async (newData, oldData) => {
+					let errorResult = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+						return (new Promise((resolve, reject) => {
+							setTimeout(() => {
+							
+							if(errorResult.errorFound){
+								const col_name = Object.keys(errorResult.rows[0])[0]
+								dataIsOnDatabase[col_name] = true
+								reject();
+							}else{
+								resetEmployees();
+								//const dataUpdate = [...equipments];
+								//const index = oldData.tableData.id;
+								//dataUpdate[index] = newData;
+								//setEquipments([...dataUpdate]);
+								resolve();
+							}
+							}, 1000);
+						}))
+					},
+					onRowDelete: async (oldData) =>{
+					await handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
+						new Promise((resolve, reject) => {
+							setTimeout(() => {
+								//const dataDelete = [...equipments];
+								//const index = oldData.tableData.id;
+								//dataDelete.splice(index, 1);
+								//setEquipments([...dataDelete]);
+								resolve();
+							}, 1000);
+						})
+					}
+				}}
+				/>
+		</div>
+		)
+	}
+
+	const resetEmployees = () => {
+	handleSearch();
+	}
+
+	const UpdateTextFields = async () => {
+
+		const search_keys = Object.keys(search)
+		const searchField_keys = Object.keys(searchFields)
+		const field_keys = filter(search_keys,function(f){ return !f.includes('Opts') && !f.includes('Blanks') && searchField_keys.includes(f) })
+		const option_keys = filter(search_keys,function(o){ return o.includes('Opts')})
+		const blank_keys = filter(search_keys,function(b){ return b.includes('Blanks')})
+
+		for(const fieldName of field_keys){
+			handleSearchFieldsChange({target:{name: fieldName, value : search[fieldName]}})
+		}
+
+		if(option_keys.length > 0 || blank_keys.length > 0) {
+			setSearchView(AVD_SEARCH)
+
+			for(const fieldName of option_keys){
+				handleSearchFieldsOptions({target:{name: fieldName, value : search[fieldName]}})
+			}
+		
+			for(const fieldName of blank_keys){
+				handleSearchFieldsBlanks({target:{name: fieldName, value : search[fieldName]}})
+			}
+
+		}
+
+	}
+
+	const UpdateUrl = () => {
+
+	let url = '?'
+	const searchFieldKeys = Object.keys(searchFields)
+
+	for(const key of searchFieldKeys) {
+		if(searchFields[key].value) url = `${url}${url != '?' ? '&':''}${key}=${searchFields[key].value}`
+		if(searchView != BASIC_SEARCH & searchFields[key].options != OPTIONS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Opts'}=${searchFields[key].options}`
+		if(searchView != BASIC_SEARCH & searchFields[key].blanks != BLANKS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Blanks'}=${searchFields[key].blanks}`
+	}
+
+	props.history.replace(PAGE_URL + (url != '?' ? url : ''))
+	}
+
+	const reloadPage = () => {
+		window.location.reload()
+	}
+
+	//will run once.
+	React.useEffect(() => {
+
+	function handleResize() {
+		// Set window width/height to state
+		setWindowSize({
+			width: window.innerWidth,
+			height: window.innerHeight,
+		});
+	}  
+
+	console.log('employeeCall')
+	setLoading(true)
+	api.get(`employee`,{}).then((response) => response.data).then((data) => {
+		console.log(data)
+		setLoading(false)
+		setEmployees(data.status != 400 ? data.data : data)
+		// this.setState({
+		// 	equipments: data.status != 400 ? data.values: data,
+		// 	setequipment: data
+		// });
+		//console.log(this.state.equipment.values);
+		// console.log(this.props, this.state);
+		}).catch(function (error) {
+		setLoading(false)
+		setEmployees([])
+		});
+
+	console.log('hraCall')
+	api.get(`hra`,{}).then((response) => response.data).then((data) => {
+		console.log(data)
+		//setLoading(false)
+		setHras(data.status != 400 ? data.data : data)
+		// this.setState({
+		// 	equipments: data.status != 400 ? data.values: data,
+		// 	setequipment: data
+		// });
+		//console.log(this.state.equipment.values);
+		// console.log(this.props, this.state);
+		}).catch(function (error) {
+		//setLoading(false)
+		setHras([])
+		});
+
+	
+		console.log(`${EQUIPMENT} Call`)
+	if(search){
+		UpdateTextFields()
+		handleSearch(null,true)
+	}else{
+		api.get(EQUIPMENT,{}).then((response) => response.data).then((data) => {
+			console.log(data)
+			//setLoading(false)
+			setEquipments(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+			}).catch(function (error) {
+			//setLoading(false)
+			setEquipments([])
+			});
+	}
+
+	// Add event listener
+	window.addEventListener("resize", handleResize);
+	
+    // Call handler right away so state gets updated with initial window size
+	handleResize();
+	
+    // Remove event listener on cleanup
+	return () => window.removeEventListener("resize", handleResize);
+	
+	}, []);// Empty array ensures that effect is only run on mount
+
+	React.useEffect(() => {
+		if(props.history.action == "PUSH"){
+			reloadPage()
+		}
+	}, [props.history.action]);
+
+	const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
+		const nFields = Object.keys(searchFields).length
+		const w = windowSize.width*.75 / nFields
+	return(	
+	<>
+	<Grid item xs={Math.floor(12/nFields)}>                 
+		<TextField
+			id={`outlined-search-${key}`} 
+			name={key} label={`Search by ${searchFields[key].label}`} 
+			type="search" variant="outlined" 
+			value={searchFields[key].value} 
+			onChange={handleSearchFieldsChange}
+			onKeyPress={handleSearchKeyPress}
+			style={{width:w,paddingRight:'20px'}}
+			InputLabelProps={{style: {fontSize: '.9vw'}}}
+			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
+		/>
+		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`)}</> : null}
+		<br/>
+		{searchView != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[key].label} Blanks Options`) : null}
+	</Grid>
+	</>)
+	});
+
+	const searchButtonGridItem = () => { 
+		return(
+			<Grid item style={{textAlign:'left',paddingLeft:'20px'}}  xs={Math.floor(12/(Object.keys(searchFields).length))}>
+				<IconButton aria-label="search" color="primary" onClick={handleSearch}>
+					<SearchIcon style={{ fontSize: 40 }}/>
+				</IconButton>
+			</Grid>)
+	}
+	
+	//Render return.
+	return (
+	<div>
+		<div style={{textAlign: 'center'}}>
+		<h2 >Equipment</h2>
+		<FormControl component="fieldset">
+			<RadioGroup row aria-label="position" name="position" value={searchView} onChange={handleSearchView}>
+			<FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
+			<FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Seach" />
+			</RadioGroup>
+		</FormControl>
+		</div>
+		<div style={{textAlign: 'center'}}>
+		<form className={classesTextField.root} noValidate autoComplete="off">
+			<div className={classesGrid.options}>
+			<Grid container spacing={2}>
+				{searchTextFieldsGridItems()}
+				{searchButtonGridItem()}
+			</Grid>
+			</div>
+		</form>
+		</div>
+		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
+		<div style={{textAlign: 'center'}}>
+		{loading ? LoadingCircle() : null}
+		{equipments.length > 0 ? materialTableSelect() : null}
+		</div>
+	</div>
+	);
 }
 
-const mapStateToProps = (state) => {
-	return {
-		products: state.products
-	};
-};
+// export class AddProduct extends Component {
 
-export default connect(mapStateToProps)(AddProduct);
+// 	constructor(props) {
+// 		super(props);
+
+// 		this.state = {
+// 			equipments: [],
+// 			currentEquipment: { id: null, item_type: '' },
+// 			editing: false,
+// 			product_name: '',
+// 			description: '',
+// 			image: '',
+// 			id_category: '',
+// 			quantity: '',
+// 			categories: [],
+// 		};
+// 	}
+
+// 	componentDidMount() {
+// 		//this.refreshCategoryTable();
+// 		//this.refreshEquipmentList();
+// 	}
+
+// 	refreshEquipmentList() {
+// 		console.log('equipmentDataCALL')
+// 		this.equipmentData = api.get('equipment', this.state).then((response) => response.data).then((data) => {
+// 			console.log(data)
+// 			// this.setState({
+// 			// 	equipments: data.status != 400 ? data.values: data,
+// 			// 	setequipment: data
+// 			// });
+// 			//console.log(this.state.equipment.values);
+// 			// console.log(this.props, this.state);
+// 		});
+// 	}
+
+// 	getEquipmentByHraID(hraID) {
+// 		this.equipmentData = api.get(`/equipment/hra/${hraID}`, this.state).then((response) => response.data).then((data) => {
+// 			console.log(data)
+// 			// this.setState({
+// 			// 	equipments: data.status != 400 ? data.values: data,
+// 			// 	setequipment: data
+// 			// });
+// 			return(data.status != 400 ? data.values: data)
+// 			//console.log(this.state.equipment.values);
+// 			// console.log(this.props, this.state);
+// 		});
+// 	}
+
+// 	addEquipment = (equipment) => {
+// 		api.post('equipment', qs.stringify(equipment)).then((res) => {
+// 			this.refreshEquipmentList();
+// 		});
+// 	};
+
+// 	deleteEquipment = (id) => {
+// 		api.delete(`equipment/${id}`).then((res) => {
+// 			this.refreshEquipmentList();
+// 		});
+// 	};
+
+// 	updateEquipment = (id, equipment) => {
+
+// 		console.log(`equipment/${id}`,qs.stringify(equipment))
+// 		api.patch(`equipment/${id}`, qs.stringify(equipment)).then((res) => {
+// 			this.refreshEquipmentList();
+// 		});
+
+// 		this.setState({
+// 			currentEquipment: { id: null, item_type: '' }
+// 		});
+
+// 		this.setEditing(false);
+// 	};
+
+// 	editRow = (equipment) => {
+// 		console.log(equipment)
+// 		this.setState({
+// 			currentEquipment: { id: equipment.id, item_type: equipment.item_type }
+// 		});
+
+// 		this.setEditing(true);
+// 	};
+
+// 	setEditing = (isEditing) => {
+// 		this.setState({ editing: isEditing });
+// 	};
+
+// 	// refreshCategoryTable() {
+// 	// 	this.categoriesData = api.get('categories', this.state).then((response) => response.data).then((data) => {
+// 	// 		this.setState({
+// 	// 			categories: data.status != 400 ? data.values: data,
+// 	// 			setCategories: data
+// 	// 		});
+// 	// 		//console.log(this.state.categories.values);
+// 	// 		// console.log(this.props, this.state);
+// 	// 	});
+// 	// }
+
+// 	// handlerChange = (e) => {
+// 	// 	this.setState({ [e.target.name]: e.target.value });
+// 	// };
+
+// 	handlerSubmit = async () => {
+// 		//window.event.preventDefault();
+// 		//await this.props.dispatch(addProduct(this.state));
+// 		//this.props.history.push('/products');
+// 	};
+
+// 	render() {
+// 		return(
+// 			<EquipmentForm/>
+// 		);
+// 	}
+// }
+
+// const mapStateToProps = (state) => {
+// 	return {
+// 		products: state.products
+// 	};
+// };
+
+// export default connect(mapStateToProps)(AddProduct);

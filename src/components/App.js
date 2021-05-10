@@ -8,15 +8,18 @@ import HomePage from './HomePage';
 import ListProduct from './ListProduct';
 import Home from './Home';
 import AddProduct from './AddProduct';
-import Eng4900 from './Eng4900';
+import Eng4900 from './eng-4900/Eng4900';
+import ViewEng4900 from './eng-4900/ViewEng4900';
 import Equipment from './Equipment';
 import Hra from './Hra';
 import Employee from './Employee';
+import ChangeHistory from './ChangeHistory';
 import Login from './Login';
 import EditProduct from './EditProduct';
 import Register from './Register';
 import Eng4844 from './Eng4844';
 import FindEng4844 from './FindEng4844';
+import NotFound from './forms/NotFound'
 // import Query from './Query';
 
 import axios from 'axios';
@@ -61,7 +64,13 @@ function App() {
 			<Route path="/eng4844" component={Eng4844} />
 
 			<Route exact path="/eng4900" component={Header} />
-			<Route path="/eng4900" component={Eng4900} />
+			<Route exact path="/eng4900" component={Eng4900} />
+
+			<Route exact path="/eng4900/view/:id" component={Header} />
+			<Route path="/eng4900/view/:id" component={Eng4900}/>
+
+			<Route exact path="/eng4900/edit/:id" component={Header} />
+			<Route path="/eng4900/edit/:id" component={Eng4900}/>
 
 			<Route exact path="/hra" component={Header} />
 			<Route path="/hra" component={Hra} />
@@ -69,9 +78,12 @@ function App() {
 			<Route exact path="/employee" component={Header} />
 			<Route path="/employee" component={Employee} />
 			
+			<Route exact path="/changehistory" component={Header} />
+			<Route path="/changehistory" component={ChangeHistory} />
+
 			{/* <Route path="/categories" component={Category} /> */}
 
-			<Route path="/login" component={HomePage} />
+			{/* <Route path="/login" component={HomePage} />
 			<Route path="/login" component={Login} />
 
 			<Route path="/logout" component={Header} />
@@ -81,7 +93,10 @@ function App() {
 			<Route path="/register" component={Register} />
 
 			<Route path="/edit/:id" component={Header} />
-			<Route path="/edit/:id" component={EditProduct} />
+			<Route path="/edit/:id" component={EditProduct} /> */}
+
+			{/* <Route exact path="*" component={NotFound}/> */}
+
 		</BrowserRouter>
 	);
 }
