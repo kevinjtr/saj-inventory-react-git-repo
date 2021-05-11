@@ -881,7 +881,7 @@ export default function FormPropsTextFields() {
       { title: 'Form ID', field: '0.form_id' },
       { title: 'Bar Tags', field: "0.bar_tag_num",editable: 'never'},
       { title: 'Losing HRA', field: "0.losing_hra_num",editable: 'never' },
-      { title: 'Gaining Hra', field: "0.gaining_hra_num",editable: 'never' },
+      { title: 'Gaining HRA', field: "0.gaining_hra_num",editable: 'never' },
     ]
   
     return(

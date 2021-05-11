@@ -157,7 +157,7 @@ export default function FormPropsTextFields(props) {
     let columns = []
     //considering move to a config file.
     let hras_cols_config = [
-      { title: 'Hra Number', field: 'hra_num', editable: 'onAdd', type:'numeric', validate: rowData => {
+      { title: 'HRA Number', field: 'hra_num', editable: 'onAdd', type:'numeric', validate: rowData => {
         // try{
         //    if(rowData.hra_num){
         //     if(rowData.hra_num.toString().length > 3){
@@ -352,7 +352,7 @@ export default function FormPropsTextFields(props) {
   return (
     <div>
         <div style={{textAlign: 'center'}}>
-            <h2 >Hra</h2>
+            <h2 >HRA</h2>
         </div>
         <div style={{textAlign: 'center'}}>
             {loading ? LoadingCircle() : null}

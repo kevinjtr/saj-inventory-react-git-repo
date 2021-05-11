@@ -86,10 +86,15 @@ export default function Eng4900(props) {
   const [searchFields, setSearchFields] = React.useState({
 		id: {label: 'ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-		losingHra: {label: 'Losing HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-		gainingHra: {label: 'Gaining HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    losingHra: {label: 'Losing HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    losingHraName: {label: 'Losing HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    gainingHra: {label: 'Gaining HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    gainingHraName: {label: 'Gaining HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    dateCreated: {label: 'Date Created', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT}
+    itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    catalogNum: {label: 'Catalog Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    acqPrice: {label: 'Acquisition Price', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    serialNum: {label: 'Serial Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
   })
   const [searchView, setSearchView] = React.useState(BASIC_SEARCH);
   const [switches, setSwitches] = React.useState({
@@ -174,7 +179,7 @@ export default function Eng4900(props) {
   
     console.log(fields_obj)
   
-    api.post(`${ENG4900}/search`,{
+    api.post(`${ENG4900}/search2`,{
       'fields': fields_obj,
       'options':opts
   
@@ -1003,7 +1008,7 @@ export default function Eng4900(props) {
       { title: 'Form ID', field: '0.form_id' },
       { title: 'Bar Tags', field: "0.bar_tag_num",editable: 'never'},
       { title: 'Losing HRA', field: "0.losing_hra_num",editable: 'never' },
-      { title: 'Gaining Hra', field: "0.gaining_hra_num",editable: 'never' },
+      { title: 'Gaining HRA', field: "0.gaining_hra_num",editable: 'never' },
     ]
   
     return(

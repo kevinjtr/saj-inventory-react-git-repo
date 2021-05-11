@@ -6,7 +6,7 @@ import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import {LoadingCircle} from './tools/tools';
 import MaterialTable from 'material-table'
-import {tableIcons} from './material-table/config'
+import {changeHistoryIcons} from './material-table/config'
 import api from '../axios/Api';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import findIndex from 'lodash/findIndex'
@@ -21,65 +21,11 @@ export default function ChangeHistory(props) {
 	const [changeHistoryData, setChangeHistoryData] = React.useState([]);
 
 	//Event Handlers.
-	const handleTableUpdate = async (rowData) => {
+	const handleUndo = async (rowData) => {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-		await api.post(`hra/update`,{params:rowData}).then((response) => response.data).then((data) => {
-		console.log(data)
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		//setLoading(false)
-		//setEquipments([])
-		});
-		
-
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
-	}
-
-	const handleTableDelete = async (rowData) => {
-
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
-		await api.post(`hra/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
-		console.log(data)
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		//setLoading(false)
-		//setEquipments([])
-		});
-		
-
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
-	}
-
-	const handleTableAdd = async (rowData) => {
-
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
-	await api.post(`hra/add`,{params:rowData}).then((response) => response.data).then((data) => {
+		await api.post(`${searchView}/update`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
@@ -120,42 +66,48 @@ export default function ChangeHistory(props) {
 			let cols_config = 
 			{
 				hra: [
-					{ title: 'Hra Number', field: 'hra_num', editable: 'onAdd', type:'numeric'},
-					{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric'},
+					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
+					{ title: 'HRA Number', field: 'hra_num', editable: 'never', type:'numeric'},
+					{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric', editable: 'never'},
 					{ title: 'Employee First Name', field: 'hra_employee_id',editable: 'never' },
 					{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
 					{ title: 'Title', field: 'hra_title',editable: 'never' },
 					{ title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },
 					{ title: 'Work Phone', field: 'hra_work_phone',editable: 'never' },
-					{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'}
+					{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'},
+					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
 				],
 				employee: [
-					{ title: 'ID', field: 'id',editable: 'never'},
-					{ title: 'First Name', field: 'first_name' },
-					{ title: 'Last name', field: 'last_name' },
-					{ title: 'Title', field: 'title' },
-					{ title: 'Office Symbol ID', field: 'office_symbol',type:'numeric'},
+					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
+					{ title: 'ID', field: 'id', editable: 'never'},
+					{ title: 'First Name', field: 'first_name', editable: 'never' },
+					{ title: 'Last name', field: 'last_name', editable: 'never' },
+					{ title: 'Title', field: 'title', editable: 'never' },
+					{ title: 'Office Symbol ID', field: 'office_symbol',type:'numeric', editable: 'never'},
 					{ title: 'Office Symbol Alias',field:'office_symbol_alias',editable: 'never'},
-					{ title: 'Work Phone', field: 'work_phone',type:'numeric'},
-					{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'}
+					{ title: 'Work Phone', field: 'work_phone',type:'numeric', editable: 'never'},
+					{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
+					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
 				],
 				equipment: 	[
-					{ title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0},
-					{ title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
-					{ title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
+					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
+					{ title: 'HRA Number', field: 'hra_num', type:'numeric',editable: 'never'},
+					{ title: 'HRA First', field: 'hra_first_name',editable: 'never' },
+					{ title: 'HRA Last', field: 'hra_last_name',editable: 'never' },
 					{ title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never' },
-					{ title: 'Item Type', field: 'item_type',col_id:4  },
-					{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5},
-					{ title: 'Employee ID', field: 'employee_id', type:'numeric',col_id:6.0},
-					{ title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
-					{ title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  },
-					{ title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
-					{ title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
-					{ title:'Catalog Num',field:'catalog_num',col_id:8 },
-					{ title:'Serial Num',field:'serial_num',col_id:9 },
-					{ title:'Manufacturer',field:'manufacturer',col_id:10 },
-					{ title:'Model',field:'model',col_id:11 },
-					{ title:'Condition',field:'condition',col_id:12 }
+					{ title: 'Item Type', field: 'item_type', editable: 'never'},
+					{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', editable: 'never'},
+					{ title: 'Employee ID', field: 'employee_id', type:'numeric', editable: 'never'},
+					{ title: 'Employee First', field: 'employee_first_name', editable: 'never' },
+					{ title: 'Employee Last', field: 'employee_last_name', editable: 'never'  },
+					{ title:'Acquisition Date',field:'acquisition_date',  type: 'date', editable: 'never' },
+					{ title:'Acquisition Price',field:'acquisition_price',type: 'numeric', editable: 'never' },
+					{ title:'Catalog Num',field:'catalog_num', editable: 'never'},
+					{ title:'Serial Num',field:'serial_num', editable: 'never' },
+					{ title:'Manufacturer',field:'manufacturer', editable: 'never'},
+					{ title:'Model',field:'model', editable: 'never'},
+					{ title:'Condition',field:'condition', editable: 'never'},
+					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
 				]
 		}
 		
@@ -166,12 +118,11 @@ export default function ChangeHistory(props) {
 		return(
 			<div style={{ maxWidth: '100%' }}>
 				<MaterialTable
-				icons={tableIcons}
+				icons={changeHistoryIcons}
+				localization={{ body: { editRow: { deleteText: 'Are you sure you want to revert back to this data?',saveTooltip:"Yes",cancelTooltip:"No" }, deleteTooltip : "Undo" } }}
 				columns={columns}
 				data={changeHistoryData[searchView]}
 				options={{
-					exportButton: true,
-					exportAllData: true,
 					headerStyle: {
 					backgroundColor: "#969696",
 					color: "#FFF",
@@ -179,13 +130,28 @@ export default function ChangeHistory(props) {
 				}
 				}}
 				title=""
-				actions={[
-					{
-					  icon: tableIcons.Check,
-					  tooltip: 'Save User',
-					  onClick: (event, rowData) => alert("This will revert changes to bartag: " + rowData.bar_tag_num)
-					}
-				  ]}
+				editable={{
+					onRowDelete: async (oldData) => {
+						//let errorResult = await handleUndo({changes:{'0':{newData:null, oldData:oldData}}})
+							//return (new Promise((resolve, reject) => {
+								//setTimeout(() => {
+								
+								//if(errorResult.errorFound){
+									//const col_name = Object.keys(errorResult.rows[0])[0]
+									//dataIsOnDatabase[col_name] = true
+									//reject();
+								//}else{
+									//resetEmployees();
+									//const dataUpdate = [...equipments];
+									//const index = oldData.tableData.id;
+									//dataUpdate[index] = newData;
+									//setEquipments([...dataUpdate]);
+									//resolve();
+								//}
+								//}, 1000);
+							//}))
+						}
+				}}
 				/>
 			</div>
 		)

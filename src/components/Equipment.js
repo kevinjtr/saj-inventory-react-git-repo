@@ -117,8 +117,6 @@ export default function Equipment(props) {
 	const [equipments, setEquipments] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
-	// const [includes_, setIncludes] = React.useState({...search_options_default});
-	// const [blanks_, setBlanks] = React.useState({...search_blanks_default});
 	const [searchView, setSearchView] = React.useState(BASIC_SEARCH);
 	const [searchFields, setSearchFields] = React.useState({
 		hraName: {label: 'HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -685,7 +683,7 @@ export default function Equipment(props) {
 		<FormControl component="fieldset">
 			<RadioGroup row aria-label="position" name="position" value={searchView} onChange={handleSearchView}>
 			<FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
-			<FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Seach" />
+			<FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Search" />
 			</RadioGroup>
 		</FormControl>
 		</div>

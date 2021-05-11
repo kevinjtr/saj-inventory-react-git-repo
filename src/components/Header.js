@@ -19,7 +19,7 @@ function Header() {
 				</li>
 				<li className="nav-item">
 					<Link to="/hra" className="nav-link">
-						Hra
+						HRA
 					</Link>
 				</li>
 				<li className="nav-item">
