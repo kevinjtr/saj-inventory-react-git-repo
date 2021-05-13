@@ -12,6 +12,10 @@ import {orderBy, findIndex, filter} from 'lodash'
 import {texFieldStyles, gridStyles, itemMenuStyles } from './styles/material-ui';
 import Switch from '@material-ui/core/Switch';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
+import { useHistory } from 'react-router-dom'
+
+const BLANKS = 'Blanks'
+const OPTS = 'Opts'
 
 const equipment_cols_config = [
 	{ title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0,
@@ -108,6 +112,7 @@ export default function Equipment(props) {
 
 	console.log(props)
 	//constants declarations
+	const history = useHistory()
 	const search = getQueryStringParams(props.location.search)
 	const PAGE_URL = `/${EQUIPMENT}`
 
@@ -132,6 +137,7 @@ export default function Equipment(props) {
 	width: undefined,
 	height: undefined,
 	});
+	const [urlUpdatedByTextFields,setUrlUpdatedByTextFields] = React.useState(false)
 
 	// Style Declarations.
 	const classesTextField = texFieldStyles();
@@ -140,23 +146,40 @@ export default function Equipment(props) {
 
 	//Event Handlers.
 	const handleSearchFieldsChange = (event) => {
-		console.log(event.target.name,event.target.value)
+		//console.log(event.target.name,event.target.value)
 		
 		if(event.target.value == ''){
-			setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} })
+			setSearchFields(prevState => {
+				console.log(prevState)
+				return {...prevState,  [event.target.name]: {...prevState[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} }
+			  });
+
+			//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} })
 		}else{
-			setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
+			//console.log('filedisnotempty')
+			setSearchFields(prevState => {
+				return {...prevState,  [event.target.name]: {...prevState[event.target.name], value: event.target.value} }
+			  });
+
+			//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
+			//console.log(searchFields)
 		}
 	};
 
 	const handleSearchFieldsOptions = (event) => {
 		const opts = SEARCH_FIELD_OPTIONS.map(x=>x.value).includes(event.target.value) ? event.target.value : OPTIONS_DEFAULT
-		setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], options : opts} })
+		setSearchFields(prevState => {
+			return {...prevState,  [event.target.name]: {...prevState[event.target.name], options : opts} }
+		  });
+		//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], options : opts} })
 	}
 
 	const handleSearchFieldsBlanks = (event) => {
 		const blks = SEARCH_FIELD_BLANKS.map(x=>x.value).includes(event.target.value) ? event.target.value : BLANKS_DEFAULT
-		setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], blanks : blks} })
+		setSearchFields(prevState => {
+			return {...prevState,  [event.target.name]: {...prevState[event.target.name], blanks : blks} }
+		  });
+		//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], blanks : blks} })
 	}
 
 	const handleSearch = async (e=null,onLoad=false) => {
@@ -174,13 +197,18 @@ export default function Equipment(props) {
 	let fields_obj = {}
 
 	Object.keys(searchFields).map(key => {
-		fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[key].value
+		fields_obj[key] = onLoad && search[key] ? search[key] : searchFields[key].value
 
-		opts.includes[key] = searchView != BASIC_SEARCH ? searchFields[key].options : OPTIONS_DEFAULT
-		opts.blanks[key] = searchView != BASIC_SEARCH ? searchFields[key].blanks : BLANKS_DEFAULT
+		//console.log(key,key+BLANKS,key+OPTS)
+		//console.log(search[key],search[key+BLANKS],search[key+OPTS])
+		console.log(`onLoad = ${onLoad.toString()} searchView=${searchView} search[${key + OPTS}]=${search[key + OPTS]} search[${key + BLANKS}]=${search[key + BLANKS]} `)
+		//opts.includes[key] = (searchView != BASIC_SEARCH && search[key + OPTS]) || (onLoad && search[key + OPTS]) ? search[key + OPTS] : OPTIONS_DEFAULT
+		//opts.blanks[key] = (searchView != BASIC_SEARCH && search[key + BLANKS]) || (onLoad && search[key + BLANKS]) ? search[key + BLANKS] : BLANKS_DEFAULT
+		opts.includes[key] = (searchView != BASIC_SEARCH && !onLoad) ? (searchFields[key].options) : (onLoad && search[key + OPTS] ? search[key + OPTS] : OPTIONS_DEFAULT)
+		opts.blanks[key] = (searchView != BASIC_SEARCH && !onLoad) ? (searchFields[key].blanks) : (onLoad && search[key + BLANKS] ? search[key + BLANKS] : BLANKS_DEFAULT)
 	})
 
-	console.log(fields_obj)
+	console.log(fields_obj,opts)
 
 	api.post(`${EQUIPMENT}/search`,{
 		'fields': fields_obj,
@@ -269,7 +297,9 @@ export default function Equipment(props) {
 	}
 
 	const handleSwithcesChange = (event) => {
-		setSwitches({ ...switches, [event.target.name]: event.target.checked });
+		setSwitches(prevState => {
+			return{ ...prevState, [event.target.name]: event.target.checked }
+		});
 	  };
 
 	const handleSearchKeyPress = (event) => {
@@ -518,38 +548,45 @@ export default function Equipment(props) {
 
 		const search_keys = Object.keys(search)
 		const searchField_keys = Object.keys(searchFields)
-		const field_keys = filter(search_keys,function(f){ return !f.includes('Opts') && !f.includes('Blanks') && searchField_keys.includes(f) })
-		const option_keys = filter(search_keys,function(o){ return o.includes('Opts')})
-		const blank_keys = filter(search_keys,function(b){ return b.includes('Blanks')})
+		const field_keys = filter(search_keys,function(f){ return !f.includes(OPTS) && !f.includes(BLANKS) && searchField_keys.includes(f) })
+		const option_keys = filter(search_keys,function(o){ return o.includes(OPTS)})
+		const blank_keys = filter(search_keys,function(b){ return b.includes(BLANKS)})
+
 
 		for(const fieldName of field_keys){
+			console.log({target:{name: fieldName, value : search[fieldName]}})
 			handleSearchFieldsChange({target:{name: fieldName, value : search[fieldName]}})
 		}
 
 		if(option_keys.length > 0 || blank_keys.length > 0) {
 			setSearchView(AVD_SEARCH)
 
-			for(const fieldName of option_keys){
-				handleSearchFieldsOptions({target:{name: fieldName, value : search[fieldName]}})
+			for(const blankFieldName of option_keys){//Options
+				const fieldName = blankFieldName.replace(OPTS,'')
+				console.log(fieldName)
+				handleSearchFieldsOptions({target:{name: fieldName, value : search[blankFieldName]}})
+
 			}
 		
-			for(const fieldName of blank_keys){
-				handleSearchFieldsBlanks({target:{name: fieldName, value : search[fieldName]}})
+			for(const optionsFieldName of blank_keys){//Blanks
+				const fieldName = optionsFieldName.replace(BLANKS,'')
+				console.log(optionsFieldName,fieldName)
+				handleSearchFieldsBlanks({target:{name: fieldName, value : search[optionsFieldName]}})
 			}
 
 		}
-
 	}
 
 	const UpdateUrl = () => {
+	setUrlUpdatedByTextFields(true)
 
 	let url = '?'
 	const searchFieldKeys = Object.keys(searchFields)
 
 	for(const key of searchFieldKeys) {
 		if(searchFields[key].value) url = `${url}${url != '?' ? '&':''}${key}=${searchFields[key].value}`
-		if(searchView != BASIC_SEARCH & searchFields[key].options != OPTIONS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Opts'}=${searchFields[key].options}`
-		if(searchView != BASIC_SEARCH & searchFields[key].blanks != BLANKS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Blanks'}=${searchFields[key].blanks}`
+		if(searchView != BASIC_SEARCH & searchFields[key].options != OPTIONS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + OPTS}=${searchFields[key].options}`
+		if(searchView != BASIC_SEARCH & searchFields[key].blanks != BLANKS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + BLANKS}=${searchFields[key].blanks}`
 	}
 
 	props.history.replace(PAGE_URL + (url != '?' ? url : ''))
@@ -604,7 +641,8 @@ export default function Equipment(props) {
 		});
 
 	
-		console.log(`${EQUIPMENT} Call`)
+	console.log(`${EQUIPMENT} Call`)
+
 	if(search){
 		UpdateTextFields()
 		handleSearch(null,true)
@@ -641,6 +679,16 @@ export default function Equipment(props) {
 			reloadPage()
 		}
 	}, [props.history.action]);
+
+	React.useEffect(() => {
+		//if(urlUpdatedByTextFields){
+			console.log(history.action)
+		//}else{
+			//console.log('url was not updated by textfield')
+		//}
+
+
+	}, [history.action]);
 
 	const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
 		const nFields = Object.keys(searchFields).length

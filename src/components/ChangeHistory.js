@@ -13,6 +13,7 @@ import findIndex from 'lodash/findIndex'
 import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
+const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
 
 export default function ChangeHistory(props) {
 	//Hooks Declarations
@@ -25,20 +26,24 @@ export default function ChangeHistory(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
+	let result = {error:true}
+
 		await api.post(`${searchView}/update`,{params:rowData}).then((response) => response.data).then((data) => {
-		console.log(data)
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
+			result = data
+			//setLoading(false)
+			//setEquipments(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
 		}).catch(function (error) {
-		//setLoading(false)
-		//setEquipments([])
+			//setLoading(false)
+			//setEquipments([])
 		});
+
+		return(result)
 		
 
 	// const tempProps = {...props};
@@ -132,24 +137,26 @@ export default function ChangeHistory(props) {
 				title=""
 				editable={{
 					onRowDelete: async (oldData) => {
-						//let errorResult = await handleUndo({changes:{'0':{newData:null, oldData:oldData}}})
-							//return (new Promise((resolve, reject) => {
-								//setTimeout(() => {
+						let result = await handleUndo({changes:{'0':{newData:oldData, oldData:{ [DB_ID_NAME[searchView]] : oldData[DB_ID_NAME[searchView]] }}}})
+							return (new Promise((resolve, reject) => {
+								setTimeout(() => {
 								
-								//if(errorResult.errorFound){
-									//const col_name = Object.keys(errorResult.rows[0])[0]
-									//dataIsOnDatabase[col_name] = true
-									//reject();
-								//}else{
-									//resetEmployees();
-									//const dataUpdate = [...equipments];
-									//const index = oldData.tableData.id;
-									//dataUpdate[index] = newData;
-									//setEquipments([...dataUpdate]);
-									//resolve();
-								//}
-								//}, 1000);
-							//}))
+								console.log(result)
+								// if(result.error){
+								// 	//onst col_name = Object.keys(result.data[0])[0]
+								// 	//dataIsOnDatabase[col_name] = true
+								// 	reject();
+								// }else{
+								// 	resetTable()
+								// 	//resetEmployees();
+								// 	//const dataUpdate = [...equipments];
+								// 	//const index = oldData.tableData.id;
+								// 	//dataUpdate[index] = newData;
+								// 	//setEquipments([...dataUpdate]);
+								 	resolve();
+								// }
+								}, 1000);
+							}))
 						}
 				}}
 				/>
@@ -158,6 +165,19 @@ export default function ChangeHistory(props) {
 		}
 
 		return(<p>No Chnages Found.</p>)
+	}
+
+	const resetTable = () => {
+		setLoading(true)
+		api.get(`change-history/${searchView}`).then((response) => response.data).then((data) => {
+		console.log(data)
+		setLoading(false)
+		setChangeHistoryData(data.status != 400 ? data.data : data)
+
+		}).catch(function (error) {
+		setLoading(false)
+		setChangeHistoryData({error:true})
+		});
 	}
     
 	//will run once.

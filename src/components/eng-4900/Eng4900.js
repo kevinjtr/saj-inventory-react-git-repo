@@ -48,8 +48,8 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import MaterialTable from 'material-table'
 import {tableIcons} from '../material-table/config'
-import Pdf from './eng4900-26-2.pdf';
-import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom} from '../tools/tools'
+//import Pdf from './eng4900-26-2.pdf';
+import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas} from '../tools/tools'
 import clsx from 'clsx'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from '../config/constants'
@@ -387,6 +387,9 @@ export default function Eng4900(props) {
                     id={`item_no_${b_key}`}
                     key={`item_no_${b_key}`}
                     label={"Item No. " + b_key}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                     style={{ width: 200 }}
                     />
                     <TextField
@@ -401,6 +404,9 @@ export default function Eng4900(props) {
                     key={`catalog_${b_key}`}
                     label={"Catalog " + b_key}
                     value={eg[i].catalog_num}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                     style={{ width: 200 }}
                     />
                     <TextField
@@ -408,6 +414,9 @@ export default function Eng4900(props) {
                     key={`nomenclature_${b_key}`}
                     label={"Nomenclature (include make, model) " + b_key}
                     value={eg[i].item_type ? eg[i].item_type : ""}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                     style={{ width: 200 }}
                     />
                     {/* </Paper>
@@ -420,6 +429,9 @@ export default function Eng4900(props) {
                     key={`cond_code_${b_key}`}
                     label={"Cond Code " + b_key}
                     value={eg[i].condition ? eg[i].condition : ""}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                     style={{ width: 150 }}
                     />
                     <TextField
@@ -427,9 +439,22 @@ export default function Eng4900(props) {
                     key={`serial_number_${b_key}`}
                     label={"Serial Number " + b_key}
                     value={eg[i].serial_num ? eg[i].serial_num : ""}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                     style={{ width: 150 }}
                     />
-                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <TextField
+                    id={`date_${b_key}`}
+                    key={`date_${b_key}`}
+                    label={"ACQ. Date " + b_key}
+                    value={eg[i].acquisition_date_print ? eg[i].acquisition_date_print : ""}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    style={{ width: 150 }}
+                    />
+                    {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <KeyboardDatePicker
                         disableToolbar
                         variant="inline"
@@ -444,7 +469,7 @@ export default function Eng4900(props) {
                             'aria-label': 'change date',
                         }}
                         style={{ width: 150 }}/>
-                    </MuiPickersUtilsProvider>
+                    </MuiPickersUtilsProvider> */}
                     {/* <TextField
                     id={`acq_date_${i}`}
                     key={`acq_date_${i}`}
@@ -456,7 +481,10 @@ export default function Eng4900(props) {
                     id={`acq_price_${b_key}`}
                     key={`acq_price_${b_key}`}
                     label={"ACQ. Price " + b_key}
-                    value={eg[i].acquisition_price ? eg[i].acquisition_price : ""}
+                    value={eg[i].acquisition_price ? '$' + numberWithCommas(eg[i].acquisition_price) : ""}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                     style={{ width: 150 }}
                     />
                     <TextField
@@ -464,6 +492,9 @@ export default function Eng4900(props) {
                     key={`document_number_${b_key}`}
                     label={"Document Number/Control ID# " + b_key}
                     value={eg[i].document_num ? eg[i].document_num : ""}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                     style={{ width: 175 }}
                     />
                 </Paper>
@@ -494,32 +525,35 @@ export default function Eng4900(props) {
 
   const handleFormSelectById = async (edit=false) => {
 
-      const findId = formId
-      if(edit) setEditable(true)
+    if(edit) setEditable(true)
 
     setSelectedForm(null)
     console.log('4900byID')
     setLoading(true)
 
-    await api.get(`officesymbol`,{}).then((response) => response.data).then((data) => {
-      console.log(data)
-      setOfficesSymbol(data.status != 400 ? data.data : [])
+    if(edit){
+      // await api.get(`officesymbol`,{}).then((response) => response.data).then((data) => {
+      //   console.log(data)
+      //   setOfficesSymbol(data.status != 400 ? data.data : [])
 
-    }).catch(function (error) {
-      //setLoading(false)
-      setOfficesSymbol([])
-    });
+      // }).catch(function (error) {
+      //   //setLoading(false)
+      //   setOfficesSymbol([])
+      // });
+    }
 
-      await api.get(`${ENG4900}/${findId}`).then((response) => response.data).then((data) => {
-        setSelectedForm(data.status != 400 ? data.data : null)
+    await api.get(`${ENG4900}/${formId}`).then((response) => response.data).then((data) => {
+      setSelectedForm(data.status != 400 ? data.data : null)
 
-        setPhoneNumbers({
-          ...phoneNumbers,
-          ["losing_hra_work_phone"]: data.data.losing_hra_work_phone,
-          ["gaining_hra_work_phone"]: data.data.gaining_hra_work_phone,
-        });
+      if(edit){
+        // setPhoneNumbers({
+        //   ...phoneNumbers,
+        //   ["losing_hra_work_phone"]: data.data.losing_hra_work_phone,
+        //   ["gaining_hra_work_phone"]: data.data.gaining_hra_work_phone,
+        // });
+      }
 
-        setLoading(false)
+      setLoading(false)
 
       }).catch(function (error) {
         setLoading(false)
@@ -539,14 +573,17 @@ export default function Eng4900(props) {
     console.log(selectedForm)
     // {...(disableFields.logistics && {variant:"filled"})}
     const {form_id, requested_action, individual_ror_prop,
-      losing_hra_num, losing_hra_first_name, losing_hra_last_name, losing_hra_office_symbol,
-      gaining_hra_num, gaining_hra_first_name, gaining_hra_last_name, gaining_hra_office_symbol,
+      losing_hra_num, losing_hra_first_name, losing_hra_last_name, losing_hra_os_alias,
+      gaining_hra_num, gaining_hra_first_name, gaining_hra_last_name, gaining_hra_os_alias,
     } = selectedForm
 
-    const idx_lhra_os = findIndex(officesSymbol,function(os){ return  os.id === losing_hra_office_symbol})
-    const idx_ghra_os = findIndex(officesSymbol,function(os){ return  os.id === gaining_hra_office_symbol})
+    const gaining_hra_work_phone = selectedForm.gaining_hra_work_phone ? selectedForm.gaining_hra_work_phone.toString() : selectedForm.gaining_hra_work_phone
+    const losing_hra_work_phone = selectedForm.losing_hra_work_phone ? selectedForm.losing_hra_work_phone.toString() : selectedForm.losing_hra_work_phone
 
-    console.log(idx_lhra_os)
+    //const idx_lhra_os = findIndex(officesSymbol,function(os){ return  os.id === losing_hra_office_symbol})
+    //const idx_ghra_os = findIndex(officesSymbol,function(os){ return  os.id === gaining_hra_office_symbol})
+
+    //console.log(idx_lhra_os)
     //console.log(f[0])
     // const lwp = f[0].losing_hra_work_phone
     // const gwp = f[0].gaining_hra_work_phone
@@ -570,7 +607,8 @@ export default function Eng4900(props) {
         <Grid item xs={12}>
           <Paper className={classesGrid.paper}>
             <p>{`Form - ${form_id}`}</p>
-            <FormControl component="fieldset">
+            {editable ? (
+              <FormControl component="fieldset">
               <FormLabel component="legend">Requested Action:</FormLabel>
               <RadioGroup row aria-label="position" name="position" defaultValue={requested_action}>
                 <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
@@ -580,10 +618,31 @@ export default function Eng4900(props) {
                 <FormControlLabel id="radio-foi" key="radio-foi" value="FOI" control={<Radio color="primary" />} label="FOI" />
               </RadioGroup>
             </FormControl>
-            <FormControlLabel
+            ) : (
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Requested Action:</FormLabel>
+              <RadioGroup row aria-label="position" name="position" value={requested_action}>
+                <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
+                <FormControlLabel id="radio-transfer" key="radio-transfer" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
+                <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
+                <FormControlLabel id="radio-excess" key="radio-excess" value="Excess" control={<Radio color="primary" />} label="Excess" />
+                <FormControlLabel id="radio-foi" key="radio-foi" value="FOI" control={<Radio color="primary" />} label="FOI" />
+              </RadioGroup>
+            </FormControl>
+            )}
+            
+            {editable ? (
+              <FormControlLabel
                 control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={reqActions["TemporaryLoan"]} onChange={handleCheckBoxChange} name="TemporaryLoan" />}
                 label="Temporary Loan"/> 
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+            ) : (
+              <FormControlLabel
+                control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={reqActions["TemporaryLoan"]} name="TemporaryLoan" />}
+                label="Temporary Loan"/> 
+            )}
+
+            {editable ? (
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
                 <KeyboardDatePicker
                 disableToolbar
                 variant="inline"
@@ -597,7 +656,20 @@ export default function Eng4900(props) {
                 KeyboardButtonProps={{
                     'aria-label': 'change date',
                 }}/>
-            </MuiPickersUtilsProvider>
+              </MuiPickersUtilsProvider>
+            ) : (
+              <TextField
+              id="date-picker-inline-expiration-date"
+              key="date-picker-inline-expiration-date"
+              label="Expiration Date"
+              name={"expiration_date"}
+              value={"N/A"}
+              //onChange={handleFormChange}
+              InputProps={{
+                readOnly: true,
+              }}
+              style={{ width: 200 }}/>
+            )}
         </Paper>
       </Grid>
       
@@ -605,22 +677,40 @@ export default function Eng4900(props) {
         <Paper className={classesGrid.paper}>
           <p>LOSING HAND RECEIPT HOLDER</p>
           <TextField
-            id="standard-helperText-l-name"
-            key="standard-helperText-l-name"
+            id="standard-helperText-f-name"
+            key="standard-helperText-f-name"
             label="2a. First Name"
             name={"losing_hra_first_name"}
-            value={selectedForm.losing_hra_first_name}
-            onChange={handleFormChange}
+            value={losing_hra_first_name}
+            //onChange={handleFormChange}
+            InputProps={{
+              readOnly: true,
+            }}
             style={{ width: 200 }}/>
           <TextField
             id="standard-helperText-l-name"
             key="standard-helperText-l-name"
             label="2a. Last Name"
             name={"losing_hra_last_name"}
-            value={selectedForm.losing_hra_last_name}
-            onChange={handleFormChange}
+            value={losing_hra_last_name}
+            //onChange={handleFormChange}
+            InputProps={{
+              readOnly: true,
+            }}
             style={{ width: 200 }}/>
-          <Autocomplete style={{ display:'inline-block' }}
+          <TextField
+            id="standard-helperText-os-alias"
+            key="standard-helperText-os-alias"
+            label="b. Office Symbol"
+            name={"losing_hra_os_alias"}
+            value={losing_hra_os_alias}
+            //onChange={handleFormChange}
+            InputProps={{
+              readOnly: true,
+            }}
+            style={{ width: 200 }}/>
+
+          {/* <Autocomplete style={{ display:'inline-block' }}
             id={`combo-box-office-symbol-losing-hra`}
             key={`combo-box-office-symbol-losing-hra`}
             name={"losing_hra_office_symbol"}
@@ -631,7 +721,7 @@ export default function Eng4900(props) {
             onChange ={handleFormChange}
           //style={{ verticalAlign: 'top' }}
           renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
-          />
+          /> */}
           {/* <TextField
             id="standard-helperText-l-os"
             key="standard-helperText-l-os"
@@ -644,17 +734,24 @@ export default function Eng4900(props) {
             label="c. Hand Receipt Account Number"
             value={losing_hra_num}
             style={{ width: 300 }}/>
-          <FormControl>
+            <TextField
+            id="standard-helperText-l-hra-pnum"
+            key="standard-helperText-l-hra-pnum"
+            label="d. Work Phone Number"
+            name="losing_hra_work_phone"
+            value={losing_hra_work_phone ? `(${losing_hra_work_phone.substring(0,3)}) ${losing_hra_work_phone.substring(3,6)} - ${losing_hra_work_phone.substring(6,10)}` : ""}
+            style={{ width: 200 }}/>
+          {/* <FormControl>
             <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
             <Input 
               style={{ height: 40,width:300 }}
               value={phoneNumbers.losing_hra_work_phone}
-              onChange={handlePhoneTextFieldChange}
+              //onChange={handlePhoneTextFieldChange}
               name="losing_hra_work_phone"
               id="formatted-text-mask-input-l-work-phone"
               key="formatted-text-mask-input-l-work-phone"
               inputComponent={TextMaskCustom}/>
-          </FormControl>
+          </FormControl> */}
         </Paper>
       </Grid>
       <Grid item xs={6}>
@@ -665,14 +762,22 @@ export default function Eng4900(props) {
             key="standard-helperText-g-first-name"
             label="3a. Name"
             name={"gaining_hra_first_name"}
-            value={selectedForm.gaining_hra_first_name}
+            value={gaining_hra_first_name}
+            //onChange={handleFormChange}
+            InputProps={{
+              readOnly: true,
+            }}
             style={{ width: 200 }}/>
           <TextField
             id="standard-helperText-g-last-name"
             key="standard-helperText-g-last-name"
             label="3a. Name"
             name={"gaining_hra_last_name"}
-            value={selectedForm.gaining_hra_last_name}
+            value={gaining_hra_last_name}
+            //onChange={handleFormChange}
+            InputProps={{
+              readOnly: true,
+            }}
             style={{ width: 200 }}/>
           {/* <TextField
             id="standard-helperText-g-os"
@@ -680,7 +785,18 @@ export default function Eng4900(props) {
             label="b. Office Symbol"
             value={selectedForm.gaining_hra_office_symbol}
             style={{ width: 200 }}/> */}
-          <Autocomplete  style={{ display:'inline-block' }}
+            <TextField
+            id="standard-helperText-g-name"
+            key="standard-helperText-g-name"
+            label="b. Office Symbol"
+            name={"gaining_hra_os_alias"}
+            value={gaining_hra_os_alias}
+            //onChange={handleFormChange}
+            InputProps={{
+              readOnly: true,
+            }}
+            style={{ width: 200 }}/>
+          {/* <Autocomplete  style={{ display:'inline-block' }}
             id={`combo-box-office-symbol-gaining-hra`}
             key={`combo-box-office-symbol-gaining-hra`}
             name={"gaining_hra_office_symbol"}
@@ -690,14 +806,21 @@ export default function Eng4900(props) {
             onChange ={handleFormChange}
             //style={{ verticalAlign: 'top' }}
             renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
-          />
+          /> */}
           <TextField
             id="standard-helperText-g-hra-num"
             key="standard-helperText-g-hra-num"
             label="c. Hand Receipt Account Number"
             value={gaining_hra_num}
             style={{ width: 300 }}/>
-          <FormControl>
+          <TextField
+            id="standard-helperText-g-hra-pnum"
+            key="standard-helperText-g-hra-pnum"
+            label="d. Work Phone Number"
+            name="gaining_hra_work_phone"
+            value={gaining_hra_work_phone ? `(${gaining_hra_work_phone.substring(0,3)}) ${gaining_hra_work_phone.substring(3,6)} - ${gaining_hra_work_phone.substring(6,10)}` : ""}
+            style={{ width: 200 }}/>
+          {/* <FormControl>
             <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
               <Input 
                 style={{ height: 40,width:200 }}
@@ -707,7 +830,7 @@ export default function Eng4900(props) {
                 id="formatted-text-mask-input-g-work-phone"
                 key="formatted-text-mask-input-g-work-phone"
                 inputComponent={TextMaskCustom}/>
-          </FormControl>
+          </FormControl> */}
         </Paper>
       </Grid>
       {bartagsData(selectedForm.equipment_group)}
@@ -727,11 +850,19 @@ export default function Eng4900(props) {
             id="standard-helperText-ror-prop-sign-date"
             key="standard-helperText-ror-prop-sign-date"
             label="b. Date"
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="filled"
             style={{ width: 120 }}/>
           <TextField
             id="standard-helperText-ror-prop-sign"
             key="standard-helperText-ror-prop-sign"
             label="c. Signature"
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="filled"
             style={{ width: 120 }}/>
       </Paper>
       </Grid>
@@ -741,11 +872,19 @@ export default function Eng4900(props) {
             id="standard-helperText-l-hra-sign"
             key="standard-helperText-l-hra-sign"
             label="14a. Losing HRH Signature"
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="filled"
             style={{ width: 300 }}/>
           <TextField
             id="standard-helperText-l-hra-sign-date"
             key="standard-helperText-l-hra-sign-date"
             label="b. Date"
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="filled"
             style={{ width: 120 }}/>
         </Paper>
       </Grid>
@@ -755,11 +894,19 @@ export default function Eng4900(props) {
             id="standard-helperText-g-hra-sign"
             key="standard-helperText-g-hra-sign"
             label="15a. Gaining HRH Signature"
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="filled"
             style={{ width: 300 }}/>
           <TextField
             id="standard-helperText-g-hra-sign-date"
             key="standard-helperText-g-hra-sign-date"
             label="b. Date"
+            InputProps={{
+              readOnly: true,
+            }}
+            variant="filled"
             style={{ width: 120 }}/>
         </Paper>
       </Grid>
@@ -990,7 +1137,9 @@ export default function Eng4900(props) {
           <div id={"row-"+form_id} key={"row-"+form_id} className="row" style={{ margin: 3,marginTop:'10px' }}>
               {!folder_link ? <input id={"viewbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={ViewForm}/> : null}
               {!folder_link ? <input id={"editbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="Edit" className="btn btn-warning ml-2" onClick={EditForm}/> : null}
-              {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {Pdf} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
+              {/* {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {Pdf} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null} */}
+              {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = "https://apps.usace.army.mil/sites/EM/SADRCO/SAJ-EM/Supplemental%20Shared/Fact%20Sheets/SUPP%20WebApp%20Files/Collier_County_FL_I_SUPP_FS18_SAJ%20REV.pdf" target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
+
             {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
               <input type="submit" value="Edit" className="btn btn-warning" />
             </Link> */}
@@ -1133,7 +1282,7 @@ export default function Eng4900(props) {
     } 
 
     //setUrl('ur')
-    console.log(props)    
+    //console.log(props)    
     if(props.location.pathname.includes(`${ENG4900}/view/`) && formId){
       handleFormSelectById()
     }else if(props.location.pathname.includes(`${ENG4900}/edit/`) && formId){
