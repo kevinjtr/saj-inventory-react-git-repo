@@ -15,6 +15,8 @@ import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import UndoIcon from '@material-ui/icons/Undo';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 
 export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
@@ -33,7 +35,9 @@ export const tableIcons = {
     Search: React.forwardRef((props, ref) => <Search {...props} ref={ref} />),
     SortArrow: React.forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
     ThirdStateCheck: React.forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: React.forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+    ViewColumn: React.forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+    View: React.forwardRef((props, ref) => <VisibilityIcon {...props} ref={ref} />),
+    Pdf: React.forwardRef((props, ref) => <PictureAsPdfIcon {...props} ref={ref} />),
   };
 
 export const changeHistoryIcons = {

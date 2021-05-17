@@ -4,7 +4,7 @@ import {routes} from './config/routes'
 import axios from 'axios';
 
 function App() {
-	axios.defaults.baseURL = 'http://localhost:8080';
+	axios.defaults.baseURL = process.env.API_URL;
 	return (
 		<BrowserRouter>
 			{routes}

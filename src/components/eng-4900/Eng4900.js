@@ -49,7 +49,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import MaterialTable from 'material-table'
 import {tableIcons} from '../material-table/config'
 //import Pdf from './eng4900-26-2.pdf';
-import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas} from '../tools/tools'
+import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../tools/tools'
 import clsx from 'clsx'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from '../config/constants'
@@ -106,7 +106,7 @@ export default function Eng4900(props) {
 	});
   const [editable,setEditable] = React.useState(false)
   const [loading, setLoading] = React.useState(false);
-  const [eng4900s, setEng4900s] = React.useState([]);
+  const [eng4900s, setEng4900s] = React.useState({});
   const [eng4900sTableFormat, setEng4900sTableFormat] = React.useState([]);
   const [numOfBarTags, setNumOfBarTags] = React.useState(1);
   const [selectedDate, setSelectedDate] = React.useState(new Date());
@@ -126,7 +126,7 @@ export default function Eng4900(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   // const [id_, setId] = React.useState('');
   const [selectedForm, setSelectedForm] = React.useState(null);
-  const [viewSearch, setViewSearch] = React.useState('card-view');
+  const [viewSearch, setViewSearch] = React.useState('table-view');
   const [formFields,setFormFields] = React.useState({
     losing_hra:{name:'',officeSymbol:'',hra_num:''},
     gaining_hra:{name:'',officeSymbol:'',hra_num:''},
@@ -518,9 +518,21 @@ export default function Eng4900(props) {
     props.history.replace(PAGE_URL + '/view/' + eId)
   }
 
+  const ViewFormById = (id) => {
+    if(id){
+      props.history.replace(PAGE_URL + '/view/' + id)
+    }
+  }
+
   const EditForm = (e) => {
     const eId = (e.target.id).split('-')[1]
     props.history.replace(PAGE_URL + '/edit/' + eId)
+  }
+
+  const EditFormById = (id) => {
+    if(id){
+      props.history.replace(PAGE_URL + '/edit/' + id)
+    }
   }
 
   const handleFormSelectById = async (edit=false) => {
@@ -1110,7 +1122,8 @@ export default function Eng4900(props) {
 
   function CardProduct(form){
     
-    const {form_id,folder_link} = form[0]
+    const {form_id,folder_link,document_source} = form[0]
+    console.log(document_source)
     let bartags = ''
 
     Object.keys(form).map(function(key) {
@@ -1135,10 +1148,10 @@ export default function Eng4900(props) {
                   {/* <small>Bar Tags: </small>
                   <small>{btPrint} </small> */}
           <div id={"row-"+form_id} key={"row-"+form_id} className="row" style={{ margin: 3,marginTop:'10px' }}>
-              {!folder_link ? <input id={"viewbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={ViewForm}/> : null}
-              {!folder_link ? <input id={"editbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="Edit" className="btn btn-warning ml-2" onClick={EditForm}/> : null}
+              {document_source != 2 ? <input id={"viewbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={ViewForm}/> : null}
+              {document_source != 2 ? <input id={"editbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="Edit" className="btn btn-warning ml-2" onClick={EditForm}/> : null}
               {/* {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {Pdf} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null} */}
-              {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = "https://apps.usace.army.mil/sites/EM/SADRCO/SAJ-EM/Supplemental%20Shared/Fact%20Sheets/SUPP%20WebApp%20Files/Collier_County_FL_I_SUPP_FS18_SAJ%20REV.pdf" target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
+              {document_source != 1 ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {folder_link} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
 
             {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
               <input type="submit" value="Edit" className="btn btn-warning" />
@@ -1152,12 +1165,38 @@ export default function Eng4900(props) {
 
   const materialTableSelect = () => {
   
+    const printElements = (elements,limit=5) => {
+      let str = ""
+      for(let i=0; i<elements.length; i++){
+        if(i+1 >= limit){
+          return str + ` and ${elements.length - limit} more.`
+        }
+        str = str + (i ? ', ' : '') + elements[i]
+      }
+      return str
+    }
+
     
+    console.log(eng4900s)
+
+    //const form_ids = Object.keys(eng4900s)
+    let formsArray = []
+    //move to api side.
+    for(const form_id in eng4900s){
+			if(eng4900s.hasOwnProperty(form_id)) {
+        const form = eng4900s[form_id]
+        const form_bartags = form.map(x => x.bar_tag_num)
+        const bartagsPrint = printElements(form_bartags)
+        const {gaining_hra_num, gaining_hra_full_name,losing_hra_full_name,losing_hra_num,document_source,folder_link} = form[0]
+        formsArray.push({form_id:form_id,bar_tags:bartagsPrint,losing_hra:`${losing_hra_num} - ${losing_hra_full_name}`,gaining_hra:`${gaining_hra_num} - ${gaining_hra_full_name}`,document_source:document_source,folder_link:folder_link})
+      }
+    }
+
     let columns = [
-      { title: 'Form ID', field: '0.form_id' },
-      { title: 'Bar Tags', field: "0.bar_tag_num",editable: 'never'},
-      { title: 'Losing HRA', field: "0.losing_hra_num",editable: 'never' },
-      { title: 'Gaining HRA', field: "0.gaining_hra_num",editable: 'never' },
+      { title: 'Form ID', field: 'form_id' },
+      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
+      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
     ]
   
     return(
@@ -1165,17 +1204,43 @@ export default function Eng4900(props) {
           <MaterialTable
           icons={tableIcons}
             columns={columns}
-            data={eng4900sTableFormat}
+            data={formsArray}
             options={{
-              exportButton: true,
-              exportAllData: true,
+              //exportButton: true,
+              //exportAllData: true,
               headerStyle: {
                 backgroundColor: "#969696",
                 color: "#FFF",
                 fontWeight: 'bold',
+                actionsColumnIndex: -1,
             }
             }}
             title=""
+            actions={[
+              // {
+              //   icon: 'View',
+              //   tooltip: 'Save User',
+              //   onClick: (event, rowData) => alert("You saved "),// + rowData.name)
+              // },
+              rowData => ({
+                icon: tableIcons.View,
+                tooltip: 'View Form',
+                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+              }),
+              rowData => ({
+                icon: tableIcons.Edit,
+                tooltip: 'Edit Form',
+                onClick: (event, rowData) => EditFormById(rowData.form_id), // + rowData.name),
+                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+              }),
+              rowData => ({
+                icon: tableIcons.Pdf,
+                tooltip: 'View PDF',
+                onClick: (event, rowData) => rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                disabled: ! (rowData.document_source != 1)  //rowData.birthYear < 2000
+              })
+            ]}
           />
     </div>
     )
@@ -1328,7 +1393,7 @@ export default function Eng4900(props) {
               <div style={{ justifyContent: 'center' }}>{cards}</div>
       </div>) : null}
 
-      {viewSearch === "table-view" ? materialTableSelect():null}
+      {viewSearch === "table-view" && Object.keys(eng4900s).length > 0 ? materialTableSelect():null}
 
       <form className={classesTextField.root} noValidate autoComplete="off">
         <div className={classesGrid.root}>

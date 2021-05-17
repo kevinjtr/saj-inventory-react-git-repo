@@ -11,15 +11,23 @@ import api from '../axios/Api';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import findIndex from 'lodash/findIndex'
 import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
+import {Alert} from '@material-ui/lab';
+import {ALERT} from './config/constants';
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
 const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
+// const ALERT = {
+// 	SUCCESS: {success:{active:true,text:'Data was undo successful.'},error:{active:false,text:''}},
+// 	FAIL: {success:{active:false,text:''},error:{active:true,text:'Could not undo data.'}},
+// 	RESET: {success:{active:false,text:''},error:{active:false,text:''}},
+// }
 
 export default function ChangeHistory(props) {
 	//Hooks Declarations
 	const [loading, setLoading] = React.useState(false);
 	const [searchView, setSearchView] = React.useState(DEFAULT_CHANGES_VIEW);
 	const [changeHistoryData, setChangeHistoryData] = React.useState([]);
+	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 
 	//Event Handlers.
 	const handleUndo = async (rowData) => {
@@ -54,12 +62,25 @@ export default function ChangeHistory(props) {
 	}
 
     const handleSearchView = (e) => {
+		setAlertUser(ALERT.RESET)
         setSearchView(e.target.value)
 	}
 	
 	const handleChangeHistoryDataChange= (e) => {
         setChangeHistoryData(e.target.value)
-    }
+	}
+	
+	const AlertUser = (x) => {
+
+		if(x.error.active){
+			return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+		}else if(x.success.active){
+			return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
+		}
+	
+		setAlertUser(ALERT.RESET)
+		return(null)
+		}
 
 	//Functions.
 	const materialTableSelect = () => {
@@ -137,11 +158,20 @@ export default function ChangeHistory(props) {
 				title=""
 				editable={{
 					onRowDelete: async (oldData) => {
-						let result = await handleUndo({changes:{'0':{newData:oldData, oldData:{ [DB_ID_NAME[searchView]] : oldData[DB_ID_NAME[searchView]] }}}})
+						setAlertUser(ALERT.RESET)
+						let result = await handleUndo({changes:{'0':{newData:oldData, oldData:{ [DB_ID_NAME[searchView]] : oldData[DB_ID_NAME[searchView]] }}},undo:true})
 							return (new Promise((resolve, reject) => {
 								setTimeout(() => {
 								
 								console.log(result)
+
+								if(!result.error){
+									setAlertUser(ALERT.SUCCESS)
+									resolve()
+								}else{
+									setAlertUser(ALERT.FAIL)
+									reject()
+								}
 								// if(result.error){
 								// 	//onst col_name = Object.keys(result.data[0])[0]
 								// 	//dataIsOnDatabase[col_name] = true
@@ -230,6 +260,7 @@ export default function ChangeHistory(props) {
 		</div>
 		<div style={{textAlign: 'center'}}>
 			{loading ? LoadingCircle() : null}
+			{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 			{changeHistoryData[searchView] ? materialTableSelect() : null}
 		</div>
 	</div>

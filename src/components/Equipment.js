@@ -11,102 +11,11 @@ import api from '../axios/Api';
 import {orderBy, findIndex, filter} from 'lodash'
 import {texFieldStyles, gridStyles, itemMenuStyles } from './styles/material-ui';
 import Switch from '@material-ui/core/Switch';
-import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
+import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, ALERT} from './config/constants'
 import { useHistory } from 'react-router-dom'
 
 const BLANKS = 'Blanks'
 const OPTS = 'Opts'
-
-const equipment_cols_config = [
-	{ title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0,
-	editComponent: (x,hras) => {
-	//console.log(x);
-	let idx = -1
-
-	if(x.rowData.hra_num){
-		idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
-	}
-
-	return(
-		<Autocomplete
-		//onChange={e => x.onChange(e)}
-		id={`combo-box-employee`}
-		size="small"
-		options={hras}
-		getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
-		value={idx != -1 ? hras[idx] : null}
-		//defaultValue={idx != -1 ? employees[idx] : null}
-		onChange ={e => {
-		const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-		console.log(hraNum_);
-		x.onChange(hraNum_)
-		}}
-		//style={{ verticalAlign: 'top' }}
-		renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
-	/>
-	)
-	}
-	},
-	{ title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
-	{ title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
-	{ title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never' },
-	{ title: 'Item Type', field: 'item_type',col_id:4  },
-	{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData,dataIsOnDatabase) => {
-		try{
-		if(rowData.bar_tag_num.toString().length > 5){
-			return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
-		}else if(dataIsOnDatabase.bar_tag_num){
-			dataIsOnDatabase.bar_tag_num = false
-			return({ isValid: false, helperText: 'bar tag exists in database.' })
-		}
-		}catch(err){
-
-		}
-		
-		return(true)
-	}},
-	{ title: 'Employee ID', field: 'employee_id', type:'numeric',col_id:6.0,
-	editComponent: (x,employees) => {
-		//console.log(x);
-		let idx = -1
-
-		if(x.rowData.employee_id){
-		idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.employee_id)); })
-		}
-
-		return(
-		<Autocomplete
-		//onChange={e => x.onChange(e)}
-		id="combo-box-employee"
-		size="small"
-		options={employees}
-		getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
-		value={idx != -1 ? employees[idx] : null}
-		//defaultValue={idx != -1 ? employees[idx] : null}
-		onChange ={e => {
-
-			const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-			console.log(id_);
-			x.onChange(id_)
-		}}
-		//style={{ verticalAlign: 'top' }}
-		renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
-		/>
-		)
-	}},
-	{ title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
-	{ title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  }
-]
-
-const ext_equipment_cols_config = [			
-	{title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
-	{title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
-	{title:'Catalog Num',field:'catalog_num',col_id:8 },
-	{title:'Serial Num',field:'serial_num',col_id:9 },
-	{title:'Manufacturer',field:'manufacturer',col_id:10 },
-	{title:'Model',field:'model',col_id:11 },
-	{title:'Condition',field:'condition',col_id:12 }
-	]
 
 export default function Equipment(props) {
 
@@ -118,10 +27,11 @@ export default function Equipment(props) {
 
 	//React Hooks Declarations.
 	const [loading, setLoading] = React.useState(false);
-	const [alertUser, setAlertUser] = React.useState({success:{active:false,text:''},error:{active:false,text:''}});
+	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 	const [equipments, setEquipments] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
+	const [condition, setCondition] = React.useState([]);
 	const [searchView, setSearchView] = React.useState(BASIC_SEARCH);
 	const [searchFields, setSearchFields] = React.useState({
 		hraName: {label: 'HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -187,7 +97,7 @@ export default function Equipment(props) {
 
 	console.log(`${EQUIPMENT} Search`)
 	setLoading(true)
-	setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
+	setAlertUser(ALERT.RESET)
 
 	let opts = {
 		includes: {},
@@ -364,10 +274,12 @@ export default function Equipment(props) {
 	if(x.error.active){
 		return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
 	}else if(x.success.active){
-		return(<Alert variant="filled" severity="success">Sucessfully added data to database!</Alert>)
+		return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
 	}
 
-	setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
+	//Sucessfully added data to database!
+
+	setAlertUser(ALERT.RESET)
 	return(null)
 	}
 
@@ -377,6 +289,125 @@ export default function Equipment(props) {
 		const dataIsOnDatabase = {
 		bar_tag_num:false
 		}
+
+		const equipment_cols_config = [
+			{ title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0,
+			editComponent: (x) => {
+			//console.log(x);
+			let idx = -1
+		
+			if(x.rowData.hra_num){
+				idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
+			}
+		
+			return(
+				<Autocomplete
+				//onChange={e => x.onChange(e)}
+				id={`combo-box-employee`}
+				size="small"
+				options={hras}
+				getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
+				value={idx != -1 ? hras[idx] : null}
+				//defaultValue={idx != -1 ? employees[idx] : null}
+				onChange ={e => {
+				const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+				console.log(hraNum_);
+				x.onChange(hraNum_)
+				}}
+				//style={{ verticalAlign: 'top' }}
+				renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
+			/>
+			)
+			}
+			},
+			{ title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
+			{ title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
+			{ title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never' },
+			{ title: 'Item Type', field: 'item_type',col_id:4  },
+			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData,dataIsOnDatabase) => {
+				try{
+				if(rowData.bar_tag_num.toString().length > 5){
+					return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
+				}else if(dataIsOnDatabase.bar_tag_num){
+					dataIsOnDatabase.bar_tag_num = false
+					return({ isValid: false, helperText: 'bar tag exists in database.' })
+				}
+				}catch(err){
+		
+				}
+				
+				return(true)
+			}},
+			{ title: 'Employee ID', field: 'employee_id', type:'numeric',col_id:6.0,
+			editComponent: (x) => {
+				//console.log(x);
+				let idx = -1
+		
+				if(x.rowData.employee_id){
+				idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.employee_id)); })
+				}
+		
+				return(
+				<Autocomplete
+				//onChange={e => x.onChange(e)}
+				id="combo-box-employee"
+				size="small"
+				options={employees}
+				getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
+				value={idx != -1 ? employees[idx] : null}
+				//defaultValue={idx != -1 ? employees[idx] : null}
+				onChange ={e => {
+		
+					const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+					console.log(id_);
+					x.onChange(id_)
+				}}
+				//style={{ verticalAlign: 'top' }}
+				renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
+				/>
+				)
+			}},
+			{ title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
+			{ title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  }
+		]
+		
+		const ext_equipment_cols_config = [			
+			{title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
+			{title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
+			{title:'Catalog Num',field:'catalog_num',col_id:8 },
+			{title:'Serial Num',field:'serial_num',col_id:9 },
+			{title:'Manufacturer',field:'manufacturer',col_id:10 },
+			{title:'Model',field:'model',col_id:11 },
+			{title:'Condition',field:'condition',col_id:12, editComponent: (x) => {
+				//console.log(x);
+				let idx = -1
+		
+				if(x.rowData.condition){
+				idx = findIndex(condition,function(c){ return (c.id && (c.id == x.rowData.condition)); })
+				}
+		
+				return(
+				<Autocomplete
+				//onChange={e => x.onChange(e)}
+				id="combo-box-employee"
+				size="small"
+				options={condition}
+				getOptionLabel={(option) => option.id + ' - ' + option.name}
+				value={idx != -1 ? condition[idx] : null}
+				//defaultValue={idx != -1 ? employees[idx] : null}
+				onChange ={e => {
+		
+					const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+					console.log(id_);
+					x.onChange(id_)
+				}}
+				//style={{ verticalAlign: 'top' }}
+				renderInput={(params) => <TextField {...params} label="Condition" margin="normal"/>}
+				/>
+				)
+			} }
+			]
+		
 
 		for(const col_config of equipment_cols_config){
 			if(cols.includes(col_config.field)) columns.push(col_config)
@@ -395,7 +426,7 @@ export default function Equipment(props) {
 
 		return(
 			<div style={{ maxWidth: '100%',paddingTop:'25px' }}>
-				<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200'}}>
+				<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
 					<FormGroup>
 						<FormControlLabel
 							control={<Switch color="primary" checked={switches.checkedView} onChange={handleSwithcesChange} name="checkedView" />}
@@ -467,10 +498,11 @@ export default function Equipment(props) {
 							}
 
 							if(alert_){
-								setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
+								//setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
+								setAlertUser({...ALERT.FAIL,error:{active:true,text:alert_}})
 								reject();
 							}else{
-								setAlertUser({success:{active:true,text:''},error:{active:false,text:''}})
+								setAlertUser(ALERT.SUCCESS)
 								resolve();
 							}
 							//for(const rowid of errorResult){}
@@ -638,6 +670,22 @@ export default function Equipment(props) {
 		}).catch(function (error) {
 		//setLoading(false)
 		setHras([])
+		});
+	
+	console.log('conditionsCall')
+	api.get(`condition`,{}).then((response) => response.data).then((data) => {
+		console.log(data)
+		//setLoading(false)
+		setCondition(data.status != 400 ? data.data : data)
+		// this.setState({
+		// 	equipments: data.status != 400 ? data.values: data,
+		// 	setequipment: data
+		// });
+		//console.log(this.state.equipment.values);
+		// console.log(this.props, this.state);
+		}).catch(function (error) {
+		//setLoading(false)
+		setCondition([])
 		});
 
 	

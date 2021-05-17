@@ -82,4 +82,8 @@ inputRef: PropTypes.func.isRequired,
 name: PropTypes.string.isRequired,
 onChange: PropTypes.func.isRequired,
 };
-    
+
+export const openInNewTab = (url) => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer')
+    if (newWindow) newWindow.opener = null
+  }
