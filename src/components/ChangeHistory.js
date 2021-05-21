@@ -134,7 +134,22 @@ export default function ChangeHistory(props) {
 					{ title:'Model',field:'model', editable: 'never'},
 					{ title:'Condition',field:'condition', editable: 'never'},
 					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
-				]
+				],
+				eng4900: [
+					//{ title: 'Item No.', field: 'hra_num', type:'numeric', editable:'never'},
+					{ title: 'Requested Action', field: 'requested_action',editable: 'never'},
+					{ title: 'Losing HRA Num', field: 'losing_hra_num',editable: 'never' },
+					{ title: 'Losing HRA First', field: 'losing_hra_first_name',editable: 'never' },
+					{ title: 'Losing HRA Last', field: 'losing_hra_last_name',editable: 'never' },
+					{ title: 'Gaining HRA Num', field: 'gaining_hra_num',editable: 'never' },
+					{ title: 'Gaining HRA First', field: 'gaining_hra_first_name',editable: 'never' },
+					{ title: 'Gaining HRA Last', field: 'gaining_hra_last_name',editable: 'never' },
+					{ title: 'Date Created', field: 'date_created',editable: 'never' },
+					{ title: 'Serial Number', field: 'serial_num',editable: 'never' },
+					{ title: 'Folder Link', field: 'folder_link',editable: 'never',type:'date' },
+					{ title: 'Equipment Group ID', field: 'equipment_group_id',editable: 'never'},
+					{ title: 'Expiration Date', field: 'expiration_date',editable: 'never'}
+				  ]
 		}
 		
 		for(const col_config of cols_config[searchView]){

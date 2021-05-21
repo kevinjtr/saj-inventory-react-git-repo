@@ -57,8 +57,6 @@ import {orderBy, findIndex, filter} from 'lodash'
 //Styles Import
 import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles } from '../styles/material-ui';
 
-
-
 export default function Eng4900(props) {
   
   //Constants Declarations.
@@ -104,11 +102,11 @@ export default function Eng4900(props) {
 	width: undefined,
 	height: undefined,
 	});
-  const [editable,setEditable] = React.useState(false)
+  // const [editable,setEditable] = React.useState(false)
   const [loading, setLoading] = React.useState(false);
   const [eng4900s, setEng4900s] = React.useState({});
-  const [eng4900sTableFormat, setEng4900sTableFormat] = React.useState([]);
-  const [numOfBarTags, setNumOfBarTags] = React.useState(1);
+  // const [eng4900sTableFormat, setEng4900sTableFormat] = React.useState([]);
+  // const [numOfBarTags, setNumOfBarTags] = React.useState(1);
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [phoneNumbers, setPhoneNumbers] = React.useState({
     gaining_hra_work_phone: '(   )    -    ',
@@ -125,15 +123,15 @@ export default function Eng4900(props) {
   });
   const [anchorEl, setAnchorEl] = React.useState(null);
   // const [id_, setId] = React.useState('');
-  const [selectedForm, setSelectedForm] = React.useState(null);
+  // const [selectedForm, setSelectedForm] = React.useState({});
   const [viewSearch, setViewSearch] = React.useState('table-view');
-  const [formFields,setFormFields] = React.useState({
-    losing_hra:{name:'',officeSymbol:'',hra_num:''},
-    gaining_hra:{name:'',officeSymbol:'',hra_num:''},
-    equipment:[],
-    ror_prop:''
-  })
-  const [officesSymbol, setOfficesSymbol] = React.useState([]);
+  // const [formFields,setFormFields] = React.useState({
+  //   losing_hra:{name:'',officeSymbol:'',hra_num:''},
+  //   gaining_hra:{name:'',officeSymbol:'',hra_num:''},
+  //   equipment:[],
+  //   ror_prop:''
+  // })
+  // const [officesSymbol, setOfficesSymbol] = React.useState([]);
 
   //Events Declarations.
 	const handleSearchFieldsChange = (event) => {
@@ -209,72 +207,9 @@ export default function Eng4900(props) {
 		   handleSearch()
 		}
 	}
-////////////////// end new
-
-  const handle4900sChange = (event) => {
-    setEng4900s(event.target.value);
-  };
-
-  // const handleItemMenuChange = (event) => {
-  //   setReqAction(event.target.value);
-  // };
-
-  const handleBarTagMenuChange = (event) => {
-    setNumOfBarTags(event.target.value);
-  };
-
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-  };
-
-  const handlePhoneTextFieldChange = (event) => {
-    setPhoneNumbers({
-      ...phoneNumbers,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleCheckBoxChange = (event) => {
-    setReqActions({ ...reqActions, [event.target.name]: event.target.checked });
-  };
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-  
-  // const handleIdChange = (event) => {
-  //   setId(event.target.value);
-  //   // if(event.target.value == ''){
-  //   //   setIncludes({...includes_,  [event.target.name]: 'includes'})
-  //   // }
-  // };
-
-  const handleViewFormFromCard = (event) => {
-    const eId = (event.target.id).split('-')[1]
-    setSelectedForm(eng4900s[eId]);
-    setPhoneNumbers({
-      ...phoneNumbers,
-      ["losing_hra_work_phone"]: eng4900s[eId][0].losing_hra_work_phone,
-      ["gaining_hra_work_phone"]: eng4900s[eId][0].gaining_hra_work_phone,
-    });
-    // if(event.target.value == ''){
-    //   setIncludes({...includes_,  [event.target.name]: 'includes'})
-    // }
-  };
-
-  const handleSearchViewChange = (event) => {
-    setSearchView(event.target.value);
-    // if(event.target.value == ''){
-    //   setIncludes({...includes_,  [event.target.name]: 'includes'})
-    // }
-  };
 
   //Function Declarations.
-  const SearchCriteriaOptions = (val,text="Options") => {
+  const SearchCriteriaOptions = (val,text="Options",w=200) => {
 
 		const menuItems = SEARCH_FIELD_OPTIONS.map(x => {
 			return(
@@ -291,7 +226,7 @@ export default function Eng4900(props) {
 				value={searchFields[val].options ? searchFields[val].options : OPTIONS_DEFAULT}
 				name={val}
 				onChange={handleSearchFieldsOptions}
-				
+				style={{width:w,paddingRight:'0px'}}
 				label="Sort By"
 				>
 				{menuItems}
@@ -300,7 +235,7 @@ export default function Eng4900(props) {
 		);
 	}
 
-	const SearchBlanksOptions = (val,text="Blanks Options") => {
+	const SearchBlanksOptions = (val,text="Blanks Options",w=200) => {
 
 		const menuItems = SEARCH_FIELD_BLANKS.map(x => {
 			return <MenuItem value={x.value}>{x.label}</MenuItem>
@@ -316,7 +251,7 @@ export default function Eng4900(props) {
 				name={val}
 				onChange={handleSearchFieldsBlanks}
 				//label="Sort By"
-				style={{width:200}}
+				style={{width:w,paddingRight:'0px'}}
 				>
 				{menuItems}
 			</Select>
@@ -368,150 +303,6 @@ export default function Eng4900(props) {
 	const reloadPage = () => {
 		window.location.reload()
   }
-  
-  /////////////////end new
-
-  const bartagsData = (eg) => {
-
-    console.log(eg)
-    const returnArray = [];
-
-    for(let i=0; i<eg.length;i++){
-      const b_key = i+1
-        returnArray.push(
-            <>
-            <Grid item xs={12}>
-                <Paper className={classesGrid.paper}>
-                <Avatar className={avatarClasses.orange}>{i+1}</Avatar>
-                    <TextField
-                    id={`item_no_${b_key}`}
-                    key={`item_no_${b_key}`}
-                    label={"Item No. " + b_key}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 200 }}
-                    />
-                    <TextField
-                    id={`bar_tag_no_${b_key}`}
-                    key={`bar_tag_no_${b_key}`}
-                    label={"Bar Tag No. " + b_key}
-                    value={eg[i].bar_tag_num ? eg[i].bar_tag_num : ""}
-                    style={{ width: 200 }}
-                    />
-                    <TextField
-                    id={`catalog_${b_key}`}
-                    key={`catalog_${b_key}`}
-                    label={"Catalog " + b_key}
-                    value={eg[i].catalog_num}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 200 }}
-                    />
-                    <TextField
-                    id={`nomenclature_${b_key}`}
-                    key={`nomenclature_${b_key}`}
-                    label={"Nomenclature (include make, model) " + b_key}
-                    value={eg[i].item_type ? eg[i].item_type : ""}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 200 }}
-                    />
-                    {/* </Paper>
-                    </Grid>
-                    <Grid item xs={6}>
-                    <Paper className={classesGrid.paper}>
-                    <Avatar className={avatarClasses.orange}>{i+1}</Avatar> */}
-                    <TextField
-                    id={`cond_code_${b_key}`}
-                    key={`cond_code_${b_key}`}
-                    label={"Cond Code " + b_key}
-                    value={eg[i].condition ? eg[i].condition : ""}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id={`serial_number_${b_key}`}
-                    key={`serial_number_${b_key}`}
-                    label={"Serial Number " + b_key}
-                    value={eg[i].serial_num ? eg[i].serial_num : ""}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id={`date_${b_key}`}
-                    key={`date_${b_key}`}
-                    label={"ACQ. Date " + b_key}
-                    value={eg[i].acquisition_date_print ? eg[i].acquisition_date_print : ""}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 150 }}
-                    />
-                    {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                        <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id={`date-picker-inline-acq-date-${b_key}`}
-                        key={`date-picker-inline-acq-date-${b_key}`}
-                        label={"ACQ. Date " + b_key}
-                        value={eg[i].acquisition_date ? eg[i].acquisition_date : ""}
-                        //onChange={handleDateChange}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                        style={{ width: 150 }}/>
-                    </MuiPickersUtilsProvider> */}
-                    {/* <TextField
-                    id={`acq_date_${i}`}
-                    key={`acq_date_${i}`}
-                    label={"ACQ. Date " + (i+1)}
-                    value={eg[i].acquisition_date ? eg[i].acquisition_date : ""}
-                    style={{ width: 150 }}
-                    /> */}
-                    <TextField
-                    id={`acq_price_${b_key}`}
-                    key={`acq_price_${b_key}`}
-                    label={"ACQ. Price " + b_key}
-                    value={eg[i].acquisition_price ? '$' + numberWithCommas(eg[i].acquisition_price) : ""}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 150 }}
-                    />
-                    <TextField
-                    id={`document_number_${b_key}`}
-                    key={`document_number_${b_key}`}
-                    label={"Document Number/Control ID# " + b_key}
-                    value={eg[i].document_num ? eg[i].document_num : ""}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    style={{ width: 175 }}
-                    />
-                </Paper>
-            </Grid>
-        </>
-        );
-    }
-    return(returnArray)
-  }
-
-  const menuItemsBarTags = () => {
-      const returnArray = []
-      for(let i=0; i < 10;i++){
-          returnArray.push(<><MenuItem value={i}>{i}</MenuItem></>)
-      }
-      return(returnArray);
-  }
 
   const ViewForm = (e) => {
     const eId = (e.target.id).split('-')[1]
@@ -533,591 +324,6 @@ export default function Eng4900(props) {
     if(id){
       props.history.replace(PAGE_URL + '/edit/' + id)
     }
-  }
-
-  const handleFormSelectById = async (edit=false) => {
-
-    if(edit) setEditable(true)
-
-    setSelectedForm(null)
-    console.log('4900byID')
-    setLoading(true)
-
-    if(edit){
-      // await api.get(`officesymbol`,{}).then((response) => response.data).then((data) => {
-      //   console.log(data)
-      //   setOfficesSymbol(data.status != 400 ? data.data : [])
-
-      // }).catch(function (error) {
-      //   //setLoading(false)
-      //   setOfficesSymbol([])
-      // });
-    }
-
-    await api.get(`${ENG4900}/${formId}`).then((response) => response.data).then((data) => {
-      setSelectedForm(data.status != 400 ? data.data : null)
-
-      if(edit){
-        // setPhoneNumbers({
-        //   ...phoneNumbers,
-        //   ["losing_hra_work_phone"]: data.data.losing_hra_work_phone,
-        //   ["gaining_hra_work_phone"]: data.data.gaining_hra_work_phone,
-        // });
-      }
-
-      setLoading(false)
-
-      }).catch(function (error) {
-        setLoading(false)
-        setSelectedForm(null)
-        //setEng4900s([])
-      });
-  }
-
-  const handleFormChange = (e) => {
-    console.log(e.target.name)
-    console.log(e.target.value)
-    setSelectedForm({...selectedForm,  [e.target.name]: e.target.value})
-  }
-
-  const form = () => {
-
-    console.log(selectedForm)
-    // {...(disableFields.logistics && {variant:"filled"})}
-    const {form_id, requested_action, individual_ror_prop,
-      losing_hra_num, losing_hra_first_name, losing_hra_last_name, losing_hra_os_alias,
-      gaining_hra_num, gaining_hra_first_name, gaining_hra_last_name, gaining_hra_os_alias,
-    } = selectedForm
-
-    const gaining_hra_work_phone = selectedForm.gaining_hra_work_phone ? selectedForm.gaining_hra_work_phone.toString() : selectedForm.gaining_hra_work_phone
-    const losing_hra_work_phone = selectedForm.losing_hra_work_phone ? selectedForm.losing_hra_work_phone.toString() : selectedForm.losing_hra_work_phone
-
-    //const idx_lhra_os = findIndex(officesSymbol,function(os){ return  os.id === losing_hra_office_symbol})
-    //const idx_ghra_os = findIndex(officesSymbol,function(os){ return  os.id === gaining_hra_office_symbol})
-
-    //console.log(idx_lhra_os)
-    //console.log(f[0])
-    // const lwp = f[0].losing_hra_work_phone
-    // const gwp = f[0].gaining_hra_work_phone
-    
-    // if(lwp){
-    //   setPhoneNumbers({
-    //     ...phoneNumbers,
-    //     ["losing_hra_work_phone"]: `(${lwp[0]}${lwp[1]}${lwp[2]}) ${lwp[3]}${lwp[4]}${lwp[5]}-${lwp[6]}${lwp[7]}${lwp[8]}${lwp[9]}`,
-    //   });
-    // }
-
-    // if(gwp){
-    //   setPhoneNumbers({
-    //     ...phoneNumbers,
-    //     ["gaining_hra_work_phone"]: `(${gwp[0]}${gwp[1]}${gwp[2]}) ${gwp[3]}${gwp[4]}${gwp[5]}-${gwp[6]}${gwp[7]}${gwp[8]}${gwp[9]}`,
-    //   }); 
-    // }
-    
-      return(
-          <>
-        <Grid item xs={12}>
-          <Paper className={classesGrid.paper}>
-            <p>{`Form - ${form_id}`}</p>
-            {editable ? (
-              <FormControl component="fieldset">
-              <FormLabel component="legend">Requested Action:</FormLabel>
-              <RadioGroup row aria-label="position" name="position" defaultValue={requested_action}>
-                <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
-                <FormControlLabel id="radio-transfer" key="radio-transfer" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
-                <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
-                <FormControlLabel id="radio-excess" key="radio-excess" value="Excess" control={<Radio color="primary" />} label="Excess" />
-                <FormControlLabel id="radio-foi" key="radio-foi" value="FOI" control={<Radio color="primary" />} label="FOI" />
-              </RadioGroup>
-            </FormControl>
-            ) : (
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Requested Action:</FormLabel>
-              <RadioGroup row aria-label="position" name="position" value={requested_action}>
-                <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
-                <FormControlLabel id="radio-transfer" key="radio-transfer" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
-                <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
-                <FormControlLabel id="radio-excess" key="radio-excess" value="Excess" control={<Radio color="primary" />} label="Excess" />
-                <FormControlLabel id="radio-foi" key="radio-foi" value="FOI" control={<Radio color="primary" />} label="FOI" />
-              </RadioGroup>
-            </FormControl>
-            )}
-            
-            {editable ? (
-              <FormControlLabel
-                control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={reqActions["TemporaryLoan"]} onChange={handleCheckBoxChange} name="TemporaryLoan" />}
-                label="Temporary Loan"/> 
-            ) : (
-              <FormControlLabel
-                control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={reqActions["TemporaryLoan"]} name="TemporaryLoan" />}
-                label="Temporary Loan"/> 
-            )}
-
-            {editable ? (
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <KeyboardDatePicker
-                disableToolbar
-                variant="inline"
-                format="MM/dd/yyyy"
-                margin="normal"
-                id="date-picker-inline-expiration-date"
-                key="date-picker-inline-expiration-date"
-                label="Expiration Date"
-                value={selectedDate}
-                onChange={handleFormChange}
-                KeyboardButtonProps={{
-                    'aria-label': 'change date',
-                }}/>
-              </MuiPickersUtilsProvider>
-            ) : (
-              <TextField
-              id="date-picker-inline-expiration-date"
-              key="date-picker-inline-expiration-date"
-              label="Expiration Date"
-              name={"expiration_date"}
-              value={"N/A"}
-              //onChange={handleFormChange}
-              InputProps={{
-                readOnly: true,
-              }}
-              style={{ width: 200 }}/>
-            )}
-        </Paper>
-      </Grid>
-      
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <p>LOSING HAND RECEIPT HOLDER</p>
-          <TextField
-            id="standard-helperText-f-name"
-            key="standard-helperText-f-name"
-            label="2a. First Name"
-            name={"losing_hra_first_name"}
-            value={losing_hra_first_name}
-            //onChange={handleFormChange}
-            InputProps={{
-              readOnly: true,
-            }}
-            style={{ width: 200 }}/>
-          <TextField
-            id="standard-helperText-l-name"
-            key="standard-helperText-l-name"
-            label="2a. Last Name"
-            name={"losing_hra_last_name"}
-            value={losing_hra_last_name}
-            //onChange={handleFormChange}
-            InputProps={{
-              readOnly: true,
-            }}
-            style={{ width: 200 }}/>
-          <TextField
-            id="standard-helperText-os-alias"
-            key="standard-helperText-os-alias"
-            label="b. Office Symbol"
-            name={"losing_hra_os_alias"}
-            value={losing_hra_os_alias}
-            //onChange={handleFormChange}
-            InputProps={{
-              readOnly: true,
-            }}
-            style={{ width: 200 }}/>
-
-          {/* <Autocomplete style={{ display:'inline-block' }}
-            id={`combo-box-office-symbol-losing-hra`}
-            key={`combo-box-office-symbol-losing-hra`}
-            name={"losing_hra_office_symbol"}
-            size="small"
-            options={officesSymbol}
-            getOptionLabel={option => option.alias}
-            defaultValue={idx_lhra_os != -1 ? officesSymbol[idx_lhra_os] : ''}
-            onChange ={handleFormChange}
-          //style={{ verticalAlign: 'top' }}
-          renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
-          /> */}
-          {/* <TextField
-            id="standard-helperText-l-os"
-            key="standard-helperText-l-os"
-            label="b. Office Symbol"
-            value={losing_hra_os_alias}
-            style={{ width: 200 }}/> */}
-          <TextField
-            id="standard-helperText-l-hra-num"
-            key="standard-helperText-l-hra-num"
-            label="c. Hand Receipt Account Number"
-            value={losing_hra_num}
-            style={{ width: 300 }}/>
-            <TextField
-            id="standard-helperText-l-hra-pnum"
-            key="standard-helperText-l-hra-pnum"
-            label="d. Work Phone Number"
-            name="losing_hra_work_phone"
-            value={losing_hra_work_phone ? `(${losing_hra_work_phone.substring(0,3)}) ${losing_hra_work_phone.substring(3,6)} - ${losing_hra_work_phone.substring(6,10)}` : ""}
-            style={{ width: 200 }}/>
-          {/* <FormControl>
-            <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-            <Input 
-              style={{ height: 40,width:300 }}
-              value={phoneNumbers.losing_hra_work_phone}
-              //onChange={handlePhoneTextFieldChange}
-              name="losing_hra_work_phone"
-              id="formatted-text-mask-input-l-work-phone"
-              key="formatted-text-mask-input-l-work-phone"
-              inputComponent={TextMaskCustom}/>
-          </FormControl> */}
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <p>GAINING HAND RECEIPT HOLDER</p>
-          <TextField
-            id="standard-helperText-g-first-name"
-            key="standard-helperText-g-first-name"
-            label="3a. Name"
-            name={"gaining_hra_first_name"}
-            value={gaining_hra_first_name}
-            //onChange={handleFormChange}
-            InputProps={{
-              readOnly: true,
-            }}
-            style={{ width: 200 }}/>
-          <TextField
-            id="standard-helperText-g-last-name"
-            key="standard-helperText-g-last-name"
-            label="3a. Name"
-            name={"gaining_hra_last_name"}
-            value={gaining_hra_last_name}
-            //onChange={handleFormChange}
-            InputProps={{
-              readOnly: true,
-            }}
-            style={{ width: 200 }}/>
-          {/* <TextField
-            id="standard-helperText-g-os"
-            key="standard-helperText-g-os"
-            label="b. Office Symbol"
-            value={selectedForm.gaining_hra_office_symbol}
-            style={{ width: 200 }}/> */}
-            <TextField
-            id="standard-helperText-g-name"
-            key="standard-helperText-g-name"
-            label="b. Office Symbol"
-            name={"gaining_hra_os_alias"}
-            value={gaining_hra_os_alias}
-            //onChange={handleFormChange}
-            InputProps={{
-              readOnly: true,
-            }}
-            style={{ width: 200 }}/>
-          {/* <Autocomplete  style={{ display:'inline-block' }}
-            id={`combo-box-office-symbol-gaining-hra`}
-            key={`combo-box-office-symbol-gaining-hra`}
-            name={"gaining_hra_office_symbol"}
-            options={officesSymbol}
-            getOptionLabel={option => option.alias}
-            defaultValue={idx_ghra_os != -1 ? officesSymbol[idx_ghra_os] : ''}
-            onChange ={handleFormChange}
-            //style={{ verticalAlign: 'top' }}
-            renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
-          /> */}
-          <TextField
-            id="standard-helperText-g-hra-num"
-            key="standard-helperText-g-hra-num"
-            label="c. Hand Receipt Account Number"
-            value={gaining_hra_num}
-            style={{ width: 300 }}/>
-          <TextField
-            id="standard-helperText-g-hra-pnum"
-            key="standard-helperText-g-hra-pnum"
-            label="d. Work Phone Number"
-            name="gaining_hra_work_phone"
-            value={gaining_hra_work_phone ? `(${gaining_hra_work_phone.substring(0,3)}) ${gaining_hra_work_phone.substring(3,6)} - ${gaining_hra_work_phone.substring(6,10)}` : ""}
-            style={{ width: 200 }}/>
-          {/* <FormControl>
-            <InputLabel htmlFor="formatted-text-mask-input">d. Work Phone Number</InputLabel>
-              <Input 
-                style={{ height: 40,width:200 }}
-                value={phoneNumbers.gaining_hra_work_phone}
-                onChange={handlePhoneTextFieldChange}
-                name="gaining_hra_work_phone"
-                id="formatted-text-mask-input-g-work-phone"
-                key="formatted-text-mask-input-g-work-phone"
-                inputComponent={TextMaskCustom}/>
-          </FormControl> */}
-        </Paper>
-      </Grid>
-      {bartagsData(selectedForm.equipment_group)}
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-ror-prop"
-            key="standard-helperText-ror-prop"
-            label="13a. Individual/Vendor Removing or Recieving Property"
-            value={individual_ror_prop ? individual_ror_prop : ""}
-            style={{ width: 600 }}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-ror-prop-sign-date"
-            key="standard-helperText-ror-prop-sign-date"
-            label="b. Date"
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="filled"
-            style={{ width: 120 }}/>
-          <TextField
-            id="standard-helperText-ror-prop-sign"
-            key="standard-helperText-ror-prop-sign"
-            label="c. Signature"
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="filled"
-            style={{ width: 120 }}/>
-      </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-l-hra-sign"
-            key="standard-helperText-l-hra-sign"
-            label="14a. Losing HRH Signature"
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="filled"
-            style={{ width: 300 }}/>
-          <TextField
-            id="standard-helperText-l-hra-sign-date"
-            key="standard-helperText-l-hra-sign-date"
-            label="b. Date"
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="filled"
-            style={{ width: 120 }}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-g-hra-sign"
-            key="standard-helperText-g-hra-sign"
-            label="15a. Gaining HRH Signature"
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="filled"
-            style={{ width: 300 }}/>
-          <TextField
-            id="standard-helperText-g-hra-sign-date"
-            key="standard-helperText-g-hra-sign-date"
-            label="b. Date"
-            InputProps={{
-              readOnly: true,
-            }}
-            variant="filled"
-            style={{ width: 120 }}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={12}>
-        <Paper className={classesGrid.paper}>
-          <p>Transfer (PBO use only)</p>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-l-command"
-            key="standard-helperText-l-command"
-            label="16a. Losing Command"
-            style={{ width: 250 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-          <TextField
-            id="standard-helperText-l-uic"
-            key="standard-helperText-l-uic"
-            label="b. UIC"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-g-command"
-            key="standard-helperText-g-command"
-            label="17a. Gaining Command"
-            style={{ width: 250 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-          <TextField
-            id="standard-helperText-g-uic"
-            key="standard-helperText-g-uic"
-            label="b. UIC"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-        <TextField
-          id="standard-helperText-ship-from"
-          key="standard-helperText-ship-from"
-          label="c. Ship From"
-          style={{ width: 120 }}
-          InputProps={{
-            readOnly: disableFields.PBO,
-          }}
-          {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-ship-to"
-            key="standard-helperText-ship-to"
-            label="c. Ship To:"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-l-pbo"
-            key="standard-helperText-l-pbo"
-            label="d. PBO"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-g-pbo"
-            key="standard-helperText-g-pbo"
-            label="d. PBO"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-l-command-sign"
-            key="standard-helperText-l-command-sign"
-            label="e. Losing Command Signature"
-            style={{ width: 300 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-          <TextField
-            id="standard-helperText-l-command-sign-date"
-            key="standard-helperText-l-command-sign-date"
-            label="f. Date"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-g-command-sign"
-            key="standard-helperText-g-command-sign"
-            label="e. Gaining Command Signature"
-            style={{ width: 300 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-          <TextField
-            id="standard-helperText-g-command-sign-date"
-            key="standard-helperText-g-command-sign-date"
-            label="f. Date"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.PBO,
-            }}
-            {...(disableFields.PBO && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={12}>
-        <Paper className={classesGrid.paper}>
-          <p>Logistics (supply use only)</p>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-        <Paper className={classesGrid.paper}>
-          <TextField
-            id="standard-helperText-received-by"
-            key="standard-helperText-received-by"
-            label="18a. Received By"
-            style={{ width: 300 }}
-            InputProps={{
-              readOnly: disableFields.logistics,
-            }}
-            {...(disableFields.logistics && {variant:"filled"})}/>
-          <TextField
-            id="standard-helperText-received-by-date"
-            key="standard-helperText-received-by-date"
-            label="b. Date"
-            style={{ width: 120 }}
-            InputProps={{
-              readOnly: disableFields.logistics,
-            }}
-            {...(disableFields.logistics && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      <Grid item xs={6}>
-      <Paper className={classesGrid.paper}>
-        <TextField
-          id="standard-helperText-posted-by"
-          key="standard-helperText-posted-by"
-          label="19a. Posted By"
-          style={{ width: 300 }}
-          InputProps={{
-            readOnly: disableFields.logistics,
-          }}
-          {...(disableFields.logistics && {variant:"filled"})}/>
-        <TextField
-          id="standard-helperText-posted-by-date"
-          key="standard-helperText-posted-by-date"
-          label="b. Date"
-          style={{ width: 120 }}
-          InputProps={{
-            readOnly: disableFields.logistics,
-          }}
-          {...(disableFields.logistics && {variant:"filled"})}/>
-        </Paper>
-      </Grid>
-      </>
-      )
   }
 
   function CardProduct(form){
@@ -1264,12 +470,13 @@ export default function Eng4900(props) {
 			InputLabelProps={{style: {fontSize: '.9vw'}}}
 			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
 		/>
-		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`)}</> : null}
+		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`,w)}</> : null}
 		<br/>
-		{searchView != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[key].label} Blanks Options`) : null}
+		{searchView != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[key].label} Blanks Options`,w) : null}
 	</Grid>
 	</>)
-	});
+  });
+  
 
 	const searchButtonGridItem = () => { 
 		return(
@@ -1285,23 +492,32 @@ export default function Eng4900(props) {
   });
 
   const displayTop = () => {
-    if(props.location.pathname.includes(`${ENG4900}/edit/`))
-    {
-      return(
-      <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - Edit Form</h2>
-      </div>
-      )
-    }
+    // if(props.location.pathname.includes(`${ENG4900}/edit/`))
+    // {
+    //   return(
+    //   <div style={{textAlign: 'center'}}>
+    //     <h2>Eng 4900 - Edit Form</h2>
+    //   </div>
+    //   )
+    // }
 
-    if(props.location.pathname.includes(`${ENG4900}/view/`))
-    {
-      return(
-      <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - View Form</h2>
-      </div>
-      )
-    }
+    // if(props.location.pathname.includes(`${ENG4900}/view/`))
+    // {
+    //   return(
+    //   <div style={{textAlign: 'center'}}>
+    //     <h2>Eng 4900 - View Form</h2>
+    //   </div>
+    //   )
+    // }
+
+    // if(props.location.pathname.includes(`${ENG4900}/create`))
+    // {
+    //   return(
+    //   <div style={{textAlign: 'center'}}>
+    //     <h2>Eng 4900 - Create Form</h2>
+    //   </div>
+    //   )
+    // }
 
     return(
       <>
@@ -1348,11 +564,7 @@ export default function Eng4900(props) {
 
     //setUrl('ur')
     //console.log(props)    
-    if(props.location.pathname.includes(`${ENG4900}/view/`) && formId){
-      handleFormSelectById()
-    }else if(props.location.pathname.includes(`${ENG4900}/edit/`) && formId){
-      handleFormSelectById(true)
-    }else if(search){
+    if(search){
       UpdateTextFields()
       handleSearch(null,true)
     }
@@ -1377,31 +589,22 @@ export default function Eng4900(props) {
   return (
     <div>
       
-      {props.location.pathname == PAGE_URL ? <Tooltip title="Crate New Form" aria-label="add">
+      <Tooltip title="Crate New Form" aria-label="add">
       <ThemeProvider>
         <Fab  variant="extended" size="medium" color="inherit" className={ clsx(plusButtonClasses.absolute, plusButtonClasses.fabGreen)} >
         Create 4900
         </Fab>
         </ThemeProvider>
-      </Tooltip> : null}
+      </Tooltip>
+
       {displayTop()}
-      <div style={{textAlign: 'center'}}>
-        {loading ? LoadingCircle() : null}
-      </div>
-      {cards.length > 0 && viewSearch == "card-view"  && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
+      <div style={{textAlign: 'center'}}> {loading ? LoadingCircle() : null} </div>
+      {/* {cards.length > 0 && viewSearch == "card-view"  && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
           <h3 style={{ justifyContent: 'center' }}>Available 4900s</h3>
               <div style={{ justifyContent: 'center' }}>{cards}</div>
-      </div>) : null}
+      </div>) : null} */}
 
       {viewSearch === "table-view" && Object.keys(eng4900s).length > 0 ? materialTableSelect():null}
-
-      <form className={classesTextField.root} noValidate autoComplete="off">
-        <div className={classesGrid.root}>
-        <Grid container spacing={3}>
-          {selectedForm ? form() : null}
-        </Grid>
-        </div>
-      </form>
     </div>
   );
 }
