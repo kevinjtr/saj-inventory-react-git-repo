@@ -4,7 +4,8 @@ import {routes} from './config/routes'
 import axios from 'axios';
 
 function App() {
-	axios.defaults.baseURL = process.env.API_URL;
+	console.log(process.env)
+	axios.defaults.baseURL = process.env.REACT_APP_API;
 	return (
 		<BrowserRouter>
 			{routes}

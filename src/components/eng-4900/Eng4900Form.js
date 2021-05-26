@@ -148,7 +148,7 @@ export default function Eng4900(props) {
         await api.get(EQUIPMENT,{}).then((eq_res) => eq_res.data).then((e_data) => {
           console.log(e_data)
           //setLoading(false)
-          setEquipments(e_data.status != 400 ? e_data.data : e_data)
+          setEquipments(e_data.status == 200 ? e_data.data : e_data)
           // this.setState({
           // 	equipments: data.status != 400 ? data.values: data,
           // 	setequipment: data

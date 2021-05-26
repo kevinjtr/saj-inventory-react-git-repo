@@ -40,6 +40,7 @@ export default function Equipment(props) {
 		bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		employeeName: {label: 'Employee Holder', value: '', width: 250, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT}
 	})
+	const [disableSearchFields, setDisableSearchFields] = React.useState(true)
 	const [switches, setSwitches] = React.useState({
 		checkedView: false,
 	  });
@@ -48,6 +49,7 @@ export default function Equipment(props) {
 	height: undefined,
 	});
 	const [urlUpdatedByTextFields,setUrlUpdatedByTextFields] = React.useState(false)
+	const [editable,setEditable] = React.useState(false)
 
 	// Style Declarations.
 	const classesTextField = texFieldStyles();
@@ -59,21 +61,15 @@ export default function Equipment(props) {
 		//console.log(event.target.name,event.target.value)
 		
 		if(event.target.value == ''){
-			setSearchFields(prevState => {
-				console.log(prevState)
-				return {...prevState,  [event.target.name]: {...prevState[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} }
-			  });
-
+			setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} });
 			//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} })
-		}else{
-			//console.log('filedisnotempty')
-			setSearchFields(prevState => {
-				return {...prevState,  [event.target.name]: {...prevState[event.target.name], value: event.target.value} }
-			  });
-
-			//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
-			//console.log(searchFields)
 		}
+
+		//console.log('filedisnotempty')
+		setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} });
+		//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
+		//console.log(searchFields)
+		
 	};
 
 	const handleSearchFieldsOptions = (event) => {
@@ -126,13 +122,17 @@ export default function Equipment(props) {
 
 	}).then((response) => response.data).then((data) => {
 		console.log(data)
+		if(data.status == 200 && data.editable){
+			setEditable(data.editable)
+			getDropDownItems()
+		}
+		setEquipments(data.status == 200 ? data.data : data)
 		setLoading(false)
-		setEquipments(data.status != 400 ? data.data : data)
-
+		setDisableSearchFields(false)
 	}).catch(function (error) {
 		setLoading(false)
 		setEquipments([])
-
+		setDisableSearchFields(false)
 	});
 
 	}
@@ -448,8 +448,7 @@ export default function Equipment(props) {
 				}
 				}}
 				title=""
-				
-				editable={{
+				{...(editable && {editable:{
 					
 					// isEditable: rowData => rowData.name === 'a', // only name(a) rows would be editable
 					//isEditHidden: rowData => rowData.name === 'x',
@@ -554,19 +553,19 @@ export default function Equipment(props) {
 							}, 1000);
 						}))
 					},
-					onRowDelete: async (oldData) =>{
-					await handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
-						new Promise((resolve, reject) => {
-							setTimeout(() => {
-								//const dataDelete = [...equipments];
-								//const index = oldData.tableData.id;
-								//dataDelete.splice(index, 1);
-								//setEquipments([...dataDelete]);
-								resolve();
-							}, 1000);
-						})
-					}
-				}}
+					// onRowDelete: async (oldData) =>{
+					// await handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
+					// 	new Promise((resolve, reject) => {
+					// 		setTimeout(() => {
+					// 			//const dataDelete = [...equipments];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataDelete.splice(index, 1);
+					// 			//setEquipments([...dataDelete]);
+					// 			resolve();
+					// 		}, 1000);
+					// 	})
+					// }
+				}})}
 				/>
 		</div>
 		)
@@ -628,77 +627,30 @@ export default function Equipment(props) {
 		window.location.reload()
 	}
 
-	//will run once.
-	React.useEffect(() => {
-
-	function handleResize() {
-		// Set window width/height to state
-		setWindowSize({
-			width: window.innerWidth,
-			height: window.innerHeight,
-		});
-	}  
-
-	console.log('employeeCall')
-	setLoading(true)
-	api.get(`employee`,{}).then((response) => response.data).then((data) => {
-		console.log(data)
-		setLoading(false)
-		setEmployees(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		setLoading(false)
-		setEmployees([])
-		});
-
-	console.log('hraCall')
-	api.get(`hra`,{}).then((response) => response.data).then((data) => {
-		console.log(data)
-		//setLoading(false)
-		setHras(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		//setLoading(false)
-		setHras([])
-		});
+	const getDropDownItems = () => {
+			
+		console.log('employeeCall')
+		setLoading(true)
+		api.get(`employee`,{}).then((response) => response.data).then((data) => {
+			console.log(data)
+			setLoading(false)
+			setEmployees(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+			}).catch(function (error) {
+			setLoading(false)
+			setEmployees([])
+			});
 	
-	console.log('conditionsCall')
-	api.get(`condition`,{}).then((response) => response.data).then((data) => {
-		console.log(data)
-		//setLoading(false)
-		setCondition(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		//setLoading(false)
-		setCondition([])
-		});
-
-	
-	console.log(`${EQUIPMENT} Call`)
-
-	if(search){
-		UpdateTextFields()
-		handleSearch(null,true)
-	}else{
-		api.get(EQUIPMENT,{}).then((response) => response.data).then((data) => {
+		console.log('hraCall')
+		api.get(`hra`,{}).then((response) => response.data).then((data) => {
 			console.log(data)
 			//setLoading(false)
-			setEquipments(data.status != 400 ? data.data : data)
+			setHras(data.status != 400 ? data.data : data)
 			// this.setState({
 			// 	equipments: data.status != 400 ? data.values: data,
 			// 	setequipment: data
@@ -707,9 +659,73 @@ export default function Equipment(props) {
 			// console.log(this.props, this.state);
 			}).catch(function (error) {
 			//setLoading(false)
-			setEquipments([])
+			setHras([])
 			});
+		
+		console.log('conditionsCall')
+		api.get(`condition`,{}).then((response) => response.data).then((data) => {
+			console.log(data)
+			//setLoading(false)
+			setCondition(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+			}).catch(function (error) {
+			//setLoading(false)
+			setCondition([])
+			});
+		}
+
+	const pageStart = async () => {
+
+		console.log(`${EQUIPMENT} Call`)
+
+		if(search){
+			UpdateTextFields()
+			handleSearch(null,true)
+		}else{
+			await api.get(EQUIPMENT,{}).then((response) => response.data).then((data) => {
+				console.log(data)
+				//setLoading(false)
+				if(data.status == 200 && data.editable){
+					setEditable(data.editable)
+					getDropDownItems()
+				}
+				
+				setEquipments(data.status == 200 ? data.data : data)
+				setDisableSearchFields(false)
+				
+				// this.setState({
+				// 	equipments: data.status != 400 ? data.values: data,
+				// 	setequipment: data
+				// });
+				//console.log(this.state.equipment.values);
+				// console.log(this.props, this.state);
+				}).catch(function (error) {
+				//setLoading(false)
+				setEquipments([])
+				setDisableSearchFields(false)
+				});
+		}
 	}
+
+	//will run once.
+	React.useEffect(() => {
+
+		console.log(api.getUri)
+
+	function handleResize() {
+		// Set window width/height to state
+		setWindowSize({
+			width: window.innerWidth,
+			height: window.innerHeight,
+		});
+	}
+
+	pageStart()
 
 	// Add event listener
 	window.addEventListener("resize", handleResize);
@@ -753,6 +769,9 @@ export default function Equipment(props) {
 			onKeyPress={handleSearchKeyPress}
 			style={{width:w,paddingRight:'20px'}}
 			InputLabelProps={{style: {fontSize: '.9vw'}}}
+			InputProps={{
+                readOnly: disableSearchFields,
+              }}
 			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
 		/>
 		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`)}</> : null}
