@@ -21,6 +21,7 @@ export default function Employee(props) {
 	const [loading, setLoading] = React.useState(false);
 	const [officesSymbol, setOfficesSymbol] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
+	const [editable,setEditable] = React.useState(false)
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
@@ -111,7 +112,7 @@ export default function Employee(props) {
 	api.get(`employee`).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
-		setEmployees(data.status != 400 ? data.data : data)
+		setEmployees(data.status === 200 ? data.data : data)
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,
 		// 	setequipment: data
@@ -132,7 +133,22 @@ export default function Employee(props) {
 	const employee_cols_config = [
 		{ title: 'ID', field: 'id',editable: 'never'},
 		{ title: 'First Name', field: 'first_name' },
-		{ title: 'Last name', field: 'last_name' },
+		{ title: 'Last name', field: 'last_name', validate: (rowData) => {		
+			if(rowData.hasOwnProperty('last_name')){
+				if(rowData.last_name) {
+					if(rowData.hasOwnProperty('tableData')){
+						if(rowData.tableData.editing === "update"){
+							return true
+						}
+					}
+
+					return true
+				}
+			}
+			
+			return ({ isValid: false, helperText: 'Last Name is required.' })
+
+		}},
 		{ title: 'Title', field: 'title' },
 		{ title: 'Office Symbol ID', field: 'office_symbol',type:'numeric',
 		editComponent: x => {
@@ -195,62 +211,61 @@ export default function Employee(props) {
 			}}
 			title=""
 			
-			editable={{
-				
+			{...(editable && {editable:{
 				//isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
 				//isEditHidden: rowData => rowData.name === 'x',
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
 				onBulkUpdate: async(changes) => {
-				await handleTableUpdate({changes:changes})
-					new Promise((resolve, reject) => {
-						setTimeout(() => {
-							//setEmployees([...employees, newData]);
-							//console.log('bulk update')
-							resetEmployees()
-							resolve();
-						}, 1000);
-					})
-				},
-				onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-				onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-				onRowAdd: async (newData) =>{
-				await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-					new Promise((resolve, reject) => {
-						setTimeout(() => {
-							//setEmployees([...employees, newData]);
-							resetEmployees();
-							resolve();
-						}, 1000);
-					})
-				},
-				onRowUpdate: async (newData, oldData) =>{
-				await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-					new Promise((resolve, reject) => {
-						setTimeout(() => {
-							
-							//const dataUpdate = [...employees];
-							//const index = oldData.tableData.id;
-							//dataUpdate[index] = newData;
-							//setEmployees([...dataUpdate]);
-							resetEmployees();
-							resolve();
-						}, 1000);
-					})
+					await handleTableUpdate({changes:changes})
+						new Promise((resolve, reject) => {
+							setTimeout(() => {
+								//setEmployees([...employees, newData]);
+								//console.log('bulk update')
+								resetEmployees()
+								resolve();
+							}, 1000);
+						})
 					},
-				onRowDelete: async (oldData) => {
-				await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
-					new Promise((resolve, reject) => {
-						setTimeout(() => {
-							//const dataDelete = [...employees];
-							//const index = oldData.tableData.id;
-							//dataDelete.splice(index, 1);
-							//setEmployees([...dataDelete]);
-							resolve();
-						}, 1000);
-					})
-				}
-			}}
+					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+					onRowAdd: async (newData) =>{
+					await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+						new Promise((resolve, reject) => {
+							setTimeout(() => {
+								//setEmployees([...employees, newData]);
+								resetEmployees();
+								resolve();
+							}, 1000);
+						})
+					},
+					onRowUpdate: async (newData, oldData) =>{
+					await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+						new Promise((resolve, reject) => {
+							setTimeout(() => {
+								
+								//const dataUpdate = [...employees];
+								//const index = oldData.tableData.id;
+								//dataUpdate[index] = newData;
+								//setEmployees([...dataUpdate]);
+								resetEmployees();
+								resolve();
+							}, 1000);
+						})
+						},
+					// onRowDelete: async (oldData) => {
+					// await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
+					// 	new Promise((resolve, reject) => {
+					// 		setTimeout(() => {
+					// 			//const dataDelete = [...employees];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataDelete.splice(index, 1);
+					// 			//setEmployees([...dataDelete]);
+					// 			resolve();
+					// 		}, 1000);
+					// 	})
+					// }
+			}})}
 			/>
 		</div>
 	)
@@ -263,7 +278,12 @@ export default function Employee(props) {
 		api.get(`employee`).then((response) => response.data).then((data) => {
 		console.log(data)
 		setLoading(false)
-		setEmployees(data.status != 400 ? data.data : data)
+		setEmployees(data.status == 200 ? data.data : data)
+
+		if(data.status == 200 && data.editable){
+			setEditable(data.editable)
+		}
+
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,
 		// 	setequipment: data
@@ -279,7 +299,7 @@ export default function Employee(props) {
 	api.get(`officesymbol`,{}).then((response) => response.data).then((data) => {
 		console.log(data)
 		// setLoading(false)
-		setOfficesSymbol(data.status != 400 ? data.data : data)
+		setOfficesSymbol(data.status === 200 ? data.data : data)
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,
 		// 	setequipment: data

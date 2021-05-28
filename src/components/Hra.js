@@ -17,6 +17,7 @@ export default function Hra(props) {
 	const [loading, setLoading] = React.useState(false);
 	const [employees, setEmployees] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
+	const [editable,setEditable] = React.useState(false)
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
@@ -107,21 +108,35 @@ export default function Hra(props) {
 	let columns = []
 	//considering move to a config file.
 	let hras_cols_config = [
-		{ title: 'HRA Number', field: 'hra_num', editable: 'onAdd', type:'numeric', validate: rowData => {
-		// try{
-		//    if(rowData.hra_num){
-		//     if(rowData.hra_num.toString().length > 3){
-		//       return ({ isValid: false, helperText: 'HRA digits exceed 3.' })
-		//     }else if( findIndex(hras,h => h.hra_num == rowData.hra_num) != -1 ){
-		//       return ({ isValid: false, helperText: 'Duplicated HRA num.' })
-		//     }
-		//   }else{
-		//     return ({ isValid: false, helperText: 'HRA number is required.' })
-		//   }
-		// }catch(err){
-		//   //do nothing
-		// }
-			return(true)
+		{ title: 'HRA Number', field: 'hra_num', editable: 'onAdd', type:'numeric', validate: (rowData) => {
+
+			if(rowData.hasOwnProperty('hra_num')){
+				if(!isNaN(rowData.hra_num)) {
+					if(rowData.hasOwnProperty('tableData')){
+						if(rowData.tableData.editing === "update"){
+							return true
+						}
+					}					
+		
+					if(typeof rowData.hra_num == "number"){
+						console.log('isnumber')
+						if(rowData.hra_num.toString().length > 3){
+							return ({ isValid: false, helperText: 'HRA digits exceed 3.' })
+						}else if( findIndex(hras,h => h.hra_num == rowData.hra_num) != -1 ){
+							return ({ isValid: false, helperText: 'Duplicated HRA num.' })
+						}
+
+						return true
+					}
+		
+					if(typeof rowData.hra_num === "string"){
+						return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
+					}
+				}
+			}
+			
+			return ({ isValid: false, helperText: 'HRA number is required.' })
+
 		}},
 		{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric',
 		editComponent: x => {
@@ -151,7 +166,7 @@ export default function Hra(props) {
 		/>
 		)
 		}},
-		{ title: 'Employee First Name', field: 'hra_employee_id',editable: 'never' },
+		{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
 		{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
 		{ title: 'Title', field: 'hra_title',editable: 'never' },
 		{ title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },
@@ -179,66 +194,64 @@ export default function Hra(props) {
 			}
 			}}
 			title=""
-			
-			editable={{
-				
+			{...(editable && {editable:{
 				//isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
 				//isEditHidden: rowData => rowData.name === 'x',
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
 				onBulkUpdate: async (changes) => {
-				await handleTableUpdate({changes:changes})
-					new Promise((resolve, reject) => {
-					
-						setTimeout(() => {
-							//setHras([...hras, newData]);
-							//console.log('bulk update')
-							
-							resetHras()
-							resolve();
-						}, 1000);
-					})
-				},
-				onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-				onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-				onRowAdd: async (newData) =>{
-				await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-					new Promise((resolve, reject) => {
-						setTimeout(() => {
-							//setHras([...hras, newData]);
-							resetHras()
-							resolve();
-						}, 1000);
-					})
-				},
-				onRowUpdate: async(newData, oldData) =>{
-				await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-					new Promise((resolve, reject) => {
-						setTimeout(() => {
-							
-							//const dataUpdate = [...hras];
-							//const index = oldData.tableData.id;
-							//dataUpdate[index] = newData;
-							resetHras()
-							//setHras([...dataUpdate]);
-		
-							resolve();
-						}, 1000);
-					})
-				},
-				onRowDelete: async (oldData) =>{
-				await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
-					new Promise((resolve, reject) => {
-						setTimeout(() => {
-							const dataDelete = [...hras];
-							const index = oldData.tableData.id;
-							dataDelete.splice(index, 1);
-							setHras([...dataDelete]);
-							resolve();
-						}, 1000);
-					})
-				}
-			}}
+					await handleTableUpdate({changes:changes})
+						new Promise((resolve, reject) => {
+						
+							setTimeout(() => {
+								//setHras([...hras, newData]);
+								//console.log('bulk update')
+								
+								resetHras()
+								resolve();
+							}, 1000);
+						})
+					},
+					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+					onRowAdd: async (newData) =>{
+					await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+						new Promise((resolve, reject) => {
+							setTimeout(() => {
+								//setHras([...hras, newData]);
+								resetHras()
+								resolve();
+							}, 1000);
+						})
+					},
+					onRowUpdate: async(newData, oldData) =>{
+					await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+						new Promise((resolve, reject) => {
+							setTimeout(() => {
+								
+								//const dataUpdate = [...hras];
+								//const index = oldData.tableData.id;
+								//dataUpdate[index] = newData;
+								resetHras()
+								//setHras([...dataUpdate]);
+			
+								resolve();
+							}, 1000);
+						})
+					},
+					// onRowDelete: async (oldData) =>{
+					// await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
+					// 	new Promise((resolve, reject) => {
+					// 		setTimeout(() => {
+					// 			const dataDelete = [...hras];
+					// 			const index = oldData.tableData.id;
+					// 			dataDelete.splice(index, 1);
+					// 			setHras([...dataDelete]);
+					// 			resolve();
+					// 		}, 1000);
+					// 	})
+					// }
+			}})}
 			/>
 		</div>
 	)
@@ -248,7 +261,7 @@ export default function Hra(props) {
 	api.get(`hra`).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
-		setHras(data.status != 400 ? data.data : data)
+		setHras(data.status == 200 ? data.data : data)
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,
 		// 	setequipment: data
@@ -267,7 +280,11 @@ export default function Hra(props) {
 		api.get(`hra`).then((response) => response.data).then((data) => {
 		console.log(data)
 		setLoading(false)
-		setHras(data.status != 400 ? data.data : data)
+		setHras(data.status == 200 ? data.data : data)
+
+		if(data.status == 200 && data.editable){
+			setEditable(data.editable)
+		}
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,
 		// 	setequipment: data

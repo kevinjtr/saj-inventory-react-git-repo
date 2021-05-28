@@ -19,7 +19,7 @@ const OPTS = 'Opts'
 
 export default function Equipment(props) {
 
-	console.log(props)
+	//console.log(props)
 	//constants declarations
 	const history = useHistory()
 	const search = getQueryStringParams(props.location.search)
@@ -43,12 +43,13 @@ export default function Equipment(props) {
 	const [disableSearchFields, setDisableSearchFields] = React.useState(true)
 	const [switches, setSwitches] = React.useState({
 		checkedView: false,
+		showSearch: false,
 	  });
 	const [windowSize, setWindowSize] = React.useState({
 	width: undefined,
 	height: undefined,
 	});
-	const [urlUpdatedByTextFields,setUrlUpdatedByTextFields] = React.useState(false)
+	//const [urlUpdatedByTextFields,setUrlUpdatedByTextFields] = React.useState(false)
 	const [editable,setEditable] = React.useState(false)
 
 	// Style Declarations.
@@ -88,12 +89,12 @@ export default function Equipment(props) {
 		//setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], blanks : blks} })
 	}
 
-	const handleSearch = async (e=null,onLoad=false) => {
+	const handleSearch = async (e=null,onLoad=false,nReset=true) => {
 	if(!onLoad) await UpdateUrl()
 
 	console.log(`${EQUIPMENT} Search`)
 	setLoading(true)
-	setAlertUser(ALERT.RESET)
+	if(nReset) setAlertUser(ALERT.RESET)
 
 	let opts = {
 		includes: {},
@@ -124,7 +125,7 @@ export default function Equipment(props) {
 		console.log(data)
 		if(data.status == 200 && data.editable){
 			setEditable(data.editable)
-			getDropDownItems()
+			//getDropDownItems()
 		}
 		setEquipments(data.status == 200 ? data.data : data)
 		setLoading(false)
@@ -138,30 +139,30 @@ export default function Equipment(props) {
 	}
 
 	const handleSearchView = (e) => {
-	setSearchView(e.target.value)
+		setSearchView(e.target.value)
 	}
 
 	const handleUpdate = async (rowData) => {
 
-	let result = {}
-	console.log(`${EQUIPMENT} Call`)
-	//setLoading(true)
-	await api.post(`${EQUIPMENT}/update`,{params:rowData}).then((response) => response.data).then((data) => {
-		result = data.columnErrors
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-	}).catch(function (error) {
-		//setLoading(false)
-		//setEquipments([])
-	});
+		let result = {}
+		console.log(`${EQUIPMENT} Call`)
+		//setLoading(true)
+		await api.post(`${EQUIPMENT}/update`,{params:rowData}).then((response) => response.data).then((data) => {
+			result = data
+			//setLoading(false)
+			//setEquipments(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+		}).catch(function (error) {
+			//setLoading(false)
+			//setEquipments([])
+		});
 
-	return(result)
+		return(result)
 	}
 
 	const handleDelete = async (rowData) => {
@@ -187,9 +188,11 @@ export default function Equipment(props) {
 
 	const handleAdd = async (rowData) => {
 
+	let result = {}
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
 	await api.post(`${EQUIPMENT}/add`,{params:rowData}).then((response) => response.data).then((data) => {
+		result = data
 		console.log(data)
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
@@ -203,6 +206,8 @@ export default function Equipment(props) {
 		//setLoading(false)
 		//setEquipments([])
 	});
+
+	return result
 
 	}
 
@@ -271,6 +276,8 @@ export default function Equipment(props) {
 
 	const AlertUser = (x) => {
 
+		console.log('alert user activated')
+
 	if(x.error.active){
 		return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
 	}else if(x.success.active){
@@ -322,23 +329,60 @@ export default function Equipment(props) {
 			},
 			{ title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
 			{ title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
-			{ title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never' },
 			{ title: 'Item Type', field: 'item_type',col_id:4  },
-			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData,dataIsOnDatabase) => {
-				try{
-				if(rowData.bar_tag_num.toString().length > 5){
-					return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
-				}else if(dataIsOnDatabase.bar_tag_num){
-					dataIsOnDatabase.bar_tag_num = false
-					return({ isValid: false, helperText: 'bar tag exists in database.' })
-				}
-				}catch(err){
-		
+			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData) => {
+
+				if(rowData.hasOwnProperty('bar_tag_num')){
+					if(!isNaN(rowData.bar_tag_num)) {
+						if(typeof rowData.bar_tag_num === "number"){
+							if(rowData.bar_tag_num.toString().length > 5){
+								return ({ isValid: false, helperText: 'Bar Tag digits exceed 5.' })
+							}else{
+								const idx = findIndex(equipments,e => e.bar_tag_num == rowData.bar_tag_num)
+								const propTableData = rowData.hasOwnProperty('tableData')//exists: editing, not exists: adding.
+
+								if(propTableData && idx != -1){
+									if(rowData.tableData.id != idx){
+										return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
+									}
+								}else if (idx != -1 && !propTableData){
+									return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
+								}								
+							}
+							return true
+						}
+			
+						if(typeof rowData.bar_tag_num === "string"){
+							return ({ isValid: false, helperText: 'Bar Tag needs to be numeric.' })
+						}
+					}
 				}
 				
-				return(true)
-			}},
-			{ title: 'Employee ID', field: 'employee_id', type:'numeric',col_id:6.0,
+				return ({ isValid: false, helperText: 'Bar Tag is required.' })
+	
+			}
+			// , validate: (rowData,dataIsOnDatabase) => {
+			// 	try{
+			// 	if(rowData.bar_tag_num.toString().length > 5){
+			// 		return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
+			// 	}else if(dataIsOnDatabase.bar_tag_num){
+			// 		dataIsOnDatabase.bar_tag_num = false
+			// 		return({ isValid: false, helperText: 'bar tag exists in database.' })
+			// 	}
+			// 	}catch(err){
+		
+			// 	}
+				
+			// 	return(true)
+			// }
+			},
+			{ title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
+			{ title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  }
+		]
+		
+		const ext_equipment_cols_config = [		
+			{title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never',col_id:2.3 },
+			{ title: 'Employee Holder ID', field: 'employee_id', type:'numeric',col_id:6.0,
 			editComponent: (x) => {
 				//console.log(x);
 				let idx = -1
@@ -367,11 +411,6 @@ export default function Equipment(props) {
 				/>
 				)
 			}},
-			{ title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
-			{ title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  }
-		]
-		
-		const ext_equipment_cols_config = [			
 			{title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
 			{title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
 			{title:'Catalog Num',field:'catalog_num',col_id:8 },
@@ -405,7 +444,9 @@ export default function Equipment(props) {
 				renderInput={(params) => <TextField {...params} label="Condition" margin="normal"/>}
 				/>
 				)
-			} }
+				}
+			},
+			editable ? {title:'Updated By',field:'updated_by_full_name',editable:'never' } : null
 			]
 		
 
@@ -426,14 +467,15 @@ export default function Equipment(props) {
 
 		return(
 			<div style={{ maxWidth: '100%',paddingTop:'25px' }}>
-				<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
-					<FormGroup>
-						<FormControlLabel
-							control={<Switch color="primary" checked={switches.checkedView} onChange={handleSwithcesChange} name="checkedView" />}
-							label={switches.checkedView ? "Extended View" : "Normal View"}
-						/>
-					</FormGroup>
-				</Grid>
+				{editable ? 
+					(<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
+						<FormGroup>
+							<FormControlLabel
+								control={<Switch color="primary" checked={switches.checkedView} onChange={handleSwithcesChange} name="checkedView" />}
+								label={switches.checkedView ? "Extended View" : "Normal View"}
+							/>
+						</FormGroup>
+					</Grid>) : null}
 				<MaterialTable
 				icons={tableIcons}
 				columns={columns}
@@ -455,7 +497,8 @@ export default function Equipment(props) {
 					// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 					// isDeleteHidden: rowData => rowData.name === 'y',
 					onBulkUpdate: async (changes) => {
-					let errorResult = await handleUpdate({changes:changes})
+					let result = await handleUpdate({changes:changes})
+					let errorResult = result.columnErrors
 					let {errorFound} = errorResult
 					return(
 						new Promise((resolve, reject) => {
@@ -473,7 +516,7 @@ export default function Equipment(props) {
 								console.log(newData,errorStatus)
 								if(!errorFound){
 								//no error
-								resetEmployees()
+								resetEquipments()
 								//const dataUpdate = [...equipments];
 								//const index = oldData.tableData.id;
 								//dataUpdate[index] = newData;
@@ -524,36 +567,51 @@ export default function Equipment(props) {
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 					onRowAdd: async (newData) => {
-					await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
-						new Promise((resolve, reject) => {
-							setTimeout(() => {
-							resetEmployees();
-								//setEquipments([...equipments, newData]);
-								resolve();
-							}, 1000);
-						})
-						},
-					onRowUpdate: async (newData, oldData) => {
-					let errorResult = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+					let result = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
 						return (new Promise((resolve, reject) => {
 							setTimeout(() => {
-							
+							console.log(result.error)
+							if(!result.error){
+								setAlertUser(ALERT.SUCCESS)
+								resetEquipments();
+								resolve();
+								return;
+							}
+
+							if(result.hasOwnProperty('columnErrors')) {
+								if(result.columnErrors.hasOwnProperty('rows')) {
+									setAlertUser({...ALERT.FAIL,error:{active:true,text:JSON.stringify(result.columnErrors.rows[0] ? result.columnErrors.rows[0] : 'error was found.')}})
+								}
+							}
+								//setEquipments([...equipments, newData]);
+								reject();
+							}, 1000);
+						}))
+						},
+					onRowUpdate: async (newData, oldData) => {
+					let result = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+					let errorResult = result.columnErrors
+						return (new Promise((resolve, reject) => {
+							setTimeout(() => {
+								
 							if(errorResult.errorFound){
 								const col_name = Object.keys(errorResult.rows[0])[0]
 								dataIsOnDatabase[col_name] = true
+								setAlertUser({...ALERT.FAIL,error:{active:true,text:'Error updating field.'}})
 								reject();
-							}else{
-								resetEmployees();
+								return;
+							}
+								resetEquipments();
+								setAlertUser(ALERT.SUCCESS)
 								//const dataUpdate = [...equipments];
 								//const index = oldData.tableData.id;
 								//dataUpdate[index] = newData;
 								//setEquipments([...dataUpdate]);
 								resolve();
-							}
 							}, 1000);
 						}))
 					},
-					// onRowDelete: async (oldData) =>{
+					// onRowDelete: async (oldData) => {
 					// await handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
 					// 	new Promise((resolve, reject) => {
 					// 		setTimeout(() => {
@@ -571,8 +629,8 @@ export default function Equipment(props) {
 		)
 	}
 
-	const resetEmployees = () => {
-	handleSearch();
+	const resetEquipments = () => {
+		handleSearch(null,false,false);
 	}
 
 	const UpdateTextFields = async () => {
@@ -609,8 +667,6 @@ export default function Equipment(props) {
 	}
 
 	const UpdateUrl = () => {
-	setUrlUpdatedByTextFields(true)
-
 	let url = '?'
 	const searchFieldKeys = Object.keys(searchFields)
 
@@ -795,13 +851,27 @@ export default function Equipment(props) {
 	<div>
 		<div style={{textAlign: 'center'}}>
 		<h2 >Equipment</h2>
+		<Grid container justify="center">
+			<Grid>
+				<FormGroup>
+					<FormControlLabel
+						control={<Switch color="primary" checked={switches.showSearch} onChange={handleSwithcesChange} name="showSearch" />}
+						label={switches.showSearch ? "Hide Search Fields" : "Show Search Fields"}
+					/>
+				</FormGroup>
+			</Grid>
+		</Grid>
+		{switches.showSearch ?
+		<>
 		<FormControl component="fieldset">
 			<RadioGroup row aria-label="position" name="position" value={searchView} onChange={handleSearchView}>
 			<FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
 			<FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Search" />
 			</RadioGroup>
-		</FormControl>
+		</FormControl></> : null
+		}		
 		</div>
+		{switches.showSearch ?
 		<div style={{textAlign: 'center'}}>
 		<form className={classesTextField.root} noValidate autoComplete="off">
 			<div className={classesGrid.options}>
@@ -811,7 +881,9 @@ export default function Equipment(props) {
 			</Grid>
 			</div>
 		</form>
-		</div>
+		</div> : null
+		}
+		
 		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 		<div style={{textAlign: 'center'}}>
 		{loading ? LoadingCircle() : null}
