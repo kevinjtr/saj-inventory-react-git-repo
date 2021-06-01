@@ -5,12 +5,12 @@ import Eng4900Form from '../eng-4900/Eng4900Form';
 import Equipment from '../Equipment';
 import Hra from '../Hra';
 import Employee from '../Employee';
-//import AnnualInventory from '../AnnualInventory';
+import AnnualInventory from '../AnnualInventory';
 import ChangeHistory from '../ChangeHistory';
 import Eng4844 from '../Eng4844';
 import FindEng4844 from '../FindEng4844';
 import NotFound from '../forms/NotFound'
-import {Route, Link} from "C:/Users/k3endkla/AppData/Local/Microsoft/TypeScript/2.9/node_modules/@types/react-router-dom";
+import {Route, Link} from "react-router-dom";
 import {filter} from 'lodash'
 import api from '../../axios/Api';
 
