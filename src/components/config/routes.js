@@ -10,7 +10,7 @@ import ChangeHistory from '../ChangeHistory';
 import Eng4844 from '../Eng4844';
 import FindEng4844 from '../FindEng4844';
 import NotFound from '../forms/NotFound'
-import {Route, Link} from "react-router-dom";
+import {Route, Link, Redirect} from "react-router-dom";
 import {filter} from 'lodash'
 import api from '../../axios/Api';
 
@@ -19,9 +19,16 @@ const DEFAULT_ROUTE = "/equipment"
 const HOME_PAGE =  (<Route
     exact
     path={'/'}
-    render={() => {
-        return window.location.replace(DEFAULT_ROUTE);
-    }}/> )
+    render={() =>{
+        return (<Redirect
+            to={{
+            pathname: DEFAULT_ROUTE,
+            }}
+        />)
+    }
+  }
+    
+    /> )
 
 const routes_config = [
     //{path:'/home',label:'Home'},
@@ -29,9 +36,9 @@ const routes_config = [
     //{path:'/annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true},
     {path:'/hra',label:'HRA',component:Hra,tab:true},
     {path:'/employee',label:'Employee',component:Employee,tab:true},
-    // {path:'/eng4900',label:'Eng 4900',component:Eng4900,tab:true},
-    // {path:'/eng4900/view/:id',label:'Eng 4900 View Form',component:Eng4900Form,tab:false},
-    // {path:'/eng4900/edit/:id',label:'Eng 4900 Edit Form',component:Eng4900Form,tab:false},
+    //{path:'/eng4900',label:'Eng 4900',component:Eng4900,tab:true},
+    //{path:'/eng4900/view/:id',label:'Eng 4900 View Form',component:Eng4900Form,tab:false},
+    //{path:'/eng4900/edit/:id',label:'Eng 4900 Edit Form',component:Eng4900Form,tab:false},
     // {path:'/eng4900/create',label:'Eng 4900 Create Form',component:Eng4900Form,tab:false},
     //{path:'/eng4844',label:'Eng 4844',component:Eng4844,tab:true},
     //{path:'/findeng4844',label:'Find Eng4844',component:FindEng4844,tab:true},

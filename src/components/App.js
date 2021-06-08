@@ -7,7 +7,7 @@ function App() {
 	console.log(process.env)
 	axios.defaults.baseURL = process.env.REACT_APP_API;
 	return (
-		<BrowserRouter>
+		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
 			{routes}
 		</BrowserRouter>
 	);
