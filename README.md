@@ -6,11 +6,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Prerequiste
 - Create a .env file on root folder
 
-**Development .env file example**
-REACT_APP_HOST = 'https://localhost:PORT'
-REACT_APP_API = 'https://localhost:PORT'
-REACT_APP_BASENAME ='/'
-PUBLIC_URL= '' 
+**Development .env file example** <br>
+REACT_APP_HOST = 'https://localhost:PORT' <br>
+REACT_APP_API = 'https://localhost:PORT' <br>
+REACT_APP_BASENAME ='/' <br>
+PUBLIC_URL= '' <br>
 
 ## Available Scripts
 
