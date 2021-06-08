@@ -19,15 +19,7 @@ const DEFAULT_ROUTE = "/equipment"
 const HOME_PAGE =  (<Route
     exact
     path={'/'}
-    render={() =>{
-        return (<Redirect
-            to={{
-            pathname: DEFAULT_ROUTE,
-            }}
-        />)
-    }
-  }
-    
+    render={() => <Redirect to={DEFAULT_ROUTE} />}
     /> )
 
 const routes_config = [

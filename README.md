@@ -2,6 +2,16 @@ Inventory React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+## Prerequiste
+- Create a .env file on root folder
+
+**Development .env file example**
+REACT_APP_HOST = 'https://localhost:PORT'
+REACT_APP_API = 'https://localhost:PORT'
+REACT_APP_BASENAME ='/'
+PUBLIC_URL= '' 
+
 ## Available Scripts
 
 In the project directory, you can run:
