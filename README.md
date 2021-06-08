@@ -3,7 +3,7 @@ Inventory React App
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 
-## Prerequiste
+## Prerequisite
 - Create a .env file on root folder
 
 **Development .env file example** <br>
