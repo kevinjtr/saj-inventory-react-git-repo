@@ -13,6 +13,7 @@ import {texFieldStyles, gridStyles, itemMenuStyles } from './styles/material-ui'
 import Switch from '@material-ui/core/Switch';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, ALERT} from './config/constants'
 import { useHistory } from 'react-router-dom'
+import Header from './Header'
 
 const BLANKS = 'Blanks'
 const OPTS = 'Opts'
@@ -29,13 +30,14 @@ export default function Equipment(props) {
 	const [loading, setLoading] = React.useState(false);
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 	const [equipments, setEquipments] = React.useState([]);
+	//const [cols, setCols] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
 	const [condition, setCondition] = React.useState([]);
 	const [searchView, setSearchView] = React.useState(BASIC_SEARCH);
 	const [searchFields, setSearchFields] = React.useState({
-		hraName: {label: 'HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		hraNum: {label: 'HRA Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+		hraName: {label: 'HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		employeeName: {label: 'Employee Holder', value: '', width: 250, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT}
@@ -125,7 +127,7 @@ export default function Equipment(props) {
 		console.log(data)
 		if(data.status == 200 && data.editable){
 			setEditable(data.editable)
-			//getDropDownItems()
+			if(onLoad) getDropDownItems()
 		}
 		setEquipments(data.status == 200 ? data.data : data)
 		setLoading(false)
@@ -329,7 +331,7 @@ export default function Equipment(props) {
 			},
 			{ title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
 			{ title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
-			{ title: 'Item Type', field: 'item_type',col_id:4  },
+			{ title: 'Item Description', field: 'item_type',col_id:4  },
 			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData) => {
 
 				if(rowData.hasOwnProperty('bar_tag_num')){
@@ -445,20 +447,25 @@ export default function Equipment(props) {
 				/>
 				)
 				}
-			},
-			editable ? {title:'Updated By',field:'updated_by_full_name',editable:'never' } : null
+			}
 			]
 		
 
+		if(editable) ext_equipment_cols_config.push({title:'Updated By',col_id:13,field:'updated_by_full_name',editable:'never' })
+
 		for(const col_config of equipment_cols_config){
-			if(cols.includes(col_config.field)) columns.push(col_config)
+			if(col_config.hasOwnProperty('field') && col_config){
+				if(cols.includes(col_config.field)) columns.push(col_config)
+			}
 		}
 
 		if(switches.checkedView){
 			let extended_columns = []
 			
 			for(const col_config of ext_equipment_cols_config){
-				if(cols.includes(col_config.field)) extended_columns.push(col_config)
+				if(col_config.hasOwnProperty('field') && col_config){
+					if(cols.includes(col_config.field)) extended_columns.push(col_config)
+				}
 			}
 
 			columns = [...columns,...extended_columns]
@@ -480,6 +487,10 @@ export default function Equipment(props) {
 				icons={tableIcons}
 				columns={columns}
 				data={equipments}
+				localization={{
+					toolbar: {
+					searchPlaceholder: "Filter Search"
+					}}}
 				options={{
 					exportButton: true,
 					exportAllData: true,
@@ -690,7 +701,7 @@ export default function Equipment(props) {
 		api.get(`employee`,{}).then((response) => response.data).then((data) => {
 			console.log(data)
 			setLoading(false)
-			setEmployees(data.status != 400 ? data.data : data)
+			setEmployees(data.status == 200 ? data.data : data)
 			// this.setState({
 			// 	equipments: data.status != 400 ? data.values: data,
 			// 	setequipment: data
@@ -706,7 +717,7 @@ export default function Equipment(props) {
 		api.get(`hra`,{}).then((response) => response.data).then((data) => {
 			console.log(data)
 			//setLoading(false)
-			setHras(data.status != 400 ? data.data : data)
+			setHras(data.status == 200 ? data.data : data)
 			// this.setState({
 			// 	equipments: data.status != 400 ? data.values: data,
 			// 	setequipment: data
@@ -722,7 +733,7 @@ export default function Equipment(props) {
 		api.get(`condition`,{}).then((response) => response.data).then((data) => {
 			console.log(data)
 			//setLoading(false)
-			setCondition(data.status != 400 ? data.data : data)
+			setCondition(data.status == 200 ? data.data : data)
 			// this.setState({
 			// 	equipments: data.status != 400 ? data.values: data,
 			// 	setequipment: data
@@ -750,7 +761,8 @@ export default function Equipment(props) {
 					setEditable(data.editable)
 					getDropDownItems()
 				}
-				
+
+				//setCols(data.status == 200 ? data.columns : [])
 				setEquipments(data.status == 200 ? data.data : data)
 				setDisableSearchFields(false)
 				
@@ -768,10 +780,10 @@ export default function Equipment(props) {
 		}
 	}
 
-	//will run once.
+	//Effects.
 	React.useEffect(() => {
 
-		console.log(api.getUri)
+		//console.log(api.getUri)
 
 	function handleResize() {
 		// Set window width/height to state
@@ -795,19 +807,10 @@ export default function Equipment(props) {
 	}, []);// Empty array ensures that effect is only run on mount
 
 	React.useEffect(() => {
+		console.log(history.action)
 		if(props.history.action == "PUSH"){
-			reloadPage()
+			history.go(0)
 		}
-	}, [props.history.action]);
-
-	React.useEffect(() => {
-		//if(urlUpdatedByTextFields){
-			console.log(history.action)
-		//}else{
-			//console.log('url was not updated by textfield')
-		//}
-
-
 	}, [history.action]);
 
 	const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
@@ -848,6 +851,8 @@ export default function Equipment(props) {
 	
 	//Render return.
 	return (
+	<>
+	<Header/>
 	<div>
 		<div style={{textAlign: 'center'}}>
 		<h2 >Equipment</h2>
@@ -887,9 +892,10 @@ export default function Equipment(props) {
 		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 		<div style={{textAlign: 'center'}}>
 		{loading ? LoadingCircle() : null}
-		{equipments.length > 0 ? materialTableSelect() : null}
+		{equipments.length> 0  ? materialTableSelect() : null}
 		</div>
 	</div>
+	</>
 	);
 }
 

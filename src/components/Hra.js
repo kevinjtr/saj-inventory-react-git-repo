@@ -11,6 +11,7 @@ import {tableIcons} from './material-table/config'
 import api from '../axios/Api';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import findIndex from 'lodash/findIndex'
+import Header from './Header'
 
 export default function Hra(props) {
 	//Hooks Declarations
@@ -101,6 +102,7 @@ export default function Hra(props) {
 	//  }
 	}
 
+	
 	//Functions.
 	const materialTableSelect = () => {
 
@@ -174,8 +176,12 @@ export default function Hra(props) {
 		{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'}
 	]
 
+	if(editable) hras_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
+
 	for(const col_config of hras_cols_config){
-		if(cols.includes(col_config.field)) columns.push(col_config)
+		if(col_config.hasOwnProperty('field') && col_config){
+			if(cols.includes(col_config.field)) columns.push(col_config)
+		}
 	}
 
 	return(
@@ -184,6 +190,10 @@ export default function Hra(props) {
 			icons={tableIcons}
 			columns={columns}
 			data={hras}
+			localization={{
+				toolbar: {
+				searchPlaceholder: "Filter Search"
+				}}}
 			options={{
 				exportButton: true,
 				exportAllData: true,
@@ -273,7 +283,12 @@ export default function Hra(props) {
 		setHras([])
 	});
 	}
-	//will run once.
+
+	const reloadPage = () => {
+		window.location.reload()
+	}
+
+	//Effects.
 	React.useEffect(() => {
 	console.log('HraCall')
 	setLoading(true)
@@ -313,19 +328,28 @@ export default function Hra(props) {
 		});
 
 
-	}, []);
+	}, []);//will run once.
+
+	React.useEffect(() => {
+		if(props.history.action == "PUSH"){
+			reloadPage()
+		}
+	}, [props.history.action]);
 
 	//Render return.
 	return (
-	<div>
-		<div style={{textAlign: 'center'}}>
-			<h2 >HRA</h2>
+		<>
+		<Header/>
+		<div>
+			<div style={{textAlign: 'center'}}>
+				<h2 >HRA</h2>
+			</div>
+			<div style={{textAlign: 'center'}}>
+				{loading ? LoadingCircle() : null}
+				{hras.length > 0 ? materialTableSelect() : null}
+			</div>
 		</div>
-		<div style={{textAlign: 'center'}}>
-			{loading ? LoadingCircle() : null}
-			{hras.length > 0 ? materialTableSelect() : null}
-		</div>
-	</div>
+		</>
 	);
 }
 

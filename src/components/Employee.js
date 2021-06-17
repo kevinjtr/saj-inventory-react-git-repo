@@ -14,6 +14,7 @@ import FormControl from '@material-ui/core/FormControl';
 import api from '../axios/Api';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import findIndex from 'lodash/findIndex'
+import Header from './Header'
 
 export default function Employee(props) {
 
@@ -179,7 +180,7 @@ export default function Employee(props) {
 		/>
 		)
 		}},
-		{title: 'Office Symbol Alias',field:'office_symbol_alias',editable: 'never'},
+		{title: 'Office Symbol',field:'office_symbol_alias',editable: 'never'},
 		{ title: 'Work Phone', field: 'work_phone',type:'numeric',validate: rowData => {
 		if(rowData.work_phone){
 			return(rowData.work_phone.toString().length > 10 ? { isValid: false, helperText: 'phone number digits exceed 10.' } : true)
@@ -189,8 +190,12 @@ export default function Employee(props) {
 		{title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'}
 	]
 
+	if(editable) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
+
 	for(const col_config of employee_cols_config){
-		if(cols.includes(col_config.field)) columns.push(col_config)
+		if(col_config.hasOwnProperty('field') && col_config){
+			if(cols.includes(col_config.field)) columns.push(col_config)
+		}
 	}
 
 	return(
@@ -199,6 +204,10 @@ export default function Employee(props) {
 			icons={tableIcons}
 			columns={columns}
 			data={employees}
+			localization={{
+				toolbar: {
+				searchPlaceholder: "Filter Search"
+				}}}
 			options={{
 				exportButton: true,
 				exportAllData: true,
@@ -271,7 +280,12 @@ export default function Employee(props) {
 	)
 	}
 
-	//will run once.
+	const reloadPage = () => {
+		window.location.reload()
+	}
+
+
+	//Effects.
 	React.useEffect(() => {
 	console.log('employeeCall')
 	setLoading(true)
@@ -312,11 +326,18 @@ export default function Employee(props) {
 		});
 
 
-	}, []);
+	}, []);//will run once.
 
+	React.useEffect(() => {
+		if(props.history.action == "PUSH"){
+			reloadPage()
+		}
+	}, [props.history.action]);
 
 	//Render return.
 	return (
+		<>
+		<Header/>
 		<div>
 			<div style={{textAlign: 'center'}}>
 				<h2 >Employee</h2>
@@ -326,6 +347,7 @@ export default function Employee(props) {
 				{employees.length > 0 ? materialTableSelect() : null}
 			</div>
 		</div>
+		</>
 	);
   }
 

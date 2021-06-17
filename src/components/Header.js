@@ -1,3 +1,27 @@
+import {routes_tabs} from './config/routes'
+import React from 'react'
+import { connect } from 'redux-bundler-react';
+
+function Header(props) {
+	const {user} = props
+
+	//doFetchUserLevel()
+	console.log(props)
+	return (
+		<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+			<p className="navbar-brand">Inventory</p>
+			<ul className="navbar-nav">
+                {routes_tabs(user)}
+                
+			</ul>
+		</nav>
+	);
+}
+
+export default connect(
+	'selectUser',
+	Header);
+
 // import React from 'react';
 // import { Link } from 'react-router-dom';
 // //import {routes_config} from './config/routes'

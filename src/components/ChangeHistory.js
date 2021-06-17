@@ -13,6 +13,7 @@ import findIndex from 'lodash/findIndex'
 import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
 import {Alert} from '@material-ui/lab';
 import {ALERT} from './config/constants';
+import Header from './Header'
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
 const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
@@ -102,6 +103,7 @@ export default function ChangeHistory(props) {
 					{ title: 'Work Phone', field: 'hra_work_phone',editable: 'never' },
 					{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'},
 					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
+					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
 				],
 				employee: [
 					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
@@ -114,6 +116,7 @@ export default function ChangeHistory(props) {
 					{ title: 'Work Phone', field: 'work_phone',type:'numeric', editable: 'never'},
 					{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
 					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
+					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
 				],
 				equipment: 	[
 					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
@@ -134,6 +137,7 @@ export default function ChangeHistory(props) {
 					{ title:'Model',field:'model', editable: 'never'},
 					{ title:'Condition',field:'condition', editable: 'never'},
 					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
+					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
 				],
 				eng4900: [
 					//{ title: 'Item No.', field: 'hra_num', type:'numeric', editable:'never'},
@@ -148,7 +152,8 @@ export default function ChangeHistory(props) {
 					{ title: 'Serial Number', field: 'serial_num',editable: 'never' },
 					{ title: 'Folder Link', field: 'folder_link',editable: 'never',type:'date' },
 					{ title: 'Equipment Group ID', field: 'equipment_group_id',editable: 'never'},
-					{ title: 'Expiration Date', field: 'expiration_date',editable: 'never'}
+					{ title: 'Expiration Date', field: 'expiration_date',editable: 'never'},
+					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
 				  ]
 		}
 		
@@ -160,7 +165,17 @@ export default function ChangeHistory(props) {
 			<div style={{ maxWidth: '100%' }}>
 				<MaterialTable
 				icons={changeHistoryIcons}
-				localization={{ body: { editRow: { deleteText: 'Are you sure you want to revert back to this data?',saveTooltip:"Yes",cancelTooltip:"No" }, deleteTooltip : "Undo" } }}
+				localization={{
+					toolbar: {
+					searchPlaceholder: "Filter"
+					},
+					body: {
+						editRow: {
+							deleteText: 'Are you sure you want to revert back to this data?',saveTooltip:"Yes",cancelTooltip:"No"
+						},
+						deleteTooltip : "Undo" 
+					}
+				}}
 				columns={columns}
 				data={changeHistoryData[searchView]}
 				options={{
@@ -209,7 +224,7 @@ export default function ChangeHistory(props) {
 		)
 		}
 
-		return(<p>No Chnages Found.</p>)
+		return(<p>No Changes Found.</p>)
 	}
 
 	const resetTable = () => {
@@ -224,8 +239,13 @@ export default function ChangeHistory(props) {
 		setChangeHistoryData({error:true})
 		});
 	}
+
+	const reloadPage = () => {
+		window.location.reload()
+	}
+
     
-	//will run once.
+	//Effects.
 	React.useEffect(() => {
 	console.log('change-history call')
 	setLoading(true)
@@ -258,8 +278,16 @@ export default function ChangeHistory(props) {
 
 	}, [searchView]);
 
+	React.useEffect(() => {
+		if(props.history.action == "PUSH"){
+			reloadPage()
+		}
+	}, [props.history.action]);
+
 	//Render return.
 	return (
+	<>
+	<Header/>
 	<div>
 		<div style={{textAlign: 'center'}}>
 			<h2 >Change History</h2>
@@ -279,5 +307,6 @@ export default function ChangeHistory(props) {
 			{changeHistoryData[searchView] ? materialTableSelect() : null}
 		</div>
 	</div>
+	</>
 	);
 }

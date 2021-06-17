@@ -17,6 +17,7 @@
     "lodash": "^4.17.21",
     "material-table": "^1.67.0",
     "material-ui": "^0.20.2",
+    "money-clip": "^3.0.3",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
@@ -30,7 +31,8 @@
     "react-text-mask": "^5.4.3",
     "react-virtualized-auto-sizer": "^1.0.5",
     "redux": "^4.0.5",
-    "redux-bundler": "^28.0.0",
+    "redux-bundler": "^28.0.2",
+    "redux-bundler-react": "^1.2.0",
     "redux-logger": "^3.0.6",
     "redux-promise-middleware": "^6.1.1",
     "yup": "^0.32.9"

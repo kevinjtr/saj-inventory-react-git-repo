@@ -411,6 +411,10 @@ export default function Eng4900(props) {
           icons={tableIcons}
             columns={columns}
             data={formsArray}
+            localization={{
+              toolbar: {
+              searchPlaceholder: "Filter Search"
+              }}}
             options={{
               //exportButton: true,
               //exportAllData: true,
