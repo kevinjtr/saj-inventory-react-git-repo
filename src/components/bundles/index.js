@@ -1,5 +1,5 @@
 import { composeBundles } from 'redux-bundler';
-import cache from '../utils/cache';
+//import cache from '../utils/cache';
 
 // import our application bundles
 //import equipmentBundle from './equipment-bundle'
