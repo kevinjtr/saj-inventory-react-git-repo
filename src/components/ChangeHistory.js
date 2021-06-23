@@ -12,7 +12,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import findIndex from 'lodash/findIndex'
 import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
 import {Alert} from '@material-ui/lab';
-import {ALERT} from './config/constants';
+import {ALERT} from './tools/tools';
 import Header from './Header'
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
@@ -81,7 +81,7 @@ export default function ChangeHistory(props) {
 	
 		setAlertUser(ALERT.RESET)
 		return(null)
-		}
+	}
 
 	//Functions.
 	const materialTableSelect = () => {
@@ -199,7 +199,7 @@ export default function ChangeHistory(props) {
 									setAlertUser(ALERT.SUCCESS)
 									resolve()
 								}else{
-									setAlertUser(ALERT.FAIL)
+									setAlertUser(ALERT.FAIL())
 									reject()
 								}
 								// if(result.error){

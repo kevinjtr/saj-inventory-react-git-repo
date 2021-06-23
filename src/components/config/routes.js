@@ -16,12 +16,12 @@ import api from '../../axios/Api';
 
 const routes_config = [
     {path:'/equipment',label:'Equipment',component:Equipment,tab:true,level:'user'},
-    //{path:'/annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true},
+    // {path:'/annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin'},
     {path:'/hra',label:'HRA',component:Hra,tab:true,level:'user'},
     {path:'/employee',label:'Employee',component:Employee,tab:true,level:'user'},
-    //{path:'/eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin'},
-    //{path:'/eng4900/view/:id',label:'Eng 4900 View Form',component:Eng4900Form,tab:false,level:'admin'},
-    //{path:'/eng4900/edit/:id',label:'Eng 4900 Edit Form',component:Eng4900Form,tab:false,level:'admin'},
+    // {path:'/eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin'},
+    // {path:'/eng4900/view/:id',label:'Eng 4900 View Form',component:Eng4900Form,tab:false,level:'admin'},
+    // {path:'/eng4900/edit/:id',label:'Eng 4900 Edit Form',component:Eng4900Form,tab:false,level:'admin'},
     // {path:'/eng4900/create',label:'Eng 4900 Create Form',component:Eng4900Form,tab:false,level:'admin'},
     //{path:'/eng4844',label:'Eng 4844',component:Eng4844,tab:true},
     //{path:'/findeng4844',label:'Find Eng4844',component:FindEng4844,tab:true},

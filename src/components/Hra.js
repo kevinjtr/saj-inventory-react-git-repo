@@ -9,9 +9,10 @@ import {LoadingCircle} from './tools/tools';
 import MaterialTable from 'material-table'
 import {tableIcons} from './material-table/config'
 import api from '../axios/Api';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {Autocomplete, Alert} from '@material-ui/lab';
 import findIndex from 'lodash/findIndex'
 import Header from './Header'
+import {ALERT} from './tools/tools'
 
 export default function Hra(props) {
 	//Hooks Declarations
@@ -19,7 +20,7 @@ export default function Hra(props) {
 	const [employees, setEmployees] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
 	const [editable,setEditable] = React.useState(false)
-
+	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
 
@@ -27,6 +28,15 @@ export default function Hra(props) {
 	//setLoading(true)
 		await api.post(`hra/update`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
+
+		const status = data.hasOwnProperty('status') ? data.status == 400 : false
+		const error = data.hasOwnProperty('error') ? data.error : false
+
+		if(status || error){
+			setAlertUser(ALERT.FAIL())
+		}else {
+			setAlertUser(ALERT.SUCCESS)
+		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -54,6 +64,15 @@ export default function Hra(props) {
 	//setLoading(true)
 		await api.post(`hra/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
+
+		const status = data.hasOwnProperty('status') ? data.status == 400 : false
+		const error = data.hasOwnProperty('error') ? data.error : false
+
+		if(status || error){
+			setAlertUser(ALERT.FAIL())
+		}else {
+			setAlertUser(ALERT.SUCCESS)
+		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -81,6 +100,16 @@ export default function Hra(props) {
 	//setLoading(true)
 	await api.post(`hra/add`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
+
+		const status = data.hasOwnProperty('status') ? data.status == 400 : false
+		const error = data.hasOwnProperty('error') ? data.error : false
+
+		if(status || error){
+			setAlertUser(ALERT.FAIL())
+		}else {
+			setAlertUser(ALERT.SUCCESS)
+		}
+
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -155,7 +184,7 @@ export default function Hra(props) {
 			id="combo-box-employee"
 			size="small"
 			options={employees}
-			getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
+			getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
 			value={idx != -1 ? employees[idx] : null}
 			onChange ={e => {
 
@@ -288,6 +317,22 @@ export default function Hra(props) {
 		window.location.reload()
 	}
 
+	const AlertUser = (x) => {
+
+	console.log('alert user activated')
+
+	if(x.error.active){
+		return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+	}else if(x.success.active){
+		return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
+	}
+
+	//Sucessfully added data to database!
+
+	setAlertUser(ALERT.RESET)
+	return(null)
+	}
+
 	//Effects.
 	React.useEffect(() => {
 	console.log('HraCall')
@@ -341,9 +386,11 @@ export default function Hra(props) {
 		<>
 		<Header/>
 		<div>
+		
 			<div style={{textAlign: 'center'}}>
 				<h2 >HRA</h2>
 			</div>
+			{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 			<div style={{textAlign: 'center'}}>
 				{loading ? LoadingCircle() : null}
 				{hras.length > 0 ? materialTableSelect() : null}

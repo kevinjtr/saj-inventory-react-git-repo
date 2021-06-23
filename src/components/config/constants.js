@@ -6,8 +6,3 @@ export const AVD_SEARCH = 'adv'
 export const BASIC_SEARCH = 'std'
 export const OPTIONS_DEFAULT = 'includes'
 export const BLANKS_DEFAULT = 'includeBlanks'
-export const ALERT = {
-	SUCCESS: {success:{active:true,text:'Action was completed.'},error:{active:false,text:''}},
-	FAIL: {success:{active:false,text:''},error:{active:true,text:'Could not complete action.'}},
-	RESET: {success:{active:false,text:''},error:{active:false,text:''}},
-}

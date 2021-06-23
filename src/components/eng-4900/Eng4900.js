@@ -56,6 +56,7 @@ import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SE
 import {orderBy, findIndex, filter} from 'lodash'
 //Styles Import
 import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles } from '../styles/material-ui';
+import Header from '../Header'
 
 export default function Eng4900(props) {
   
@@ -591,8 +592,9 @@ export default function Eng4900(props) {
 
   //Render return.
   return (
+    <>
+    <Header/>
     <div>
-      
       <Tooltip title="Crate New Form" aria-label="add">
       <ThemeProvider>
         <Fab  variant="extended" size="medium" color="inherit" className={ clsx(plusButtonClasses.absolute, plusButtonClasses.fabGreen)} >
@@ -610,6 +612,7 @@ export default function Eng4900(props) {
 
       {viewSearch === "table-view" && Object.keys(eng4900s).length > 0 ? materialTableSelect():null}
     </div>
+    </>
   );
 }
 

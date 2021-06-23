@@ -3,7 +3,7 @@ import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, 
 import { withStyles } from '@material-ui/core/styles';
 import 'date-fns';
 import SearchIcon from '@material-ui/icons/Search';
-import {LoadingCircle, getQueryStringParams} from './tools/tools';
+import {LoadingCircle, getQueryStringParams, ALERT} from './tools/tools';
 import MaterialTable from 'material-table'
 import {tableIcons} from './material-table/config'
 import {Autocomplete, Alert} from '@material-ui/lab';
@@ -11,7 +11,7 @@ import api from '../axios/Api';
 import {orderBy, findIndex, filter} from 'lodash'
 import {texFieldStyles, gridStyles, itemMenuStyles } from './styles/material-ui';
 import Switch from '@material-ui/core/Switch';
-import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, ALERT} from './config/constants'
+import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import { useHistory } from 'react-router-dom'
 import Header from './Header'
 
@@ -315,7 +315,7 @@ export default function Equipment(props) {
 				id={`combo-box-employee`}
 				size="small"
 				options={hras}
-				getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
+				getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
 				value={idx != -1 ? hras[idx] : null}
 				//defaultValue={idx != -1 ? employees[idx] : null}
 				onChange ={e => {
@@ -333,7 +333,6 @@ export default function Equipment(props) {
 			{ title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
 			{ title: 'Item Description', field: 'item_type',col_id:4  },
 			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData) => {
-
 				if(rowData.hasOwnProperty('bar_tag_num')){
 					if(!isNaN(rowData.bar_tag_num)) {
 						if(typeof rowData.bar_tag_num === "number"){
@@ -347,7 +346,7 @@ export default function Equipment(props) {
 									if(rowData.tableData.id != idx){
 										return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
 									}
-								}else if (idx != -1 && !propTableData){
+								}else if (idx != -1 && !propTableData && !rowData.hasOwnProperty('id')){
 									return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
 								}								
 							}
@@ -359,7 +358,6 @@ export default function Equipment(props) {
 						}
 					}
 				}
-				
 				return ({ isValid: false, helperText: 'Bar Tag is required.' })
 	
 			}
@@ -399,7 +397,7 @@ export default function Equipment(props) {
 				id="combo-box-employee"
 				size="small"
 				options={employees}
-				getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
+				getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
 				value={idx != -1 ? employees[idx] : null}
 				//defaultValue={idx != -1 ? employees[idx] : null}
 				onChange ={e => {
@@ -552,7 +550,7 @@ export default function Equipment(props) {
 
 							if(alert_){
 								//setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
-								setAlertUser({...ALERT.FAIL,error:{active:true,text:alert_}})
+								setAlertUser(ALERT.FAIL(alert_))
 								reject();
 							}else{
 								setAlertUser(ALERT.SUCCESS)
@@ -591,7 +589,7 @@ export default function Equipment(props) {
 
 							if(result.hasOwnProperty('columnErrors')) {
 								if(result.columnErrors.hasOwnProperty('rows')) {
-									setAlertUser({...ALERT.FAIL,error:{active:true,text:JSON.stringify(result.columnErrors.rows[0] ? result.columnErrors.rows[0] : 'error was found.')}})
+									setAlertUser( result.columnErrors.rows[0] ? ALERT.FAIL( JSON.stringify(result.columnErrors.rows[0])) : ALERT.FAIL())
 								}
 							}
 								//setEquipments([...equipments, newData]);
@@ -608,7 +606,7 @@ export default function Equipment(props) {
 							if(errorResult.errorFound){
 								const col_name = Object.keys(errorResult.rows[0])[0]
 								dataIsOnDatabase[col_name] = true
-								setAlertUser({...ALERT.FAIL,error:{active:true,text:'Error updating field.'}})
+								setAlertUser(ALERT.FAIL())
 								reject();
 								return;
 							}

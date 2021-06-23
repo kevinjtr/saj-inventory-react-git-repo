@@ -5,12 +5,13 @@ import 'date-fns';
 import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
-import {LoadingCircle} from './tools/tools';
+import {LoadingCircle, ALERT} from './tools/tools';
 import MaterialTable from 'material-table'
 import {tableIcons} from './material-table/config'
 import api from '../axios/Api';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import findIndex from 'lodash/findIndex'
+import {Autocomplete, Alert} from '@material-ui/lab';
+import {findIndex} from 'lodash'
+import Header from './Header'
 
 export default function AnnualInventory(props) {
 	//Hooks Declarations
@@ -19,6 +20,7 @@ export default function AnnualInventory(props) {
 	const [hras, setHras] = React.useState([]);
 	const [annualInv, setAnnualInv] = React.useState([]);
 	const [editable,setEditable] = React.useState(false)
+	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
@@ -27,6 +29,15 @@ export default function AnnualInventory(props) {
 	//setLoading(true)
 		await api.post(`annualinventory/update`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
+
+		const status = data.hasOwnProperty('status') ? data.status == 400 : false
+		const error = data.hasOwnProperty('error') ? data.error : false
+
+		if(status || error){
+			setAlertUser(ALERT.FAIL())
+		}else {
+			setAlertUser(ALERT.SUCCESS)
+		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -54,6 +65,15 @@ export default function AnnualInventory(props) {
 	//setLoading(true)
 		await api.post(`annualinventory/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
+
+		const status = data.hasOwnProperty('status') ? data.status == 400 : false
+		const error = data.hasOwnProperty('error') ? data.error : false
+
+		if(status || error){
+			setAlertUser(ALERT.FAIL())
+		}else {
+			setAlertUser(ALERT.SUCCESS)
+		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -81,6 +101,15 @@ export default function AnnualInventory(props) {
 	//setLoading(true)
 	await api.post(`annualinventory/add`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
+
+		const status = data.hasOwnProperty('status') ? data.status == 400 : false
+		const error = data.hasOwnProperty('error') ? data.error : false
+
+		if(status || error){
+			setAlertUser(ALERT.FAIL())
+		}else {
+			setAlertUser(ALERT.SUCCESS)
+		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -109,8 +138,86 @@ export default function AnnualInventory(props) {
 	let columns = []
 	//considering move to a config file.
 	let cols_config = [
-		{ title: 'HRA Number', field: 'hra_num', editable: 'onAdd', type:'numeric'},
-		{ title: 'Fiscal Year', field: 'firscal_year', type:'numeric'},
+		{ title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0,
+		editComponent: (x) => {
+		//console.log(x);
+		let idx = -1
+	
+		if(x.rowData.hra_num){
+			idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
+		}
+	
+		return(
+			<Autocomplete
+			//onChange={e => x.onChange(e)}
+			id={`combo-box-employee`}
+			size="small"
+			options={hras}
+			getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
+			value={idx != -1 ? hras[idx] : null}
+			//defaultValue={idx != -1 ? employees[idx] : null}
+			onChange ={e => {
+			const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+			console.log(hraNum_);
+			x.onChange(hraNum_)
+			}}
+			//style={{ verticalAlign: 'top' }}
+			renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
+		/>
+		)
+		},
+		validate :(rowData) => {
+			if(rowData.hasOwnProperty('hra_num')){
+				if(!isNaN(rowData.hra_num)) {
+					if(rowData.hasOwnProperty('tableData')){
+						if(rowData.tableData.editing === "update"){
+							return true
+						}
+					}					
+		
+					if(typeof rowData.hra_num == "number"){
+						return true
+					}
+		
+					if(typeof rowData.hra_num === "string"){
+						return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
+					}
+				}
+			}
+			
+			return ({ isValid: false, helperText: 'HRA num is required.' })
+		},
+		},
+		{ title: 'Fiscal Year', field: 'fiscal_year', editable: 'onAdd', type:'numeric', validate: (rowData) => {
+
+			if(rowData.hasOwnProperty('fiscal_year')){
+				if(!isNaN(rowData.fiscal_year)) {
+					if(rowData.hasOwnProperty('tableData')){
+						if(rowData.tableData.editing === "update"){
+							return true
+						}
+					}					
+		
+					if(typeof rowData.fiscal_year == "number"){
+						console.log('isnumber')
+						if(rowData.fiscal_year.toString().length > 4){
+							return ({ isValid: false, helperText: 'FY digits exceed 4.' })
+						}else if( findIndex(hras,h => h.fiscal_year == rowData.fiscal_year) != -1 ){
+							return ({ isValid: false, helperText: 'Duplicated HRA num.' })
+						}
+
+						return true
+					}
+		
+					if(typeof rowData.fiscal_year === "string"){
+						return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
+					}
+				}
+			}
+			
+			return ({ isValid: false, helperText: 'Fiscal Year is required.' })
+
+		}},
 		// , validate: (rowData) => {
 
 		// 	if(rowData.hasOwnProperty('hra_num')){
@@ -277,7 +384,24 @@ export default function AnnualInventory(props) {
 		setAnnualInv([])
 	});
 	}
-	//will run once.
+
+	const AlertUser = (x) => {
+
+		console.log('alert user activated')
+
+	if(x.error.active){
+		return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+	}else if(x.success.active){
+		return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
+	}
+
+	//Sucessfully added data to database!
+
+	setAlertUser(ALERT.RESET)
+	return(null)
+	}
+
+	//Effects
 	React.useEffect(() => {
 	console.log('AnnualInvCall')
 	setLoading(true)
@@ -300,36 +424,40 @@ export default function AnnualInventory(props) {
 		setAnnualInv([])
 		});
 
-	// console.log('HRACall')
-	// api.get(`hra`,{}).then((response) => response.data).then((data) => {
-	// 	console.log(data.data)
-	// 	// setLoading(false)
-	// 	setHras(data.status != 400 ? data.data : data)
-	// 	// this.setState({
-	// 	// 	equipments: data.status != 400 ? data.values: data,
-	// 	// 	setequipment: data
-	// 	// });
-	// 	//console.log(this.state.equipment.values);
-	// 	// console.log(this.props, this.state);
-	// 	}).catch(function (error) {
-	// 	//setLoading(false)
-	// 	setHras([])
-	// 	});
+	console.log('HRACall')
+	api.get(`hra`,{}).then((response) => response.data).then((data) => {
+		console.log(data.data)
+		// setLoading(false)
+		setHras(data.status != 400 ? data.data : data)
+		// this.setState({
+		// 	equipments: data.status != 400 ? data.values: data,
+		// 	setequipment: data
+		// });
+		//console.log(this.state.equipment.values);
+		// console.log(this.props, this.state);
+		}).catch(function (error) {
+		//setLoading(false)
+		setHras([])
+		});
 
 
 	}, []);
 
 	//Render return.
 	return (
+	<>
+	<Header/>
 	<div>
 		<div style={{textAlign: 'center'}}>
 			<h2 >Annual Inventory</h2>
 		</div>
+		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 		<div style={{textAlign: 'center'}}>
 			{loading ? LoadingCircle() : null}
-			{!loading && annualInv.length > 0 ? materialTableSelect() : null}
+			{!loading ? materialTableSelect() : null}
 		</div>
 	</div>
+	</>
 	);
 }
 

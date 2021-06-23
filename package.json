@@ -17,6 +17,7 @@
     "lodash": "^4.17.21",
     "material-table": "^1.67.0",
     "material-ui": "^0.20.2",
+    "moment": "^2.29.1",
     "money-clip": "^3.0.3",
     "node-sass": "^4.14.1",
     "prop-types": "^15.7.2",
