@@ -244,7 +244,7 @@ export default function Equipment(props) {
 				name={val}
 				onChange={handleSearchFieldsOptions}
 				
-				label="Sort By"
+				label={text}
 				>
 				{menuItems}
 			</Select>
@@ -266,6 +266,7 @@ export default function Equipment(props) {
 				id="demo-simple-select-outlined"
 				value={searchFields[val].blanks ? searchFields[val].blanks : BLANKS_DEFAULT}
 				name={val}
+				label={text}
 				onChange={handleSearchFieldsBlanks}
 				//label="Sort By"
 				style={{width:200}}

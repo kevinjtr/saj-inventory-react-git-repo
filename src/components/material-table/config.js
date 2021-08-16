@@ -17,6 +17,9 @@ import ViewColumn from '@material-ui/icons/ViewColumn';
 import UndoIcon from '@material-ui/icons/Undo';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
+import UpdateIcon from '@material-ui/icons/Update';
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 
 export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
@@ -38,6 +41,9 @@ export const tableIcons = {
     ViewColumn: React.forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
     View: React.forwardRef((props, ref) => <VisibilityIcon {...props} ref={ref} />),
     Pdf: React.forwardRef((props, ref) => <PictureAsPdfIcon {...props} ref={ref} />),
+    Update: React.forwardRef((props, ref) => <UpdateIcon {...props} ref={ref} />),
+    Lock: React.forwardRef((props, ref) => <LockIcon {...props} ref={ref} />),
+    Unlock: React.forwardRef((props, ref) => <LockOpenIcon {...props} ref={ref} />),
   };
 
 export const changeHistoryIcons = {

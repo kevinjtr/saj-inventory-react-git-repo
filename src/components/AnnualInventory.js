@@ -12,6 +12,10 @@ import api from '../axios/Api';
 import {Autocomplete, Alert} from '@material-ui/lab';
 import {findIndex} from 'lodash'
 import Header from './Header'
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+
+const lockOptions = {2:'UNLOCK',1:'LOCK'}
 
 export default function AnnualInventory(props) {
 	//Hooks Declarations
@@ -138,7 +142,7 @@ export default function AnnualInventory(props) {
 	let columns = []
 	//considering move to a config file.
 	let cols_config = [
-		{ title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0,
+		{ title: 'HRA Number', field: 'hra_num', type:'numeric', editable: 'onAdd', col_id:2.0,
 		editComponent: (x) => {
 		//console.log(x);
 		let idx = -1
@@ -187,6 +191,91 @@ export default function AnnualInventory(props) {
 			
 			return ({ isValid: false, helperText: 'HRA num is required.' })
 		},
+		},
+		{ title: 'Status', field: 'locked',type:'numeric', editable: 'onUpdate',
+		render: rowData => <a value={rowData.locked} >{rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED'}</a>,
+		lookup:lockOptions
+		// editComponent: x => {
+		// 	//const table_id = x.rowData.tableData.id
+		// 	console.log(x);
+		// 	let idx = -1
+	
+		// 	if(x.rowData.locked){
+		// 		idx = findIndex(lockOptions,function(o){ return (o.value == x.rowData.locked) })
+		// 	}
+	
+		// 	return(
+		// 		<Autocomplete
+		// 		//onChange={e => x.onChange(e)}
+		// 		id={`combo-box-employee-`}
+		// 		size="small"
+		// 		options={lockOptions}
+		// 		getOptionLabel={(option) => option.status}
+		// 		value={idx != -1 ? lockOptions[idx].value : null}
+		// 		onChange ={e => {
+	
+		// 		const val_ = e.target.textContent ? (e.target.textContent == 'LOCKED' ? 1:2) : 2
+		// 		//console.log(e.target);
+		// 		x.onChange(val_)
+		// 		}}
+		// 		//style={{ verticalAlign: 'top' }}
+		// 		renderInput={(params) => <TextField {...params} label="Status" margin="normal"/>}
+		// 	/>
+		// 	)
+		// }
+		// editComponent: x => {
+		// //const table_id = x.rowData.tableData.id
+		// // console.log(x);
+		// // let idx = -1
+
+		// // if(x.rowData.office_symbol){
+		// // 	idx = findIndex(officesSymbol,function(o){ return (o.id && (o.id == x.rowData.office_symbol)); })
+		// // }
+
+		// if(x.rowData.locked === 1){
+		// 	return(
+		// 		<LockOpenIcon
+		// 		//onChange={e => x.onChange(e)}
+		// 		id={`lock-icon-${x.rowData.id}`}
+		// 		key={`lock-icon-${x.rowData.id}`}
+		// 		//size="small"
+		// 		//options={officesSymbol}
+		// 		//getOptionLabel={(option) => option.id + ' - ' + option.alias}
+		// 		//value={idx != -1 ? officesSymbol[idx] : null}
+		// 		// onChange ={e => {
+	
+		// 		// const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+		// 		// console.log(id_);
+		// 		// x.onChange(id_)
+		// 		// }}
+		// 		onClick={() => alert('lock open icon clicked.')}
+		// 		//style={{ verticalAlign: 'top' }}
+		// 		//renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
+		// 	/>
+		// 	)
+		// }
+
+		// return(
+		// 	<LockIcon
+		// 		//onChange={e => x.onChange(e)}
+		// 		id={`lock-icon-${x.rowData.id}`}
+		// 		key={`lock-icon-${x.rowData.id}`}
+		// 		//size="small"
+		// 		//options={officesSymbol}
+		// 		//getOptionLabel={(option) => option.id + ' - ' + option.alias}
+		// 		//value={idx != -1 ? officesSymbol[idx] : null}
+		// 		// onChange ={e => {
+
+		// 		// const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+		// 		// console.log(id_);
+		// 		// x.onChange(id_)
+		// 		// }}
+		// 		onClick={() => alert('lock icon clicked.')}
+		// 		//style={{ verticalAlign: 'top' }}
+		// 		//renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
+		// 	/>
+		// )
+		// }
 		},
 		{ title: 'Fiscal Year', field: 'fiscal_year', editable: 'onAdd', type:'numeric', validate: (rowData) => {
 
@@ -304,70 +393,95 @@ export default function AnnualInventory(props) {
 			}
 			}}
 			title=""
+			actions={[
+				
+				rowData => ({
+					icon: tableIcons.Update,
+					tooltip: 'Update',
+					onClick: async (event, rowData) => {
+						await handleTableUpdate({changes:{'0':{newData:{...rowData,update:true}}}});
+						resetAnnualInventory();
+					},
+					disabled: (rowData.locked != 2) //rowData.birthYear < 2000
+				}),
+				// rowData => ({
+				// 	icon: tableIcons.Lock,
+				// 	tooltip: 'Lock',
+				// 	onClick: (event, rowData) => alert("You updated " + JSON.stringify(rowData)),
+				// 	disabled: !(rowData.locked == 2) //rowData.birthYear < 2000
+				// }),
+				// rowData => ({
+				// 	icon: tableIcons.Unlock,
+				// 	tooltip: 'Unlock',
+				// 	onClick: (event, rowData) => alert("You updated " + JSON.stringify(rowData)),
+				// 	disabled: !(rowData.locked != 2) //rowData.birthYear < 2000
+				// }),
+				
+			  ]}
 			{...(editable && {editable:{
-				//isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
+				isEditable: rowData => rowData.locked === 2, // only name(a) rows would be editable
 				//isEditHidden: rowData => rowData.name === 'x',
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
-				onBulkUpdate: async (changes) => {
-					await handleTableUpdate({changes:changes})
-						new Promise((resolve, reject) => {
+				// onBulkUpdate: async (changes) => {
+				// 	await handleTableUpdate({changes:changes})
+				// 		new Promise((resolve, reject) => {
 						
-							setTimeout(() => {
-								//setHras([...hras, newData]);
-								//console.log('bulk update')
+				// 			setTimeout(() => {
+				// 				//setHras([...hras, newData]);
+				// 				//console.log('bulk update')
 								
-								resetHras()
-								resolve();
-							}, 1000);
-						})
-					},
-					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-					onRowAdd: async (newData) =>{
-					await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-						new Promise((resolve, reject) => {
-							setTimeout(() => {
-								//setHras([...hras, newData]);
-								resetHras()
-								resolve();
-							}, 1000);
-						})
-					},
-					onRowUpdate: async(newData, oldData) =>{
-					await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-						new Promise((resolve, reject) => {
-							setTimeout(() => {
-								
-								//const dataUpdate = [...hras];
-								//const index = oldData.tableData.id;
-								//dataUpdate[index] = newData;
-								resetHras()
-								//setHras([...dataUpdate]);
-			
-								resolve();
-							}, 1000);
-						})
-					},
-					// onRowDelete: async (oldData) =>{
-					// await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
-					// 	new Promise((resolve, reject) => {
-					// 		setTimeout(() => {
-					// 			const dataDelete = [...hras];
-					// 			const index = oldData.tableData.id;
-					// 			dataDelete.splice(index, 1);
-					// 			setHras([...dataDelete]);
-					// 			resolve();
-					// 		}, 1000);
-					// 	})
-					// }
+				// 				resetAnnualInventory()
+				// 				resolve();
+				// 			}, 1000);
+				// 		})
+				// },
+				onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+				onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+				onRowAdd: async (newData) => {
+				await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+					new Promise((resolve, reject) => {
+						setTimeout(() => {
+							//setHras([...hras, newData]);
+							resetAnnualInventory()
+							resolve();
+						}, 1000);
+					})
+				},
+				onRowUpdate: async(newData, oldData) =>{
+				await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+					new Promise((resolve, reject) => {
+						setTimeout(() => {
+							
+							//const dataUpdate = [...hras];
+							//const index = oldData.tableData.id;
+							//dataUpdate[index] = newData;
+							resetAnnualInventory()
+							//setHras([...dataUpdate]);
+		
+							resolve();
+						}, 1000);
+					})
+				},
+				// onRowDelete: async (oldData) =>{
+				// await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
+				// 	new Promise((resolve, reject) => {
+				// 		setTimeout(() => {
+				// 			const dataDelete = [...hras];
+				// 			const index = oldData.tableData.id;
+				// 			dataDelete.splice(index, 1);
+				// 			setHras([...dataDelete]);
+				// 			resolve();
+				// 		}, 1000);
+				// 	})
+				// }
 			}})}
 			/>
 		</div>
 	)
 	}
 
-	const resetHras = () => {
+	const resetAnnualInventory = () => {
 	api.get(`annualinventory`).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
@@ -412,6 +526,8 @@ export default function AnnualInventory(props) {
 
 		if(data.status == 200 && data.editable){
 			setEditable(data.editable)
+
+			console.log('is editable')
 		}
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,

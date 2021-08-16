@@ -167,7 +167,7 @@ export default function ChangeHistory(props) {
 				icons={changeHistoryIcons}
 				localization={{
 					toolbar: {
-					searchPlaceholder: "Filter"
+						searchPlaceholder: "Filter"
 					},
 					body: {
 						editRow: {

@@ -209,14 +209,14 @@ export default function Employee(props) {
 		/>
 		)
 		}},
-		{title: 'Office Symbol',field:'office_symbol_alias',editable: 'never'},
+		{ title: 'Office Symbol',field:'office_symbol_alias',editable: 'never'},
 		{ title: 'Work Phone', field: 'work_phone',type:'numeric',validate: rowData => {
 		if(rowData.work_phone){
 			return(rowData.work_phone.toString().length > 10 ? { isValid: false, helperText: 'phone number digits exceed 10.' } : true)
 		}
 		return(true)
 		}},
-		{title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'}
+		{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'}
 	]
 
 	if(editable) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
