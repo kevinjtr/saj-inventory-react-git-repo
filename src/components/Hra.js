@@ -24,8 +24,10 @@ export default function Hra(props) {
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
 
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
+		//console.log('equipmentbyHraCall')
+		//setLoading(true)
+		let errorFound = true
+
 		await api.post(`hra/update`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
 
@@ -35,6 +37,7 @@ export default function Hra(props) {
 		if(status || error){
 			setAlertUser(ALERT.FAIL())
 		}else {
+			errorFound = false
 			setAlertUser(ALERT.SUCCESS)
 		}
 		//setLoading(false)
@@ -51,11 +54,12 @@ export default function Hra(props) {
 		});
 		
 
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
+		return errorFound
+		// const tempProps = {...props};
+		//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+		//  if(!searchResult.error){
+		//   equipments = searchResult.data
+		//  }
 	}
 
 	const handleTableDelete = async (rowData) => {
@@ -96,39 +100,42 @@ export default function Hra(props) {
 
 	const handleTableAdd = async (rowData) => {
 
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
-	await api.post(`hra/add`,{params:rowData}).then((response) => response.data).then((data) => {
-		console.log(data)
+		//console.log('equipmentbyHraCall')
+		//setLoading(true)
+		let errorFound = true
+		await api.post(`hra/add`,{params:rowData}).then((response) => response.data).then((data) => {
+			console.log(data)
 
-		const status = data.hasOwnProperty('status') ? data.status == 400 : false
-		const error = data.hasOwnProperty('error') ? data.error : false
+			const status = data.hasOwnProperty('status') ? data.status == 400 : false
+			const error = data.hasOwnProperty('error') ? data.error : false
 
-		if(status || error){
-			setAlertUser(ALERT.FAIL())
-		}else {
-			setAlertUser(ALERT.SUCCESS)
-		}
+			if(status || error){
+				setAlertUser(ALERT.FAIL())
+			}else {
+				errorFound = false
+				setAlertUser(ALERT.SUCCESS)
+			}
 
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
+			//setLoading(false)
+			//setEquipments(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
 		}).catch(function (error) {
-		//setLoading(false)
-		//setEquipments([])
+			//setLoading(false)
+			//setEquipments([])
 		});
 		
 
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
+		return errorFound
+		// const tempProps = {...props};
+		//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+		//  if(!searchResult.error){
+		//   equipments = searchResult.data
+		//  }
 	}
 
 	
@@ -239,44 +246,48 @@ export default function Hra(props) {
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
 				onBulkUpdate: async (changes) => {
-					await handleTableUpdate({changes:changes})
-						new Promise((resolve, reject) => {
-						
+					const errorResult = await handleTableUpdate({changes:changes})
+						return(new Promise((resolve, reject) => {
 							setTimeout(() => {
-								//setHras([...hras, newData]);
-								//console.log('bulk update')
+								if(errorResult){
+									reject()
+									return
+								}
 								
 								resetHras()
 								resolve();
 							}, 1000);
-						})
+						}))
 					},
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 					onRowAdd: async (newData) =>{
-					await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-						new Promise((resolve, reject) => {
+					const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+						return(new Promise((resolve, reject) => {
 							setTimeout(() => {
-								//setHras([...hras, newData]);
+								if(errorResult){
+									reject()
+									return
+								}
+
 								resetHras()
 								resolve();
 							}, 1000);
-						})
+						}))
 					},
 					onRowUpdate: async(newData, oldData) =>{
-					await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-						new Promise((resolve, reject) => {
+					const errorResult = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+						return (new Promise((resolve, reject) => {
 							setTimeout(() => {
-								
-								//const dataUpdate = [...hras];
-								//const index = oldData.tableData.id;
-								//dataUpdate[index] = newData;
+								if(errorResult){
+									reject()
+									return
+								}
+
 								resetHras()
-								//setHras([...dataUpdate]);
-			
 								resolve();
 							}, 1000);
-						})
+						}))
 					},
 					// onRowDelete: async (oldData) =>{
 					// await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
@@ -297,6 +308,7 @@ export default function Hra(props) {
 	}
 
 	const resetHras = () => {
+		setLoading(true)
 	api.get(`hra`).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
@@ -307,9 +319,11 @@ export default function Hra(props) {
 		// });
 		//console.log(this.state.equipment.values);
 		// console.log(this.props, this.state);
+		setLoading(false)
 	}).catch(function (error) {
 		//setLoading(false)
 		setHras([])
+		setLoading(false)
 	});
 	}
 

@@ -6,6 +6,7 @@ import Equipment from '../Equipment';
 import Hra from '../Hra';
 import Employee from '../Employee';
 import AnnualInventory from '../AnnualInventory';
+import ViewAnnualInventory from '../ViewAnnualInventory';
 import ChangeHistory from '../ChangeHistory';
 import Eng4844 from '../Eng4844';
 import FindEng4844 from '../FindEng4844';
@@ -17,6 +18,7 @@ import api from '../../axios/Api';
 const routes_config = [
     {path:'/equipment',label:'Equipment',component:Equipment,tab:true,level:'user'},
     {path:'/annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin'},
+    {path:'/annualinventory/:id',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin'},
     {path:'/hra',label:'HRA',component:Hra,tab:true,level:'user'},
     {path:'/employee',label:'Employee',component:Employee,tab:true,level:'user'},
     // {path:'/eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin'},

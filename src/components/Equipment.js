@@ -243,7 +243,8 @@ export default function Equipment(props) {
 				value={searchFields[val].options ? searchFields[val].options : OPTIONS_DEFAULT}
 				name={val}
 				onChange={handleSearchFieldsOptions}
-				
+				style={{width:'100%'}}
+				InputLabelProps={{style: {fontSize: '.8vw'}}}
 				label={text}
 				>
 				{menuItems}
@@ -269,7 +270,8 @@ export default function Equipment(props) {
 				label={text}
 				onChange={handleSearchFieldsBlanks}
 				//label="Sort By"
-				style={{width:200}}
+				style={{width:'100%'}}
+				InputLabelProps={{style: {fontSize: '.8vw'}}}
 				>
 				{menuItems}
 			</Select>
@@ -825,10 +827,11 @@ export default function Equipment(props) {
 			value={searchFields[key].value} 
 			onChange={handleSearchFieldsChange}
 			onKeyPress={handleSearchKeyPress}
-			style={{width:w,paddingRight:'20px'}}
-			InputLabelProps={{style: {fontSize: '.9vw'}}}
+			style={{width:'100%',paddingRight:'20px'}}
+			InputLabelProps={{style: {fontSize: '.7vw'}}}
 			InputProps={{
-                readOnly: disableSearchFields,
+				readOnly: disableSearchFields,
+				shrink: true
               }}
 			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
 		/>
@@ -891,7 +894,7 @@ export default function Equipment(props) {
 		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 		<div style={{textAlign: 'center'}}>
 		{loading ? LoadingCircle() : null}
-		{equipments.length> 0  ? materialTableSelect() : null}
+		{equipments.length > 0  ? materialTableSelect() : null}
 		</div>
 	</div>
 	</>

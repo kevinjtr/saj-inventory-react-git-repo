@@ -29,10 +29,10 @@ export default function Employee(props) {
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
 
+		let errorFound = true
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
 		await api.post(`employee/update`,{params:rowData}).then((response) => response.data).then((data) => {
-		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
 		const error = data.hasOwnProperty('error') ? data.error : false
@@ -40,8 +40,10 @@ export default function Employee(props) {
 		if(status || error){
 			setAlertUser(ALERT.FAIL())
 		}else {
+			errorFound = false
 			setAlertUser(ALERT.SUCCESS)
 		}
+
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -56,6 +58,7 @@ export default function Employee(props) {
 		});
 		
 
+		return errorFound
 	// const tempProps = {...props};
 	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
 	//  if(!searchResult.error){
@@ -103,6 +106,8 @@ export default function Employee(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
+	let errorFound = true
+
 	await api.post(`employee/add`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
 
@@ -112,8 +117,11 @@ export default function Employee(props) {
 		if(status || error){
 			setAlertUser(ALERT.FAIL())
 		}else {
+			errorFound = false
 			setAlertUser(ALERT.SUCCESS)
 		}
+
+		
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -127,6 +135,7 @@ export default function Employee(props) {
 		//setEquipments([])
 		});
 		
+		return errorFound
 
 	// const tempProps = {...props};
 	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
@@ -139,6 +148,7 @@ export default function Employee(props) {
 
 	//Functions Declarations.
 	const resetEmployees = () => {
+		setLoading(true)
 	api.get(`employee`).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
@@ -149,9 +159,11 @@ export default function Employee(props) {
 		// });
 		//console.log(this.state.equipment.values);
 		// console.log(this.props, this.state);
+		setLoading(false)
 	}).catch(function (error) {
 		//setLoading(false)
 		setEmployees([])
+		setLoading(false)
 	});
 	}
 
@@ -255,41 +267,51 @@ export default function Employee(props) {
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
 				onBulkUpdate: async(changes) => {
-					await handleTableUpdate({changes:changes})
-						new Promise((resolve, reject) => {
+					const errorResult = await handleTableUpdate({changes:changes})
+						return(new Promise((resolve, reject) => {
 							setTimeout(() => {
-								//setEmployees([...employees, newData]);
-								//console.log('bulk update')
-								resetEmployees()
+								if(errorResult){
+									reject()
+									return;
+								}
+
+								resetEmployees();
 								resolve();
+								
 							}, 1000);
-						})
+						}))
 					},
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 					onRowAdd: async (newData) =>{
-					await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-						new Promise((resolve, reject) => {
+					const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+						return(new Promise((resolve, reject) => {
 							setTimeout(() => {
-								//setEmployees([...employees, newData]);
+								if(errorResult){
+									reject()
+									return;
+								}
+
 								resetEmployees();
 								resolve();
+								
 							}, 1000);
-						})
+						}))
 					},
 					onRowUpdate: async (newData, oldData) =>{
-					await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-						new Promise((resolve, reject) => {
+						const errorResult = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+						return(new Promise((resolve, reject) => {
 							setTimeout(() => {
-								
-								//const dataUpdate = [...employees];
-								//const index = oldData.tableData.id;
-								//dataUpdate[index] = newData;
-								//setEmployees([...dataUpdate]);
+								if(errorResult){
+									reject()
+									return;
+								}
+
 								resetEmployees();
 								resolve();
+									
 							}, 1000);
-						})
+						}))
 						},
 					// onRowDelete: async (oldData) => {
 					// await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})

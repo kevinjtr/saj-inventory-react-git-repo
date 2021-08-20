@@ -18,7 +18,9 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 const lockOptions = {2:'UNLOCK',1:'LOCK'}
 
 export default function AnnualInventory(props) {
+	const PAGE_URL = '/annualinventory'
 	//Hooks Declarations
+	const [initialize, setInitialize] = React.useState(true);
 	const [loading, setLoading] = React.useState(false);
 	//const [employees, setEmployees] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
@@ -103,6 +105,8 @@ export default function AnnualInventory(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
+	let resultReturn = {errorFound:false}
+
 	await api.post(`annualinventory/add`,{params:rowData}).then((response) => response.data).then((data) => {
 		console.log(data)
 
@@ -114,6 +118,8 @@ export default function AnnualInventory(props) {
 		}else {
 			setAlertUser(ALERT.SUCCESS)
 		}
+
+		resultReturn = data.columnErrors
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
 		// this.setState({
@@ -123,10 +129,12 @@ export default function AnnualInventory(props) {
 		//console.log(this.state.equipment.values);
 		// console.log(this.props, this.state);
 		}).catch(function (error) {
+			resultReturn = {...resultReturn,errorFound:false}
 		//setLoading(false)
 		//setEquipments([])
 		});
 		
+		return resultReturn
 
 	// const tempProps = {...props};
 	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
@@ -287,12 +295,12 @@ export default function AnnualInventory(props) {
 						}
 					}					
 		
+					console.log((new Date()).getFullYear() + 1,rowData.fiscal_year,typeof rowData.fiscal_year,typeof rowData.fiscal_year,rowData.fiscal_year)
 					if(typeof rowData.fiscal_year == "number"){
-						console.log('isnumber')
-						if(rowData.fiscal_year.toString().length > 4){
-							return ({ isValid: false, helperText: 'FY digits exceed 4.' })
-						}else if( findIndex(hras,h => h.fiscal_year == rowData.fiscal_year) != -1 ){
-							return ({ isValid: false, helperText: 'Duplicated HRA num.' })
+						if(rowData.fiscal_year.toString().length != 4){
+							return ({ isValid: false, helperText: 'four digits are required.' })
+						}else if(rowData.fiscal_year < 1990 || rowData.fiscal_year > (new Date()).getFullYear() + 1){
+							return ({ isValid: false, helperText: 'year is out of range.' })
 						}
 
 						return true
@@ -307,69 +315,8 @@ export default function AnnualInventory(props) {
 			return ({ isValid: false, helperText: 'Fiscal Year is required.' })
 
 		}},
-		// , validate: (rowData) => {
-
-		// 	if(rowData.hasOwnProperty('hra_num')){
-		// 		if(!isNaN(rowData.hra_num)) {
-		// 			if(rowData.hasOwnProperty('tableData')){
-		// 				if(rowData.tableData.editing === "update"){
-		// 					return true
-		// 				}
-		// 			}					
-		
-		// 			if(typeof rowData.hra_num == "number"){
-		// 				console.log('isnumber')
-		// 				if(rowData.hra_num.toString().length > 3){
-		// 					return ({ isValid: false, helperText: 'HRA digits exceed 3.' })
-		// 				}else if( findIndex(hras,h => h.hra_num == rowData.hra_num) != -1 ){
-		// 					return ({ isValid: false, helperText: 'Duplicated HRA num.' })
-		// 				}
-
-		// 				return true
-		// 			}
-		
-		// 			if(typeof rowData.hra_num === "string"){
-		// 				return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
-		// 			}
-		// 		}
-		// 	}
-			
-		// 	return ({ isValid: false, helperText: 'HRA number is required.' })
-
-		// }},
-		// { title: 'Employee ID', field: 'hra_employee_id',type:'numeric',
-		// editComponent: x => {
-		// console.log(x);
-		// let idx = -1
-
-		// if(x.rowData.hra_employee_id){
-		// 	idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.hra_employee_id)); })
-		// }
-
-		// return(
-		// 	<Autocomplete
-		// 	//onChange={e => x.onChange(e)}
-		// 	id="combo-box-employee"
-		// 	size="small"
-		// 	options={employees}
-		// 	getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
-		// 	value={idx != -1 ? employees[idx] : null}
-		// 	onChange ={e => {
-
-		// 	const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-		// 	console.log(id_);
-		// 	x.onChange(id_)
-		// 	}}
-		// 	//style={{ verticalAlign: 'top' }}
-		// 	renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
-		// />
-		// )
-		// }},
 		{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
 		{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
-		// { title: 'Title', field: 'hra_title',editable: 'never' },
-		// { title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },
-		// { title: 'Work Phone', field: 'hra_work_phone',editable: 'never' },
 		{ title: 'Equipment Quantity', field: 'annual_equipment_count',editable: 'never'}
 	]
 
@@ -394,7 +341,6 @@ export default function AnnualInventory(props) {
 			}}
 			title=""
 			actions={[
-				
 				rowData => ({
 					icon: tableIcons.Update,
 					tooltip: 'Update',
@@ -403,6 +349,15 @@ export default function AnnualInventory(props) {
 						resetAnnualInventory();
 					},
 					disabled: (rowData.locked != 2) //rowData.birthYear < 2000
+				}),
+				rowData => ({
+					icon: tableIcons.View,
+					tooltip: 'View',
+					onClick: async (event, rowData) => {
+						props.history.replace(`${PAGE_URL}/${rowData.id}`)
+						//await handleTableUpdate({changes:{'0':{newData:{...rowData,update:true}}}});
+						//resetAnnualInventory();
+					}
 				}),
 				// rowData => ({
 				// 	icon: tableIcons.Lock,
@@ -439,14 +394,19 @@ export default function AnnualInventory(props) {
 				onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 				onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 				onRowAdd: async (newData) => {
-				await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-					new Promise((resolve, reject) => {
+				const result = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+					return (new Promise((resolve, reject) => {
 						setTimeout(() => {
 							//setHras([...hras, newData]);
-							resetAnnualInventory()
-							resolve();
+							if(result.errorFound){
+								reject()
+							}else{
+								resetAnnualInventory()
+								resolve();
+							}
+							
 						}, 1000);
-					})
+					}))
 				},
 				onRowUpdate: async(newData, oldData) =>{
 				await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
@@ -482,20 +442,14 @@ export default function AnnualInventory(props) {
 	}
 
 	const resetAnnualInventory = () => {
+		setLoading(true)
 	api.get(`annualinventory`).then((response) => response.data).then((data) => {
 		console.log(data)
-		//setLoading(false)
-		
 		setAnnualInv(data.status == 200 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
+		setLoading(false)
 	}).catch(function (error) {
-		//setLoading(false)
 		setAnnualInv([])
+		setLoading(false)
 	});
 	}
 
@@ -518,10 +472,9 @@ export default function AnnualInventory(props) {
 	//Effects
 	React.useEffect(() => {
 	console.log('AnnualInvCall')
-	setLoading(true)
+	setInitialize(true)
 		api.get(`annualinventory`).then((response) => response.data).then((data) => {
 		console.log(data)
-		setLoading(false)
 		setAnnualInv(data.status == 200 ? data.data : data)
 
 		if(data.status == 200 && data.editable){
@@ -535,9 +488,10 @@ export default function AnnualInventory(props) {
 		// });
 		//console.log(this.state.equipment.values);
 		// console.log(this.props, this.state);
+		setInitialize(false)
 		}).catch(function (error) {
 		setLoading(false)
-		setAnnualInv([])
+		setInitialize(false)
 		});
 
 	console.log('HRACall')
@@ -569,130 +523,10 @@ export default function AnnualInventory(props) {
 		</div>
 		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 		<div style={{textAlign: 'center'}}>
-			{loading ? LoadingCircle() : null}
-			{!loading ? materialTableSelect() : null}
+			{loading || initialize ? LoadingCircle() : null}
+			{!initialize ? materialTableSelect() : null}
 		</div>
 	</div>
 	</>
 	);
 }
-
-
-
-
-
-// import React, { Component } from 'react';
-// import qs from 'querystring';
-// import { connect } from 'react-redux';
-// import { addProduct } from '../publics/actions/eng4900s';
-// import api from '../axios/Api';
-// import HraForm from './forms/hra';
-
-// export class AddProduct extends Component {
-
-// 	constructor(props) {
-// 		super(props);
-
-// 		this.state = {
-// 			equipments: [],
-// 			currentEquipment: { id: null, item_type: '' },
-// 			editing: false,
-// 			product_name: '',
-// 			description: '',
-// 			image: '',
-// 			id_category: '',
-// 			quantity: '',
-// 			categories: [],
-// 		};
-// 	}
-
-// 	componentDidMount() {
-// 		//this.refreshCategoryTable();
-// 		//this.refreshEquipmentList();
-// 	}
-
-// 	refreshEquipmentList() {
-// 		console.log('equipmentDataCALL')
-// 		this.equipmentData = api.get('employee', this.state).then((response) => response.data).then((data) => {
-// 			console.log(data)
-// 			// this.setState({
-// 			// 	equipments: data.status != 400 ? data.values: data,
-// 			// 	setequipment: data
-// 			// });
-// 			//console.log(this.state.equipment.values);
-// 			// console.log(this.props, this.state);
-// 		});
-// 	}
-
-// 	getEquipmentByHraID(hraID) {
-// 		this.equipmentData = api.get(`/equipment/hra/${hraID}`, this.state).then((response) => response.data).then((data) => {
-// 			console.log(data)
-// 			// this.setState({
-// 			// 	equipments: data.status != 400 ? data.values: data,
-// 			// 	setequipment: data
-// 			// });
-// 			return(data.status != 400 ? data.values: data)
-// 			//console.log(this.state.equipment.values);
-// 			// console.log(this.props, this.state);
-// 		});
-// 	}
-
-// 	addEquipment = (equipment) => {
-// 		api.post('equipment', qs.stringify(equipment)).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-// 	};
-
-// 	deleteEquipment = (id) => {
-// 		api.delete(`equipment/${id}`).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-// 	};
-
-// 	updateEquipment = (id, equipment) => {
-
-// 		console.log(`equipment/${id}`,qs.stringify(equipment))
-// 		api.patch(`equipment/${id}`, qs.stringify(equipment)).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-
-// 		this.setState({
-// 			currentEquipment: { id: null, item_type: '' }
-// 		});
-
-// 		this.setEditing(false);
-// 	};
-
-// 	editRow = (equipment) => {
-// 		console.log(equipment)
-// 		this.setState({
-// 			currentEquipment: { id: equipment.id, item_type: equipment.item_type }
-// 		});
-
-// 		this.setEditing(true);
-// 	};
-
-// 	setEditing = (isEditing) => {
-// 		this.setState({ editing: isEditing });
-// 	};
-
-// 	handlerSubmit = async () => {
-// 		//window.event.preventDefault();
-// 		//await this.props.dispatch(addProduct(this.state));
-// 		//this.props.history.push('/products');
-// 	};
-	
-// 	render() {
-// 		return(
-// 			<HraForm/>
-// 		);
-// 	}
-// }
-
-// const mapStateToProps = (state) => {
-// 	return {
-// 		products: state.products
-// 	};
-// };
-
-// export default connect(mapStateToProps)(AddProduct);
