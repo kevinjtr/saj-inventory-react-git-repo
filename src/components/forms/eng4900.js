@@ -38,7 +38,9 @@ import api from '../../axios/Api';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormLabel from '@material-ui/core/FormLabel';
-
+import MaterialTable from 'material-table'
+import {tableIcons} from '../material-table/config'
+import Pdf from './eng4900-26-2.pdf';
 
 const plusButtonStyles = makeStyles((theme) => ({
   fab: {
@@ -205,6 +207,7 @@ export default function FormPropsTextFields() {
 
   //Hooks Declarations.
   const [eng4900s, setEng4900s] = React.useState([]);
+  const [eng4900sTableFormat, setEng4900sTableFormat] = React.useState([]);
   const [numOfBarTags, setNumOfBarTags] = React.useState(1);
   const [selectedDate, setSelectedDate] = React.useState(new Date());
   const [phoneNumbers, setPhoneNumbers] = React.useState({
@@ -223,7 +226,7 @@ export default function FormPropsTextFields() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [id_, setId] = React.useState('');
   const [selectedForm, setSelectedForm] = React.useState(null);
-
+  const [searchView, setSearchView] = React.useState('card-view');
   
   //Events Declarations.
   const handle4900sChange = (event) => {
@@ -281,12 +284,23 @@ export default function FormPropsTextFields() {
     // }
   };
 
+  const handleSearchViewChange = (event) => {
+    setSearchView(event.target.value);
+    // if(event.target.value == ''){
+    //   setIncludes({...includes_,  [event.target.name]: 'includes'})
+    // }
+  };
+
   
 
   //Function Declarations.
   const bartagsData = (f) => {
+
+    console.log(f)
     const returnArray = [];
-    for(let i=0; i<f.length;i++){
+    const keys = Object.keys(f);
+
+    for(let i=0; i<keys.length;i++){
       const b_key = i+1
         returnArray.push(
             <>
@@ -398,8 +412,20 @@ export default function FormPropsTextFields() {
     setSelectedForm(null)
     console.log('4900SearchCall')
       await api.post(`eng4900/search`,{fields:{id:id_}}).then((response) => response.data).then((data) => {
-        console.log(data)
-        setEng4900s(data.status != 400 ? data.data : data)
+        console.log(data.data)
+        setEng4900s(data.status != 400 ? data.data : [])
+
+        for (var key in data.data) {
+          if (data.data.hasOwnProperty(key)) {
+            data.data[key] = Object.assign({}, data.data[key]);
+          }
+        }
+
+        console.log(Object.values(data.data))
+        setEng4900sTableFormat(data.status != 400 ? Object.values(data.data) : [])
+        
+        //setEng4900sTableFormat(eng4900s.map(form => Object.assign({}, form)))
+        
         // this.setState({
         // 	equipments: data.status != 400 ? data.values: data,
         // 	setequipment: data
@@ -446,27 +472,11 @@ export default function FormPropsTextFields() {
               <RadioGroup row aria-label="position" name="position" defaultValue={requested_action}>
                 <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
                 <FormControlLabel id="radio-transfer" key="radio-transfer" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
-                <FormControlLabel id="radio-end" key="radio-end" value="End" control={<Radio color="primary" />} label="Repair" />
+                <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
                 <FormControlLabel id="radio-excess" key="radio-excess" value="Excess" control={<Radio color="primary" />} label="Excess" />
                 <FormControlLabel id="radio-foi" key="radio-foi" value="FOI" control={<Radio color="primary" />} label="FOI" />
-                {/* <FormControlLabel value="Temporary Loan" control={<Radio color="primary" />} label="Repair" /> */}
               </RadioGroup>
             </FormControl>
-            {/* <FormControlLabel
-                control={<Checkbox checked={reqActions["Issue"] } onChange={handleCheckBoxChange} name="issue" />}
-                label="Issue"/>
-            <FormControlLabel
-                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="transfer" />}
-                label="Transfer"/>
-            <FormControlLabel
-                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="repair" />}
-                label="Repair"/>
-            <FormControlLabel
-                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="excess" />}
-                label="Excess"/>
-            <FormControlLabel
-                control={<Checkbox checked={reqActions["Issue"]} onChange={handleCheckBoxChange} name="foi" />}
-                label="FOI"/>*/}
             <FormControlLabel
                 control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={reqActions["TemporaryLoan"]} onChange={handleCheckBoxChange} name="TemporaryLoan" />}
                 label="Temporary Loan"/> 
@@ -826,8 +836,8 @@ export default function FormPropsTextFields() {
   }
 
   function CardProduct(form){
-
-    const {form_id} = form[0]
+    
+    const {form_id,folder_link} = form[0]
     let bartags = ''
 
     Object.keys(form).map(function(key) {
@@ -838,11 +848,11 @@ export default function FormPropsTextFields() {
       <div  id={"container-"+form_id} key={"container-"+form_id} className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
         <div id={"card-"+form_id} key={"card-"+form_id} className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
               <div style={{display:'inline'}}>
-                <h4 style={{ marginTop: '20px' }}>ENG4900 - ID: {form_id}</h4>
+                <h4 style={{ marginTop: '20px' }}>ENG4900: {form_id}</h4>
               </div>
-              <div style={{display:'inline',textAlign:'center'}}>
+              {/* <div style={{display:'inline',textAlign:'center'}}>
                   { <img src={'./ENG4900.PNG'} alt="" style={{height:"100%",width:"100%",display:'inline'}} />}
-              </div>           
+              </div>            */}
           <hr />
           
           <h6>Bar Tags Quantity: {form.length}</h6>
@@ -852,7 +862,8 @@ export default function FormPropsTextFields() {
                   {/* <small>Bar Tags: </small>
                   <small>{btPrint} </small> */}
           <div id={"row-"+form_id} key={"row-"+form_id} className="row" style={{ margin: 3,marginTop:'10px' }}>
-              <input id={"bnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={handleViewFormFromCard}/>
+              {!folder_link ? <input id={"bnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={handleViewFormFromCard}/> : null}
+              {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {Pdf} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
             {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
               <input type="submit" value="Edit" className="btn btn-warning" />
             </Link> */}
@@ -862,6 +873,37 @@ export default function FormPropsTextFields() {
       </div>
     );
   }
+
+  const materialTableSelect = () => {
+  
+    
+    let columns = [
+      { title: 'Form ID', field: '0.form_id' },
+      { title: 'Bar Tags', field: "0.bar_tag_num",editable: 'never'},
+      { title: 'Losing HRA', field: "0.losing_hra_num",editable: 'never' },
+      { title: 'Gaining HRA', field: "0.gaining_hra_num",editable: 'never' },
+    ]
+  
+    return(
+      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+          <MaterialTable
+          icons={tableIcons}
+            columns={columns}
+            data={eng4900sTableFormat}
+            options={{
+              exportButton: true,
+              exportAllData: true,
+              headerStyle: {
+                backgroundColor: "#969696",
+                color: "#FFF",
+                fontWeight: 'bold',
+            }
+            }}
+            title=""
+          />
+    </div>
+    )
+    }
 
   //Render Variables
   const textFieldsLosingHandConfig1 = [
@@ -1108,11 +1150,20 @@ console.log(phoneNumbers)
               </div>
           </form>
       </div>
-
-      {cards.length > 0 && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
-          <h3 style={{ justifyContent: 'center' }}>List Of Available 4900s</h3>
+      {/* <div style={{textAlign:'center'}}>
+        <FormControl component="fieldset">
+          <RadioGroup row aria-label="position" name="position" defaultValue={searchView} onChange={handleSearchViewChange}>
+          <FormControlLabel id="card-view" key="card-view" value="card-view" control={<Radio color="primary" />} label="Card View" />
+            <FormControlLabel id="table-view" key="table-view" value="table-view" control={<Radio color="primary" />} label="Table View" />
+          </RadioGroup>
+        </FormControl>
+      </div> */}
+      {cards.length > 0 && searchView == "card-view"  && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
+          <h3 style={{ justifyContent: 'center' }}>Available 4900s</h3>
               <div style={{ justifyContent: 'center' }}>{cards}</div>
       </div>) : null}
+
+      {searchView === "table-view" ? materialTableSelect():null}
 
       <form className={classesTextField.root} noValidate autoComplete="off">
         <div className={classesGrid.root}>

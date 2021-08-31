@@ -11,7 +11,7 @@ import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {LoadingCircle} from '../tools/tools';
 import MaterialTable from 'material-table'
 import {tableIcons} from '../material-table/config'
 import FormControl from '@material-ui/core/FormControl';
@@ -20,47 +20,19 @@ import api from '../../axios/Api';
 import orderBy from 'lodash/orderBy'
 import findIndex from 'lodash/findIndex'
 
-const texFieldStyles = makeStyles((theme) => ({
-  root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: '25ch',
-    },
-  },
-  options: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: '25ch',
-      textAlign: 'center',
-    },
-  },
-}));
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 
-const gridStyles = makeStyles((theme) => ({
-    root: {
-      flexGrow: 1,
-    },
-    paper: {
-      padding: theme.spacing(2),
-      textAlign: 'center',
-      color: theme.palette.text.secondary,
-    },
-    options: {
-        flexGrow: 1,
-        textAlign: 'center',
-      },
-  }));
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Typography from '@material-ui/core/Typography';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-const itemMenuStyles = makeStyles((theme) => ({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-  }));
-  
+import {texFieldStyles, gridStyles, itemMenuStyles } from '../styles/material-ui';
+
   function TextMaskCustom(props) {
     const { inputRef, ...other } = props;
   
@@ -109,6 +81,18 @@ const itemMenuStyles = makeStyles((theme) => ({
     onChange: PropTypes.func.isRequired,
   };
 
+  const accordionStyles = makeStyles((theme) => ({
+    root: {
+      width: '100%',
+    },
+    heading: {
+      fontSize: theme.typography.pxToRem(15),
+      fontWeight: theme.typography.fontWeightRegular,
+    },
+    body:{textAlign:'center'}
+  }));
+  
+
 
 export default function FormPropsTextFields(props) {
   
@@ -137,12 +121,13 @@ export default function FormPropsTextFields(props) {
     bartagNum:"includeBlanks",
     employeeName:"includeBlanks"
   });
-
+  const [searchView, setSearchView] = React.useState('std');
   
   // Style Declarations.
   const classesTextField = texFieldStyles();
   const classesItemMenu = itemMenuStyles();
   const classesGrid = gridStyles();
+  const classesAccordion = accordionStyles();
 
   //Event Handlers.
   const handleHraNameChange = (event) => {
@@ -226,6 +211,10 @@ export default function FormPropsTextFields(props) {
   //  }
   }
 
+  const handleSearchView = (e) => {
+    setSearchView(e.target.value)
+    }
+
   const handleUpdate = async (rowData) => {
 
     let result = {}
@@ -249,11 +238,11 @@ export default function FormPropsTextFields(props) {
     return(result)
   }
 
-  const handleDelete = (rowData) => {
+  const handleDelete = async (rowData) => {
 
   //console.log('equipmentbyHraCall')
   //setLoading(true)
-    api.post(`equipment/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+    await api.post(`equipment/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
       console.log(data)
       //setLoading(false)
       //setEquipments(data.status != 400 ? data.data : data)
@@ -270,11 +259,11 @@ export default function FormPropsTextFields(props) {
     
   }
 
-  const handleAdd = (rowData) => {
+  const handleAdd = async (rowData) => {
 
   //console.log('equipmentbyHraCall')
   //setLoading(true)
-    api.post(`equipment/add`,{params:rowData}).then((response) => response.data).then((data) => {
+    await api.post(`equipment/add`,{params:rowData}).then((response) => response.data).then((data) => {
       console.log(data)
       //setLoading(false)
       //setEquipments(data.status != 400 ? data.data : data)
@@ -293,11 +282,11 @@ export default function FormPropsTextFields(props) {
 
 
   //Functions.
-  const LoadingCircle = () => {
-  return (
-    <CircularProgress />
-  );
-  }
+  // const LoadingCircle = () => {
+  // return (
+  //   <CircularProgress />
+  // );
+  // }
 
   const SearchCriteriaOptions = (val,text="Options") => {
   return (
@@ -378,7 +367,7 @@ export default function FormPropsTextFields(props) {
         id={`combo-box-employee`}
         size="small"
         options={hras}
-        getOptionLabel={(option) => option.hra_num + ' - ' + option.first_name + ' ' + option.last_name}
+        getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
         value={idx != -1 ? hras[idx] : null}
         //defaultValue={idx != -1 ? employees[idx] : null}
         onChange ={e => {
@@ -396,11 +385,15 @@ export default function FormPropsTextFields(props) {
     { title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
     { title: 'Item Type', field: 'item_type',col_id:4  },
     { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: rowData => {
-      if(rowData.bar_tag_num.toString().length > 5){
-        return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
-      }else if(dataIsOnDatabase.bar_tag_num){
-        dataIsOnDatabase.bar_tag_num = false
-        return({ isValid: false, helperText: 'bar tag exists in database.' })
+      try{
+        if(rowData.bar_tag_num.toString().length > 5){
+          return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
+        }else if(dataIsOnDatabase.bar_tag_num){
+          dataIsOnDatabase.bar_tag_num = false
+          return({ isValid: false, helperText: 'bar tag exists in database.' })
+        }
+      }catch(err){
+
       }
       
       return(true)
@@ -494,10 +487,11 @@ export default function FormPropsTextFields(props) {
                         console.log(newData,errorStatus)
                         if(!errorFound){
                           //no error
-                          const dataUpdate = [...equipments];
-                          const index = oldData.tableData.id;
-                          dataUpdate[index] = newData;
-                          setEquipments([...dataUpdate]);
+                          resetEmployees()
+                          //const dataUpdate = [...equipments];
+                          //const index = oldData.tableData.id;
+                          //dataUpdate[index] = newData;
+                          //setEquipments([...dataUpdate]);
                         }else{
                           //error found.
                           console.log('error found')
@@ -542,14 +536,16 @@ export default function FormPropsTextFields(props) {
             },
             onRowAddCancelled: rowData => console.log('Row adding cancelled'),
             onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-            onRowAdd: newData =>
+            onRowAdd: async (newData) => {
+              await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
                 new Promise((resolve, reject) => {
                     setTimeout(() => {
-                        handleAdd({changes:{'0':{newData:newData, oldData:null}}})
-                        setEquipments([...equipments, newData]);
+                      resetEmployees();
+                        //setEquipments([...equipments, newData]);
                         resolve();
                     }, 1000);
-                }),
+                })
+                },
             onRowUpdate: async (newData, oldData) => {
               let errorResult = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
                   return (new Promise((resolve, reject) => {
@@ -560,32 +556,36 @@ export default function FormPropsTextFields(props) {
                         dataIsOnDatabase[col_name] = true
                         reject();
                       }else{
-                        const dataUpdate = [...equipments];
-                        const index = oldData.tableData.id;
-                        dataUpdate[index] = newData;
-                        setEquipments([...dataUpdate]);
+                        resetEmployees();
+                        //const dataUpdate = [...equipments];
+                        //const index = oldData.tableData.id;
+                        //dataUpdate[index] = newData;
+                        //setEquipments([...dataUpdate]);
                         resolve();
                       }
                     }, 1000);
                 }))
-              }
-                
-                ,
-            onRowDelete: oldData =>
+            },
+            onRowDelete: async (oldData) =>{
+              await handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
                 new Promise((resolve, reject) => {
                     setTimeout(() => {
-                      handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
-                        const dataDelete = [...equipments];
-                        const index = oldData.tableData.id;
-                        dataDelete.splice(index, 1);
-                        setEquipments([...dataDelete]);
+                        //const dataDelete = [...equipments];
+                        //const index = oldData.tableData.id;
+                        //dataDelete.splice(index, 1);
+                        //setEquipments([...dataDelete]);
                         resolve();
                     }, 1000);
                 })
+            }
         }}
         />
   </div>
   )
+  }
+
+  const resetEmployees = () => {
+    handleSearch();
   }
 
   //will run once.
@@ -593,9 +593,10 @@ export default function FormPropsTextFields(props) {
     //setLoading(true)
 
     console.log('employeeCall')
+    setLoading(true)
     api.get(`employee`,{}).then((response) => response.data).then((data) => {
         console.log(data)
-      // setLoading(false)
+        setLoading(false)
         setEmployees(data.status != 400 ? data.data : data)
         // this.setState({
         // 	equipments: data.status != 400 ? data.values: data,
@@ -604,7 +605,7 @@ export default function FormPropsTextFields(props) {
         //console.log(this.state.equipment.values);
         // console.log(this.props, this.state);
       }).catch(function (error) {
-        //setLoading(false)
+        setLoading(false)
         setEmployees([])
       });
 
@@ -649,6 +650,12 @@ export default function FormPropsTextFields(props) {
     <div>
       <div style={{textAlign: 'center'}}>
         <h2 >Equipment</h2>
+        <FormControl component="fieldset">
+          <RadioGroup row aria-label="position" name="position" defaultValue="std" onChange={handleSearchView}>
+            <FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
+            <FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Seach" />
+          </RadioGroup>
+        </FormControl>
       </div>
       <div style={{textAlign: 'center'}}>
         <form className={classesTextField.root} noValidate autoComplete="off">
@@ -657,37 +664,37 @@ export default function FormPropsTextFields(props) {
                     {/* <Grid item xs={12}> */}
                       <Grid item xs={Math.floor(12/5)}>
                         <TextField id="outlined-search-hraName" name="hraName" label="Search by HRA Name" type="search" variant="outlined" value={hraName} onChange={handleHraNameChange}/>
-                        {hraName ? <><br/>{SearchCriteriaOptions("hraName","HRA Name Options")}</> : null}
+                        {hraName && searchView != 'std' ? <><br/>{SearchCriteriaOptions("hraName","HRA Name Options")}</> : null}
                         <br/>
-                        {SearchBlanksOptions("hraName","HRA Name Blanks Options")}
+                        {searchView != 'std' ? SearchBlanksOptions("hraName","HRA Name Blanks Options") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
                         <TextField id="outlined-search-hraNum" name="hraNum" label="Search by HRA Number" type="search" variant="outlined" value={hraNum} onChange={handlehraNumChange}/>
-                        {hraNum ? <><br/> {SearchCriteriaOptions("hraNum","HRA Number Options")}</> : null}
+                        {hraNum && searchView != 'std' ? <><br/> {SearchCriteriaOptions("hraNum","HRA Number Options")}</> : null}
                         <br/>
-                        {SearchBlanksOptions("hraNum","HRA Number Blanks Options")}
+                        {searchView != 'std' ? SearchBlanksOptions("hraNum","HRA Number Blanks Options") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
                         <TextField id="outlined-search-itemType" name="itemType" label="Search by Item Description" type="search" variant="outlined" value={itemType} onChange={handleItemTypeChange}/>
-                        {itemType ? <><br/>{SearchCriteriaOptions("itemType","Item Description Options")}</> : null}
+                        {itemType && searchView != 'std' ? <><br/>{SearchCriteriaOptions("itemType","Item Description Options")}</> : null}
                         <br/>
-                        {SearchBlanksOptions("itemType","Item Description Blanks Options")}
+                        {searchView != 'std' ? SearchBlanksOptions("itemType","Item Description Blanks Options") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
                         <TextField id="outlined-search-bartagNum" name="bartagNum" label="Search by Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/>
-                        {bartagNum ? <><br/>{SearchCriteriaOptions("bartagNum","Bartag Options")}</>: null}
+                        {bartagNum && searchView != 'std' ? <><br/>{SearchCriteriaOptions("bartagNum","Bartag Options")}</>: null}
                         <br/>
-                        {SearchBlanksOptions("bartagNum","Bartag Blanks Options")}
+                        {searchView != 'std' ? SearchBlanksOptions("bartagNum","Bartag Blanks Options") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
                         <TextField style={{width:250}}id="outlined-search-employeeName" name="employeeName" label="Search by Employee Holder" type="search" variant="outlined" value={employeeName} onChange={handleEmployeeNameChange}/>
-                        {employeeName ? <><br/>{SearchCriteriaOptions("employeeName","Employee Holder Options")}</> : null}
+                        {employeeName && searchView != 'std' ? <><br/>{SearchCriteriaOptions("employeeName","Employee Holder Options")}</> : null}
                         <br/>
-                        {SearchBlanksOptions("employeeName","Employee Holder Blanks Options")} 
+                        {searchView != 'std' ? SearchBlanksOptions("employeeName","Employee Holder Blanks Options") : null} 
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
@@ -701,6 +708,58 @@ export default function FormPropsTextFields(props) {
             </div>
         </form>
       </div>
+      {/* <div className={classesAccordion.root}>
+      <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classesAccordion.heading}>TextFieldOptions</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+            <div className={classesAccordion.body}>
+              <form className={classesTextField.root} noValidate autoComplete="off">
+                <div className={classesGrid.options}>
+                  <Grid container spacing={3}>
+                      <Grid item xs={Math.floor(12/6)}>
+                        {hraName ? <><br/>{SearchCriteriaOptions("hraName","HRA Name Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("hraName","HRA Name Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/6)}>
+                        {hraNum ? <><br/> {SearchCriteriaOptions("hraNum","HRA Number Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("hraNum","HRA Number Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/6)}>
+                        {itemType ? <><br/>{SearchCriteriaOptions("itemType","Item Description Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("itemType","Item Description Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/6)}>
+                        {bartagNum ? <><br/>{SearchCriteriaOptions("bartagNum","Bartag Options")}</>: null}
+                        <br/>
+                        {SearchBlanksOptions("bartagNum","Bartag Blanks Options")}
+                      </Grid>
+
+                      <Grid item xs={Math.floor(12/6)}>
+                        {employeeName ? <><br/>{SearchCriteriaOptions("employeeName","Employee Holder Options")}</> : null}
+                        <br/>
+                        {SearchBlanksOptions("employeeName","Employee Holder Blanks Options")} 
+                      </Grid>
+                  </Grid>
+                </div>
+              </form>
+            </div>
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+      </div> */}
       {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
       <div style={{textAlign: 'center'}}>
         {loading ? LoadingCircle() : null}
