@@ -20,6 +20,8 @@ import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import UpdateIcon from '@material-ui/icons/Update';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
+import PublishIcon from '@material-ui/icons/Publish';
 
 export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
@@ -44,6 +46,8 @@ export const tableIcons = {
     Update: React.forwardRef((props, ref) => <UpdateIcon {...props} ref={ref} />),
     Lock: React.forwardRef((props, ref) => <LockIcon {...props} ref={ref} />),
     Unlock: React.forwardRef((props, ref) => <LockOpenIcon {...props} ref={ref} />),
+    EditOutlined: React.forwardRef((props, ref) => <EditOutlinedIcon {...props} ref={ref} />),
+    Publish: React.forwardRef((props, ref) => <PublishIcon {...props} ref={ref} />),
   };
 
 export const changeHistoryIcons = {
