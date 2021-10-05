@@ -53,10 +53,28 @@ import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatC
 import clsx from 'clsx'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from '../config/constants'
-import {orderBy, findIndex, filter} from 'lodash'
+import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
 import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles } from '../styles/material-ui';
 import Header from '../Header'
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import CloseIcon from '@material-ui/icons/Close';
+import { makeStyles } from '@material-ui/core/styles';
+import UploadFormModal from '../../containers/UploadFormModal'
+import Eng4900Form from '../../containers/Eng4900Form'
+
+const dialogStyles = makeStyles(theme => ({
+  dialogWrapper: {
+    padding: theme.spacing(2),
+    position:'absolute',
+    top: theme.spacing(5)
+  },
+  dialogTitle: {
+    paddingRight:'0px'
+  }
+}))
 
 export default function Eng4900(props) {
   
@@ -64,7 +82,9 @@ export default function Eng4900(props) {
   const formId = props.match.params.id
   const search = getQueryStringParams(props.location.search)
   const PAGE_URL = `/${ENG4900}`
-    
+  const statusOptions = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY', 3:'COMPLETED LOSING HRA SIGNATURE', 4:'COMPLETED GAINING HRA SIGNATURE',
+  5:'SENT TO PBO', 6:'SENT TO LOGISTICS'}
+
   //Variables Declarations.
 
 
@@ -80,8 +100,21 @@ export default function Eng4900(props) {
       primary: green,
     },
   });
+  const classDialog = dialogStyles();
 
   //Hooks Declarations.
+  
+  const [uploadPdf, setUploadPdf] = React.useState({
+    show: false,
+    rowData: null
+  })
+
+  const [create4900, setCreate4900] = React.useState({
+    show: false,
+    formData: null,
+    formId:null
+  })
+
   const [searchFields, setSearchFields] = React.useState({
 		id: {label: 'ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -126,6 +159,7 @@ export default function Eng4900(props) {
   // const [id_, setId] = React.useState('');
   // const [selectedForm, setSelectedForm] = React.useState({});
   const [viewSearch, setViewSearch] = React.useState('table-view');
+  const [editable,setEditable] = React.useState(false)
   // const [formFields,setFormFields] = React.useState({
   //   losing_hra:{name:'',officeSymbol:'',hra_num:''},
   //   gaining_hra:{name:'',officeSymbol:'',hra_num:''},
@@ -186,6 +220,10 @@ export default function Eng4900(props) {
       console.log(data)
       setLoading(false)
       setEng4900s(data.status != 400 ? data.data : data)
+
+      if(data.status == 200 && data.editable){
+        setEditable(data.editable)
+      }
   
     }).catch(function (error) {
       setLoading(false)
@@ -198,6 +236,33 @@ export default function Eng4900(props) {
   const handleSearchView = (e) => {
   setSearchView(e.target.value)
   }
+
+  async function get4900Pdf(rowData) {
+    const {form_id} = rowData
+
+    setLoading(true)
+    if(typeof form_id != 'undefined'){
+      await api.get(`${ENG4900}/pdf/${form_id}`, {
+        responseType: 'blob', //Force to receive data in a Blob Format
+      })
+      .then(response => {
+      //Create a Blob from the PDF Stream
+          const file = new Blob(
+            [response.data], 
+            {type: 'application/pdf'});
+      //Build a URL from the file
+          const fileURL = URL.createObjectURL(file);
+      //Open the URL on new Window
+          window.open(fileURL, '_blank');
+          setLoading(false)
+      })
+      .catch(error => {
+          console.log(error);
+          setLoading(false)
+      });
+    }
+    
+  } 
 
   const handleSwithcesChange = (event) => {
 		setSwitches({ ...switches, [event.target.name]: event.target.checked });
@@ -264,9 +329,9 @@ export default function Eng4900(props) {
 
 		const search_keys = Object.keys(search)
 		const searchField_keys = Object.keys(searchFields)
-		const field_keys = filter(search_keys,function(f){ return !f.includes('Opts') && !f.includes('Blanks') && searchField_keys.includes(f) })
-		const option_keys = filter(search_keys,function(o){ return o.includes('Opts')})
-		const blank_keys = filter(search_keys,function(b){ return b.includes('Blanks')})
+		const field_keys = _filter(search_keys,function(f){ return !f.includes('Opts') && !f.includes('Blanks') && searchField_keys.includes(f) })
+		const option_keys = _filter(search_keys,function(o){ return o.includes('Opts')})
+		const blank_keys = _filter(search_keys,function(b){ return b.includes('Blanks')})
 
 		for(const fieldName of field_keys){
 			handleSearchFieldsChange({target:{name: fieldName, value : search[fieldName]}})
@@ -370,6 +435,153 @@ export default function Eng4900(props) {
     );
   }
 
+  // const handleModalUploadSubmit = (e) => {
+  //   //const {apiRoot,uploadText,uploadData,doChangeUploadDone} = this.props
+
+  //   // const formData = new FormData();
+  //   // formData.append('File', modal.uploadData);
+
+  //   // if(!modal.uploadError){
+  //   //   setModal({...modal,uploadError:"Could not upload file."})
+  //   //   return
+  //   // }
+
+  //   setModal({...modal,uploadDone:true,uploadError:null})
+    
+  //   // api.post(`${ENG4900}/uploads`,{name:modal.text,data:modal.uploadData})
+  //   // .then(res => {
+  //   //     if(res.data)
+  //   //     {
+  //   //         console.log("File was recieved.")
+  //   //         doChangeUploadDone(true)
+  //   //     }else
+  //   //     {
+  //   //         console.log("File was not recieved.")
+  //   //     }
+  //   // })
+
+  // }
+
+  // const validateModalInput = (e) => {
+  //   //const {divisionSelected, districtSelected,doChangeUploadData,doChangeUploadActiveButton,doChangeUploadText} = this.props
+
+  //   console.log(e.target.value)
+  //   if(e.target.value.toLowerCase().includes('.pdf'))
+  //   {    
+  //     setModal({...modal,text:e.target.value,uploadData:e.target.files[0],buttonActive:true})
+  //     return
+  //   }
+
+  //   clearModalData()
+
+  // }
+
+  // const handleModalStatusChange = (e) => {
+  //   //const {divisionSelected, districtSelected,doChangeUploadData,doChangeUploadActiveButton,doChangeUploadText} = this.props
+
+  //   // if(e.target.value.toLowerCase().includes('.pdf'))
+  //   // {    
+  //   //   setModal({...modal,text:e.target.value,uploadData:e.target.files[0],buttonActive:true})
+  //   //   return
+  //   // }
+
+  //   setModal({...modal,newStatus:e.target.value})
+  //   //clearModalData()
+
+  // }
+
+  // const resetModalData = () => {
+  //   setModal({...modal,
+  //     active:false,
+  //     rowData:null,
+  //     reset: false,
+  //     text:"",
+  //     buttonActive:false,
+  //     uploadData:null,
+  //     uploadDone:false,
+  //     uploadError:null,
+  //     newStatus:null}
+  //   )
+  //   return;
+  // }
+
+  // const clearModalData = () => {
+  //   setModal({...modal,
+  //       rowData:null,
+  //       reset: false,
+  //       text:"",
+  //       buttonActive:false,
+  //       uploadData:null,
+  //       uploadDone:false,
+  //       uploadError:null,
+  //       newStatus:null}
+  //   )
+  //   return;
+  // }
+
+  // const uploadModal = () => {
+
+  //   const returnUploadLabel = () => {
+
+  //     return (<>
+  //     <div>
+  //       <label htmlFor="FFR_FD_UPLOAD" style={{margin:'0', width:'100%', height:'100%'}}>
+  //       Attach Signed PDF document
+  //       </label>
+  //       <input name="pdf" accept={'.pdf,.PDF'} id="pdf" type="file" onChange={validateModalInput} aria-describedby="fileHelp" className="form-control-file" />
+  //     </div>
+  //       {modal.buttonActive ? <Button  onClick={handleModalUploadSubmit} variant="contained" color="primary">Upload</Button> : null}
+  //       {modal.uploadError ? <p>{modal.uploadError}</p> : null}
+  //       </>)
+  //   }
+
+  //   const returnCompleteLabel = () => {
+  //       return (<p>Upload is Complete. </p>)
+  //   }
+
+  //   const keys = _filter(Object.keys(statusOptions),function(k){ console.log(k); return Number(k) >= ( modal.rowData ? modal.rowData.status : 0)})
+
+  //   console.log(keys)
+  //   const uploadStatusItems = keys.map(k => {
+	// 		return <MenuItem value={k}>{statusOptions[k]}</MenuItem>
+	// 	})
+
+  //   return(
+  //     <Dialog open={modal.active} class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
+  //       if (reason !== 'backdropClick') {
+  //         setModal({...modal,active:false})
+  //       }
+  //     }}>
+      
+  //     <div style={{display:'flex'}}>
+  //       <DialogTitle disableTypography class={classDialog.dialogTitle}>
+  //         <h2>ENG4900{modal.rowData ? ' - ' + modal.rowData.form_id : null}</h2>  
+  //       </DialogTitle>
+  //       <IconButton onClick={()=>resetModalData()}>
+  //         <CloseIcon />
+  //       </IconButton>
+  //     </div>
+  //     {!modal.uploadDone ? (
+  //       <FormControl >
+  //         <InputLabel id="demo-simple-select-label">Status</InputLabel>
+  //         <Select
+  //           labelId="demo-simple-select-label"
+  //           id="demo-simple-select"
+  //           value={modal.newStatus ? modal.newStatus : modal.rowData.status}
+  //           onChange={handleModalStatusChange}
+  //         >
+  //         {uploadStatusItems}
+  //         </Select>
+  //       </FormControl>
+  //     ) : null}
+  //       <DialogContent>
+        
+  //       { modal.newStatus && ( modal.newStatus != modal.rowData.status) ? (modal.uploadDone ? returnCompleteLabel() : returnUploadLabel()) : null}
+  //       </DialogContent>
+  //     </Dialog>
+  //   )
+  // }
+
   const materialTableSelect = () => {
   
     const printElements = (elements,limit=5) => {
@@ -394,13 +606,28 @@ export default function Eng4900(props) {
         const form = eng4900s[form_id]
         const form_bartags = form.map(x => x.bar_tag_num)
         const bartagsPrint = printElements(form_bartags)
-        const {gaining_hra_num, gaining_hra_full_name,losing_hra_full_name,losing_hra_num,document_source,folder_link} = form[0]
-        formsArray.push({form_id:form_id,bar_tags:bartagsPrint,losing_hra:`${losing_hra_num} - ${losing_hra_full_name}`,gaining_hra:`${gaining_hra_num} - ${gaining_hra_full_name}`,document_source:document_source,folder_link:folder_link})
+        const {gaining_hra_num, gaining_hra_full_name,losing_hra_full_name,losing_hra_num,document_source,folder_link,status} = form[0]
+        formsArray.push({status:status,form_id:form_id,bar_tags:bartagsPrint,losing_hra:`${losing_hra_num} - ${losing_hra_full_name}`,gaining_hra:`${gaining_hra_num} - ${gaining_hra_full_name}`,document_source:document_source,folder_link:folder_link})
       }
     }
 
     let columns = [
-      { title: 'Form ID', field: 'form_id' },
+      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
+      lookup: statusOptions, validate: (rowData) => {		
+        if(rowData.hasOwnProperty('status')){
+          if(rowData.status) {
+            if(rowData.hasOwnProperty('tableData')){
+              if(rowData.status >= formsArray[rowData.tableData.id].status){
+                return true
+              }
+            }
+          }
+        }
+        
+        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
+  
+      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
       { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
       { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
@@ -415,6 +642,9 @@ export default function Eng4900(props) {
             localization={{
               toolbar: {
               searchPlaceholder: "Filter Search"
+              },
+              body: {
+                editTooltip : "Update Status" 
               }}}
             options={{
               //exportButton: true,
@@ -440,18 +670,82 @@ export default function Eng4900(props) {
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
-                icon: tableIcons.Edit,
-                tooltip: 'Edit Form',
-                onClick: (event, rowData) => EditFormById(rowData.form_id), // + rowData.name),
-                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
-              }),
+                  icon: tableIcons.EditOutlined,
+                  tooltip: 'Edit Form',
+                  onClick: (event, rowData) => alert(JSON.stringify(rowData)),//EditFormById(rowData.form_id), // + rowData.name),
+                  disabled: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
+                }),
               rowData => ({
                 icon: tableIcons.Pdf,
                 tooltip: 'View PDF',
-                onClick: (event, rowData) => rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-                disabled: ! (rowData.document_source != 1)  //rowData.birthYear < 2000
-              })
+                onClick: (event, rowData) => {
+                  get4900Pdf(rowData)
+                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              }),
+              rowData => ({
+                icon: tableIcons.Publish,
+                tooltip: 'Upload PDF',
+                onClick: (event, rowData) => {
+                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              })               
             ]}
+            {...(editable && {editable:{
+              //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
+              //isEditHidden: rowData => rowData.name === 'x',
+              // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
+              // isDeleteHidden: rowData => rowData.name === 'y',
+              // onBulkUpdate: async(changes) => {
+              //   const errorResult = await handleTableUpdate({changes:changes})
+              //     return(new Promise((resolve, reject) => {
+              //       setTimeout(() => {
+              //         if(errorResult){
+              //           reject()
+              //           return;
+              //         }
+      
+              //         resetEmployees();
+              //         resolve();
+                      
+              //       }, 1000);
+              //     }))
+              //   },
+              //   onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+              //   onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+              //   onRowAdd: async (newData) =>{
+              //   const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+              //     return(new Promise((resolve, reject) => {
+              //       setTimeout(() => {
+              //         if(errorResult){
+              //           reject()
+              //           return;
+              //         }
+      
+              //         resetEmployees();
+              //         resolve();
+                      
+              //       }, 1000);
+              //     }))
+              //   },
+                onRowUpdate: async (newData, oldData) =>{
+                  const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                  return(new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                      if(errorResult){
+                        reject()
+                        return;
+                      }
+      
+                      //resetEmployees();
+                      resolve();
+                        
+                    }, 1000);
+                  }))
+                  },
+            }})}
           />
     </div>
     )
@@ -589,15 +883,18 @@ export default function Eng4900(props) {
 			reloadPage()
 		}
 	}, [props.history.action]);
+  
 
   //Render return.
   return (
     <>
+    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={statusOptions}/> : null}
+    {create4900.show ? <Eng4900Form action={"CREATE"} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <Header/>
     <div>
       <Tooltip title="Crate New Form" aria-label="add">
       <ThemeProvider>
-        <Fab  variant="extended" size="medium" color="inherit" className={ clsx(plusButtonClasses.absolute, plusButtonClasses.fabGreen)} >
+        <Fab  variant="extended" size="medium" color="inherit" className={ clsx(plusButtonClasses.absolute, plusButtonClasses.fabGreen)} onClick={()=>setCreate4900({...create4900,show:true})} >
         Create 4900
         </Fab>
         </ThemeProvider>
