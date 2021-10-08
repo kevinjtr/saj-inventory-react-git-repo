@@ -47,10 +47,7 @@ export default function Equipment(props) {
 		checkedView: false,
 		showSearch: false,
 	  });
-	const [windowSize, setWindowSize] = React.useState({
-	width: undefined,
-	height: undefined,
-	});
+
 	//const [urlUpdatedByTextFields,setUrlUpdatedByTextFields] = React.useState(false)
 	const [editable,setEditable] = React.useState(false)
 
@@ -786,24 +783,24 @@ export default function Equipment(props) {
 
 		//console.log(api.getUri)
 
-	function handleResize() {
-		// Set window width/height to state
-		setWindowSize({
-			width: window.innerWidth,
-			height: window.innerHeight,
-		});
-	}
+	// function handleResize() {
+	// 	// Set window width/height to state
+	// 	setWindowSize({
+	// 		width: window.innerWidth,
+	// 		height: window.innerHeight,
+	// 	});
+	// }
 
 	pageStart()
 
 	// Add event listener
-	window.addEventListener("resize", handleResize);
+	//window.addEventListener("resize", handleResize);
 	
     // Call handler right away so state gets updated with initial window size
-	handleResize();
+	//handleResize();
 	
     // Remove event listener on cleanup
-	return () => window.removeEventListener("resize", handleResize);
+	//return () => window.removeEventListener("resize", handleResize);
 	
 	}, []);// Empty array ensures that effect is only run on mount
 
@@ -816,7 +813,6 @@ export default function Equipment(props) {
 
 	const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
 		const nFields = Object.keys(searchFields).length
-		const w = windowSize.width*.75 / nFields
 	return(	
 	<>
 	<Grid item xs={Math.floor(12/nFields)}>                 

@@ -754,7 +754,8 @@ export default function Eng4900(props) {
   //Render Variables
   const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
 		const nFields = Object.keys(searchFields).length
-		const w = windowSize.width*.75 / nFields
+    const w = windowSize.width*.75 / nFields
+    
 	return(	
 	<>
 	<Grid item xs={Math.ceil(12/(nFields + 1))}>                 
@@ -765,8 +766,8 @@ export default function Eng4900(props) {
 			value={searchFields[key].value} 
 			onChange={handleSearchFieldsChange}
 			onKeyPress={handleSearchKeyPress}
-			style={{width:w,paddingRight:'0px'}}
-			InputLabelProps={{style: {fontSize: '.9vw'}}}
+			style={{width:'100%',paddingRight:'20px'}}
+			InputLabelProps={{style: {fontSize: '.6vw'}}}
 			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
 		/>
 		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`,w)}</> : null}
@@ -889,11 +890,11 @@ export default function Eng4900(props) {
   return (
     <>
     {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={statusOptions}/> : null}
-    {create4900.show ? <Eng4900Form action={"CREATE"} create4900={create4900} setCreate4900={setCreate4900}/> : null}
+    {create4900.show ? <Eng4900Form action={"CREATE"} type="DIALOG" create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <Header/>
     <div>
       <Tooltip title="Crate New Form" aria-label="add">
-      <ThemeProvider>
+        <ThemeProvider>
         <Fab  variant="extended" size="medium" color="inherit" className={ clsx(plusButtonClasses.absolute, plusButtonClasses.fabGreen)} onClick={()=>setCreate4900({...create4900,show:true})} >
         Create 4900
         </Fab>

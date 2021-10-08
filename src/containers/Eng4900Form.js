@@ -27,6 +27,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Paper from '@material-ui/core/Paper';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+//import LoadingButton from '@mui/lab/LoadingButton';
 import Menu from '@material-ui/core/Menu';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline'
 import Fab from '@material-ui/core/Fab';
@@ -126,6 +127,8 @@ const RESET_FORM = {
   equipment_group: []
 }
 
+const RESET_HRAS_HOOK = {losing:[],gaining:[]}
+
 function formatPhoneNumber(phoneNumberString) {
   var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
   var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
@@ -142,10 +145,10 @@ export default function Eng4900(props) {
   console.log(props)
   const {formData, create4900, setCreate4900, type} = props
   const formId = props.match ? props.match.params.id : null
-  const action = props.action ? props.action.toUpperCase() : "VIEW"
+  let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
   //(props.match ? props.match.location.pathname.split('/')[2].toUpperCase() : "VIEW")
-  const editEnabled = ["CREATE","EDIT"].includes(action)
-  console.log(action)
+  //const editEnabled = ["CREATE","EDIT"].includes(action)
+  //console.log(action)
   //Variables Declarations.
 
   //Styles Declarations.
@@ -155,8 +158,16 @@ export default function Eng4900(props) {
   const plusButtonClasses = plusButtonStyles();
 
   //Hooks Declarations.
-  const [loading, setLoading] = React.useState(false);
-  const [activeSubmitButton, setActiveSubmitButton] = React.useState(false);
+  const [loading, setLoading] = React.useState({
+    init:false,
+    hra:false,
+    equipment:false,
+    submit:false
+  });
+  const [submitButton, setSubmitButton] = React.useState({
+    active:false,
+    send:false,
+  });
   const [equipments,setEquipments] = React.useState([])
   const [phoneNumbers, setPhoneNumbers] = React.useState({
     gaining_hra_work_phone: '(   )    -    ',
@@ -164,7 +175,8 @@ export default function Eng4900(props) {
     numberformat: '1320',
   });
   const [selectedForm, setSelectedForm] = React.useState(RESET_FORM);
-  const [hras, setHras] = React.useState([]);
+  const [hras, setHras] = React.useState(RESET_HRAS_HOOK);
+  const [editEnabled, setEditEnabled] = React.useState(false);
 
   const handleCheckBoxChange = (event) => {
     setSelectedForm({ ...selectedForm, temporary_loan: (event.target.checked ? 1 : 2) });
@@ -172,43 +184,55 @@ export default function Eng4900(props) {
 
   const handleFormSelect = async () => {
 
-    const getHrasAndEquipments = async () => {
-      await api.get(`hra`).then((hra_res) => hra_res.data).then((h_data) => {
-        console.log('hra_download',h_data)
-        setHras(h_data.status != 400 ? h_data.data : h_data)
+    const getHrasAndEquipments = () => {
+      setLoading({...loading,hra:true})
+      setLoading({...loading,equipment:true})
+
+      api.get(`hra/form`).then((hra_res) => hra_res.data).then((h_data) => {
+          console.log('hra_download',h_data)
+          setHras(h_data.status != 400 ? h_data.data : h_data)
+          setLoading({...loading,hra:false})
         }).catch(function (error) {
-        setHras([])
+          setHras(RESET_HRAS_HOOK)
+          setLoading({...loading,hra:false})
         });
     
-      await api.get(EQUIPMENT,{}).then((eq_res) => eq_res.data).then((e_data) => {
-        console.log(e_data)
-        setEquipments(e_data.status == 200 ? e_data.data : e_data)
-        }).catch(function (error) {
-        setEquipments([])
-        });
+      // api.get(`${EQUIPMENT}`).then((eq_res) => eq_res.data).then((e_data) => {
+      //     console.log(e_data)
+      //     setEquipments(e_data.status == 200 ? e_data.data : e_data)
+      //     setLoading({...loading,equipment:false})
+      //   }).catch(function (error) {
+      //     setEquipments([])
+      //     setLoading({...loading,equipment:false})
+      //   });
     }
 
-    setLoading(true)
-    console.log(formId)
+    setLoading({...loading,init:true})
 
     if(action === "CREATE"){
-      await getHrasAndEquipments()
-      setLoading(false)
+      setEditEnabled(true)
+      setLoading({...loading,init:false})
+      getHrasAndEquipments()
       return;
     }
 
     if((action === "EDIT" || action === "VIEW") && formId){
       await api.get(`${ENG4900}/${formId}`).then((response) => response.data).then(async (data) => {
 
-        if(action === "EDIT"){
-          await getHrasAndEquipments()
+        if(data.data.status != 1 && action === "EDIT"){
+          setEditEnabled(false)
+        }
+
+        setSelectedForm(data.status != 400 ? data.data : null)
+        setLoading({...loading,init:false})
+
+        if(action === "EDIT" && data.data.status === 1){
+          setEditEnabled(true)
+          getHrasAndEquipments()
         }
   
-        setSelectedForm(data.status != 400 ? data.data : null)
-        setLoading(false)
-  
         }).catch(function (error) {
-          setLoading(false)
+          setLoading({...loading,init:false,hra:false,equipment:false})
           setSelectedForm(RESET_FORM)
           //setEng4900s([])
         });
@@ -246,11 +270,26 @@ export default function Eng4900(props) {
   const handleLosingHraChange = (event,val) => {
 
     if(val){
+
       setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: val} })
+
+      console.log(val)
+      const idx = findIndex(hras.losing,function(h){ return h.hra_num === val.hra_num})
+
+      console.log('index',idx)
+      if(idx != -1){
+        setEquipments(hras.losing[idx].equipments)
+        console.log(equipments)
+        return;
+      }
+
+      setEquipments([])
       return;
     }
 
-    setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: RESET_HRA} })
+    
+    setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: RESET_HRA},equipment_group:[] })
+    setEquipments([])
   }
 
   const handleHraChange = (event,val) => {
@@ -279,6 +318,27 @@ export default function Eng4900(props) {
   
 
   const handleSubmit = (event) => {
+
+    setSubmitButton({...submitButton,send:true})
+
+    if(editEnabled){
+      api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
+
+        // console.log(data)
+        // setLoading(false)
+        // setEng4900s(data.status != 400 ? data.data : data)
+  
+        // if(data.status == 200 && data.editable){
+        //   setEditable(data.editable)
+        // }
+        setSubmitButton({...submitButton,send:false})
+    
+      }).catch(function (error) {
+        // setLoading(false)
+        // setEng4900s([])
+        setSubmitButton({...submitButton,send:false})
+      });
+    }
   }
 
   const resetCreate4900Data = () => {
@@ -289,7 +349,10 @@ export default function Eng4900(props) {
 
   const form = () => {
 
+    console.log(selectedForm)
+
         return(
+          <>
           <form className={classesTextField.root} noValidate autoComplete="off">
           <div className={classesGrid.root}>
             <Grid container spacing={3}>
@@ -299,7 +362,7 @@ export default function Eng4900(props) {
                 {editEnabled ? (
                   <FormControl error={!selectedForm.requested_action} component="fieldset">
                   <FormLabel component="legend">Requested Action:</FormLabel>
-                  <RadioGroup row aria-label="position" name="position" defaultValue={selectedForm.requested_action} onChange={(event)=>setSelectedForm( {...selectedForm,requested_action:event.target.value} )}>
+                  <RadioGroup row aria-label="position" name="position" value={selectedForm.requested_action} onChange={(event)=>setSelectedForm( {...selectedForm,requested_action:event.target.value} )}>
                     <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
                     <FormControlLabel id="radio-transfer" key="radio-transfer" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
                     <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
@@ -403,7 +466,8 @@ export default function Eng4900(props) {
                 <Autocomplete
                   style={{ display:'inline-block' }}
                   id="combo-box-losing"
-                  options={hras}
+                  options={hras.losing}
+                  loading={loading.hra}
                   getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
                   defaultValue={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
                   style={{ width: 300 }}
@@ -467,7 +531,11 @@ export default function Eng4900(props) {
                   <Autocomplete
                   style={{ display:'inline-block' }}
                   id="combo-box-gaining"
-                  options={hras}
+                  options={hras.gaining}
+                  getOptionDisabled={(option) =>
+                    selectedForm.hra.losing.hra_num === option.hra_num
+                  }
+                  loading={loading.hra}
                   getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
                   defaultValue={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
                   style={{ width: 300 }}
@@ -776,6 +844,25 @@ export default function Eng4900(props) {
             </Grid>
           </div>
         </form>
+        {(action === "CREATE" || action === "EDIT") && editEnabled ? (
+          <div style={{textAlign:'center'}}>
+
+          {/* <LoadingButton className={ submitButton ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...(!submitButton && {disabled:true})}
+            onClick={handleSubmit}
+            endIcon={tableIcons.Send}
+            loading={loading.submit}
+            loadingPosition="end"
+            variant="contained"
+          >
+            Send
+          </LoadingButton> */}
+
+          <Button onClick={handleSubmit} className={ submitButton.active ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...((!submitButton.active && !submitButton.send) && {disabled:true})}> 
+            Submit
+          </Button>
+          </div>
+        ) : null}
+        </>
         )
       
 
@@ -1273,9 +1360,12 @@ export default function Eng4900(props) {
       //{ title: 'Item No.', field: 'hra_num', type:'numeric', editEnabled:'never'},
       { title: 'Bar Tag No.', field: 'bar_tag_num', type:'numeric',
         editComponent: x => {
-        console.log(x);
+        //console.log(x);
         let idx = -1
     
+        //const equipments_losing_hra = selectedForm.hra.losing.hra_num && Object.keys(equipments) > 0 ? equipments[selectedForm.hra.losing.hra_num] : []
+        const selectedEquipments = selectedForm.equipment_group.length > 0 ? selectedForm.equipment_group.map(x => x.bar_tag_num) : []
+
         if(x.rowData.bar_tag_num){
           idx = findIndex(equipments,function(e){ return (e.bar_tag_num && (e.bar_tag_num == x.rowData.bar_tag_num)); })
         }
@@ -1288,10 +1378,14 @@ export default function Eng4900(props) {
           options={equipments}
           getOptionLabel={(option) => option.bar_tag_num + ' - ' + option.item_type}
           value={idx != -1 ? equipments[idx] : null}
+          getOptionDisabled={(option) =>
+            selectedEquipments.includes(option.bar_tag_num)
+          }
+          loading={loading.equipment}
           onChange ={e => {
     
           const bt_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-          console.log(bt_);
+          //console.log(bt_);
           x.onChange(bt_)
           }}
           //style={{ verticalAlign: 'top' }}
@@ -1353,7 +1447,10 @@ export default function Eng4900(props) {
           onRowAdd: newData =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
+              //const equipments_losing_hra = selectedForm.hra.losing.hra_num && Object.keys(equipments) > 0 ? equipments[selectedForm.hra.losing.hra_num] : []
+
               const idx = findIndex(equipments,function(e){ return e.bar_tag_num === newData.bar_tag_num})
+
               if(idx != -1){
                 setSelectedForm({...selectedForm,equipment_group:[...selectedForm.equipment_group, equipments[idx]]});
               }
@@ -1392,13 +1489,20 @@ export default function Eng4900(props) {
     if(action === "CREATE"){
       console.log(selectedForm)
       if(isDateValid(selectedForm.expiration_date) && selectedForm.requested_action && selectedForm.hra.losing.hra_num && selectedForm.hra.gaining.hra_num && selectedForm.equipment_group.length > 0){
-        setActiveSubmitButton(true)
+        setSubmitButton({...submitButton,active:true})
         return;
       }
         
-      setActiveSubmitButton(false)
+      setSubmitButton({...submitButton,active:false})
     }
   },[selectedForm])
+
+  useEffect(()=>{
+    if(!selectedForm.hra.losing.hra_num){
+      //setSelectedForm({...selectedForm,equipment_group:[]})
+    }
+    
+  },[selectedForm.hra.losing.hra_num])
 
   //Render Variables
   const displayTop = () => {
@@ -1466,15 +1570,9 @@ export default function Eng4900(props) {
         <DialogContent>
         
         {displayTop()}
-        <div style={{textAlign: 'center'}}> {loading ? LoadingCircle() : null} </div>
+        <div style={{textAlign: 'center'}}> {loading.init ? LoadingCircle() : null} </div>
         {form()}
-        {action === "CREATE" || action === "EDIT" ? (
-          <div style={{textAlign:'center'}}>
-          <Button className={ activeSubmitButton ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...(!activeSubmitButton && {disabled:true})}> 
-            Submit
-          </Button>
-          </div>
-        ) : null}
+
         </DialogContent>
         </Dialog>
         </>
@@ -1485,15 +1583,8 @@ export default function Eng4900(props) {
     <>
     <Header/>
       {displayTop()}
-      <div style={{textAlign: 'center'}}> {loading ? LoadingCircle() : null} </div>
-      {form()}
-      {action === "CREATE" || action === "EDIT" ? (
-        <div style={{textAlign:'center'}}>
-        <Button className={ activeSubmitButton ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...(!activeSubmitButton && {disabled:true})}> 
-          Submit
-        </Button>
-        </div>
-      ) : null}
+      <div style={{textAlign: 'center'}}> {loading.init ? LoadingCircle() : null} </div>
+      {!loading.init ? form() : null}
       </>
   )
 

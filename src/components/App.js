@@ -13,11 +13,11 @@ export default function App(props) {
 	return (
 		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
 		<Switch>
-		<Route
+		{/* <Route
 			exact
 			path={'/'}
 			render={() => <Redirect to={'/equipment'} />}
-		/>
+		/> */}
 			{routes}
 		<Route render={() => <Redirect to={'/404'} />}/>
 		</Switch>

@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import '../img/style.css';
+import Header from './Header'
 
 export class Home extends Component {
 
 	render() {
 
 		return (
+			<>
+			<Header/>
 			<div>
 				<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
 					{/* <TextField onClick={this.tfSubmit}/> */}
@@ -23,6 +26,7 @@ export class Home extends Component {
 					</div> */}
 				</div>
 			</div>
+			</>
 		);
 	}
 }
