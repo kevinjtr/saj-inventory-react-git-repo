@@ -82,8 +82,8 @@ export default function Eng4900(props) {
   const formId = props.match.params.id
   const search = getQueryStringParams(props.location.search)
   const PAGE_URL = `/${ENG4900}`
-  const statusOptions = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY', 3:'COMPLETED LOSING HRA SIGNATURE', 4:'COMPLETED GAINING HRA SIGNATURE',
-  5:'SENT TO PBO', 6:'SENT TO LOGISTICS'}
+  const statusOptions = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY',3:'SEND TO LOSING HRA', 4:'COMPLETED LOSING HRA SIGNATURE',  5:'SEND TO GAINING HRA', 6:'COMPLETED GAINING HRA SIGNATURE',
+  7:'SENT TO PBO', 8:'SENT TO LOGISTICS'}
 
   //Variables Declarations.
 
@@ -169,6 +169,20 @@ export default function Eng4900(props) {
   // const [officesSymbol, setOfficesSymbol] = React.useState([]);
 
   //Events Declarations.
+
+  const handleTableDelete = async (rowData) => {
+    let result = {error:true}
+
+    await api.post(`${ENG4900}/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+      result = data
+
+    }).catch(function (error) {
+      //do nothing.
+    });
+
+    return result
+  }
+
 	const handleSearchFieldsChange = (event) => {
 		console.log(event.target.name,event.target.value)
 		
@@ -392,48 +406,48 @@ export default function Eng4900(props) {
     }
   }
 
-  function CardProduct(form){
+  // function CardProduct(form){
     
-    const {form_id,folder_link,document_source} = form[0]
-    console.log(document_source)
-    let bartags = ''
+  //   const {form_id,folder_link,document_source} = form[0]
+  //   console.log(document_source)
+  //   let bartags = ''
 
-    Object.keys(form).map(function(key) {
-      bartags = bartags + (bartags ? ', ':'') + form[key].bar_tag_num
-    });
+  //   Object.keys(form).map(function(key) {
+  //     bartags = bartags + (bartags ? ', ':'') + form[key].bar_tag_num
+  //   });
 
-    return (
-      <div  id={"container-"+form_id} key={"container-"+form_id} className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
-        <div id={"card-"+form_id} key={"card-"+form_id} className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
-              <div style={{display:'inline'}}>
-                <h4 style={{ marginTop: '20px' }}>ENG4900: {form_id}</h4>
-              </div>
-              {/* <div style={{display:'inline',textAlign:'center'}}>
-                  { <img src={'./ENG4900.PNG'} alt="" style={{height:"100%",width:"100%",display:'inline'}} />}
-              </div>            */}
-          <hr />
+  //   return (
+  //     <div  id={"container-"+form_id} key={"container-"+form_id} className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
+  //       <div id={"card-"+form_id} key={"card-"+form_id} className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
+  //             <div style={{display:'inline'}}>
+  //               <h4 style={{ marginTop: '20px' }}>ENG4900: {form_id}</h4>
+  //             </div>
+  //             {/* <div style={{display:'inline',textAlign:'center'}}>
+  //                 { <img src={'./ENG4900.PNG'} alt="" style={{height:"100%",width:"100%",display:'inline'}} />}
+  //             </div>            */}
+  //         <hr />
           
-          <h6>Bar Tags Quantity: {Object.keys(form).length}</h6>
-          <small>Losing HRA: {form[0].losing_hra_num + ' - ' + form[0].losing_hra_first_name + ' ' + form[0].losing_hra_last_name }</small>
-          <small>Gaining HRA: {form[0].gaining_hra_num + ' - ' + form[0].gaining_hra_first_name + ' ' + form[0].gaining_hra_last_name}</small>
-          <small>Bar Tags: {bartags}</small>
-                  {/* <small>Bar Tags: </small>
-                  <small>{btPrint} </small> */}
-          <div id={"row-"+form_id} key={"row-"+form_id} className="row" style={{ margin: 3,marginTop:'10px' }}>
-              {document_source != 2 ? <input id={"viewbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={ViewForm}/> : null}
-              {document_source != 2 ? <input id={"editbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="Edit" className="btn btn-warning ml-2" onClick={EditForm}/> : null}
-              {/* {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {Pdf} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null} */}
-              {document_source != 1 ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {folder_link} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
+  //         <h6>Bar Tags Quantity: {Object.keys(form).length}</h6>
+  //         <small>Losing HRA: {form[0].losing_hra_num + ' - ' + form[0].losing_hra_first_name + ' ' + form[0].losing_hra_last_name }</small>
+  //         <small>Gaining HRA: {form[0].gaining_hra_num + ' - ' + form[0].gaining_hra_first_name + ' ' + form[0].gaining_hra_last_name}</small>
+  //         <small>Bar Tags: {bartags}</small>
+  //                 {/* <small>Bar Tags: </small>
+  //                 <small>{btPrint} </small> */}
+  //         <div id={"row-"+form_id} key={"row-"+form_id} className="row" style={{ margin: 3,marginTop:'10px' }}>
+  //             {document_source != 2 ? <input id={"viewbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={ViewForm}/> : null}
+  //             {document_source != 2 ? <input id={"editbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="Edit" className="btn btn-warning ml-2" onClick={EditForm}/> : null}
+  //             {/* {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {Pdf} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null} */}
+  //             {document_source != 1 ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {folder_link} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
 
-            {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
-              <input type="submit" value="Edit" className="btn btn-warning" />
-            </Link> */}
-          </div>
-          <br />
-        </div>
-      </div>
-    );
-  }
+  //           {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
+  //             <input type="submit" value="Edit" className="btn btn-warning" />
+  //           </Link> */}
+  //         </div>
+  //         <br />
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   // const handleModalUploadSubmit = (e) => {
   //   //const {apiRoot,uploadText,uploadData,doChangeUploadDone} = this.props
@@ -598,18 +612,20 @@ export default function Eng4900(props) {
     
     console.log(eng4900s)
 
-    //const form_ids = Object.keys(eng4900s)
-    let formsArray = []
-    //move to api side.
-    for(const form_id in eng4900s){
-			if(eng4900s.hasOwnProperty(form_id)) {
-        const form = eng4900s[form_id]
-        const form_bartags = form.map(x => x.bar_tag_num)
-        const bartagsPrint = printElements(form_bartags)
-        const {gaining_hra_num, gaining_hra_full_name,losing_hra_full_name,losing_hra_num,document_source,folder_link,status} = form[0]
-        formsArray.push({status:status,form_id:form_id,bar_tags:bartagsPrint,losing_hra:`${losing_hra_num} - ${losing_hra_full_name}`,gaining_hra:`${gaining_hra_num} - ${gaining_hra_full_name}`,document_source:document_source,folder_link:folder_link})
-      }
-    }
+    // //const form_ids = Object.keys(eng4900s)
+    // let formsArray = []
+    // //move to api side.
+    // for(const form_id in eng4900s){
+		// 	if(eng4900s.hasOwnProperty(form_id)) {
+    //     const form = eng4900s[form_id]
+    //     const form_bartags = form.map(x => x.bar_tag_num)
+    //     const bartagsPrint = printElements(form_bartags)
+    //     const {gaining_hra_num, gaining_hra_full_name,losing_hra_full_name,losing_hra_num,document_source,folder_link,status} = form[0]
+    //     formsArray.push({status:status,form_id:form_id,bar_tags:bartagsPrint,losing_hra:`${losing_hra_num} - ${losing_hra_full_name}`,gaining_hra:`${gaining_hra_num} - ${gaining_hra_full_name}`,document_source:document_source,folder_link:folder_link})
+    //   }
+    // }
+
+    // console.log(formsArray)
 
     let columns = [
       { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
@@ -617,7 +633,7 @@ export default function Eng4900(props) {
         if(rowData.hasOwnProperty('status')){
           if(rowData.status) {
             if(rowData.hasOwnProperty('tableData')){
-              if(rowData.status >= formsArray[rowData.tableData.id].status){
+              if(rowData.status >= eng4900s[rowData.tableData.id].status){
                 return true
               }
             }
@@ -638,7 +654,7 @@ export default function Eng4900(props) {
           <MaterialTable
           icons={tableIcons}
             columns={columns}
-            data={formsArray}
+            data={eng4900s}
             localization={{
               toolbar: {
               searchPlaceholder: "Filter Search"
@@ -697,7 +713,7 @@ export default function Eng4900(props) {
               //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
               //isEditHidden: rowData => rowData.name === 'x',
               // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
-              // isDeleteHidden: rowData => rowData.name === 'y',
+              isDeleteHidden: rowData => rowData.originator !== 1,
               // onBulkUpdate: async(changes) => {
               //   const errorResult = await handleTableUpdate({changes:changes})
               //     return(new Promise((resolve, reject) => {
@@ -730,21 +746,41 @@ export default function Eng4900(props) {
               //       }, 1000);
               //     }))
               //   },
-                onRowUpdate: async (newData, oldData) =>{
-                  const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-                  return(new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      if(errorResult){
-                        reject()
-                        return;
-                      }
-      
-                      //resetEmployees();
-                      resolve();
-                        
-                    }, 1000);
-                  }))
-                  },
+              onRowUpdate: async (newData, oldData) =>{
+                const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                return(new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    if(errorResult){
+                      reject()
+                      return;
+                    }
+    
+                    //resetEmployees();
+                    resolve();
+                      
+                  }, 1000);
+                }))
+                },
+              onRowDelete: async (oldData) => {
+                const result = await handleTableDelete(oldData)
+
+                return(new Promise((resolve, reject) => {
+                  setTimeout(() => {
+
+                    if(!result.error){
+                      const dataDelete = [...eng4900s];
+                      const index = oldData.tableData.id;
+                      dataDelete.splice(index, 1);
+                      //setEng4900s([...dataDelete]);
+                      resolve()
+                      return;
+                    }  
+    
+                    reject();
+                  }, 1000);
+                }
+              ))
+                }
             }})}
           />
     </div>
@@ -787,9 +823,9 @@ export default function Eng4900(props) {
 			</Grid>)
 	}
 
-  const cards = Object.keys(eng4900s).map(function(key) {
-    return CardProduct(eng4900s[key]);
-  });
+  // const cards = Object.keys(eng4900s).map(function(key) {
+  //   return CardProduct(eng4900s[key]);
+  // });
 
   const displayTop = () => {
     // if(props.location.pathname.includes(`${ENG4900}/edit/`))
@@ -864,10 +900,10 @@ export default function Eng4900(props) {
 
     //setUrl('ur')
     //console.log(props)    
-    if(search){
-      UpdateTextFields()
-      handleSearch(null,true)
-    }
+    // if(search){
+    //   UpdateTextFields()
+    //   handleSearch(null,true)
+    // }
     
     // Add event listener
     window.addEventListener("resize", handleResize);
@@ -890,7 +926,7 @@ export default function Eng4900(props) {
   return (
     <>
     {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={statusOptions}/> : null}
-    {create4900.show ? <Eng4900Form action={"CREATE"} type="DIALOG" create4900={create4900} setCreate4900={setCreate4900}/> : null}
+    {create4900.show ? <Eng4900Form action={"CREATE"} type="DIALOG" eng4900s={eng4900s} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <Header/>
     <div>
       <Tooltip title="Crate New Form" aria-label="add">

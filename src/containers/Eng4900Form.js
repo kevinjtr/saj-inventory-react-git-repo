@@ -53,6 +53,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import { makeStyles } from '@material-ui/core/styles';
 import Header from '../components/Header'
+import AdornedButton from './AdornedButton'
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -143,7 +144,7 @@ export default function Eng4900(props) {
   
   //Constants Declarations.
   console.log(props)
-  const {formData, create4900, setCreate4900, type} = props
+  const {formData, create4900, setCreate4900, type, eng4900s, setEng4900s} = props
   const formId = props.match ? props.match.params.id : null
   let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
   //(props.match ? props.match.location.pathname.split('/')[2].toUpperCase() : "VIEW")
@@ -315,30 +316,30 @@ export default function Eng4900(props) {
 
   }
 
-  
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
 
     setSubmitButton({...submitButton,send:true})
 
-    if(editEnabled){
-      api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
+    return(new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if(editEnabled){
+          api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
+            if(!data.error){
+              setEng4900s([data.data, ...eng4900s])
+              resetCreate4900Data()
+            }
+            
+            setSubmitButton({...submitButton,send:false})
+        
+          }).catch(function (error) {
+            setSubmitButton({...submitButton,send:false})
+          });
+        }
 
-        // console.log(data)
-        // setLoading(false)
-        // setEng4900s(data.status != 400 ? data.data : data)
-  
-        // if(data.status == 200 && data.editable){
-        //   setEditable(data.editable)
-        // }
-        setSubmitButton({...submitButton,send:false})
-    
-      }).catch(function (error) {
-        // setLoading(false)
-        // setEng4900s([])
-        setSubmitButton({...submitButton,send:false})
-      });
-    }
+        resolve();
+        
+      }, 1000);
+    }))
   }
 
   const resetCreate4900Data = () => {
@@ -857,9 +858,9 @@ export default function Eng4900(props) {
             Send
           </LoadingButton> */}
 
-          <Button onClick={handleSubmit} className={ submitButton.active ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...((!submitButton.active && !submitButton.send) && {disabled:true})}> 
+          <AdornedButton onClick={handleSubmit} className={ submitButton.active ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...((!submitButton.active || submitButton.send) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
             Submit
-          </Button>
+          </AdornedButton>
           </div>
         ) : null}
         </>
