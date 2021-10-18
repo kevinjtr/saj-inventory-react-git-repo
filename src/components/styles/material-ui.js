@@ -1,3 +1,7 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import { deepOrange, deepPurple, green } from '@material-ui/core/colors';
 
@@ -6,11 +10,12 @@ export const plusButtonStyles = makeStyles((theme) => ({
       margin: theme.spacing(2),
     },
     absolute: {
-      position: 'absolute',
+      //position: 'absolute',
       //top: theme.spacing(2),
       right: theme.spacing(3),
+      //float:'right',
       //right: '0',
-      marginTop:'10px'
+      marginBottom:'10px'
     },
     fabGreen: {
       color: theme.palette.common.white,
@@ -18,6 +23,7 @@ export const plusButtonStyles = makeStyles((theme) => ({
       '&:hover': {
         backgroundColor: green[600],
       },
+      //paddingLeft: theme.spacing(5)
     },
   }));
   
@@ -94,4 +100,46 @@ export const AvatarStyles = makeStyles((theme) => ({
         backgroundColor: deepPurple[500],
       },
     }));
+    
+
+export const TabPanel = (props) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+export const a11yProps = (index) => {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+export const tabStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.paper,
+    paddingTop: theme.spacing(2)
+  },
+}));
     

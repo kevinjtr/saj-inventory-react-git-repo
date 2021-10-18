@@ -144,7 +144,7 @@ export default function Eng4900(props) {
   
   //Constants Declarations.
   console.log(props)
-  const {formData, create4900, setCreate4900, type, eng4900s, setEng4900s} = props
+  const {formData, create4900, setCreate4900, type, eng4900s, setEng4900s, tab} = props
   const formId = props.match ? props.match.params.id : null
   let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
   //(props.match ? props.match.location.pathname.split('/')[2].toUpperCase() : "VIEW")
@@ -325,7 +325,9 @@ export default function Eng4900(props) {
         if(editEnabled){
           api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
             if(!data.error){
-              setEng4900s([data.data, ...eng4900s])
+              setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
+
+              //setEng4900s([data.data, ...eng4900s])
               resetCreate4900Data()
             }
             
