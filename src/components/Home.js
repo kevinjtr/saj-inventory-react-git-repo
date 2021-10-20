@@ -13,7 +13,7 @@ export class Home extends Component {
 				<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
 					{/* <TextField onClick={this.tfSubmit}/> */}
 					<h2>Home</h2>
-					<img src="usace-iventory.jpg" alt="image" />
+					<img src="usace-inventory.png" alt="image" />
 					<br />
 					<br />
 					{/* <div>

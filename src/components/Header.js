@@ -1,12 +1,10 @@
 import {routes_tabs} from './config/routes'
 import React from 'react'
 import { connect } from 'redux-bundler-react';
+// import Brightness4Icon from '@material-ui/icons/Brightness4';
 
 function Header(props) {
 	const {user} = props
-
-	//doFetchUserLevel()
-	console.log(props)
 	return (
 		<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
 			<p className="navbar-brand">Inventory</p>
@@ -14,6 +12,7 @@ function Header(props) {
                 {routes_tabs(user)}
                 
 			</ul>
+			{/* <div style={{position:'absolute',right:'.7vw'}}><Brightness4Icon/></div> */}
 		</nav>
 	);
 }

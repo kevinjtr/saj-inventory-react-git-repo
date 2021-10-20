@@ -128,7 +128,7 @@ const RESET_FORM = {
   equipment_group: []
 }
 
-const RESET_HRAS_HOOK = {losing:[],gaining:[]}
+//const RESET_HRAS_HOOK = {losing:[],gaining:[]}
 
 function formatPhoneNumber(phoneNumberString) {
   var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
@@ -141,16 +141,14 @@ function formatPhoneNumber(phoneNumberString) {
 
 
 export default function Eng4900(props) {
-  
-  //Constants Declarations.
   console.log(props)
-  const {formData, create4900, setCreate4900, type, eng4900s, setEng4900s, tab} = props
+
+  //Constants Declarations.
+  const {formData, create4900, setCreate4900, type, eng4900s, setEng4900s, tab, hras} = props
   const formId = props.match ? props.match.params.id : null
-  let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
-  //(props.match ? props.match.location.pathname.split('/')[2].toUpperCase() : "VIEW")
-  //const editEnabled = ["CREATE","EDIT"].includes(action)
-  //console.log(action)
+
   //Variables Declarations.
+  let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
 
   //Styles Declarations.
   const classesTextField = texFieldStyles();
@@ -170,13 +168,8 @@ export default function Eng4900(props) {
     send:false,
   });
   const [equipments,setEquipments] = React.useState([])
-  const [phoneNumbers, setPhoneNumbers] = React.useState({
-    gaining_hra_work_phone: '(   )    -    ',
-    losing_hra_work_phone: '(   )    -    ',
-    numberformat: '1320',
-  });
   const [selectedForm, setSelectedForm] = React.useState(RESET_FORM);
-  const [hras, setHras] = React.useState(RESET_HRAS_HOOK);
+  //const [hras, setHras] = React.useState(RESET_HRAS_HOOK);
   const [editEnabled, setEditEnabled] = React.useState(false);
 
   const handleCheckBoxChange = (event) => {
@@ -185,35 +178,35 @@ export default function Eng4900(props) {
 
   const handleFormSelect = async () => {
 
-    const getHrasAndEquipments = () => {
-      setLoading({...loading,hra:true})
-      setLoading({...loading,equipment:true})
+  // const getHrasAndEquipments = () => {
+  //   // setLoading({...loading,hra:true})
+  //   // setLoading({...loading,equipment:true})
 
-      api.get(`hra/form`).then((hra_res) => hra_res.data).then((h_data) => {
-          console.log('hra_download',h_data)
-          setHras(h_data.status != 400 ? h_data.data : h_data)
-          setLoading({...loading,hra:false})
-        }).catch(function (error) {
-          setHras(RESET_HRAS_HOOK)
-          setLoading({...loading,hra:false})
-        });
-    
-      // api.get(`${EQUIPMENT}`).then((eq_res) => eq_res.data).then((e_data) => {
-      //     console.log(e_data)
-      //     setEquipments(e_data.status == 200 ? e_data.data : e_data)
-      //     setLoading({...loading,equipment:false})
-      //   }).catch(function (error) {
-      //     setEquipments([])
-      //     setLoading({...loading,equipment:false})
-      //   });
-    }
+  //   // api.get(`hra/form`).then((hra_res) => hra_res.data).then((h_data) => {
+  //   //     console.log('hra_download',h_data)
+  //   //     setHras(h_data.status != 400 ? h_data.data : h_data)
+  //   //     setLoading({...loading,hra:false})
+  //   //   }).catch(function (error) {
+  //   //     setHras(RESET_HRAS_HOOK)
+  //   //     setLoading({...loading,hra:false})
+  //   //   });
+  
+  //   // api.get(`${EQUIPMENT}`).then((eq_res) => eq_res.data).then((e_data) => {
+  //   //     console.log(e_data)
+  //   //     setEquipments(e_data.status == 200 ? e_data.data : e_data)
+  //   //     setLoading({...loading,equipment:false})
+  //   //   }).catch(function (error) {
+  //   //     setEquipments([])
+  //   //     setLoading({...loading,equipment:false})
+  //   //   });
+  // }
 
     setLoading({...loading,init:true})
 
     if(action === "CREATE"){
       setEditEnabled(true)
       setLoading({...loading,init:false})
-      getHrasAndEquipments()
+      //getHrasAndEquipments()
       return;
     }
 
@@ -229,7 +222,7 @@ export default function Eng4900(props) {
 
         if(action === "EDIT" && data.data.status === 1){
           setEditEnabled(true)
-          getHrasAndEquipments()
+          //getHrasAndEquipments()
         }
   
         }).catch(function (error) {
@@ -271,8 +264,8 @@ export default function Eng4900(props) {
   const handleLosingHraChange = (event,val) => {
 
     if(val){
-
       setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: val} })
+      setEquipments([])
 
       console.log(val)
       const idx = findIndex(hras.losing,function(h){ return h.hra_num === val.hra_num})
@@ -281,15 +274,13 @@ export default function Eng4900(props) {
       if(idx != -1){
         setEquipments(hras.losing[idx].equipments)
         console.log(equipments)
-        return;
       }
 
-      setEquipments([])
       return;
     }
 
     
-    setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: RESET_HRA},equipment_group:[] })
+    setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: RESET_HRA}, equipment_group:[] })
     setEquipments([])
   }
 
@@ -349,11 +340,7 @@ export default function Eng4900(props) {
     return;
   }
 
-
   const form = () => {
-
-    console.log(selectedForm)
-
         return(
           <>
           <form className={classesTextField.root} noValidate autoComplete="off">
@@ -1488,7 +1475,14 @@ export default function Eng4900(props) {
     )
   }
 
+  //Effects
+  useEffect(() => {
+    handleFormSelect()
+  }, []);//will run once.
+
   useEffect(()=>{
+    console.log(selectedForm)
+
     if(action === "CREATE"){
       console.log(selectedForm)
       if(isDateValid(selectedForm.expiration_date) && selectedForm.requested_action && selectedForm.hra.losing.hra_num && selectedForm.hra.gaining.hra_num && selectedForm.equipment_group.length > 0){
@@ -1538,18 +1532,6 @@ export default function Eng4900(props) {
 
     return(<div style={{textAlign: 'center'}}> <h2>Eng 4900</h2> </div>)
   }
-
-  const disableFields = {
-    PBO: true,
-    logistics: true,
-    HRA: false,
-    user: false
-  }
-
-  //Effects.
-	useEffect(() => {
-    handleFormSelect()
-  }, []);//will run once.
 
   //Render return.
 
