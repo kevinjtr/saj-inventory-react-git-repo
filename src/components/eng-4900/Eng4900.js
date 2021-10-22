@@ -290,6 +290,10 @@ export default function Eng4900(props) {
       if(data.status == 200 && data.editable){
         setEditable(data.editable)
         setEng4900s(data.data)
+
+        if(data.data[0].length == 0){
+          setTabs(1)
+        }
       }
       
       setLoading({...loading,init:false})
@@ -526,7 +530,7 @@ export default function Eng4900(props) {
       <div className={tabClasses.root}>
         <AppBar position="static" color="default">
           <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
-            <Tab label={formTabs[0].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(0)} />
+            <Tab label={formTabs[0].label.toUpperCase()} disabled={eng4900s[0].length == 0} icon={<DescriptionIcon/>} {...a11yProps(0)} />
             <Tab label={formTabs[1].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(1)} />
             <Tab label={formTabs[2].label.toUpperCase()} icon= {
             <Badge badgeContent={eng4900s[2].length} color="secondary">
@@ -824,18 +828,18 @@ export default function Eng4900(props) {
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
-                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
-              rowData => ({
-                icon: tableIcons.Publish,
-                tooltip: 'Upload PDF',
-                onClick: (event, rowData) => {
-                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              })               
+              // rowData => ({
+              //   icon: tableIcons.Publish,
+              //   tooltip: 'Upload PDF',
+              //   onClick: (event, rowData) => {
+              //     setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+              //   },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+              //   disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              // })               
             ]}
             {...(editable && {editable:{
               //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable

@@ -15,7 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import clsx from 'clsx'
-import { green, grey } from '@material-ui/core/colors';
+import { blue, grey } from '@material-ui/core/colors';
 import AdornedButton from './AdornedButton'
 import {useDropzone} from 'react-dropzone';
 import api from '../axios/Api';
@@ -92,26 +92,26 @@ const dialogStyles = makeStyles(theme => ({
 }))
 
 const plusButtonStyles = makeStyles((theme) => ({
-    fab: {
-      margin: theme.spacing(2),
-    },
-    absolute: {
-      //position: 'absolute',
-      //top: theme.spacing(2),
-      right: theme.spacing(3),
-      //right: '0',
-      marginTop: theme.spacing(2)
-    },
-    fabGreen: {
+    // fab: {
+    //   margin: theme.spacing(2),
+    // },
+    // absolute: {
+    //   //position: 'absolute',
+    //   //top: theme.spacing(2),
+    //   right: theme.spacing(3),
+    //   //right: '0',
+    //   marginTop: theme.spacing(2)
+    // },
+    fabBlue: {
       color: theme.palette.common.white,
-      backgroundColor: green[500],
+      backgroundColor: blue[500],
       '&:hover': {
-        backgroundColor: green[600],
+        backgroundColor: blue[600],
       },
       height:'50px',
-      width:'20%',
+      width:'50%',
       marginTop: '20px',
-      marginBottom:'20px'
+      marginBottom:'20px',
     },
     fabGrey: {
       color: theme.palette.common.white,
@@ -120,7 +120,7 @@ const plusButtonStyles = makeStyles((theme) => ({
         backgroundColor: grey[600],
       },
       height:'50px',
-      width:'20%',
+      width:'50%',
       marginTop: '20px',
       marginBottom:'20px'
     },
@@ -146,6 +146,7 @@ export default function UploadFormModal(props) {
         active:false,
         send:false,
       });
+    const [progress, setProgress] = useState(0); // progess bar
 
     //Styles declaration
     const classDialog = dialogStyles();
@@ -154,19 +155,22 @@ export default function UploadFormModal(props) {
     //Events declaration
     const handleSubmit = async (event) => {
 
+        setProgress(0)
         setSubmitButton({...submitButton,send:true})
     
         return(new Promise((resolve, reject) => {
           setTimeout(() => {
 
             if(files.length != 0){
-                console.log(files[0])
                 var formData = new FormData();
                 formData.append('file', files[0]);
 
-                api.post('eng4900/upload',formData, { headers: {
-                    "Content-Type": "multipart/form-data",
-                }}).then((response) => {
+                api.post('eng4900/upload',formData, {
+                    onUploadProgress: (ProgressEvent) => {
+                        let progress = Math.round(
+                        ProgressEvent.loaded / ProgressEvent.total * 100);
+                        setProgress(progress);
+                    }}).then((response) => {
                     console.log(response)
                 }).catch(function (error) {
                     //do nothing.
@@ -206,16 +210,11 @@ export default function UploadFormModal(props) {
                 <div style={thumb} key={'thumb-' + file.name}>
                     <div style={thumbInner}>
                     <PictureAsPdfIcon style={img}/>
-                    
-                    {/* <img
-                        src={file.preview}
-                        style={img}
-                    /> */}
                     </div>
                 </div>
                 ));
 
-            const description = files.map(file => <li key={file.path}>{file.path}</li>);
+            const description = files.map((file) => <li key={file.path}>{file.path}  <i className="fa fa-trash text-red" style={{color:'#FF0000'}} title="Remove Attachment" onClick={() => remove(file)}></i></li>);
             
             return (
                 <section className="container">
@@ -226,7 +225,18 @@ export default function UploadFormModal(props) {
                 </div>
                 <aside style={thumbsContainer}>
                     {thumbs}
+                </aside>
+                <aside style={thumbsContainer}>
+                    <ul>
                     {description}
+                    </ul>
+                </aside>
+                <aside>
+                    {progress > 0 ? (
+                        <div className="progessBar" style={{ width: progress }}>
+                        {'Upload Progress:' + progress + '%'}
+                        </div>
+                    ) : null}
                 </aside>
                 </section>
             );
@@ -236,11 +246,25 @@ export default function UploadFormModal(props) {
             return (<p>Upload is Complete. </p>)
         }
 
-        const keys = filter(Object.keys(statusOptions),function(k){ console.log(k); return Number(k) >= (uploadPdf.rowData ? uploadPdf.rowData.status : 0)})
+        const keys = filter(Object.keys(statusOptions),function(k){ 
+           const {rowData} = uploadPdf
+        
+            if(Object.keys(rowData).length > 0){
+                const {status, originator} = rowData
+
+                if(status && originator){
+                    return Number(k) >= status
+                }
+
+                return Number(k) >= rowData.status && Number(k) <= rowData.status + 1
+            }
+            
+            return false
+        })
 
         const uploadStatusItems = keys.map(k => {
                 return <MenuItem value={k}>{statusOptions[k]}</MenuItem>
-            })
+        })
 
         const {getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject} = useDropzone({
             accept: 'application/pdf',
@@ -254,6 +278,16 @@ export default function UploadFormModal(props) {
             onDropRejected: () => setSubmitButton({...submitButton,active:false}),
             });
 
+        const remove = file => {
+            const newFiles = [...files];     // make a var for the new array
+            newFiles.splice(file, 1);        // remove the file from the array
+            setFiles(newFiles);              // update the state
+
+            if(newFiles.length == 0){
+                setSubmitButton({...submitButton,active:false})
+            }
+        };
+            
         const style = useMemo(() => ({
             ...baseStyle,
             ...(isDragActive ? activeStyle : {}),
@@ -275,6 +309,8 @@ export default function UploadFormModal(props) {
             console.log(submitButton)
         }, [submitButton]);
 
+        const newStatusSelected = modal.newStatus && ( modal.newStatus != uploadPdf.rowData.status)
+
         return(
             <Dialog open={uploadPdf.show} class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
                 if (reason !== 'backdropClick') {
@@ -285,7 +321,7 @@ export default function UploadFormModal(props) {
                 <div>
                 <DialogTitle disableTypography class={classDialog.dialogTitle}>
                     <div style={{position:'absolute',left:'10px'}}>
-                        <h2>ENG4900{uploadPdf.rowData ? ' - ' + uploadPdf.rowData.form_id : null}</h2>  
+                        <h2>Upload Eng4900{uploadPdf.rowData ? ' - ' + uploadPdf.rowData.form_id : null}</h2>  
                     </div>
                     <IconButton onClick={()=>resetModalData()}>
                         <CloseIcon />
@@ -308,10 +344,12 @@ export default function UploadFormModal(props) {
                 </FormControl>
                 ) : null}
                 
-                { modal.newStatus && ( modal.newStatus != uploadPdf.rowData.status) ? (modal.uploadDone ? returnCompleteLabel() : returnUploadDropZone()) : null}
-                <AdornedButton onClick={handleSubmit} className={ submitButton.active ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...((!submitButton.active || submitButton.send) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
-                Submit
-                </AdornedButton>
+                { newStatusSelected ? (modal.uploadDone ? returnCompleteLabel() : returnUploadDropZone()) : null}
+                <div style={{textAlign:'center'}}>
+                    <AdornedButton onClick={handleSubmit} className={ submitButton.active && newStatusSelected ? clsx(plusButtonClasses.fabBlue) : clsx(plusButtonClasses.fabGrey)} {...(( !submitButton.active || submitButton.send || !newStatusSelected) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
+                    Upload
+                    </AdornedButton>
+                </div>
                 </DialogContent>
             </Dialog>
         )
