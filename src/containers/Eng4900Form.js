@@ -54,6 +54,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { makeStyles } from '@material-ui/core/styles';
 import Header from '../components/Header'
 import AdornedButton from './AdornedButton'
+import debounce from 'lodash/debounce'
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -108,7 +109,7 @@ const RESET_HRA = {
   hra_first_name: "",
   hra_full_name: "",
   hra_last_name: "",
-  hra_num: "",
+  hra_num: null,
   hra_office_symbol_alias: "",
   hra_title: "",
   hra_work_phone: ""  
@@ -120,6 +121,7 @@ const RESET_FORM = {
   individual_ror_prop: "",
   expiration_date: null,
   expiration_date_print: "",
+  new_equipments: 0,
   temporary_loan: 2,
   hra: {
     losing: RESET_HRA,
@@ -174,6 +176,10 @@ export default function Eng4900(props) {
 
   const handleCheckBoxChange = (event) => {
     setSelectedForm({ ...selectedForm, temporary_loan: (event.target.checked ? 1 : 2) });
+  };
+
+  const handleNewEquipmentsCheckBoxChange = (event) => {
+    setSelectedForm({ ...selectedForm, new_equipments: Number(event.target.checked), hra: { ...selectedForm.hra, losing: RESET_HRA, equipment_group: [] } })
   };
 
   const handleFormSelect = async () => {
@@ -307,32 +313,53 @@ export default function Eng4900(props) {
 
   }
 
+  const submitForm = debounce(async () => {
+    if(editEnabled){
+      api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
+        if(!data.error){
+          setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
+
+          //setEng4900s([data.data, ...eng4900s])
+          resetCreate4900Data()
+        }
+        
+        setSubmitButton({...submitButton,send:false})
+    
+      }).catch(function (error) {
+        setSubmitButton({...submitButton,send:false})
+      });
+    }
+  }, 1000, {maxWait:2000})
+
   const handleSubmit = async (event) => {
 
     setSubmitButton({...submitButton,send:true})
+    submitForm()
 
-    return(new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if(editEnabled){
-          api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
-            if(!data.error){
-              setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
 
-              //setEng4900s([data.data, ...eng4900s])
-              resetCreate4900Data()
-            }
+    // return(new Promise((resolve, reject) => {
+    //   setTimeout(() => {
+
+    //     if(editEnabled){
+    //       api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
+    //         if(!data.error){
+    //           setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
+
+    //           //setEng4900s([data.data, ...eng4900s])
+    //           resetCreate4900Data()
+    //         }
             
-            setSubmitButton({...submitButton,send:false})
+    //         setSubmitButton({...submitButton,send:false})
         
-          }).catch(function (error) {
-            setSubmitButton({...submitButton,send:false})
-          });
-        }
+    //       }).catch(function (error) {
+    //         setSubmitButton({...submitButton,send:false})
+    //       });
+    //     }
 
-        resolve();
+    //     resolve();
         
-      }, 1000);
-    }))
+    //   }, 1000);
+    // }))
   }
 
   const resetCreate4900Data = () => {
@@ -349,6 +376,16 @@ export default function Eng4900(props) {
               <Grid item xs={12}>
               <Paper className={classesGrid.paper}>
                 <p>{`Form - ${formId ? formId : 'New'}`}</p> 
+                {editEnabled ? (
+                  <FormControlLabel
+                    control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.new_equipments} onChange={handleNewEquipmentsCheckBoxChange} name="TemporaryLoan" />}
+                    label="New Equipment"/> 
+                ) : (
+                  <FormControlLabel
+                    control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.new_equipments} name="TemporaryLoan" />}
+                    label="New Equipment"/> 
+                )}
+
                 {editEnabled ? (
                   <FormControl error={!selectedForm.requested_action} component="fieldset">
                   <FormLabel component="legend">Requested Action:</FormLabel>
@@ -424,6 +461,7 @@ export default function Eng4900(props) {
                 key="standard-helperText-f-name"
                 label="2a. First Name"
                 name={"losing_hra_first_name"}
+                disabled={selectedForm.new_equipments}
                 value={selectedForm.hra.losing.hra_first_name}
                 //onChange={handleFormChange}
                 InputProps={{
@@ -435,6 +473,7 @@ export default function Eng4900(props) {
                 key="standard-helperText-l-name"
                 label="2a. Last Name"
                 name={"losing_hra_last_name"}
+                disabled={selectedForm.new_equipments}
                 value={selectedForm.hra.losing.hra_last_name}
                 //onChange={handleFormChange}
                 InputProps={{
@@ -446,6 +485,7 @@ export default function Eng4900(props) {
                 key="standard-helperText-os-alias"
                 label="b. Office Symbol"
                 name={"losing_hra_os_alias"}
+                disabled={selectedForm.new_equipments}
                 value={selectedForm.hra.losing.hra_office_symbol_alias}
                 //onChange={handleFormChange}
                 InputProps={{
@@ -458,17 +498,19 @@ export default function Eng4900(props) {
                   id="combo-box-losing"
                   options={hras.losing}
                   loading={loading.hra}
+                  disabled={selectedForm.new_equipments}
                   getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
-                  defaultValue={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
+                  value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
                   style={{ width: 300 }}
                   onChange={handleLosingHraChange}
                   
-                  renderInput={(params) => <TextField {...(!selectedForm.hra.losing.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
+                  renderInput={(params) => <TextField {...( (!selectedForm.hra.losing.hra_num && !selectedForm.new_equipments) && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
                 :
                 <TextField
                   id="standard-helperText-l-hra-num"
                   key="standard-helperText-l-hra-num"
                   label="c. Hand Receipt Account Number"
+                  disabled={selectedForm.new_equipments}
                   value={selectedForm.hra.losing.hra_num}
                   style={{ width: 300 }}/>
                 }
@@ -477,6 +519,7 @@ export default function Eng4900(props) {
                 key="standard-helperText-l-hra-pnum"
                 label="d. Work Phone Number"
                 name="losing_hra_work_phone"
+                disabled={selectedForm.new_equipments}
                 value={selectedForm.hra.losing.hra_work_phone ? formatPhoneNumber(selectedForm.hra.losing.hra_work_phone) : ""}
                 style={{ width: 200 }}/>
             </Paper>
@@ -1485,7 +1528,7 @@ export default function Eng4900(props) {
 
     if(action === "CREATE"){
       console.log(selectedForm)
-      if(isDateValid(selectedForm.expiration_date) && selectedForm.requested_action && selectedForm.hra.losing.hra_num && selectedForm.hra.gaining.hra_num && selectedForm.equipment_group.length > 0){
+      if(isDateValid(selectedForm.expiration_date) && selectedForm.requested_action && (selectedForm.hra.losing.hra_num || !selectedForm.new_equipments) && selectedForm.hra.gaining.hra_num && selectedForm.equipment_group.length > 0){
         setSubmitButton({...submitButton,active:true})
         return;
       }

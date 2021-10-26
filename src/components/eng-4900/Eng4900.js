@@ -530,7 +530,7 @@ export default function Eng4900(props) {
       <div className={tabClasses.root}>
         <AppBar position="static" color="default">
           <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
-            <Tab label={formTabs[0].label.toUpperCase()} disabled={eng4900s[0].length == 0} icon={<DescriptionIcon/>} {...a11yProps(0)} />
+            <Tab label={formTabs[0].label.toUpperCase()} hidden={eng4900s[0].length == 0} icon={<DescriptionIcon/>} {...a11yProps(0)} />
             <Tab label={formTabs[1].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(1)} />
             <Tab label={formTabs[2].label.toUpperCase()} icon= {
             <Badge badgeContent={eng4900s[2].length} color="secondary">
@@ -1273,7 +1273,7 @@ export default function Eng4900(props) {
           <h3 style={{ justifyContent: 'center' }}>Available 4900s</h3>
               <div style={{ justifyContent: 'center' }}>{cards}</div>
       </div>) : null} */}
-      {TabsEng4900()}
+      {!loading.init ? TabsEng4900() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
     </div>
     </>
   );

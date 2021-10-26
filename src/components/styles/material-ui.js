@@ -52,6 +52,13 @@ export const gridStyles = makeStyles((theme) => ({
         textAlign: 'center',
         color: theme.palette.text.secondary,
       },
+      header: {
+        padding: theme.spacing(2),
+        display: 'flex',
+        flowDirection: 'row',
+        color: theme.palette.text.secondary,
+        textAlign: 'center'
+      },
       paperHidden: {
         padding: theme.spacing(2),
         textAlign: 'center',
