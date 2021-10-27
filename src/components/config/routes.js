@@ -18,9 +18,11 @@ import NotFound from '../forms/NotFound'
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import {filter} from 'lodash'
 import api from '../../axios/Api';
+import SignInOut from '../../containers/SignInOut'
 
 const routes_config = [
     {path:'/',label:'Home',component:Home,tab:true,level:'user'},
+    {path:'/signin',label:'SignInOut',component:SignInOut,tab:true,level:'user'},
     {path:'/equipment',label:'Equipment',component:Equipment,tab:true,level:'user'},
     {path:'/annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin'},
     {path:'/annualinventory/:id',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin'},
