@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 import { deepOrange, deepPurple, green } from '@material-ui/core/colors';
+import { FormatAlignLeft } from '@material-ui/icons';
 
 export const plusButtonStyles = makeStyles((theme) => ({
     fab: {
@@ -26,6 +27,7 @@ export const texFieldStyles = makeStyles((theme) => ({
       '& .MuiTextField-root': {
         margin: theme.spacing(1),
         width: '25ch',
+        textAlign: 'center',
       },
     },
     options: {
@@ -94,4 +96,14 @@ export const AvatarStyles = makeStyles((theme) => ({
         backgroundColor: deepPurple[500],
       },
     }));
+
+export const dropDownStyles = makeStyles((theme) => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },
+})); 
     

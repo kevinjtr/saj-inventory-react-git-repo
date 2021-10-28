@@ -315,12 +315,12 @@ export default function FormPropsTextFields(props) {
                         <InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
                         <Select
                         labelId="demo-simple-select-outlined-label"
-                        id="demo-simple-select-outlined"
+                        id="demo-simple-select-outlined-native"
                         value={blanks_[val] ? blanks_[val] : null}
                         name={val}
                         onChange={handleBlanks}
                         //label="Sort By"
-                        style={{width:200}}
+                       // style={{width:200}}
                         >
                         <MenuItem value={"includeBlanks"}>Include Blanks</MenuItem>
                         <MenuItem value={"excludeBlanks"}>Exclude Blanks</MenuItem>
@@ -365,7 +365,7 @@ export default function FormPropsTextFields(props) {
         <Autocomplete
         //onChange={e => x.onChange(e)}
         id={`combo-box-employee`}
-        size="small"
+        //size="small"
         options={hras}
         getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
         value={idx != -1 ? hras[idx] : null}
@@ -411,7 +411,7 @@ export default function FormPropsTextFields(props) {
         <Autocomplete
         //onChange={e => x.onChange(e)}
         id="combo-box-employee"
-        size="small"
+        //size="small"
         options={employees}
         getOptionLabel={(option) => option.id + ' - ' + option.first_name + ' ' + option.last_name}
         value={idx != -1 ? employees[idx] : null}
@@ -663,40 +663,44 @@ export default function FormPropsTextFields(props) {
                 <Grid container spacing={3}>
                     {/* <Grid item xs={12}> */}
                       <Grid item xs={Math.floor(12/5)}>
-                        <TextField id="outlined-search-hraName" name="hraName" label="Search by HRA Name" type="search" variant="outlined" value={hraName} onChange={handleHraNameChange}/>
+                        <TextField id="outlined-search-hraName" name="hraName" label="Search HRA Name" type="search" variant="outlined" value={hraName} onChange={handleHraNameChange}/>
                         {hraName && searchView != 'std' ? <><br/>{SearchCriteriaOptions("hraName","HRA Name Options")}</> : null}
                         <br/>
-                        {searchView != 'std' ? SearchBlanksOptions("hraName","HRA Name Blanks Options") : null}
+                        <br/>
+                        {searchView != 'std' ? SearchBlanksOptions("hraName","HRA Name") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
-                        <TextField id="outlined-search-hraNum" name="hraNum" label="Search by HRA Number" type="search" variant="outlined" value={hraNum} onChange={handlehraNumChange}/>
+                        <TextField id="outlined-search-hraNum" name="hraNum" label="Search HRA Number" type="search" variant="outlined" value={hraNum} onChange={handlehraNumChange}/>
                         {hraNum && searchView != 'std' ? <><br/> {SearchCriteriaOptions("hraNum","HRA Number Options")}</> : null}
                         <br/>
-                        {searchView != 'std' ? SearchBlanksOptions("hraNum","HRA Number Blanks Options") : null}
+                        <br/>
+                        {searchView != 'std' ? SearchBlanksOptions("hraNum","HRA Number") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
-                        <TextField id="outlined-search-itemType" name="itemType" label="Search by Item Description" type="search" variant="outlined" value={itemType} onChange={handleItemTypeChange}/>
+                        <TextField id="outlined-search-itemType" name="itemType" label="Search Item Description" type="search" variant="outlined" value={itemType} onChange={handleItemTypeChange}/>
                         {itemType && searchView != 'std' ? <><br/>{SearchCriteriaOptions("itemType","Item Description Options")}</> : null}
                         <br/>
-                        {searchView != 'std' ? SearchBlanksOptions("itemType","Item Description Blanks Options") : null}
+                        <br/>
+                        {searchView != 'std' ? SearchBlanksOptions("itemType","Item Description") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
-                        <TextField id="outlined-search-bartagNum" name="bartagNum" label="Search by Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/>
+                        <TextField id="outlined-search-bartagNum" name="bartagNum" label="Search Bar Tag" type="search" variant="outlined" value={bartagNum} onChange={handleBartagNumChange}/>
                         {bartagNum && searchView != 'std' ? <><br/>{SearchCriteriaOptions("bartagNum","Bartag Options")}</>: null}
                         <br/>
-                        {searchView != 'std' ? SearchBlanksOptions("bartagNum","Bartag Blanks Options") : null}
+                        <br/>
+                        {searchView != 'std' ? SearchBlanksOptions("bartagNum","Bar Tag") : null}
                       </Grid>
 
                       <Grid item xs={Math.floor(12/5)}>
-                        <TextField style={{width:250}}id="outlined-search-employeeName" name="employeeName" label="Search by Employee Holder" type="search" variant="outlined" value={employeeName} onChange={handleEmployeeNameChange}/>
+                        <TextField style={{width:250}}id="outlined-search-employeeName" name="employeeName" label="Search Employee" type="search" variant="outlined" value={employeeName} onChange={handleEmployeeNameChange}/>
                         {employeeName && searchView != 'std' ? <><br/>{SearchCriteriaOptions("employeeName","Employee Holder Options")}</> : null}
                         <br/>
-                        {searchView != 'std' ? SearchBlanksOptions("employeeName","Employee Holder Blanks Options") : null} 
+                        <br/>
+                        {searchView != 'std' ? SearchBlanksOptions("employeeName","Employee") : null} 
                       </Grid>
-
                       <Grid item xs={Math.floor(12/5)}>
                         <IconButton aria-label="search" color="primary" onClick={handleSearch}>
                           <SearchIcon style={{ fontSize: 40 }}/>

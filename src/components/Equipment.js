@@ -14,6 +14,9 @@ import Switch from '@material-ui/core/Switch';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import { useHistory } from 'react-router-dom'
 import Header from './Header'
+import { FormatAlignLeft } from '@material-ui/icons';
+//import Box from '@mui/material/Box';
+import Typography from '@material-ui/core/Typography';
 
 const BLANKS = 'Blanks'
 const OPTS = 'Opts'
@@ -40,7 +43,7 @@ export default function Equipment(props) {
 		hraName: {label: 'HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
 		bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-		employeeName: {label: 'Employee Holder', value: '', width: 250, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT}
+		employeeName: {label: 'Employee', value: '', width: 250, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT}
 	})
 	const [disableSearchFields, setDisableSearchFields] = React.useState(true)
 	const [switches, setSwitches] = React.useState({
@@ -235,47 +238,51 @@ export default function Equipment(props) {
 		})
 
 		return (
-		<FormControl variant="outlined" className={classesItemMenu.formControl}>
-			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
-			<Select
-				labelId="demo-simple-select-outlined-label"
-				id="demo-simple-select-outlined"
-				value={searchFields[val].options ? searchFields[val].options : OPTIONS_DEFAULT}
-				name={val}
-				onChange={handleSearchFieldsOptions}
-				style={{width:'100%'}}
-				InputLabelProps={{style: {fontSize: '.8vw'}}}
-				label={text}
-				>
-				{menuItems}
-			</Select>
-		</FormControl>
+		<div>
+			<br/>
+				<Typography noWrap>{text}</Typography>
+				<Select
+					//labelId="demo-simple-select-outlined-label"
+					id="demo-simple-select-outlined"
+					select
+					value={searchFields[val].options ? searchFields[val].options : OPTIONS_DEFAULT}
+					name={val}
+					onChange={handleSearchFieldsOptions}
+					style={{width:'80%',paddingRight:'20px'}}
+					//InputLabelProps={{style: {fontSize: '8vw'}}}
+					//label={text}
+					variant="outlined"
+					>
+					{menuItems}
+				</Select>
+			
+		</div>	
 		);
 	}
 
-	const SearchBlanksOptions = (val,text="Blanks Options") => {
+	const SearchBlanksOptions = (val,text="") => {
 
 		const menuItems = SEARCH_FIELD_BLANKS.map(x => {
 			return <MenuItem value={x.value}>{x.label}</MenuItem>
 		})
 
 		return (
-		<FormControl variant="outlined" className={classesItemMenu.formControl}>
-			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
-			<Select
-				labelId="demo-simple-select-outlined-label"
-				id="demo-simple-select-outlined"
-				value={searchFields[val].blanks ? searchFields[val].blanks : BLANKS_DEFAULT}
-				name={val}
-				label={text}
-				onChange={handleSearchFieldsBlanks}
-				//label="Sort By"
-				style={{width:'100%'}}
-				InputLabelProps={{style: {fontSize: '.8vw'}}}
+			<div>
+				<Typography noWrap>{text}</Typography>
+				<Select
+					id="demo-simple-select-outlined"
+					select
+					value={searchFields[val].blanks ? searchFields[val].blanks : BLANKS_DEFAULT}
+					name={val}
+					onChange={handleSearchFieldsBlanks}
+					style={{width:'80%'}}
+				    //label="Sort By"
+					//style={{width:'100%',paddingLeft:'20px'}}
+					variant="outlined"
 				>
-				{menuItems}
-			</Select>
-		</FormControl>
+					{menuItems}
+				</Select>
+			</div>
 		);
 	}
 
@@ -316,7 +323,8 @@ export default function Equipment(props) {
 				<Autocomplete
 				//onChange={e => x.onChange(e)}
 				id={`combo-box-employee`}
-				size="small"
+				//size="small"
+				//style={{width:'80%'}}
 				options={hras}
 				getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
 				value={idx != -1 ? hras[idx] : null}
@@ -398,7 +406,7 @@ export default function Equipment(props) {
 				<Autocomplete
 				//onChange={e => x.onChange(e)}
 				id="combo-box-employee"
-				size="small"
+				//size="small"
 				options={employees}
 				getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
 				value={idx != -1 ? employees[idx] : null}
@@ -432,7 +440,7 @@ export default function Equipment(props) {
 				<Autocomplete
 				//onChange={e => x.onChange(e)}
 				id="combo-box-employee"
-				size="small"
+				//size="small"
 				options={condition}
 				getOptionLabel={(option) => option.id + ' - ' + option.name}
 				value={idx != -1 ? condition[idx] : null}
@@ -816,35 +824,39 @@ export default function Equipment(props) {
 
 	const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
 		const nFields = Object.keys(searchFields).length
-		const w = windowSize.width*.75 / nFields
+		const w = windowSize.width*.75 / nFields > 150 ? windowSize.width*.75 / nFields : 150
 	return(	
 	<>
-	<Grid item xs={Math.floor(12/nFields)}>                 
+	<Grid item xs={Math.floor(12/nFields)}>     
+		<Typography noWrap>{`Search ${searchFields[key].label}`}</Typography>        
 		<TextField
 			id={`outlined-search-${key}`} 
-			name={key} label={`Search by ${searchFields[key].label}`} 
+			name={key} 
 			type="search" variant="outlined" 
 			value={searchFields[key].value} 
 			onChange={handleSearchFieldsChange}
 			onKeyPress={handleSearchKeyPress}
-			style={{width:'100%',paddingRight:'20px'}}
-			InputLabelProps={{style: {fontSize: '.7vw'}}}
-			InputProps={{
-				readOnly: disableSearchFields,
-				shrink: true
-              }}
+			style={{width:w,paddingRight:'20px'}}
+			//InputLabelProps={{style: {fontSize: '.7vw'}}}
+			//InputProps={{
+				//readOnly: disableSearchFields,
+				//shrink: false
+             //}}
 			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
 		/>
 		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`)}</> : null}
 		<br/>
-		{searchView != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[key].label} Blanks Options`) : null}
-	</Grid>
+		<br/>
+		{searchView != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[key].label}`) : null}
+		</Grid>  
+
+	
 	</>)
 	});
 
 	const searchButtonGridItem = () => { 
 		return(
-			<Grid item style={{textAlign:'left',paddingLeft:'20px'}}  xs={Math.floor(12/(Object.keys(searchFields).length))}>
+			<Grid item style={{textAlign:'left',paddingLeft:'20px', paddingTop:'35px'}}  xs={Math.floor(12/(Object.keys(searchFields).length))}>
 				<IconButton aria-label="search" color="primary" onClick={handleSearch}>
 					<SearchIcon style={{ fontSize: 40 }}/>
 				</IconButton>

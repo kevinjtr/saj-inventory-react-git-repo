@@ -17,6 +17,7 @@ import NotFound from '../forms/NotFound'
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import {filter} from 'lodash'
 import api from '../../axios/Api';
+import Register from '../Register';
 
 const routes_config = [
     {path:'/equipment',label:'Equipment',component:Equipment,tab:true,level:'user'},
@@ -34,6 +35,7 @@ const routes_config = [
     {path:'/problemreportviewer',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'user'},
     {path:'/changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin'},
     {path:'/404',label:'Not Found',component:NotFound,tab:false},
+    {path:'/register',label:'Register',component:Register,tab:true,level:'user'},
 ]
 
 export const routes_tabs = (lvl) => {
