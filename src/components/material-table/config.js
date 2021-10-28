@@ -22,6 +22,7 @@ import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import PublishIcon from '@material-ui/icons/Publish';
+import SendIcon from '@material-ui/icons/Send';
 
 export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
@@ -48,6 +49,7 @@ export const tableIcons = {
     Unlock: React.forwardRef((props, ref) => <LockOpenIcon {...props} ref={ref} />),
     EditOutlined: React.forwardRef((props, ref) => <EditOutlinedIcon {...props} ref={ref} />),
     Publish: React.forwardRef((props, ref) => <PublishIcon {...props} ref={ref} />),
+    Send: React.forwardRef((props, ref) => <SendIcon {...props} ref={ref} />),
   };
 
 export const changeHistoryIcons = {

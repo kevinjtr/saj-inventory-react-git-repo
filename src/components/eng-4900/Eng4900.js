@@ -46,7 +46,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormLabel from '@material-ui/core/FormLabel';
-import MaterialTable from 'material-table'
+import MaterialTable, { MTableToolbar } from 'material-table'
 import {tableIcons} from '../material-table/config'
 //import Pdf from './eng4900-26-2.pdf';
 import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../tools/tools'
@@ -55,7 +55,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from '../config/constants'
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
-import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles } from '../styles/material-ui';
+import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles } from '../styles/material-ui';
 import Header from '../Header'
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -64,6 +64,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
 import UploadFormModal from '../../containers/UploadFormModal'
 import Eng4900Form from '../../containers/Eng4900Form'
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Badge from '@material-ui/core/Badge';
+import DescriptionIcon from '@material-ui/icons/Description';
+import Switch from '@material-ui/core/Switch';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -82,8 +88,31 @@ export default function Eng4900(props) {
   const formId = props.match.params.id
   const search = getQueryStringParams(props.location.search)
   const PAGE_URL = `/${ENG4900}`
-  const statusOptions = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY', 3:'COMPLETED LOSING HRA SIGNATURE', 4:'COMPLETED GAINING HRA SIGNATURE',
-  5:'SENT TO PBO', 6:'SENT TO LOGISTICS'}
+  const statusOptions = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY',3:'LOSING HRA SIGNATURE REQUIRED', 4:'COMPLETED LOSING HRA SIGNATURE',  5:'GAINING HRA SIGNATURE REQUIRED', 6:'COMPLETED GAINING HRA SIGNATURE',
+  7:'SENT TO PBO', 8:'SENT TO LOGISTICS'}
+  const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_forms', label:'Completed Forms'}}
+  const SEARCH_FIELD_RESET = {
+    id: {label: 'ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    losingHra: {label: 'Losing HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    losingHraName: {label: 'Losing HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    gainingHra: {label: 'Gaining HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    gainingHraName: {label: 'Gaining HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    catalogNum: {label: 'Catalog Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    acqPrice: {label: 'Acquisition Price', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    serialNum: {label: 'Serial Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+  }
+  const OPTS_RESET = {
+    includes: {},
+    blanks: {}
+  }
+  const SWITCH_RESET = {
+		checkedView: false,
+		showSearch: false,
+  }
+  const RESET_HRAS = {losing:[],gaining:[]}
 
   //Variables Declarations.
 
@@ -101,99 +130,114 @@ export default function Eng4900(props) {
     },
   });
   const classDialog = dialogStyles();
+  const tabClasses = tabStyles();
 
   //Hooks Declarations.
-  
   const [uploadPdf, setUploadPdf] = React.useState({
     show: false,
     rowData: null
   })
-
   const [create4900, setCreate4900] = React.useState({
     show: false,
     formData: null,
     formId:null
   })
-
   const [searchFields, setSearchFields] = React.useState({
-		id: {label: 'ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-		requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    losingHra: {label: 'Losing HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    losingHraName: {label: 'Losing HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    gainingHra: {label: 'Gaining HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    gainingHraName: {label: 'Gaining HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    catalogNum: {label: 'Catalog Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    acqPrice: {label: 'Acquisition Price', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    serialNum: {label: 'Serial Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    0: SEARCH_FIELD_RESET,
+    1: SEARCH_FIELD_RESET,
+    2: SEARCH_FIELD_RESET,
+    3: SEARCH_FIELD_RESET,
   })
-  const [searchView, setSearchView] = React.useState(BASIC_SEARCH);
-  const [switches, setSwitches] = React.useState({
-		checkedView: false,
-	  });
+  const [searchView, setSearchView] = React.useState({
+    0: BASIC_SEARCH,
+    1: BASIC_SEARCH,
+    3: BASIC_SEARCH,
+    4: BASIC_SEARCH,
+  });
 	const [windowSize, setWindowSize] = React.useState({
 	width: undefined,
 	height: undefined,
 	});
-  // const [editable,setEditable] = React.useState(false)
-  const [loading, setLoading] = React.useState(false);
-  const [eng4900s, setEng4900s] = React.useState({});
-  // const [eng4900sTableFormat, setEng4900sTableFormat] = React.useState([]);
-  // const [numOfBarTags, setNumOfBarTags] = React.useState(1);
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
-  const [phoneNumbers, setPhoneNumbers] = React.useState({
-    gaining_hra_work_phone: '(   )    -    ',
-    losing_hra_work_phone: '(   )    -    ',
-    numberformat: '1320',
-  });
-  const [reqActions, setReqActions] = React.useState({
-    Issue: false,
-    Transfer: false,
-    Repair: false,
-    Excess: false,
-    Foi: false,
-    TemporaryLoan: false
-  });
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  // const [id_, setId] = React.useState('');
-  // const [selectedForm, setSelectedForm] = React.useState({});
-  const [viewSearch, setViewSearch] = React.useState('table-view');
+  const [loading, setLoading] = React.useState({init:true,refresh:{
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+  }});
+  const [eng4900s, setEng4900s] = React.useState({
+      0: [],
+      1: [],
+      2: [],
+      3: []
+    });
   const [editable,setEditable] = React.useState(false)
-  // const [formFields,setFormFields] = React.useState({
-  //   losing_hra:{name:'',officeSymbol:'',hra_num:''},
-  //   gaining_hra:{name:'',officeSymbol:'',hra_num:''},
-  //   equipment:[],
-  //   ror_prop:''
-  // })
-  // const [officesSymbol, setOfficesSymbol] = React.useState([]);
+  const [tabs, setTabs] = React.useState(0);
+  const [switches, setSwitches] = React.useState({
+      0: SWITCH_RESET,
+      1: SWITCH_RESET,
+      2: SWITCH_RESET,
+      3: SWITCH_RESET,
+    });
+  const [hras, setHras] = React.useState({
+    0: RESET_HRAS,
+    1: RESET_HRAS,
+    2: RESET_HRAS,
+    4: RESET_HRAS,
+  });
 
   //Events Declarations.
+  const handleTableDelete = async (rowData) => {
+    let result = {error:true}
+
+    await api.post(`${ENG4900}/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+      result = data
+
+    }).catch(function (error) {
+      //do nothing.
+    });
+
+    return result
+  }
+
 	const handleSearchFieldsChange = (event) => {
-		console.log(event.target.name,event.target.value)
-		
-		if(event.target.value == ''){
-			setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} })
+		console.log(event.target.value)
+    //const tab = event.target.id.split('-')[1]
+
+    if(event.target.value == ''){
+      setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], value: event.target.value, options: OPTIONS_DEFAULT}} })
 		}else{
-			setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
-		}
+			setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], value: event.target.value}} })
+    }
+
+		// if(event.target.value == ''){
+		// 	setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} })
+		// }else{
+		// 	setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
+		// }
 	};
 
 	const handleSearchFieldsOptions = (event) => {
-		const opts = SEARCH_FIELD_OPTIONS.map(x=>x.value).includes(event.target.value) ? event.target.value : OPTIONS_DEFAULT
-		setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], options : opts} })
+    const opts = SEARCH_FIELD_OPTIONS.map(x=>x.value).includes(event.target.value) ? event.target.value : OPTIONS_DEFAULT
+    //const tab = event.target.id.split('-')[1]
+
+    //setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], options : opts} })
+    
+    setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], options : opts}} })
 	}
 
 	const handleSearchFieldsBlanks = (event) => {
-		const blks = SEARCH_FIELD_BLANKS.map(x=>x.value).includes(event.target.value) ? event.target.value : BLANKS_DEFAULT
-		setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], blanks : blks} })
+    const blks = SEARCH_FIELD_BLANKS.map(x=>x.value).includes(event.target.value) ? event.target.value : BLANKS_DEFAULT
+    //const tab = event.target.id.split('-')[1]
+
+    //setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], blanks : blks} })
+    
+    setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], blanks : blks}} })
   }
   
   const handleSearch = async (e=null,onLoad=false) => {
-    if(!onLoad) await UpdateUrl()
-  
-    console.log(`${ENG4900} Search`)
-    setLoading(true)
+    //if(!onLoad) await UpdateUrl()
+
+    setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
     //setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
   
     let opts = {
@@ -203,44 +247,75 @@ export default function Eng4900(props) {
   
     let fields_obj = {}
   
-    Object.keys(searchFields).map(key => {
-      fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[key].value
+    Object.keys(searchFields[tabs]).map(key => {
+      fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[tabs][key].value
   
-      opts.includes[key] = searchView != BASIC_SEARCH ? searchFields[key].options : OPTIONS_DEFAULT
-      opts.blanks[key] = searchView != BASIC_SEARCH ? searchFields[key].blanks : BLANKS_DEFAULT
+      opts.includes[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].options : OPTIONS_DEFAULT
+      opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
     })
-  
-    console.log(fields_obj)
   
     api.post(`${ENG4900}/search2`,{
       'fields': fields_obj,
-      'options':opts
-  
+      'options':opts,
+      'tab': formTabs[tabs].id
     }).then((response) => response.data).then((data) => {
       console.log(data)
-      setLoading(false)
-      setEng4900s(data.status != 400 ? data.data : data)
+      setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
+      setEng4900s({...eng4900s, [tabs]: data.status != 400 ? data.data[tabs] : []})
+      //setEng4900s()
 
       if(data.status == 200 && data.editable){
         setEditable(data.editable)
       }
   
     }).catch(function (error) {
-      setLoading(false)
-      setEng4900s([])
+      setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
+      setEng4900s({...eng4900s, [tabs]: []})
   
     });
   
-    }
+  }
+
+  const pageInitialize = () => {
+    setLoading({...loading,init:true})
+  
+    api.post(`${ENG4900}/search2`, {
+      'fields': {},
+      'options':OPTS_RESET,
+      'tab': formTabs[tabs].id,
+      'init': true
+    }).then((response) => response.data).then((data) => {
+      console.log(data)
+
+      if(data.status == 200 && data.editable){
+        setEditable(data.editable)
+        setEng4900s(data.data)
+
+        if(data.data[0].length == 0){
+          setTabs(1)
+        }
+      }
+      
+      setLoading({...loading,init:false})
+
+    }).catch(function (error) {
+      setLoading({...loading,init:false})
+      setEng4900s({...eng4900s, [tabs]: []})
+  
+    });
+
+    getHrasAndEquipments()
+  }
   
   const handleSearchView = (e) => {
-  setSearchView(e.target.value)
+
+  setSearchView({...searchView, [e.target.name]: e.target.value})
   }
 
   async function get4900Pdf(rowData) {
     const {form_id} = rowData
 
-    setLoading(true)
+    setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
     if(typeof form_id != 'undefined'){
       await api.get(`${ENG4900}/pdf/${form_id}`, {
         responseType: 'blob', //Force to receive data in a Blob Format
@@ -254,26 +329,70 @@ export default function Eng4900(props) {
           const fileURL = URL.createObjectURL(file);
       //Open the URL on new Window
           window.open(fileURL, '_blank');
-          setLoading(false)
+          setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
       })
       .catch(error => {
           console.log(error);
-          setLoading(false)
+          setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
       });
     }
     
   } 
 
-  const handleSwithcesChange = (event) => {
-		setSwitches({ ...switches, [event.target.name]: event.target.checked });
+  const handleSwitchesChange = (event) => {
+    const target = event.target.name.split('-')
+		setSwitches({ ...switches, [target[1]]: {...switches[target[1]], [target[0]]: event.target.checked} });
   };
 
   const handleSearchKeyPress = (event) => {
+    //const tab = event.target.id.split('-')[1]
+
 		if(event.key == "Enter"){//enter key pressed.
 		   handleSearch()
 		}
 	}
 
+  const handleTabChange = (event, newValue) => {
+    setTabs(newValue);
+  };
+
+  const getHrasAndEquipments = () => {
+
+    api.get(`hra/form`).then((hra_res) => hra_res.data).then((h_data) => {
+        console.log('hra_download',h_data)
+
+        for(const key in h_data.data){
+          setHras({...hras, [key]: (h_data.status != 400 ? h_data.data[key] : RESET_HRAS) })
+        }        
+
+      }).catch(function (error) {
+        setHras(RESET_HRAS)
+      });
+  }
+
+  const handleTableUpdate = async (rowData) => {
+
+    let result = {error:true}
+    
+		//setLoading(true)
+		await api.post(`eng4900/update`,{params:rowData}).then((response) => response.data).then((data) => {
+			result = data
+			//setLoading(false)
+			//setEquipments(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+		}).catch(function (error) {
+			//setLoading(false)
+			//setEquipments([])
+		});
+
+		return(result)
+  }
+  
   //Function Declarations.
   const SearchCriteriaOptions = (val,text="Options",w=200) => {
 
@@ -287,9 +406,10 @@ export default function Eng4900(props) {
 		<FormControl variant="outlined" className={classesItemMenu.formControl}>
 			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
 			<Select
-				labelId="demo-simple-select-outlined-label"
-				id="demo-simple-select-outlined"
-				value={searchFields[val].options ? searchFields[val].options : OPTIONS_DEFAULT}
+				labelId={`select-${tabs}-label`}
+        id={`select-${tabs}-opts`}
+        key={`select-${tabs}-opts`}
+				value={searchFields[tabs][val].options ? searchFields[tabs][val].options : OPTIONS_DEFAULT}
 				name={val}
 				onChange={handleSearchFieldsOptions}
 				style={{width:w,paddingRight:'0px'}}
@@ -311,9 +431,10 @@ export default function Eng4900(props) {
 		<FormControl variant="outlined" className={classesItemMenu.formControl}>
 			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
 			<Select
-				labelId="demo-simple-select-outlined-label"
-				id="demo-simple-select-outlined"
-				value={searchFields[val].blanks ? searchFields[val].blanks : BLANKS_DEFAULT}
+				labelId={`select-${tabs}-blanks-label`}
+        id={`select-${tabs}-blanks`}
+        id={`select-${tabs}-blanks`}
+				value={searchFields[tabs][val].blanks ? searchFields[tabs][val].blanks : BLANKS_DEFAULT}
 				name={val}
 				onChange={handleSearchFieldsBlanks}
 				//label="Sort By"
@@ -325,46 +446,19 @@ export default function Eng4900(props) {
 		);
   }
 
-  const UpdateTextFields = async () => {
+	// const UpdateUrl = () => {
 
-		const search_keys = Object.keys(search)
-		const searchField_keys = Object.keys(searchFields)
-		const field_keys = _filter(search_keys,function(f){ return !f.includes('Opts') && !f.includes('Blanks') && searchField_keys.includes(f) })
-		const option_keys = _filter(search_keys,function(o){ return o.includes('Opts')})
-		const blank_keys = _filter(search_keys,function(b){ return b.includes('Blanks')})
+	// let url = '?'
+	// const searchFieldKeys = Object.keys(searchFields)
 
-		for(const fieldName of field_keys){
-			handleSearchFieldsChange({target:{name: fieldName, value : search[fieldName]}})
-		}
+	// for(const key of searchFieldKeys) {
+	// 	if(searchFields[key].value) url = `${url}${url != '?' ? '&':''}${key}=${searchFields[key].value}`
+	// 	if(searchView != BASIC_SEARCH & searchFields[key].options != OPTIONS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Opts'}=${searchFields[key].options}`
+	// 	if(searchView != BASIC_SEARCH & searchFields[key].blanks != BLANKS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Blanks'}=${searchFields[key].blanks}`
+	// }
 
-		if(option_keys.length > 0 || blank_keys.length > 0) {
-			setSearchView(AVD_SEARCH)
-
-			for(const fieldName of option_keys){
-				handleSearchFieldsOptions({target:{name: fieldName, value : search[fieldName]}})
-			}
-		
-			for(const fieldName of blank_keys){
-				handleSearchFieldsBlanks({target:{name: fieldName, value : search[fieldName]}})
-			}
-
-		}
-
-	}
-
-	const UpdateUrl = () => {
-
-	let url = '?'
-	const searchFieldKeys = Object.keys(searchFields)
-
-	for(const key of searchFieldKeys) {
-		if(searchFields[key].value) url = `${url}${url != '?' ? '&':''}${key}=${searchFields[key].value}`
-		if(searchView != BASIC_SEARCH & searchFields[key].options != OPTIONS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Opts'}=${searchFields[key].options}`
-		if(searchView != BASIC_SEARCH & searchFields[key].blanks != BLANKS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Blanks'}=${searchFields[key].blanks}`
-	}
-
-	props.history.replace(PAGE_URL + (url != '?' ? url : ''))
-	}
+	// props.history.replace(PAGE_URL + (url != '?' ? url : ''))
+	// }
 
 	const reloadPage = () => {
 		window.location.reload()
@@ -392,224 +486,81 @@ export default function Eng4900(props) {
     }
   }
 
-  function CardProduct(form){
-    
-    const {form_id,folder_link,document_source} = form[0]
-    console.log(document_source)
-    let bartags = ''
+  const searchForm = (tab) => {
 
-    Object.keys(form).map(function(key) {
-      bartags = bartags + (bartags ? ', ':'') + form[key].bar_tag_num
-    });
-
-    return (
-      <div  id={"container-"+form_id} key={"container-"+form_id} className="container" style={{ justifyContent: 'center', textAlign: 'center', marginLeft: '21px' }}>
-        <div id={"card-"+form_id} key={"card-"+form_id} className="col-md-12 card" style={{ textAlign: 'left', margin: 10 }}>
-              <div style={{display:'inline'}}>
-                <h4 style={{ marginTop: '20px' }}>ENG4900: {form_id}</h4>
-              </div>
-              {/* <div style={{display:'inline',textAlign:'center'}}>
-                  { <img src={'./ENG4900.PNG'} alt="" style={{height:"100%",width:"100%",display:'inline'}} />}
-              </div>            */}
-          <hr />
-          
-          <h6>Bar Tags Quantity: {Object.keys(form).length}</h6>
-          <small>Losing HRA: {form[0].losing_hra_num + ' - ' + form[0].losing_hra_first_name + ' ' + form[0].losing_hra_last_name }</small>
-          <small>Gaining HRA: {form[0].gaining_hra_num + ' - ' + form[0].gaining_hra_first_name + ' ' + form[0].gaining_hra_last_name}</small>
-          <small>Bar Tags: {bartags}</small>
-                  {/* <small>Bar Tags: </small>
-                  <small>{btPrint} </small> */}
-          <div id={"row-"+form_id} key={"row-"+form_id} className="row" style={{ margin: 3,marginTop:'10px' }}>
-              {document_source != 2 ? <input id={"viewbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="View" className="btn btn-primary" onClick={ViewForm}/> : null}
-              {document_source != 2 ? <input id={"editbnt-"+form_id} key={"bnt-"+form_id} type="submit" value="Edit" className="btn btn-warning ml-2" onClick={EditForm}/> : null}
-              {/* {folder_link ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {Pdf} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null} */}
-              {document_source != 1 ? <a id={"bnt-pdf-"+form_id} key={"bnt-pdf-"+form_id} href = {folder_link} target = "_blank" type="submit" value="Pdf" className="btn btn-danger">PDF</a> : null}
-
-            {/* <Link onClick={deleteConfirm} style={{ margin: 2 }}>
-              <input type="submit" value="Edit" className="btn btn-warning" />
-            </Link> */}
+      return(
+        <div style={{textAlign: 'center'}}>
+        <Grid container justify="center">
+          <Grid>
+            <FormGroup>
+              <FormControlLabel
+                control={<Switch color="primary" id={`switch-${tab}`} id={`switch-${tab}`} checked={switches[tab].showSearch} onChange={handleSwitchesChange} name={`showSearch-${tab}`} />}
+                label={switches[tab].showSearch ? "Hide Search Fields" : "Show Search Fields"}
+              />
+            </FormGroup>
+          </Grid>
+        </Grid>
+        {switches[tab].showSearch ?
+        <>
+        <FormControl component="fieldset">
+          <RadioGroup row aria-label="position" name={tab} id={`radio-group-${tab}`} id={`radio-group-${tab}`} value={searchView[tab]} onChange={handleSearchView}>
+          <FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
+          <FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Search" />
+          </RadioGroup>
+        </FormControl></> : null
+        }		
+        {switches[tab].showSearch ?
+        <div style={{textAlign: 'center'}}>
+        <form className={classesTextField.root} noValidate autoComplete="off">
+          <div className={classesGrid.options}>
+          <Grid container spacing={2}>
+            {searchTextFieldsGridItems(tab)}
+            {searchButtonGridItem(tab)}
+          </Grid>
           </div>
-          <br />
-        </div>
+        </form>
+        </div> : null
+        }
+      </div>
+    )
+  }
+
+  const TabsEng4900 = () => {
+    return (
+      <div className={tabClasses.root}>
+        <AppBar position="static" color="default">
+          <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
+            <Tab label={formTabs[0].label.toUpperCase()} hidden={eng4900s[0].length == 0} icon={<DescriptionIcon/>} {...a11yProps(0)} />
+            <Tab label={formTabs[1].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(1)} />
+            <Tab label={formTabs[2].label.toUpperCase()} icon= {
+            <Badge badgeContent={eng4900s[2].length} color="secondary">
+                <DescriptionIcon/>
+              </Badge>  
+            } {...a11yProps(2)}/>  
+            <Tab label={formTabs[3].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(3)} />
+          </Tabs>
+        </AppBar>
+        <TabPanel value={tabs} index={0}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
+          {!loading.init ? [searchForm(0), materialTableMyForms(0)] : null}
+        </TabPanel>
+        <TabPanel value={tabs} index={1}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
+          {!loading.init ? [searchForm(1), materialTableHraForms(1)] : null}
+        </TabPanel>
+        <TabPanel value={tabs} index={2}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
+          {!loading.init ? [searchForm(2), materialTableSignForms(2)] : null}
+        </TabPanel>
+        <TabPanel value={tabs} index={3}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
+          {!loading.init ? [searchForm(3), materialTableCompletedForms(3)] : null}
+        </TabPanel>
       </div>
     );
   }
 
-  // const handleModalUploadSubmit = (e) => {
-  //   //const {apiRoot,uploadText,uploadData,doChangeUploadDone} = this.props
-
-  //   // const formData = new FormData();
-  //   // formData.append('File', modal.uploadData);
-
-  //   // if(!modal.uploadError){
-  //   //   setModal({...modal,uploadError:"Could not upload file."})
-  //   //   return
-  //   // }
-
-  //   setModal({...modal,uploadDone:true,uploadError:null})
-    
-  //   // api.post(`${ENG4900}/uploads`,{name:modal.text,data:modal.uploadData})
-  //   // .then(res => {
-  //   //     if(res.data)
-  //   //     {
-  //   //         console.log("File was recieved.")
-  //   //         doChangeUploadDone(true)
-  //   //     }else
-  //   //     {
-  //   //         console.log("File was not recieved.")
-  //   //     }
-  //   // })
-
-  // }
-
-  // const validateModalInput = (e) => {
-  //   //const {divisionSelected, districtSelected,doChangeUploadData,doChangeUploadActiveButton,doChangeUploadText} = this.props
-
-  //   console.log(e.target.value)
-  //   if(e.target.value.toLowerCase().includes('.pdf'))
-  //   {    
-  //     setModal({...modal,text:e.target.value,uploadData:e.target.files[0],buttonActive:true})
-  //     return
-  //   }
-
-  //   clearModalData()
-
-  // }
-
-  // const handleModalStatusChange = (e) => {
-  //   //const {divisionSelected, districtSelected,doChangeUploadData,doChangeUploadActiveButton,doChangeUploadText} = this.props
-
-  //   // if(e.target.value.toLowerCase().includes('.pdf'))
-  //   // {    
-  //   //   setModal({...modal,text:e.target.value,uploadData:e.target.files[0],buttonActive:true})
-  //   //   return
-  //   // }
-
-  //   setModal({...modal,newStatus:e.target.value})
-  //   //clearModalData()
-
-  // }
-
-  // const resetModalData = () => {
-  //   setModal({...modal,
-  //     active:false,
-  //     rowData:null,
-  //     reset: false,
-  //     text:"",
-  //     buttonActive:false,
-  //     uploadData:null,
-  //     uploadDone:false,
-  //     uploadError:null,
-  //     newStatus:null}
-  //   )
-  //   return;
-  // }
-
-  // const clearModalData = () => {
-  //   setModal({...modal,
-  //       rowData:null,
-  //       reset: false,
-  //       text:"",
-  //       buttonActive:false,
-  //       uploadData:null,
-  //       uploadDone:false,
-  //       uploadError:null,
-  //       newStatus:null}
-  //   )
-  //   return;
-  // }
-
-  // const uploadModal = () => {
-
-  //   const returnUploadLabel = () => {
-
-  //     return (<>
-  //     <div>
-  //       <label htmlFor="FFR_FD_UPLOAD" style={{margin:'0', width:'100%', height:'100%'}}>
-  //       Attach Signed PDF document
-  //       </label>
-  //       <input name="pdf" accept={'.pdf,.PDF'} id="pdf" type="file" onChange={validateModalInput} aria-describedby="fileHelp" className="form-control-file" />
-  //     </div>
-  //       {modal.buttonActive ? <Button  onClick={handleModalUploadSubmit} variant="contained" color="primary">Upload</Button> : null}
-  //       {modal.uploadError ? <p>{modal.uploadError}</p> : null}
-  //       </>)
-  //   }
-
-  //   const returnCompleteLabel = () => {
-  //       return (<p>Upload is Complete. </p>)
-  //   }
-
-  //   const keys = _filter(Object.keys(statusOptions),function(k){ console.log(k); return Number(k) >= ( modal.rowData ? modal.rowData.status : 0)})
-
-  //   console.log(keys)
-  //   const uploadStatusItems = keys.map(k => {
-	// 		return <MenuItem value={k}>{statusOptions[k]}</MenuItem>
-	// 	})
-
-  //   return(
-  //     <Dialog open={modal.active} class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
-  //       if (reason !== 'backdropClick') {
-  //         setModal({...modal,active:false})
-  //       }
-  //     }}>
-      
-  //     <div style={{display:'flex'}}>
-  //       <DialogTitle disableTypography class={classDialog.dialogTitle}>
-  //         <h2>ENG4900{modal.rowData ? ' - ' + modal.rowData.form_id : null}</h2>  
-  //       </DialogTitle>
-  //       <IconButton onClick={()=>resetModalData()}>
-  //         <CloseIcon />
-  //       </IconButton>
-  //     </div>
-  //     {!modal.uploadDone ? (
-  //       <FormControl >
-  //         <InputLabel id="demo-simple-select-label">Status</InputLabel>
-  //         <Select
-  //           labelId="demo-simple-select-label"
-  //           id="demo-simple-select"
-  //           value={modal.newStatus ? modal.newStatus : modal.rowData.status}
-  //           onChange={handleModalStatusChange}
-  //         >
-  //         {uploadStatusItems}
-  //         </Select>
-  //       </FormControl>
-  //     ) : null}
-  //       <DialogContent>
-        
-  //       { modal.newStatus && ( modal.newStatus != modal.rowData.status) ? (modal.uploadDone ? returnCompleteLabel() : returnUploadLabel()) : null}
-  //       </DialogContent>
-  //     </Dialog>
-  //   )
-  // }
-
-  const materialTableSelect = () => {
-  
-    const printElements = (elements,limit=5) => {
-      let str = ""
-      for(let i=0; i<elements.length; i++){
-        if(i+1 >= limit){
-          return str + ` and ${elements.length - limit} more.`
-        }
-        str = str + (i ? ', ' : '') + elements[i]
-      }
-      return str
-    }
-
-    
-    console.log(eng4900s)
-
-    //const form_ids = Object.keys(eng4900s)
-    let formsArray = []
-    //move to api side.
-    for(const form_id in eng4900s){
-			if(eng4900s.hasOwnProperty(form_id)) {
-        const form = eng4900s[form_id]
-        const form_bartags = form.map(x => x.bar_tag_num)
-        const bartagsPrint = printElements(form_bartags)
-        const {gaining_hra_num, gaining_hra_full_name,losing_hra_full_name,losing_hra_num,document_source,folder_link,status} = form[0]
-        formsArray.push({status:status,form_id:form_id,bar_tags:bartagsPrint,losing_hra:`${losing_hra_num} - ${losing_hra_full_name}`,gaining_hra:`${gaining_hra_num} - ${gaining_hra_full_name}`,document_source:document_source,folder_link:folder_link})
-      }
-    }
+  const materialTableMyForms = (tab_idx) => {
 
     let columns = [
       { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
@@ -617,7 +568,7 @@ export default function Eng4900(props) {
         if(rowData.hasOwnProperty('status')){
           if(rowData.status) {
             if(rowData.hasOwnProperty('tableData')){
-              if(rowData.status >= formsArray[rowData.tableData.id].status){
+              if(rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status){
                 return true
               }
             }
@@ -638,13 +589,14 @@ export default function Eng4900(props) {
           <MaterialTable
           icons={tableIcons}
             columns={columns}
-            data={formsArray}
+            data={eng4900s[tab_idx]}
             localization={{
               toolbar: {
               searchPlaceholder: "Filter Search"
               },
               body: {
-                editTooltip : "Update Status" 
+                editTooltip : "Update Status",
+                emptyDataSourceMessage:<h6>No Forms Found.</h6>
               }}}
             options={{
               //exportButton: true,
@@ -663,6 +615,21 @@ export default function Eng4900(props) {
               //   tooltip: 'Save User',
               //   onClick: (event, rowData) => alert("You saved "),// + rowData.name)
               // },
+              {
+                icon: () => (
+                <Tooltip title="Crate New Form" aria-label="add">
+                  <ThemeProvider>
+                    <Fab  variant="extended" size="medium" color="inherit" className={ plusButtonClasses.fabGreen}>
+                    Create 4900
+                    </Fab>
+                  </ThemeProvider>
+                </Tooltip>
+                ),
+                tooltip: "Create New Form",
+                position: "toolbar",
+                onClick: () => setCreate4900({...create4900,show:true}),
+                hidden: hras[tab_idx].losing.length == 0
+              },
               rowData => ({
                 icon: tableIcons.View,
                 tooltip: 'View Form',
@@ -697,7 +664,7 @@ export default function Eng4900(props) {
               //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
               //isEditHidden: rowData => rowData.name === 'x',
               // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
-              // isDeleteHidden: rowData => rowData.name === 'y',
+              isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
               // onBulkUpdate: async(changes) => {
               //   const errorResult = await handleTableUpdate({changes:changes})
               //     return(new Promise((resolve, reject) => {
@@ -730,65 +697,490 @@ export default function Eng4900(props) {
               //       }, 1000);
               //     }))
               //   },
-                onRowUpdate: async (newData, oldData) =>{
-                  const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-                  return(new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      if(errorResult){
-                        reject()
-                        return;
-                      }
-      
-                      //resetEmployees();
-                      resolve();
-                        
-                    }, 1000);
-                  }))
-                  },
+              onRowUpdate: async (newData, oldData) =>{
+                const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                return(new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    if(errorResult){
+                      reject()
+                      return;
+                    }
+    
+                    //resetEmployees();
+                    resolve();
+                      
+                  }, 1000);
+                }))
+                },
+              onRowDelete: async (oldData) => {
+                const result = await handleTableDelete(oldData)
+
+                return(new Promise((resolve, reject) => {
+                  setTimeout(() => {
+
+                    if(!result.error){
+                      const dataDelete = [...eng4900s[tab_idx]];
+                      const index = oldData.tableData.id;
+                      dataDelete.splice(index, 1);
+                      //setEng4900s([...dataDelete]);
+                      resolve()
+                      return;
+                    }  
+    
+                    reject();
+                  }, 1000);
+                }
+              ))
+                }
             }})}
           />
     </div>
     )
   }
 
+  const materialTableHraForms = (tab_idx) => {
+
+    let columns = [
+      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
+      lookup: statusOptions, validate: (rowData) => {		
+        if(rowData.hasOwnProperty('status')){
+          if(rowData.status) {
+            if(rowData.hasOwnProperty('tableData')){
+
+              if(rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
+                return ({ isValid: false, helperText: 'Please select a different Status.' })
+
+              //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
+                return true
+            }
+          }
+        }
+        
+        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
+  
+      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Form ID', field: 'form_id', editable:'never'},
+      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
+      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
+    ]
+  
+    return(
+      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+          <MaterialTable
+          icons={tableIcons}
+            columns={columns}
+            data={eng4900s[tab_idx]}
+            localization={{
+              toolbar: {
+              searchPlaceholder: "Filter Search"
+              },
+              body: {
+                editTooltip : "Update Status",
+                emptyDataSourceMessage:<h6>No Forms Found.</h6>
+              }}}
+            options={{
+              //exportButton: true,
+              //exportAllData: true,
+              headerStyle: {
+                backgroundColor: "#969696",
+                color: "#FFF",
+                fontWeight: 'bold',
+                actionsColumnIndex: -1,
+            }
+            }}
+            title=""
+            actions={[
+              // {
+              //   icon: 'View',
+              //   tooltip: 'Save User',
+              //   onClick: (event, rowData) => alert("You saved "),// + rowData.name)
+              // },
+              {
+                icon: () => (
+                <Tooltip title="Crate New Form" aria-label="add">
+                  <ThemeProvider>
+                    <Fab  variant="extended" size="medium" color="inherit" className={ plusButtonClasses.fabGreen}>
+                    Create 4900
+                    </Fab>
+                  </ThemeProvider>
+                </Tooltip>
+                ),
+                tooltip: "Create New Form",
+                position: "toolbar",
+                onClick: () => setCreate4900({...create4900,show:true}),
+                hidden: hras[tab_idx].losing.length == 0
+              },
+              rowData => ({
+                icon: tableIcons.View,
+                tooltip: 'View Form',
+                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+              }),
+              rowData => ({
+                  icon: tableIcons.EditOutlined,
+                  tooltip: 'Edit Form',
+                  onClick: (event, rowData) => alert(JSON.stringify(rowData)),//EditFormById(rowData.form_id), // + rowData.name),
+                  disabled: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
+                }),
+              rowData => ({
+                icon: tableIcons.Pdf,
+                tooltip: 'View PDF',
+                onClick: (event, rowData) => {
+                  get4900Pdf(rowData)
+                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              }),
+              // rowData => ({
+              //   icon: tableIcons.Publish,
+              //   tooltip: 'Upload PDF',
+              //   onClick: (event, rowData) => {
+              //     setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+              //   },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+              //   disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              // })               
+            ]}
+            {...(editable && {editable:{
+              //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
+              //isEditHidden: rowData => rowData.name === 'x',
+              // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
+              isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
+              // onBulkUpdate: async(changes) => {
+              //   const errorResult = await handleTableUpdate({changes:changes})
+              //     return(new Promise((resolve, reject) => {
+              //       setTimeout(() => {
+              //         if(errorResult){
+              //           reject()
+              //           return;
+              //         }
+      
+              //         resetEmployees();
+              //         resolve();
+                      
+              //       }, 1000);
+              //     }))
+              //   },
+              //   onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+              //   onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+              //   onRowAdd: async (newData) =>{
+              //   const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+              //     return(new Promise((resolve, reject) => {
+              //       setTimeout(() => {
+              //         if(errorResult){
+              //           reject()
+              //           return;
+              //         }
+      
+              //         resetEmployees();
+              //         resolve();
+                      
+              //       }, 1000);
+              //     }))
+              //   },
+              onRowUpdate: async (newData, oldData) => {
+                const result = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+
+                return(new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    const keys = Object.keys(result.data)
+
+                    if(result.error || keys.length == 0){
+                      reject()
+                      return;
+                    }
+
+                    const dataUpdate = [...eng4900s[tab_idx]];
+                    const index = oldData.tableData.id;
+                    dataUpdate[index] = result.data;
+                    setEng4900s({...eng4900s, [tab_idx]: [...dataUpdate]});
+                    resolve();
+                      
+                  }, 1000);
+                }))
+              },
+              onRowDelete: async (oldData) => {
+                const result = await handleTableDelete(oldData)
+
+                return(new Promise((resolve, reject) => {
+                  setTimeout(() => {
+
+                    if(!result.error){
+                      const dataDelete = [...eng4900s[tab_idx]];
+                      const index = oldData.tableData.id;
+                      dataDelete.splice(index, 1);
+                      //setEng4900s([...dataDelete]);
+                      resolve()
+                      return;
+                    }  
+    
+                    reject();
+                  }, 1000);
+                }
+              ))
+                }
+            }})}
+          />
+    </div>
+    )
+  }
+
+  const materialTableSignForms = (tab_idx) => {
+    
+    let columns = [
+      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
+      lookup: statusOptions, validate: (rowData) => {		
+        if(rowData.hasOwnProperty('status')){
+          if(rowData.status) {
+            if(rowData.hasOwnProperty('tableData')){
+              if(rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status){
+                return true
+              }
+            }
+          }
+        }
+        
+        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
+  
+      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Form ID', field: 'form_id', editable:'never'},
+      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
+      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
+    ]
+  
+    return(
+      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+          <MaterialTable
+          icons={tableIcons}
+            columns={columns}
+            data={eng4900s[tab_idx]}
+            localization={{
+              toolbar: {
+              searchPlaceholder: "Filter Search"
+              },
+              body: {
+                editTooltip : "Update Status",
+                emptyDataSourceMessage:<h6>No Forms Found.</h6>
+              }}}
+            options={{
+              //exportButton: true,
+              //exportAllData: true,
+              headerStyle: {
+                backgroundColor: "#969696",
+                color: "#FFF",
+                fontWeight: 'bold',
+                actionsColumnIndex: -1,
+            }
+            }}
+            title=""
+            actions={[
+              rowData => ({
+                icon: tableIcons.View,
+                tooltip: 'View Form',
+                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+              }),
+              rowData => ({
+                icon: tableIcons.Pdf,
+                tooltip: 'View PDF',
+                onClick: (event, rowData) => {
+                  get4900Pdf(rowData)
+                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              }),
+              rowData => ({
+                icon: tableIcons.Publish,
+                tooltip: 'Upload PDF',
+                onClick: (event, rowData) => {
+                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              })               
+            ]}
+            {...(editable && {editable:{
+              //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
+              isEditHidden: () => true,
+              // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
+              //isDeleteHidden: rowData => rowData.originator !== 1,
+              // onBulkUpdate: async(changes) => {
+              //   const errorResult = await handleTableUpdate({changes:changes})
+              //     return(new Promise((resolve, reject) => {
+              //       setTimeout(() => {
+              //         if(errorResult){
+              //           reject()
+              //           return;
+              //         }
+      
+              //         resetEmployees();
+              //         resolve();
+                      
+              //       }, 1000);
+              //     }))
+              //   },
+              //   onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+              //   onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+              //   onRowAdd: async (newData) =>{
+              //   const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+              //     return(new Promise((resolve, reject) => {
+              //       setTimeout(() => {
+              //         if(errorResult){
+              //           reject()
+              //           return;
+              //         }
+      
+              //         resetEmployees();
+              //         resolve();
+                      
+              //       }, 1000);
+              //     }))
+              //   },
+              onRowUpdate: async (newData, oldData) =>{
+                const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+
+                return(new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    if(errorResult){
+                      reject()
+                      return;
+                    }
+    
+                    //resetEmployees();
+                    resolve();
+                      
+                  }, 1000);
+                }))
+                },
+              // onRowDelete: async (oldData) => {
+              //   const result = await handleTableDelete(oldData)
+
+              //   return(new Promise((resolve, reject) => {
+              //     setTimeout(() => {
+
+              //       if(!result.error){
+              //         const dataDelete = [...eng4900s[1]];
+              //         const index = oldData.tableData.id;
+              //         dataDelete.splice(index, 1);
+              //         //setEng4900s([...dataDelete]);
+              //         resolve()
+              //         return;
+              //       }  
+    
+              //       reject();
+              //     }, 1000);
+              //   }
+              // ))
+              //   }
+            }})}
+          />
+    </div>
+    )
+  }
+
+  const materialTableCompletedForms = (tab_idx) => {
+    
+    let columns = [
+      { title: 'Status', field: 'status', editable:'never', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
+      lookup: statusOptions, validate: (rowData) => {		
+        if(rowData.hasOwnProperty('status')){
+          if(rowData.status) {
+            if(rowData.hasOwnProperty('tableData')){
+              if(rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status){
+                return true
+              }
+            }
+          }
+        }
+        
+        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
+  
+      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Form ID', field: 'form_id', editable:'never'},
+      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
+      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
+    ]
+  
+    return(
+      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+          <MaterialTable
+          icons={tableIcons}
+            columns={columns}
+            data={eng4900s[tab_idx]}
+            localization={{
+              toolbar: {
+              searchPlaceholder: "Filter Search"
+              },
+              body: {
+                editTooltip : "Update Status",
+                emptyDataSourceMessage:<h6>No Forms Found.</h6>
+              }}}
+            options={{
+              headerStyle: {
+                backgroundColor: "#969696",
+                color: "#FFF",
+                fontWeight: 'bold',
+                actionsColumnIndex: -1,
+            }
+            }}
+            title=""
+            actions={[
+              rowData => ({
+                icon: tableIcons.View,
+                tooltip: 'View Form',
+                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+              }),
+              rowData => ({
+                icon: tableIcons.Pdf,
+                tooltip: 'View PDF',
+                onClick: (event, rowData) => {
+                  get4900Pdf(rowData)
+                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+              }),           
+            ]}
+          />
+    </div>
+    )
+  }
+
   //Render Variables
-  const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
-		const nFields = Object.keys(searchFields).length
-		const w = windowSize.width*.75 / nFields
+  const searchTextFieldsGridItems = (tab) => Object.keys(searchFields[tab]).map(key => {
+		const nFields = Object.keys(searchFields[tab]).length
+    const w = windowSize.width*.75 / nFields
+    
 	return(	
 	<>
 	<Grid item xs={Math.ceil(12/(nFields + 1))}>                 
 		<TextField
-			id={`outlined-search-${key}`} 
-			name={key} label={`Search by ${searchFields[key].label}`} 
+      id={`search-${tab}-${key}`}
+      key={`search-${tab}-${key}`} 
+			name={key} label={`Search by ${searchFields[tab][key].label}`} 
 			type="search" variant="outlined" 
-			value={searchFields[key].value} 
+			value={searchFields[tab][key].value} 
 			onChange={handleSearchFieldsChange}
 			onKeyPress={handleSearchKeyPress}
-			style={{width:w,paddingRight:'0px'}}
-			InputLabelProps={{style: {fontSize: '.9vw'}}}
-			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
+			style={{width:'100%',paddingRight:'20px'}}
+			InputLabelProps={{style: {fontSize: '.6vw'}}}
 		/>
-		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`,w)}</> : null}
+		{searchFields[tab][key].value && searchView[tab] != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[tab][key].label} Options`,w)}</> : null}
 		<br/>
-		{searchView != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[key].label} Blanks Options`,w) : null}
+		{searchView[tab] != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[tab][key].label} Blanks Options`,w) : null}
 	</Grid>
 	</>)
   });
-  
 
-	const searchButtonGridItem = () => { 
+	const searchButtonGridItem = (tab) => { 
 		return(
-			<Grid item style={{textAlign:'left',paddingLeft:'20px'}}  xs={Math.floor(12/(Object.keys(searchFields).length))}>
-				<IconButton aria-label="search" color="primary" onClick={handleSearch}>
+			<Grid item style={{textAlign:'left',paddingLeft:'20px'}}  xs={Math.floor(12/(Object.keys(searchFields[tab]).length))}>
+				<IconButton id={`search-${tab}`} key={`search-${tab}`} name={tab} aria-label="search" color="primary" onClick={handleSearch}>
 					<SearchIcon style={{ fontSize: 40 }}/>
 				</IconButton>
 			</Grid>)
 	}
-
-  const cards = Object.keys(eng4900s).map(function(key) {
-    return CardProduct(eng4900s[key]);
-  });
 
   const displayTop = () => {
     // if(props.location.pathname.includes(`${ENG4900}/edit/`))
@@ -819,27 +1211,9 @@ export default function Eng4900(props) {
     // }
 
     return(
-      <>
       <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 Form</h2>
-        <FormControl component="fieldset">
-          <RadioGroup row aria-label="position" name="position" value={searchView} onChange={handleSearchView}>
-            <FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
-            <FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Seach" />
-          </RadioGroup>
-        </FormControl>            
+        <h2>Eng 4900 Form</h2>     
       </div>
-      <div style={{textAlign: 'center'}}>
-        <form className={classesTextField.root} noValidate autoComplete="off">
-          <div className={classesGrid.options}>
-          <Grid container spacing={2}>
-            {searchTextFieldsGridItems()}
-            {searchButtonGridItem()}
-          </Grid>
-          </div>
-        </form>
-      </div>
-      </>
     )
   }
 
@@ -859,14 +1233,9 @@ export default function Eng4900(props) {
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    } 
-
-    //setUrl('ur')
-    //console.log(props)    
-    if(search){
-      UpdateTextFields()
-      handleSearch(null,true)
     }
+
+    pageInitialize();
     
     // Add event listener
     window.addEventListener("resize", handleResize);
@@ -879,35 +1248,32 @@ export default function Eng4900(props) {
   }, []);
 
   React.useEffect(() => {
+    console.log(eng4900s)
+  }, [eng4900s]);
+
+  React.useEffect(() => {
 		if(props.history.action == "PUSH"){
 			reloadPage()
 		}
 	}, [props.history.action]);
   
+  React.useEffect(() => {
+		console.log(hras)
+	}, [hras]);
 
   //Render return.
   return (
     <>
     {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={statusOptions}/> : null}
-    {create4900.show ? <Eng4900Form action={"CREATE"} create4900={create4900} setCreate4900={setCreate4900}/> : null}
+    {create4900.show ? <Eng4900Form action={"CREATE"} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <Header/>
     <div>
-      <Tooltip title="Crate New Form" aria-label="add">
-      <ThemeProvider>
-        <Fab  variant="extended" size="medium" color="inherit" className={ clsx(plusButtonClasses.absolute, plusButtonClasses.fabGreen)} onClick={()=>setCreate4900({...create4900,show:true})} >
-        Create 4900
-        </Fab>
-        </ThemeProvider>
-      </Tooltip>
-
       {displayTop()}
-      <div style={{textAlign: 'center'}}> {loading ? LoadingCircle() : null} </div>
       {/* {cards.length > 0 && viewSearch == "card-view"  && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
           <h3 style={{ justifyContent: 'center' }}>Available 4900s</h3>
               <div style={{ justifyContent: 'center' }}>{cards}</div>
       </div>) : null} */}
-
-      {viewSearch === "table-view" && Object.keys(eng4900s).length > 0 ? materialTableSelect():null}
+      {!loading.init ? TabsEng4900() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
     </div>
     </>
   );

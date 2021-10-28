@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect, useState, useMemo} from 'react'
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,8 +9,77 @@ import filter from 'lodash/filter'
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
+import {Select} from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
+//import {DropzoneArea, DropzoneDialog} from 'material-ui-dropzone'
+import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import clsx from 'clsx'
+import { blue, grey } from '@material-ui/core/colors';
+import AdornedButton from './AdornedButton'
+import {useDropzone} from 'react-dropzone';
+import api from '../axios/Api';
+import DeleteIcon from '@material-ui/icons/Delete';
+import debounce from 'lodash/debounce'
+
+const baseStyle = {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '20px',
+    borderWidth: 2,
+    borderRadius: 2,
+    borderColor: '#eeeeee',
+    borderStyle: 'dashed',
+    backgroundColor: '#fafafa',
+    color: '#bdbdbd',
+    outline: 'none',
+    transition: 'border .24s ease-in-out'
+  };
+  
+const activeStyle = {
+borderColor: '#2196f3'
+};
+
+const acceptStyle = {
+borderColor: '#00e676'
+};
+
+const rejectStyle = {
+borderColor: '#ff1744'
+};
+
+const thumbsContainer = {
+display: 'flex',
+flexDirection: 'row',
+flexWrap: 'wrap',
+marginTop: 16
+};
+
+const thumb = {
+  display: 'inline-flex',
+  borderRadius: 2,
+  border: '1px solid #eaeaea',
+  marginBottom: 8,
+  marginRight: 8,
+  width: 100,
+  height: 100,
+  padding: 4,
+  boxSizing: 'border-box'
+};
+
+const thumbInner = {
+  display: 'flex',
+  minWidth: 0,
+  overflow: 'hidden'
+};
+
+const img = {
+  display: 'block',
+  width: 'auto',
+  height: '100%'
+};
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -19,15 +88,49 @@ const dialogStyles = makeStyles(theme => ({
     top: theme.spacing(5)
   },
   dialogTitle: {
-    paddingRight:'0px'
-  }
+    float:'right'
+  },
 }))
+
+const plusButtonStyles = makeStyles((theme) => ({
+    // fab: {
+    //   margin: theme.spacing(2),
+    // },
+    // absolute: {
+    //   //position: 'absolute',
+    //   //top: theme.spacing(2),
+    //   right: theme.spacing(3),
+    //   //right: '0',
+    //   marginTop: theme.spacing(2)
+    // },
+    fabBlue: {
+      color: theme.palette.common.white,
+      backgroundColor: blue[500],
+      '&:hover': {
+        backgroundColor: blue[600],
+      },
+      height:'50px',
+      width:'50%',
+      marginTop: '20px',
+      marginBottom:'20px',
+    },
+    fabGrey: {
+      color: theme.palette.common.white,
+      backgroundColor: grey[500],
+      '&:hover': {
+        backgroundColor: grey[600],
+      },
+      height:'50px',
+      width:'50%',
+      marginTop: '20px',
+      marginBottom:'20px'
+    },
+  }));
 
 export default function UploadFormModal(props) {
 
     //constant declarations
     const {type, uploadPdf, setUploadPdf, statusOptions} = props;
-    const FORMS_ACEPTABLE = ["eng4900","eng4844"]
 
     //hooks declaration.
     const [modal,setModal] = React.useState({
@@ -39,155 +142,230 @@ export default function UploadFormModal(props) {
         uploadError:null,
         newStatus:null,
         })
+    const [files, setFiles] = React.useState([])
+    const [submitButton, setSubmitButton] = React.useState({
+        active:false,
+        send:false,
+      });
+    const [progress, setProgress] = useState(0); // progess bar
 
     //Styles declaration
     const classDialog = dialogStyles();
+    const plusButtonClasses = plusButtonStyles();
 
-    const handleModalUploadSubmit = (e) => {
-        //const {apiRoot,uploadText,uploadData,doChangeUploadDone} = this.props
-    
-        // const formData = new FormData();
-        // formData.append('File', modal.uploadData);
-    
-        // if(!modal.uploadError){
-        //   setModal({...modal,uploadError:"Could not upload file."})
-        //   return
-        // }
-        console.log(FORMS_ACEPTABLE.includes(type))
-        setModal({...modal,uploadDone:true,uploadError:null})
+    //Functions declaration
+    const formUpload = debounce(async () => {
+
+        if(files.length != 0){
+            var formData = new FormData();
+            formData.append('file', files[0]);
+
+            await api.post('eng4900/upload', formData, {
+                onUploadProgress: (ProgressEvent) => {
+                    let progress = Math.round(
+                    ProgressEvent.loaded / ProgressEvent.total * 100);
+                    setProgress(progress);
+                }}).then((response) => {
+                console.log(response)
+            }).catch(function (error) {
+                //do nothing.
+            });
+        }
         
-        // api.post(`${ENG4900}/uploads`,{name:modal.text,data:modal.uploadData})
-        // .then(res => {
-        //     if(res.data)
-        //     {
-        //         console.log("File was recieved.")
-        //         doChangeUploadDone(true)
-        //     }else
-        //     {
-        //         console.log("File was not recieved.")
-        //     }
-        // })
-    
-    }
+        setSubmitButton({...submitButton,send:false})
+    }, 1500);
 
-    const validateModalInput = (e) => {
-    //const {divisionSelected, districtSelected,doChangeUploadData,doChangeUploadActiveButton,doChangeUploadText} = this.props
+    //Events declaration
+    const handleSubmit = async (event) => {
 
-    console.log(e.target.value)
-    if(e.target.value.toLowerCase().includes('.pdf'))
-    {    
-        setModal({...modal,text:e.target.value,uploadData:e.target.files[0],buttonActive:true})
-        return
-    }
-
-    clearModalData()
-
+        setProgress(0)
+        setSubmitButton({...submitButton,send:true})
+        formUpload()
     }
 
     const handleModalStatusChange = (e) => {
-    //const {divisionSelected, districtSelected,doChangeUploadData,doChangeUploadActiveButton,doChangeUploadText} = this.props
-
-    // if(e.target.value.toLowerCase().includes('.pdf'))
-    // {    
-    //   setModal({...modal,text:e.target.value,uploadData:e.target.files[0],buttonActive:true})
-    //   return
-    // }
-
-    setModal({...modal,newStatus:e.target.value})
-    //clearModalData()
-
+        setModal({...modal,newStatus:e.target.value})
     }
 
     const resetModalData = () => {
-    setUploadPdf({...uploadPdf,show:false})
-    setModal({...modal,
-        reset: false,
-        text:"",
-        buttonActive:false,
-        uploadData:null,
-        uploadDone:false,
-        uploadError:null,
-        newStatus:null}
-    )
-    return;
-    }
-
-    const clearModalData = () => {
-    setModal({...modal,
-        reset: false,
-        text:"",
-        buttonActive:false,
-        uploadData:null,
-        uploadDone:false,
-        uploadError:null,
-        newStatus:null}
-    )
-    return;
+        setUploadPdf({...uploadPdf,show:false})
+        setModal({...modal,
+            reset: false,
+            text:"",
+            buttonActive:false,
+            uploadData:null,
+            uploadDone:false,
+            uploadError:null,
+            newStatus:null}
+        )
+        return;
     }
 
     const UploadModal = () => {
 
-    const returnUploadLabel = () => {
+        const returnUploadDropZone = () => {
 
-        return (<>
-        <div>
-        <label htmlFor="FFR_FD_UPLOAD" style={{margin:'0', width:'100%', height:'100%'}}>
-        Attach Signed PDF document
-        </label>
-        <input name="pdf" accept={'.pdf'} id="pdf" type="file" onChange={validateModalInput} aria-describedby="fileHelp" className="form-control-file" />
-        </div>
-        {modal.buttonActive ? <Button  onClick={handleModalUploadSubmit} variant="contained" color="primary">Upload</Button> : null}
-        {modal.uploadError ? <p>{modal.uploadError}</p> : null}
-        </>)
-    }
+            const thumbs = files.map(file => (
+                <div style={thumb} key={'thumb-' + file.name}>
+                    <div style={thumbInner}>
+                    <PictureAsPdfIcon style={img}/>
+                    </div>
+                </div>
+                ));
 
-    const returnCompleteLabel = () => {
-        return (<p>Upload is Complete. </p>)
-    }
+            //const description = files.map((file) => <li key={file.path}>{file.path}  <i className="fa fa-trash text-red" style={{color:'#FF0000'}} title="Remove Attachment" onClick={() => remove(file)}></i></li>);
+            
 
-    const keys = filter(Object.keys(statusOptions),function(k){ console.log(k); return Number(k) >= (uploadPdf.rowData ? uploadPdf.rowData.status : 0)})
+            const description = files.map((file) => <li key={file.path}>{file.path}
+              <IconButton style={{color:'#FF0000'}} size="small" title="Remove Attachment" aria-label="delete" onClick={() => remove(file)}>
+                <DeleteIcon />
+            </IconButton>
+              </li>);
+            
+            
 
-    console.log(keys)
-    const uploadStatusItems = keys.map(k => {
-            return <MenuItem value={k}>{statusOptions[k]}</MenuItem>
+
+            return (
+                <section className="container">
+                <div {...getRootProps({className: 'dropzone',style})}>
+                    <input {...getInputProps()} />
+                    <p>Drag 'n' drop some files here, or click to select files</p>
+                    <em>(Only *.pdf files are accepted)</em>
+                </div>
+                <aside style={thumbsContainer}>
+                    {thumbs}
+                </aside>
+                <aside style={thumbsContainer}>
+                    <ul>
+                    {description}
+                    </ul>
+                </aside>
+                <aside>
+                    {progress > 0 ? (
+                        <div className="progessBar" style={{ width: progress }}>
+                        {'Upload Progress:' + progress + '%'}
+                        </div>
+                    ) : null}
+                </aside>
+                </section>
+            );
+        }
+
+        const returnCompleteLabel = () => {
+            return (<p>Upload is Complete. </p>)
+        }
+
+        const keys = filter(Object.keys(statusOptions),function(k){ 
+           const {rowData} = uploadPdf
+        
+            if(Object.keys(rowData).length > 0){
+                const {status, originator} = rowData
+
+                if(status && originator){
+                    return Number(k) >= status
+                }
+
+                return Number(k) >= rowData.status && Number(k) <= rowData.status + 1
+            }
+            
+            return false
         })
 
-    return(
-        <Dialog open={uploadPdf.show} class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
-        if (reason !== 'backdropClick') {
-            //setModal({...modal,active:false})
-        }
-        }}>
-        
-        <div style={{display:'flex'}}>
-        <DialogTitle disableTypography class={classDialog.dialogTitle}>
-            <h2>ENG4900{uploadPdf.rowData ? ' - ' + uploadPdf.rowData.form_id : null}</h2>  
-        </DialogTitle>
-        <IconButton onClick={()=>resetModalData()}>
-            <CloseIcon />
-        </IconButton>
-        </div>
-        {!modal.uploadDone ? (
-        <FormControl >
-            <InputLabel id="demo-simple-select-label">Status</InputLabel>
-            <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
-            value={modal.newStatus ? modal.newStatus : uploadPdf.rowData.status}
-            onChange={handleModalStatusChange}
-            >
-            {uploadStatusItems}
-            </Select>
-        </FormControl>
-        ) : null}
-        <DialogContent>
-        
-        { modal.newStatus && ( modal.newStatus != uploadPdf.rowData.status) ? (modal.uploadDone ? returnCompleteLabel() : returnUploadLabel()) : null}
-        </DialogContent>
-        </Dialog>
-    )
-    }
+        const uploadStatusItems = keys.map(k => {
+                return <MenuItem value={k}>{statusOptions[k]}</MenuItem>
+        })
 
+        const {getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject} = useDropzone({
+            accept: 'application/pdf',
+            onDrop: acceptedFiles => {
+                setFiles(acceptedFiles.map(file => Object.assign(file, {
+                preview: URL.createObjectURL(file)
+                })));
+            },
+            maxFiles: 1,
+            onDropAccepted: () => setSubmitButton({...submitButton,active:true}),
+            onDropRejected: () => setSubmitButton({...submitButton,active:false}),
+            });
+
+        const remove = file => {
+            const newFiles = [...files];     // make a var for the new array
+            newFiles.splice(file, 1);        // remove the file from the array
+            setFiles(newFiles);              // update the state
+
+            if(newFiles.length == 0){
+                setSubmitButton({...submitButton,active:false})
+            }
+        };
+            
+        const style = useMemo(() => ({
+            ...baseStyle,
+            ...(isDragActive ? activeStyle : {}),
+            ...(isDragAccept ? acceptStyle : {}),
+            ...(isDragReject ? rejectStyle : {})
+            }), [
+            isDragActive,
+            isDragReject,
+            isDragAccept
+            ]);
+            
+        
+        useEffect(() => () => {
+            // Make sure to revoke the data uris to avoid memory leaks
+            files.forEach(file => URL.revokeObjectURL(file.preview));
+        }, [files]);
+
+        useEffect(() => () => {
+            console.log(submitButton)
+        }, [submitButton]);
+
+        const newStatusSelected = modal.newStatus && ( modal.newStatus != uploadPdf.rowData.status)
+
+        return(
+            <Dialog open={uploadPdf.show} class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
+                if (reason !== 'backdropClick') {
+                    //setModal({...modal,active:false})
+                }
+                }}>
+
+                <div>
+                <DialogTitle disableTypography class={classDialog.dialogTitle}>
+                    <div style={{position:'absolute',left:'15px',paddingTop:'15px'}}>
+                        <h5>Upload Signed Eng 4900{uploadPdf.rowData ? ' - ' + uploadPdf.rowData.form_id : null}</h5>  
+                    </div>
+                    <IconButton onClick={()=>resetModalData()}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                </div>
+                <DialogContent>
+                
+                
+                {!modal.uploadDone ? (
+                <div style={{textAlign:'center'}}>
+                    <FormControl style={{paddingBottom:20}}>
+                        <InputLabel id="demo-simple-select-label">Status</InputLabel>
+                        <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={modal.newStatus ? modal.newStatus : uploadPdf.rowData.status}
+                        onChange={handleModalStatusChange}
+                        >
+                        {uploadStatusItems}
+                        </Select>
+                    </FormControl>
+                </div>
+                ) : null}
+                
+                { newStatusSelected ? (modal.uploadDone ? returnCompleteLabel() : returnUploadDropZone()) : null}
+                <div style={{textAlign:'center'}}>
+                    <AdornedButton onClick={handleSubmit} className={ submitButton.active && newStatusSelected ? clsx(plusButtonClasses.fabBlue) : clsx(plusButtonClasses.fabGrey)} {...(( !submitButton.active || submitButton.send || !newStatusSelected) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
+                    Upload
+                    </AdornedButton>
+                </div>
+                </DialogContent>
+            </Dialog>
+        )
+    }
 
     if(uploadPdf.rowData)
         return(<UploadModal/>)
