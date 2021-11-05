@@ -22,22 +22,12 @@ import Select from '@material-ui/core/Select';
 import Header from './Header'
 import InputLabel from '@material-ui/core/InputLabel';
 import * as Yup from 'yup'
-
+import ChipInput from 'material-ui-chip-input'
+import { values } from 'lodash';
 
 
 export default function Register(){
-	//Validation
-	const validationSchema = Yup.object({
-		first_name: Yup.string().required("Required"),
-		last_name: Yup.string().required("Required"),
-        email: Yup.string().email("Enter valid email").required("Required"),
-        work_phone: Yup.number().typeError("Enter valid phone number").required('Required'),
-		division: Yup.string().required("Required"),
-		district: Yup.string().required("Required"),
-		office_symbol: Yup.string().required("Required"),
-		user_type: Yup.string().required("Required")
-    });
-	
+
 	//Format Data
 	function formatPhoneNumber(phoneNumberString) {
 		var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
@@ -60,23 +50,7 @@ export default function Register(){
 	// 	user_type: ''
 	// }
 
-		const formik = useFormik({
-		  initialValues: {
-				first_name: '',
-				last_name: '',
-				email: '',
-				work_phone: '',
-				division:'',
-				district: '',
-				office_symbol: '',
-				user_type: ''
-			},
-		  validationSchema: validationSchema,
-		  onSubmit: (values) => {
-			alert(JSON.stringify(values, null, 2));
-		  }});	  
-
-	
+			
 
 	//Styles Declarations
 	const dropDownClasses = dropDownStyles (); 
@@ -130,129 +104,164 @@ export default function Register(){
 	};
 	
 	const [DivisionItems, setDivisionItems] = React.useState([]);
+	const [districtItems, setDistrictItems] = React.useState([]);
+	const [officeItems, setOfficeItems] = React.useState([]);
+	const [userItems, setUserItems] = React.useState([]);
 	//will run once.
 	React.useEffect(() => {
 	  //setLoading(true)
-		  console.log('Division')
-		  api.get(`register/division`,{}).then((response) => response.data).then((data) => {
+		  api.get(`register/registrationDropDownData`,{}).then((response) => response.data).then((data) => {
 		  console.log(data)
-		  if(data.status != 400){
-			setDivisionItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
-	
-		  }
-		  console.log(DivisionItems);
+		  if(data.status !== 400){
+			setDivisionItems(data.data.division.map(( properties ) => ({ label: properties.name, value: properties.id })));
+			setDistrictItems(data.data.district.map(( properties ) => ({ label: properties.name, value: properties.id })));
+			setOfficeItems(data.data.officeSymbol.map(( properties ) => ({ label: properties.name, value: properties.id })));
+			setUserItems(data.data.userType.map(( properties ) => ({ label: properties.name, value: properties.id })));
+		}
 		}).catch(function (error) {
 			setDivisionItems([])
-		}) 
-	  }, []); 
-	
-	  const divisionDropDownItems = DivisionItems.map((c, i)=>{
-		console.log(c);
-		return(
-		 
-		  <MenuItem value={c.value} name= {c.label} >
-		  {c.value + '.' + c.label}
-		  </MenuItem>
-	
-		)
-		})
-	
-	
-	
-	const [districtItems, setDistrictItems] = React.useState([]);
-	//will run once.
-	React.useEffect(() => {
-	  //setLoading(true)
-		  console.log('District')
-		  api.get(`register/district`,{}).then((response) => response.data).then((data) => {
-		  console.log(data)
-		  if(data.status != 400){
-			setDistrictItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
-	
-		  }
-		  console.log(districtItems);
-		}).catch(function (error) {
 			setDistrictItems([])
-		}) 
-	  }, []); 
-	
-	  const districtDropDownItems = districtItems.map((c, i)=>{
-		console.log(c);
-		return(
-		 
-		  <MenuItem value={c.value} name= {c.label} >
-		  {c.value + '.' + c.label}
-		  </MenuItem>
-	
-		)
-		})
-	
-	
-	const [officeItems, setOfficeItems] = React.useState([]);
-	//will run once.
-	React.useEffect(() => {
-	  //setLoading(true)
-		  console.log('Office Symbol')
-		  api.get(`register/officeSymbol`,{}).then((response) => response.data).then((data) => {
-		  console.log(data)
-		  if(data.status != 400){
-			setOfficeItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
-	
-		  }
-		  console.log(officeItems);
-		}).catch(function (error) {
 			setOfficeItems([])
-		}) 
-	  }, []); 
-	
-	  const officeSymbolDropDownItems = officeItems.map((c, i)=>{
-		console.log(c);
-		return(
-		 
-		  <MenuItem value={c.value} name= {c.label} >
-		  {c.value + '.' + c.label}
-		  </MenuItem>
-	
-		)
-		})
-	
-		const [userItems, setUserItems] = React.useState([]);
-	//will run once.
-	React.useEffect(() => {
-	  //setLoading(true)
-		  console.log('Office Symbol')
-		  api.get(`register/userType`,{}).then((response) => response.data).then((data) => {
-		  console.log(data)
-		  if(data.status != 400){
-			setUserItems(data.data.map(( properties ) => ({ label: properties.name, value: properties.id })));
-	
-		  }
-		  console.log(userItems);
-		}).catch(function (error) {
 			setUserItems([])
 		}) 
 	  }, []); 
 	
-	  const userTypeDropDownItems = userItems.map((c, i)=>{
-		console.log(c);
+	  const divisionDropDownItems = DivisionItems.map((c, i)=>{
 		return(
 		 
 		  <MenuItem value={c.value} name= {c.label} >
-		  {c.value + '.' + c.label}
+		  { c.label}
 		  </MenuItem>
 	
 		)
 		})
+		const districtDropDownItems = districtItems.map((c, i)=>{
+			return(
+			 
+			  <MenuItem value={c.value} name= {c.label} >
+			  { c.label}
+			  </MenuItem>
+		
+			)
+		})
 	
+		const officeSymbolDropDownItems = officeItems.map((c, i)=>{
+			return(
+			 
+			  <MenuItem value={c.value} name= {c.label} >
+			  {c.label}
+			  </MenuItem>
+		
+			)
+			})
+
+			const userTypeDropDownItems = userItems.map((c, i)=>{
+				console.log(c);
+				return(
+				 
+				  <MenuItem value={c.value} name= {c.label} >
+				  {c.label}
+				  </MenuItem>
+			
+				)
+				})
+
+
+	const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+
+	//Validation
+	const validationSchema = Yup.object({
+		first_name: Yup.string().required("Required"),
+		last_name: Yup.string().required("Required"),
+        email: Yup.string().email("Enter valid email").required("Required"),
+        work_phone: Yup.string().matches(phoneRegExp, "Enter valid phone number").typeError("Enter valid phone number").required('Required'),
+		division: Yup.mixed().notOneOf(divisionDropDownItems).required("Required"),
+		district: Yup.mixed().notOneOf(districtDropDownItems).required("Required"),
+		office_symbol: Yup.mixed().notOneOf(officeSymbolDropDownItems).required("Required"),
+		user_type: Yup.mixed().notOneOf(userTypeDropDownItems).required("Required"),
+		hras: Yup.string().required("Required")
+    });
+
+	
+	const formik = useFormik({
+		initialValues: {
+			  first_name: '',
+			  last_name: '',
+			  email: '',
+			  work_phone: '',
+			  division:'',
+			  district: '',
+			  office_symbol: '',
+			  user_type: '',
+			  hras:''
+		  },
+		validationSchema: validationSchema,
+		onSubmit: (values) => {
+			alert(JSON.stringify(formik.values, null, 2));
+			console.log('button was clicked.');
+		//   alert(JSON.stringify(values, null, 2));
+		//   console.log(values);
+		}
+		});
+		
+		/* const onButtonSubmit = () => {
+			alert(JSON.stringify(formik.values, null, 2));
+			console.log('button was clicked.');
+		}; */
+
+		const HRAFormField = () => { 
+			return(
+				<Grid item xs={4}>
+					<InputLabel>HRA Numbers</InputLabel>
+					<TextField
+						id="hras"
+						key="hras"
+						name="hras"
+						value={formik.values.hras}
+						onChange={formik.handleChange}
+						error={formik.touched.work_phone && Boolean(formik.errors.hras)}
+						helperText={formik.touched.work_phone && formik.errors.hras}
+						style={{ width: 300 }} />
+				</Grid>)
+		}
+	    const formValues = formik.values;
+
+		const handleAdd = async (formValues) => {
+			alert(JSON.stringify(formValues, null, 2));
+			let result = {}
+			//console.log('equipmentbyHraCall')
+			//setLoading(true)
+			await api.post(`register/addi`,{params: {changes: formValues}}).then((response) => response.data).then((data) => {
+				result = data
+				console.log(data)
+				//setLoading(false)
+				//setEquipments(data.status != 400 ? data.data : data)
+				// this.setState({
+				// 	equipments: data.status != 400 ? data.values: data,
+				// 	setequipment: data
+				// });
+				//console.log(this.state.equipment.values);
+				// console.log(this.props, this.state);
+			}).catch(function (error) {
+				//setLoading(false)
+				//setEquipments([])
+			});
+		
+			return result
+		
+		}
 	
 	return (
 		<>
 		<Header/>
 		<Grid>
-			<form  onSubmit={formik.handleSubmit}>
+		<form onSubmit={formik.handleSubmit}>
 			<div className={classesGrid.paper}>
 				<div textAlign='center'>
 					<h2>Register</h2>
+					<br/>
+					<br/>
+					<h5 style={{ color: 'red' }} >Please note all fields are required.</h5>
 				</div>
 				<br/>
 				<br/>
@@ -311,8 +320,8 @@ export default function Register(){
 					<Select
 						id="Division"
 						name="division"
-						value={divisionSelection}
-						onChange={divisionSelectionChange}
+						value={formik.values.division}
+						onChange={formik.handleChange}
 						error={formik.touched.division && Boolean(formik.errors.division)}
 						helperText={formik.touched.division && formik.errors.division}
 						style={{ width: 300 }}
@@ -327,8 +336,8 @@ export default function Register(){
 					<Select
 					  id="District"
 					  name="district"
-					  value={districtSelection}
-					  onChange={districtSelectionChange}
+					  value={formik.values.district}
+					  onChange={formik.handleChange}
 					  error={formik.touched.district && Boolean(formik.errors.district)}
 					  helperText={formik.touched.district && formik.errors.district}
 					  style={{ width: 300 }}
@@ -343,8 +352,8 @@ export default function Register(){
 					<Select
 					  id="Office_Symbol"
 					  name="office_symbol"
-					  value={officeSelection}
-					  onChange={divisionSelectionChange}
+					  value={formik.values.office_symbol}
+					  onChange={formik.handleChange}
 					  error={formik.touched.office_symbol && Boolean(formik.errors.office_symbol)}
 					  helperText={formik.touched.office_symbol && formik.errors.office_symbol}
 					  style={{ width: 300 }}
@@ -359,8 +368,8 @@ export default function Register(){
 					<Select
 					  id="User_Type"
 					  name="user_type"
-					  value={userSelection}
-					  onChange={userSelectionChange}
+					  value={formik.values.user_type}
+					  onChange={formik.handleChange}
 					  error={formik.touched.user_type && Boolean(formik.errors.user_type)}
 					  helperText={formik.touched.user_type && formik.errors.user_type}
 					  style={{ width: 300 }}
@@ -368,27 +377,18 @@ export default function Register(){
 					{userTypeDropDownItems}
 					</Select>
 				</FormControl>
-				<br/>
-				<br/>
-				<br/>
-				<Button type="submit"  variant="contained">Submit</Button>
+				</Grid>
+				{formik.values.user_type === 2 ? HRAFormField() : null}
 				</Grid>
 				<br/>
-
-				</Grid>
+				<br/>
+				<br/>
+				<Button type="submit" name="a-button" variant="contained" onClick="handleAdd()">Submit</Button>
 			</div>
-
-				  {/* <FormControl component="fieldset">
-					<FormLabel component="legend">User Type</FormLabel>
-					<RadioGroup row aria-label="position" name="position" defaultValue={requested_action} onChange={(event)=>setSelectedForm( {...selectedForm,requested_action:event.target.value} )}>
-					  <FormControlLabel id="radio-HRA" key="radio-HRA" value="Hand Reciept Account Holder" control={<Radio color="primary" />} label="Hand Reciept Account Holder" />
-					  <FormControlLabel id="radio-" key="radio-" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
-					  <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
-					</RadioGroup>
-				  </FormControl> */}
 			</form>
 		</Grid>
 		</>
+		
 	)
 	
 }

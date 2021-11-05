@@ -844,12 +844,11 @@ export default function Equipment(props) {
              //}}
 			//{...(searchFields[key].value != null && {style:{width:searchFields[key].width}})}
 		/>
-		{searchFields[key].value && searchView != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`)}</> : null}
+		{searchFields[key].value && searchView !== BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[key].label} Options`)}</> : null}
 		<br/>
-		<br/>
-		{searchView != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[key].label}`) : null}
+		<br/> 
+		{(searchView !== BASIC_SEARCH) && (!searchFields[key].value) ? SearchBlanksOptions(key,`${searchFields[key].label}`) : null}
 		</Grid>  
-
 	
 	</>)
 	});

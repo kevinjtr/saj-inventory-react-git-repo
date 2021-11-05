@@ -115,11 +115,11 @@ export default function FormPropsTextFields(props) {
     employeeName:"includes"
   });
   const [blanks_, setBlanks] = React.useState({
-    hraName:"includeBlanks",
-    hraNum:"includeBlanks",
-    itemType:"includeBlanks",
-    bartagNum:"includeBlanks",
-    employeeName:"includeBlanks"
+    hraName:"displayBlanks",
+    hraNum:"displayBlanks",
+    itemType:"displayBlanks",
+    bartagNum:"displayBlanks",
+    employeeName:"displayBlanks"
   });
   const [searchView, setSearchView] = React.useState('std');
   
@@ -322,8 +322,8 @@ export default function FormPropsTextFields(props) {
                         //label="Sort By"
                        // style={{width:200}}
                         >
-                        <MenuItem value={"includeBlanks"}>Include Blanks</MenuItem>
-                        <MenuItem value={"excludeBlanks"}>Exclude Blanks</MenuItem>
+                        <MenuItem value={"displayBlanks"}>Display Blanks</MenuItem>
+                        <MenuItem value={"hideBlanks"}>Hide Blanks</MenuItem>
                         <MenuItem value={"onlyBlanks"}>Only Blanks</MenuItem>
                         
                         </Select>

@@ -18,11 +18,9 @@ import NotFound from '../forms/NotFound'
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import {filter} from 'lodash'
 import api from '../../axios/Api';
-<<<<<<< HEAD
 import Register from '../Register';
-=======
 import SignInOut from '../../containers/SignInOut'
->>>>>>> remotes/origin/master
+
 
 const routes_config = [
     {path:'/',label:'Home',component:Home,tab:true,level:'user'},
