@@ -14,6 +14,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import api from '../axios/Api';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+import ChipInput from 'material-ui-chip-input';
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
@@ -26,6 +27,7 @@ const Signup = () => {
 	const [districtItems, setDistrictItems] = React.useState([]);
 	const [officeItems, setOfficeItems] = React.useState([]);
 	const [userItems, setUserItems] = React.useState([]);
+    const [inputChips,setInputChips] = React.useState([]);
 
 	const divisionDropDownItems = DivisionItems.map((c, i)=>{
 		return(
@@ -111,6 +113,41 @@ const Signup = () => {
 		}, []); 
 
 
+// Handle Chip Input
+function onBeforeChipAdd (chip) {
+    return (chip.length === 3)
+	//return ((chip.length === 3) && (Number.isInteger(chip)))
+};
+
+// Add Chip
+function handleChipAdd (chip) {
+    
+	//formik.values.hras.push(chip)
+    setInputChips([...inputChips,chip])
+	formik.values.hras = [...inputChips]
+};
+
+// Delete Chip
+function handleChipDelete (c, index) {
+ 
+	//console.log(inputChips,index)
+
+	const dataDelete = [...inputChips]
+	console.log(dataDelete)
+	dataDelete.splice(index,1)
+	//formik.values.hras = [...dataDelete]
+	//formik.values.hras = []
+	console.log(dataDelete)
+	setInputChips([...dataDelete])
+	formik.values.hras = [...dataDelete]
+    //formik.values.hras.filter((c) => c !== deletedChip)
+
+   /* const itemIndex = formik.values.hras.indexOf(deletedChip) 
+	if(itemIndex > -1){
+		formik.values.hras.remove(itemIndex)
+	} */
+    
+};
 //preventing submit on enter
 function onKeyDown(keyEvent) {
     if ((keyEvent.charCode || keyEvent.keyCode) === 13){
@@ -144,23 +181,25 @@ const handleAdd = async (formValues) => {
     return result
 
 }
-		const HRAFormField = () => { 
-			return(
-				<div>
-					<InputLabel>HRA Numbers</InputLabel>
-					<TextField
-						fullWidth
-						id="hras"
-						name="hras"
-						value={formik.values.hras}
-						onChange={formik.handleChange}
-						error={formik.touched.work_phone && Boolean(formik.errors.hras)}
-						helperText={formik.touched.work_phone && formik.errors.hras}
-						 />
-                     <br/>
-                     <br/>
-				</div>)
-		}
+const HRAFormField = () => { 
+    return(
+        <div>
+            <InputLabel>HRA Numbers</InputLabel>
+            <ChipInput
+                fullWidth
+                id="hras"
+                name="hras"
+                //value={formik.values.hras}
+                value={inputChips}
+                onBeforeAdd={(chip) => onBeforeChipAdd(chip)}
+                onAdd={(chip) => handleChipAdd(chip)}
+                onDelete={(c, index) => handleChipDelete(c,index)}
+                //onChange={formik.handleChange}
+                //error={formik.touched.work_phone && Boolean(formik.errors.hras)}
+                //helperText={formik.touched.work_phone && formik.errors.hras}
+                 />
+        </div>)
+}
 
 		
 		const validationSchema = yup.object({
@@ -211,7 +250,7 @@ const handleAdd = async (formValues) => {
 			district: '',
 			office_symbol: '',
 			user_type: '',
-			hras: '',
+			hras: [],
 		},
 		validationSchema: validationSchema,
 		onSubmit: (values) => {
