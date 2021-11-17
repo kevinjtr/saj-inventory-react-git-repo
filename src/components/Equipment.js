@@ -681,6 +681,7 @@ export default function Equipment(props) {
 				const fieldName = optionsFieldName.replace(BLANKS,'')
 				console.log(optionsFieldName,fieldName)
 				handleSearchFieldsBlanks({target:{name: fieldName, value : search[optionsFieldName]}})
+				
 			}
 
 		}
