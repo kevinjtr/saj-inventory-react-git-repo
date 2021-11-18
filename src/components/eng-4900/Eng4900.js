@@ -70,6 +70,7 @@ import Tab from '@material-ui/core/Tab';
 import Badge from '@material-ui/core/Badge';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Switch from '@material-ui/core/Switch';
+import Typography from 'material-ui/styles/typography';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -403,10 +404,9 @@ export default function Eng4900(props) {
 		})
 
 		return (
-		<FormControl variant="outlined" className={classesItemMenu.formControl}>
-			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
+      <div>
+			<Typography noWrap>{text}</Typography>
 			<Select
-				labelId={`select-${tabs}-label`}
         id={`select-${tabs}-opts`}
         key={`select-${tabs}-opts`}
 				value={searchFields[tabs][val].options ? searchFields[tabs][val].options : OPTIONS_DEFAULT}
@@ -417,8 +417,9 @@ export default function Eng4900(props) {
 				>
 				{menuItems}
 			</Select>
-		</FormControl>
+      </div>
 		);
+    
 	}
 
 	const SearchBlanksOptions = (val,text="Blanks Options",w=200) => {
@@ -428,11 +429,9 @@ export default function Eng4900(props) {
 		})
 
 		return (
-		<FormControl variant="outlined" className={classesItemMenu.formControl}>
-			<InputLabel id="demo-simple-select-outlined-label">{text}</InputLabel>
+		<div>
+			<Typography noWrap>{text}</Typography>
 			<Select
-				labelId={`select-${tabs}-blanks-label`}
-        id={`select-${tabs}-blanks`}
         id={`select-${tabs}-blanks`}
 				value={searchFields[tabs][val].blanks ? searchFields[tabs][val].blanks : BLANKS_DEFAULT}
 				name={val}
@@ -442,7 +441,7 @@ export default function Eng4900(props) {
 				>
 				{menuItems}
 			</Select>
-		</FormControl>
+		</div>
 		);
   }
 
@@ -1154,17 +1153,18 @@ export default function Eng4900(props) {
     
 	return(	
 	<>
-	<Grid item xs={Math.ceil(12/(nFields + 1))}>                 
+	<Grid item xs={Math.ceil(12/(nFields + 1))}>  
+  <Typography noWrap>{`Search ${searchFields[tab][key].label}`}</Typography>         
 		<TextField
       id={`search-${tab}-${key}`}
       key={`search-${tab}-${key}`} 
-			name={key} label={`Search by ${searchFields[tab][key].label}`} 
+			name={key}
 			type="search" variant="outlined" 
 			value={searchFields[tab][key].value} 
 			onChange={handleSearchFieldsChange}
 			onKeyPress={handleSearchKeyPress}
 			style={{width:'100%',paddingRight:'20px'}}
-			InputLabelProps={{style: {fontSize: '.6vw'}}}
+		//	InputLabelProps={{style: {fontSize: '.6vw'}}}
 		/>
 		{searchFields[tab][key].value && searchView[tab] != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[tab][key].label} Options`,w)}</> : null}
 		<br/>
