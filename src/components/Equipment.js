@@ -243,7 +243,8 @@ export default function Equipment(props) {
 				<Typography noWrap>{text}</Typography>
 				<Select
 					//labelId="demo-simple-select-outlined-label"
-					id="demo-simple-select-outlined"
+					id={`opts-select-${text}`}
+					key={`opts-select-${text}`}
 					select
 					value={searchFields[val].options ? searchFields[val].options : OPTIONS_DEFAULT}
 					name={val}
@@ -270,7 +271,8 @@ export default function Equipment(props) {
 			<div>
 				<Typography noWrap>{text}</Typography>
 				<Select
-					id="demo-simple-select-outlined"
+					id={`blanks-select-${text}`}
+					key={`blanks-select-${text}`}
 					select
 					value={searchFields[val].blanks ? searchFields[val].blanks : BLANKS_DEFAULT}
 					name={val}
@@ -831,7 +833,8 @@ export default function Equipment(props) {
 	<Grid item xs={Math.floor(12/nFields)}>     
 		<Typography noWrap>{`Search ${searchFields[key].label}`}</Typography>        
 		<TextField
-			id={`outlined-search-${key}`} 
+			id={`outlined-search-${key}`}
+			key={`outlined-search-${key}`}
 			name={key} 
 			type="search" variant="outlined" 
 			value={searchFields[key].value} 
