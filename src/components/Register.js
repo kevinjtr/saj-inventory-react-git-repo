@@ -26,10 +26,7 @@ import ChipInput from 'material-ui-chip-input';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { values } from 'lodash';
 
-
-
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
-
   
 export default function Register(){
 	
@@ -37,7 +34,10 @@ export default function Register(){
 	const [districtItems, setDistrictItems] = React.useState([]);
 	const [officeItems, setOfficeItems] = React.useState([]);
 	const [userItems, setUserItems] = React.useState([]);
-	const [inputChips,setInputChips] = React.useState([]);
+	const [divisionSelection, setDivision] = React.useState("");
+	const [districtSelection, setDistrict] = React.useState("");
+	const [officeSelection, setOffice] = React.useState("");
+	const [userSelection, setUser] = React.useState("");
 
 	const divisionDropDownItems = DivisionItems.map((c, i)=>{
 		return(
@@ -49,208 +49,95 @@ export default function Register(){
 		)
 		})
 
-		const districtDropDownItems = districtItems.map((c, i)=>{
-			return(
-			 
-			  <MenuItem value={c.value} name= {c.label} >
-			  { c.label}
-			  </MenuItem>
+	const districtDropDownItems = districtItems.map((c, i)=>{
+	return(
 		
-			)
-		})
+		<MenuItem value={c.value} name= {c.label} >
+		{ c.label}
+		</MenuItem>
 
-		const officeSymbolDropDownItems = officeItems.map((c, i)=>{
-			return(
-			 
-			  <MenuItem value={c.value} name= {c.label} >
-			  {c.label}
-			  </MenuItem>
+	)
+	})
+
+	const officeSymbolDropDownItems = officeItems.map((c, i)=>{
+	return(
 		
-			)
-			})
+		<MenuItem value={c.value} name= {c.label} >
+		{c.label}
+		</MenuItem>
 
-			const userTypeDropDownItems = userItems.map((c, i)=>{
-				console.log(c);
-				return(
-				 
-				  <MenuItem value={c.value} name= {c.label} >
-				  {c.label}
-				  </MenuItem>
+	)
+	})
+
+	const userTypeDropDownItems = userItems.map((c, i)=>{
+		console.log(c);
+		return(
 			
-				)
-				})
+			<MenuItem value={c.value} name= {c.label} >
+			{c.label}
+			</MenuItem>
 
-
-	const [divisionSelection, setDivision] = React.useState("");
-
+		)
+	})
+	
 	const divisionSelectionChange = (event) =>{
 	 setDivision(event.target.value);
 	}
-
-	const [districtSelection, setDistrict] = React.useState("");
 	  
 	const districtSelectionChange = (event) =>{
 	 setDistrict(event.target.value);
 	}
 
-	const [officeSelection, setOffice] = React.useState("");
-	  
 	const officeSelectionChange = (event) =>{
 	 setOffice(event.target.value);
 	}
 
-	const [userSelection, setUser] = React.useState("");
-	  
 	const userSelectionChange = (event) =>{
 	 setUser(event.target.value);
 	}
 
-	React.useEffect(() => {
-			api.get(`register/registrationDropDownData`,{}).then((response) => response.data).then((data) => {
-			console.log(data)
-			if(data.status !== 400){
-			  setDivisionItems(data.data.division.map(( properties ) => ({ label: properties.name, value: properties.id })));
-			  setDistrictItems(data.data.district.map(( properties ) => ({ label: properties.name, value: properties.id })));
-			  setOfficeItems(data.data.officeSymbol.map(( properties ) => ({ label: properties.name, value: properties.id })));
-			  setUserItems(data.data.userType.map(( properties ) => ({ label: properties.name, value: properties.id })));
-		  }
-		  }).catch(function (error) {
-			  setDivisionItems([])
-			  setDistrictItems([])
-			  setOfficeItems([])
-			  setUserItems([])
-		  }) 
-		}, []); 
-
-// Handle Chip Input
-function onBeforeChipAdd (chip) {
-    return (chip.length === 3)
-	//return ((chip.length === 3) && (Number.isInteger(chip)))
-};
-
-// Add Chip
-function handleChipAdd (chip) {
-    
-	//formik.values.hras.push(chip)
-    setInputChips([...inputChips,chip])
-	formik.values.hras = [...inputChips]
-};
-
-// Delete Chip
-function handleChipDelete (c, index) {
- 
-	//console.log(inputChips,index)
-
-	const dataDelete = [...inputChips]
-	console.log(dataDelete)
-	dataDelete.splice(index,1)
-	//formik.values.hras = [...dataDelete]
-	//formik.values.hras = []
-	console.log(dataDelete)
-	setInputChips([...dataDelete])
-	formik.values.hras = [...dataDelete]
-    //formik.values.hras.filter((c) => c !== deletedChip)
-
-   /* const itemIndex = formik.values.hras.indexOf(deletedChip) 
-	if(itemIndex > -1){
-		formik.values.hras.remove(itemIndex)
-	} */
-    
-};
-
-//Stops the form from submitting when the user hits enter
-function onKeyDown(keyEvent) {
-	if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
-	  keyEvent.preventDefault();
-	}
-  }
-
-
-
-// api posting method
-		const handleAdd = async (formValues) => {
-			
-			//alert(JSON.stringify(formValues, null, 2));
-			let result = {}
-			//console.log('equipmentbyHraCall')
-			//setLoading(true)
-			await api.post(`register/add`,{params: {newData: formValues}}).then((response) => response.data).then((data) => {
-				result = data
-				console.log(data)
-				//setLoading(false)
-				//setEquipments(data.status != 400 ? data.data : data)
-				// this.setState({
-				// 	equipments: data.status != 400 ? data.values: data,
-				// 	setequipment: data
-				// });
-				//console.log(this.state.equipment.values);
-				// console.log(this.props, this.state);
-			}).catch(function (error) {
-				//setLoading(false)
-				//setEquipments([])
-			});
-		
-			return result
-		
-		};
-	
-		const HRAFormField = () => { 
-			return(
-				<div>
-					<InputLabel>HRA Numbers</InputLabel>
-					<ChipInput
-						fullWidth
-						id="hras"
-						name="hras"
-						//value={formik.values.hras}
-						value={inputChips}
-						onBeforeAdd={(chip) => onBeforeChipAdd(chip)}
-                        onAdd={(chip) => handleChipAdd(chip)}
-                        onDelete={(c, index) => handleChipDelete(c,index)}
-						//onChange={formik.handleChange}
-						//error={formik.touched.work_phone && Boolean(formik.errors.hras)}
-						//helperText={formik.touched.work_phone && formik.errors.hras}
-						 />
-				</div>)
-		}
-
-		
-		const validationSchema = yup.object({
-			first_name: yup
-				.string("Required")
-				.required("Required"),
-			last_name: yup
-				.string("Required")
-				.required("Required"),
-			title: yup
-				.string("Required")
-				.required("Required"),
-			email: yup
-				.string("Required")
-				.email("Enter valid email")
-				.required("Required"),
-			work_phone: yup
-				.string("Required")
-				.required("Required")
-				.matches(phoneRegExp, "Enter valid phone number")
-				.typeError("Enter valid phone number").required('Required'),
-			division: yup
-				.mixed()
-				.notOneOf(divisionDropDownItems)
-				.required("Required"),
-			district: yup
-				.mixed()
-				.notOneOf(districtDropDownItems)
-				.required("Required"),
-			office_symbol: yup
-				.mixed()
-				.notOneOf(officeSymbolDropDownItems)
-				.required("Required"),
-			user_type: yup
-				.mixed()
-				.notOneOf(userTypeDropDownItems)
-				.required("Required"),
-		  });
+	const validationSchema = yup.object({
+		first_name: yup
+			.string("Required")
+			.required("Required"),
+		last_name: yup
+			.string("Required")
+			.required("Required"),
+		title: yup
+			.string("Required")
+			.required("Required"),
+		email: yup
+			.string("Required")
+			.email("Enter valid email")
+			.required("Required"),
+		work_phone: yup
+			.string("Required")
+			.required("Required")
+			.matches(phoneRegExp, "Enter valid phone number")
+			.typeError("Enter valid phone number").required('Required'),
+		division: yup
+			.mixed()
+			.notOneOf(divisionDropDownItems)
+			.required("Required"),
+		district: yup
+			.mixed()
+			.notOneOf(districtDropDownItems)
+			.required("Required"),
+		office_symbol: yup
+			.mixed()
+			.notOneOf(officeSymbolDropDownItems)
+			.required("Required"),
+		user_type: yup
+			.mixed()
+			.notOneOf(userTypeDropDownItems)
+			.required("Required"),
+		// hras: yup
+		// 	.array().of(yup.number())
+		// 	.required()
+		// 	.when('hraS', {
+		// 		is: 2, // alternatively: (val) => val == true
+		// 	})
+	  });
 
 	const formik = useFormik({
 		initialValues: {
@@ -272,9 +159,102 @@ function onKeyDown(keyEvent) {
 		    handleAdd(values);
 		},
 	  });
-	 
-	 
-	  
+
+	React.useEffect(() => {
+			api.get(`register/registrationDropDownData`,{}).then((response) => response.data).then((data) => {
+			console.log(data)
+			if(data.status !== 400){
+				setDivisionItems(data.data.division.map(( properties ) => ({ label: properties.name, value: properties.id })));
+				setDistrictItems(data.data.district.map(( properties ) => ({ label: properties.name, value: properties.id })));
+				setOfficeItems(data.data.officeSymbol.map(( properties ) => ({ label: properties.name, value: properties.id })));
+				setUserItems(data.data.userType.map(( properties ) => ({ label: properties.name, value: properties.id })));
+			}
+			}).catch(function (error) {
+				setDivisionItems([])
+				setDistrictItems([])
+				setOfficeItems([])
+				setUserItems([])
+			}) 
+	}, []); 
+
+	// Handle Chip Input
+	function handleChipInput (e) {
+		if(formik.values.hras.length < 3){
+			e.target.value = e.target.value.replace(/[^0-9]/g, '')
+
+			if (e.target.value.length > 3) {
+				e.target.value = e.target.value.substring(0,3)
+			} 
+
+			return;
+		}
+
+		e.target.value = ''
+	};
+
+	// Add Chip
+	function handleChipAdd (chip) {
+		formik.setFieldValue('hras',[...formik.values.hras,chip])
+	};
+
+	// Delete Chip
+	function handleChipDelete (c, index) {
+		const dataDelete = [...formik.values.hras]
+		dataDelete.splice(index,1)
+		formik.setFieldValue('hras',[...dataDelete])
+	};
+
+	//Stops the form from submitting when the user hits enter
+	function onKeyDown(keyEvent) {
+		if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
+		keyEvent.preventDefault();
+		}
+	}
+
+	// api posting method
+	const handleAdd = async (formValues) => {
+		
+		//alert(JSON.stringify(formValues, null, 2));
+		let result = {}
+		//console.log('equipmentbyHraCall')
+		//setLoading(true)
+		await api.post(`register/add`,{params: {newData: formValues}}).then((response) => response.data).then((data) => {
+			result = data
+			console.log(data)
+			//setLoading(false)
+			//setEquipments(data.status != 400 ? data.data : data)
+			// this.setState({
+			// 	equipments: data.status != 400 ? data.values: data,
+			// 	setequipment: data
+			// });
+			//console.log(this.state.equipment.values);
+			// console.log(this.props, this.state);
+		}).catch(function (error) {
+			//setLoading(false)
+			//setEquipments([])
+		});
+
+		return result
+
+	};
+
+	const HRAFormField = () => {
+		return(
+			<div>
+				<InputLabel>HRA Numbers</InputLabel>
+				<ChipInput
+					fullWidth
+					id="hras"
+					name="hras"
+					value={formik.values.hras}
+					onAdd={(chip) => handleChipAdd(chip)}
+					onDelete={(c, index) => handleChipDelete(c,index)}
+					onInput={(e) => handleChipInput(e)}
+					//error={formik.touched.work_phone && Boolean(formik.errors.hras)}
+					//helperText={formik.touched.work_phone && formik.errors.hras}
+				/>
+			</div>)
+	} 
 	
 	return (
 		<div>
@@ -291,6 +271,8 @@ function onKeyDown(keyEvent) {
 			error={formik.touched.first_name && Boolean(formik.errors.first_name)}
 			helperText={formik.touched.first_name && formik.errors.first_name}
 		  />
+		  <br/>
+		  <br/>
 		  <InputLabel>Last Name</InputLabel>
 		  <TextField
 			fullWidth
@@ -301,6 +283,8 @@ function onKeyDown(keyEvent) {
 			error={formik.touched.last_name && Boolean(formik.errors.last_name)}
 			helperText={formik.touched.last_name && formik.errors.last_name}
 		  />
+		    <br/>
+			<br/>
 		  <InputLabel>Title</InputLabel>
 		  <TextField
 			fullWidth
