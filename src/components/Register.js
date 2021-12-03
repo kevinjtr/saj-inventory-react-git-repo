@@ -19,7 +19,6 @@ import api from '../axios/Api';
 import MenuItem from '@material-ui/core/MenuItem';
 import { dropDownStyles } from './styles/material-ui';
 import Select from '@material-ui/core/Select';
-import Header from './Header'
 import InputLabel from '@material-ui/core/InputLabel';
 import * as yup from 'yup'
 import ChipInput from 'material-ui-chip-input';
@@ -259,7 +258,6 @@ export default function Register(){
 	return (
 		<div>
 		<form onKeyDown={onKeyDown} onSubmit={formik.handleSubmit}>
-		<Header/>
 		<h2>Register</h2>
 		<InputLabel>First Name</InputLabel>
 		<TextField

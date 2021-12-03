@@ -6,7 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Login from '../components/Login'
 import Signup from '../components/Signup' 
-import Header from '../components/Header'
 import { Row, Col } from 'react-bootstrap';
 import { AlignHorizontalLeft } from '@mui/icons-material';
 
@@ -40,7 +39,6 @@ const handleChange = (event, newValue) => {
   
     return (
       <>
-      <Header/>
       <Row>
       <Col>
         <img src="usace-inventory.png" alt="image" height="290px" style={{ marginLeft: '300px', marginTop: '20px'}}/>
