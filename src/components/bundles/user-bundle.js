@@ -6,7 +6,6 @@ export default {
 
     const initialState = {
         user: 'user',
-
     }
 
     return (state = initialState, { type, payload }) => {
@@ -38,7 +37,7 @@ export default {
         .then((response) => {
           localStorage.setItem('auth', response.data.token);
           localStorage.setItem('user', response.data.user);
-          localStorage.setItem('x-access-token-expiration', Date.now() + 2 * 60 * 60 * 1000);
+          localStorage.setItem('x-access-token-expiration', Date.now() + 15 * 60 * 1000);//15min token duration.
           
           dispatch({
             type: "SET_USER_LVL",
@@ -48,6 +47,20 @@ export default {
           });  
         })
         .catch((err) => Promise.reject('Authentication Failed!'));
+    },
+    doLogout: (val, cascade, silent) => ({ dispatch, store }) => {
+
+          localStorage.setItem('auth', '');
+          localStorage.setItem('user', '');
+          localStorage.setItem('x-access-token-expiration', Date.now());//15min token duration.
+          
+          dispatch({
+            type: 'SET_USER_LVL_FROM_LOCAL',
+            payload: {
+                user: localStorage.getItem('user')
+            }
+          });
+
     },
     doSetUserFromLocalStorage: (val, cascade, silent) => ({ dispatch, store }) => {
       if(store.selectIsLoggedIn()){

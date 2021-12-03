@@ -100,43 +100,43 @@ export default function Register(){
 		first_name: yup
 			.string("Required")
 			.required("Required"),
-		// last_name: yup
-		// 	.string("Required")
-		// 	.required("Required"),
-		// title: yup
-		// 	.string("Required")
-		// 	.required("Required"),
-		// email: yup
-		// 	.string("Required")
-		// 	.email("Enter valid email")
-		// 	.required("Required"),
-		// work_phone: yup
-		// 	.string("Required")
-		// 	.required("Required")
-		// 	.matches(phoneRegExp, "Enter valid phone number")
-		// 	.typeError("Enter valid phone number").required('Required'),
-		// division: yup
-		// 	.mixed()
-		// 	.notOneOf(divisionDropDownItems)
-		// 	.required("Required"),
-		// district: yup
-		// 	.mixed()
-		// 	.notOneOf(districtDropDownItems)
-		// 	.required("Required"),
-		// office_symbol: yup
-		// 	.mixed()
-		// 	.notOneOf(officeSymbolDropDownItems)
-		// 	.required("Required"),
-		// user_type: yup
-		// 	.mixed()
-		// 	.notOneOf(userTypeDropDownItems)
-		// 	.required("Required"),
-		hras: yup
-			.array().of(yup.number())
-			.required()
-			// .when('hraS', {
-			// 	is: 2, // alternatively: (val) => val == true
-			// })
+		last_name: yup
+			.string("Required")
+			.required("Required"),
+		title: yup
+			.string("Required")
+			.required("Required"),
+		email: yup
+			.string("Required")
+			.email("Enter valid email")
+			.required("Required"),
+		work_phone: yup
+			.string("Required")
+			.required("Required")
+			.matches(phoneRegExp, "Enter valid phone number")
+			.typeError("Enter valid phone number").required('Required'),
+		division: yup
+			.mixed()
+			.notOneOf(divisionDropDownItems)
+			.required("Required"),
+		district: yup
+			.mixed()
+			.notOneOf(districtDropDownItems)
+			.required("Required"),
+		office_symbol: yup
+			.mixed()
+			.notOneOf(officeSymbolDropDownItems)
+			.required("Required"),
+		user_type: yup
+			.mixed()
+			.notOneOf(userTypeDropDownItems)
+			.required("Required"),
+		// hras: yup
+		// 	.array().of(yup.number())
+		// 	.required()
+		// 	.when('hraS', {
+		// 		is: 2, // alternatively: (val) => val == true
+		// 	})
 	  });
 
 	const formik = useFormik({
@@ -271,6 +271,8 @@ export default function Register(){
 			error={formik.touched.first_name && Boolean(formik.errors.first_name)}
 			helperText={formik.touched.first_name && formik.errors.first_name}
 		  />
+		  <br/>
+		  <br/>
 		  <InputLabel>Last Name</InputLabel>
 		  <TextField
 			fullWidth
@@ -281,6 +283,8 @@ export default function Register(){
 			error={formik.touched.last_name && Boolean(formik.errors.last_name)}
 			helperText={formik.touched.last_name && formik.errors.last_name}
 		  />
+		    <br/>
+			<br/>
 		  <InputLabel>Title</InputLabel>
 		  <TextField
 			fullWidth
@@ -359,8 +363,7 @@ export default function Register(){
 			>	
 			{userTypeDropDownItems}
 		  </Select>
-		  {/* {formik.values.user_type === 2 ? HRAFormField() : null} */}
-		  {HRAFormField()}
+		  {formik.values.user_type === 2 ? HRAFormField() : null}
 		   <Button color="primary" variant="contained" fullWidth type="submit">
           	Submit
            </Button>

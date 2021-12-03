@@ -23,6 +23,7 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import PublishIcon from '@material-ui/icons/Publish';
 import SendIcon from '@material-ui/icons/Send';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 
 export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
@@ -51,6 +52,35 @@ export const tableIcons = {
     Publish: React.forwardRef((props, ref) => <PublishIcon {...props} ref={ref} />),
     Send: React.forwardRef((props, ref) => <SendIcon {...props} ref={ref} />),
   };
+
+export const form4900Icons = {
+  Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
+    Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
+    Clear: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} style={{color:'#FF0000'}}/>),
+    DetailPanel: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref}/>),
+    Export: React.forwardRef((props, ref) => <SaveAlt {...props} ref={ref} style= { {color:"#1E90FF"} }/>),
+    Filter: React.forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    FirstPage: React.forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+    LastPage: React.forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+    NextPage: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+    PreviousPage: React.forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+    ResetSearch: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+    Search: React.forwardRef((props, ref) => <Search {...props} ref={ref} />),
+    SortArrow: React.forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+    ThirdStateCheck: React.forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+    ViewColumn: React.forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
+    View: React.forwardRef((props, ref) => <VisibilityIcon {...props} ref={ref} />),
+    Pdf: React.forwardRef((props, ref) => <PictureAsPdfIcon {...props} ref={ref} />),
+    Update: React.forwardRef((props, ref) => <UpdateIcon {...props} ref={ref} />),
+    Lock: React.forwardRef((props, ref) => <LockIcon {...props} ref={ref} />),
+    Unlock: React.forwardRef((props, ref) => <LockOpenIcon {...props} ref={ref} />),
+    EditOutlined: React.forwardRef((props, ref) => <EditOutlinedIcon {...props} ref={ref} />),
+    Assignment: React.forwardRef((props, ref) => <AssignmentIcon {...props} ref={ref} />),
+    Publish: React.forwardRef((props, ref) => <PublishIcon {...props} ref={ref} />),
+    Send: React.forwardRef((props, ref) => <SendIcon {...props} ref={ref} />),
+}
 
 export const changeHistoryIcons = {
   Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),

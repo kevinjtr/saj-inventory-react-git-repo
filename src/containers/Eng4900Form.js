@@ -173,13 +173,14 @@ export default function Eng4900(props) {
   const [selectedForm, setSelectedForm] = React.useState(RESET_FORM);
   //const [hras, setHras] = React.useState(RESET_HRAS_HOOK);
   const [editEnabled, setEditEnabled] = React.useState(false);
+  const [condition, setCondition] = React.useState([]);
 
   const handleCheckBoxChange = (event) => {
     setSelectedForm({ ...selectedForm, temporary_loan: (event.target.checked ? 1 : 2) });
   };
 
   const handleNewEquipmentsCheckBoxChange = (event) => {
-    setSelectedForm({ ...selectedForm, new_equipments: Number(event.target.checked), hra: { ...selectedForm.hra, losing: RESET_HRA, equipment_group: [] } })
+    setSelectedForm({ ...selectedForm, new_equipments: Number(event.target.checked), hra: { ...selectedForm.hra, losing: RESET_HRA, gaining: RESET_HRA, equipment_group: [] } })
   };
 
   const handleFormSelect = async () => {
@@ -561,16 +562,14 @@ export default function Eng4900(props) {
                 }}
                 style={{ width: 200 }}/>
               {editEnabled ? 
-                  <Autocomplete
+              <Autocomplete
                   style={{ display:'inline-block' }}
                   id="combo-box-gaining"
-                  options={hras.gaining}
-                  getOptionDisabled={(option) =>
-                    selectedForm.hra.losing.hra_num === option.hra_num
-                  }
+                  options={selectedForm.new_equipments ? hras.losing : hras.gaining}
+                  getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
                   loading={loading.hra}
                   getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
-                  defaultValue={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
+                  value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
                   style={{ width: 300 }}
                   onChange={handleGainingHraChange}
                   renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
@@ -593,7 +592,7 @@ export default function Eng4900(props) {
                 style={{ width: 200 }}/>
             </Paper>
           </Grid>
-          {materialTableSelect()}
+          {selectedForm.new_equipments ? materialTableNewEquipment() : materialTableSelect()}
           <Grid item xs={6}>
             <Paper className={classesGrid.paper}>
             {editEnabled ? 
@@ -1517,6 +1516,247 @@ export default function Eng4900(props) {
       </div>
     )
   }
+
+  const materialTableNewEquipment = () => {
+
+		const equipment_cols = [
+      { title: 'Item Description', field: 'item_type',col_id:4  },
+			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData) => {
+				if(rowData.hasOwnProperty('bar_tag_num')){
+					if(!isNaN(rowData.bar_tag_num)) {
+						if(typeof rowData.bar_tag_num === "number"){
+							if(rowData.bar_tag_num.toString().length > 5){
+								return ({ isValid: false, helperText: 'Bar Tag digits exceed 5.' })
+							}else{
+								const idx = findIndex(equipments,e => e.bar_tag_num == rowData.bar_tag_num)
+								const propTableData = rowData.hasOwnProperty('tableData')//exists: editing, not exists: adding.
+
+								if(propTableData && idx != -1){
+									if(rowData.tableData.id != idx){
+										return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
+									}
+								}else if (idx != -1 && !propTableData && !rowData.hasOwnProperty('id')){
+									return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
+								}								
+							}
+							return true
+						}
+			
+						if(typeof rowData.bar_tag_num === "string"){
+							return ({ isValid: false, helperText: 'Bar Tag needs to be numeric.' })
+						}
+					}
+				}
+				return ({ isValid: false, helperText: 'Bar Tag is required.' })
+	
+			}
+			// , validate: (rowData,dataIsOnDatabase) => {
+			// 	try{
+			// 	if(rowData.bar_tag_num.toString().length > 5){
+			// 		return({ isValid: false, helperText: 'bar tag digits length cannot exceed 5.' })
+			// 	}else if(dataIsOnDatabase.bar_tag_num){
+			// 		dataIsOnDatabase.bar_tag_num = false
+			// 		return({ isValid: false, helperText: 'bar tag exists in database.' })
+			// 	}
+			// 	}catch(err){
+		
+			// 	}
+				
+			// 	return(true)
+			// }
+			},
+			{title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
+			{title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
+			{title:'Catalog Num',field:'catalog_num',col_id:8 },
+			{title:'Serial Num',field:'serial_num',col_id:9 },
+			{title:'Manufacturer',field:'manufacturer',col_id:10 },
+			{title:'Model',field:'model',col_id:11 },
+			{title:'Condition',field:'condition',col_id:12, editComponent: (x) => {
+				//console.log(x);
+				let idx = -1
+		
+				if(x.rowData.condition){
+				idx = findIndex(condition,function(c){ return (c.id && (c.id == x.rowData.condition)); })
+				}
+		
+				return(
+				<Autocomplete
+				//onChange={e => x.onChange(e)}
+				id="combo-box-employee"
+				//size="small"
+				options={condition}
+				getOptionLabel={(option) => option.id + ' - ' + option.name}
+				value={idx != -1 ? condition[idx] : null}
+				//defaultValue={idx != -1 ? employees[idx] : null}
+				onChange ={e => {
+		
+					const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+					console.log(id_);
+					x.onChange(id_)
+				}}
+				//style={{ verticalAlign: 'top' }}
+				renderInput={(params) => <TextField {...params} label="Condition" margin="normal"/>}
+				/>
+				)
+				}
+			}
+			]
+
+		return(
+			<div style={{ width: '100%'}}>
+				<MaterialTable
+				icons={tableIcons}
+				columns={equipment_cols}
+				data={selectedForm.equipment_group}
+        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color:'#ff0000'}}>Equipments are required</h6> } }}
+        options={{
+          //exportButton: true,
+          //exportAllData: true,
+          search:false,
+          headerStyle: {
+          backgroundColor: "#969696",
+          color: "#FFF",
+          fontWeight: 'bold',
+        }
+        }}
+				title=""
+				editable={{
+					// isEditable: rowData => rowData.name === 'a', // only name(a) rows would be editable
+					//isEditHidden: rowData => rowData.name === 'x',
+					// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
+					// isDeleteHidden: rowData => rowData.name === 'y',
+					// onBulkUpdate: async (changes) => {
+					// let result = await handleUpdate({changes:changes})
+					// let errorResult = result.columnErrors
+					// let {errorFound} = errorResult
+					// return(
+					// 	new Promise((resolve, reject) => {
+					// 	setTimeout(() => {
+					// 		/* setEquipments([...equipments, newData]); */
+					// 		console.log('bulk update')
+					// 		//console.log(changes)
+					// 		const keys = Object.keys(changes)//0 ,1,2
+					// 		let alert_ = ''
+
+					// 		for(const key of keys){
+					// 			const {newData,oldData} = changes[key]
+					// 			const errorStatus = errorResult.rows[key]
+
+					// 			console.log(newData,errorStatus)
+					// 			if(!errorFound){
+					// 			//no error
+					// 			resetEquipments()
+					// 			//const dataUpdate = [...equipments];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataUpdate[index] = newData;
+					// 			//setEquipments([...dataUpdate]);
+					// 			}else{
+					// 			//error found.
+					// 			console.log('error found')
+					// 			//dataIsOnDatabase[Object.keys(errorStatus)[0]] = true
+					// 			const col_name = Object.keys(errorStatus)[0]
+					// 			const errorText = errorStatus[col_name]
+					// 			alert_ = alert_ + `row ${Number(key)+1}: ${col_name} - ${errorText}\n`
+					// 			}
+
+								
+					// 			//console.log(errorStatus,newData)
+					// 			//const dataUpdate = [...equipments];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataUpdate[index] = newData;
+					// 			//setEquipments([...dataUpdate]);
+					// 			//resolve();
+					// 		}
+
+					// 		if(alert_){
+					// 			//setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
+					// 			setAlertUser(ALERT.FAIL(alert_))
+					// 			reject();
+					// 		}else{
+					// 			setAlertUser(ALERT.SUCCESS)
+					// 			resolve();
+					// 		}
+					// 		//for(const rowid of errorResult){}
+					// 		// if(Object.keys(errorResult).length > 0){
+					// 		//   console.log(errorResult)
+					// 		//   dataIsOnDatabase[Object.keys(errorResult)[0]] = true
+					// 		//   reject();
+					// 		// }else{
+					// 		//   for(const {newData,oldData} of changes){
+					// 		//     const dataUpdate = [...equipments];
+					// 		//     const index = oldData.tableData.id;
+					// 		//     dataUpdate[index] = newData;
+					// 		//     setEquipments([...dataUpdate]);
+					// 		//     resolve();
+					// 		//   }
+					// 		// }
+					// 	}, 1000);
+					// }))
+					// },
+					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+					onRowAdd: async (newData) => {
+					//let result = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
+						return (new Promise((resolve, reject) => {
+							setTimeout(() => {
+							//console.log(result.error)
+							// if(!result.error){
+							// 	setAlertUser(ALERT.SUCCESS)
+							// 	resetEquipments();
+								resolve();
+							// 	return;
+							// }
+
+							// if(result.hasOwnProperty('columnErrors')) {
+							// 	if(result.columnErrors.hasOwnProperty('rows')) {
+							// 		setAlertUser( result.columnErrors.rows[0] ? ALERT.FAIL( JSON.stringify(result.columnErrors.rows[0])) : ALERT.FAIL())
+							// 	}
+							// }
+							// 	//setEquipments([...equipments, newData]);
+							// 	reject();
+							}, 1000);
+						}))
+					},
+					// onRowUpdate: async (newData, oldData) => {
+					// let result = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+					// let errorResult = result.columnErrors
+					// 	return (new Promise((resolve, reject) => {
+					// 		setTimeout(() => {
+								
+					// 		if(errorResult.errorFound){
+					// 			const col_name = Object.keys(errorResult.rows[0])[0]
+					// 			dataIsOnDatabase[col_name] = true
+					// 			setAlertUser(ALERT.FAIL())
+					// 			reject();
+					// 			return;
+					// 		}
+					// 			resetEquipments();
+					// 			setAlertUser(ALERT.SUCCESS)
+					// 			//const dataUpdate = [...equipments];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataUpdate[index] = newData;
+					// 			//setEquipments([...dataUpdate]);
+					// 			resolve();
+					// 		}, 1000);
+					// 	}))
+					// },
+					// onRowDelete: async (oldData) => {
+					// await handleDelete({changes:{'0':{newData:null, oldData:oldData}}})
+					// 	new Promise((resolve, reject) => {
+					// 		setTimeout(() => {
+					// 			//const dataDelete = [...equipments];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataDelete.splice(index, 1);
+					// 			//setEquipments([...dataDelete]);
+					// 			resolve();
+					// 		}, 1000);
+					// 	})
+					// }
+				}}
+				/>
+		</div>
+		)
+	}
 
   //Effects
   useEffect(() => {

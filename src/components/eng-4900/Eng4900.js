@@ -47,7 +47,7 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import MaterialTable, { MTableToolbar } from 'material-table'
-import {tableIcons} from '../material-table/config'
+import {form4900Icons} from '../material-table/config'
 //import Pdf from './eng4900-26-2.pdf';
 import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../tools/tools'
 import clsx from 'clsx'
@@ -586,7 +586,7 @@ export default function Eng4900(props) {
     return(
       <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
-          icons={tableIcons}
+          icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
             localization={{
@@ -630,19 +630,19 @@ export default function Eng4900(props) {
                 hidden: hras[tab_idx].losing.length == 0
               },
               rowData => ({
-                icon: tableIcons.View,
+                icon: form4900Icons.View,
                 tooltip: 'View Form',
                 onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
-                  icon: tableIcons.EditOutlined,
+                  icon: form4900Icons.Assignment,
                   tooltip: 'Edit Form',
                   onClick: (event, rowData) => alert(JSON.stringify(rowData)),//EditFormById(rowData.form_id), // + rowData.name),
                   disabled: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
                 }),
               rowData => ({
-                icon: tableIcons.Pdf,
+                icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
@@ -651,7 +651,7 @@ export default function Eng4900(props) {
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
               rowData => ({
-                icon: tableIcons.Publish,
+                icon: form4900Icons.Publish,
                 tooltip: 'Upload PDF',
                 onClick: (event, rowData) => {
                   setUploadPdf({...uploadPdf,show:true,rowData:rowData})
@@ -767,7 +767,7 @@ export default function Eng4900(props) {
     return(
       <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
-          icons={tableIcons}
+          icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
             localization={{
@@ -797,7 +797,7 @@ export default function Eng4900(props) {
               // },
               {
                 icon: () => (
-                <Tooltip title="Crate New Form" aria-label="add">
+                <Tooltip title="Create New Form" aria-label="add">
                   <ThemeProvider>
                     <Fab  variant="extended" size="medium" color="inherit" className={ plusButtonClasses.fabGreen}>
                     Create 4900
@@ -811,19 +811,19 @@ export default function Eng4900(props) {
                 hidden: hras[tab_idx].losing.length == 0
               },
               rowData => ({
-                icon: tableIcons.View,
+                icon: form4900Icons.View,
                 tooltip: 'View Form',
                 onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
-                  icon: tableIcons.EditOutlined,
+                  icon: form4900Icons.Assignment,
                   tooltip: 'Edit Form',
                   onClick: (event, rowData) => alert(JSON.stringify(rowData)),//EditFormById(rowData.form_id), // + rowData.name),
                   disabled: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
                 }),
               rowData => ({
-                icon: tableIcons.Pdf,
+                icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
@@ -832,7 +832,7 @@ export default function Eng4900(props) {
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
               // rowData => ({
-              //   icon: tableIcons.Publish,
+              //   icon: form4900Icons.Publish,
               //   tooltip: 'Upload PDF',
               //   onClick: (event, rowData) => {
               //     setUploadPdf({...uploadPdf,show:true,rowData:rowData})
@@ -951,7 +951,7 @@ export default function Eng4900(props) {
     return(
       <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
-          icons={tableIcons}
+          icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
             localization={{
@@ -975,13 +975,13 @@ export default function Eng4900(props) {
             title=""
             actions={[
               rowData => ({
-                icon: tableIcons.View,
+                icon: form4900Icons.View,
                 tooltip: 'View Form',
                 onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
-                icon: tableIcons.Pdf,
+                icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
@@ -990,7 +990,7 @@ export default function Eng4900(props) {
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
               rowData => ({
-                icon: tableIcons.Publish,
+                icon: form4900Icons.Publish,
                 tooltip: 'Upload PDF',
                 onClick: (event, rowData) => {
                   setUploadPdf({...uploadPdf,show:true,rowData:rowData})
@@ -1104,7 +1104,7 @@ export default function Eng4900(props) {
     return(
       <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
-          icons={tableIcons}
+          icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
             localization={{
@@ -1126,13 +1126,13 @@ export default function Eng4900(props) {
             title=""
             actions={[
               rowData => ({
-                icon: tableIcons.View,
+                icon: form4900Icons.View,
                 tooltip: 'View Form',
                 onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
-                icon: tableIcons.Pdf,
+                icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)

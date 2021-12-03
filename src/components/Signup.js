@@ -15,41 +15,48 @@ import api from '../axios/Api';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import ChipInput from 'material-ui-chip-input';
+import { Row,  Col } from 'react-bootstrap';
+import {registrationDropDownItems} from './config/constants'
+import findIndex from 'lodash/findIndex'
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const Signup = () => {
-    const paperStyle = { padding: 20, width: 300, margin: "0 auto" }
+    const paperStyle = { padding: 20, width: 450, margin: "0 auto" }
     const headerStyle = { margin: 0 }
     const avatarStyle = { backgroundColor: '#1bbd7e' }
     const marginTop = { marginTop: 5 }
+    const [dropDownData,setDropDownData] = React.useState()
     const [DivisionItems, setDivisionItems] = React.useState([]);
 	const [districtItems, setDistrictItems] = React.useState([]);
 	const [officeItems, setOfficeItems] = React.useState([]);
 	const [userItems, setUserItems] = React.useState([]);
     const [inputChips,setInputChips] = React.useState([]);
+    const [districtDropDownItems,setDistrictDropDownItems] = React.useState([]);
 
-	const divisionDropDownItems = DivisionItems.map((c, i)=>{
+	const divisionDropDownItems = registrationDropDownItems.division.map((c, i)=>{
+      
 		return(
 		 
-		  <MenuItem value={c.value} name= {c.label} >
+		  <MenuItem id={c.symbol} key={c.symbol} value={c.value} name={c.label} >
 		  { c.label}
 		  </MenuItem>
 	
 		)
 		})
-
-		const districtDropDownItems = districtItems.map((c, i)=>{
-			return(
+        
+		//let districtDropDownItems = []
+        // registrationDropDownItems.district.map((c, i)=>{
+		// 	return(
 			 
-			  <MenuItem value={c.value} name= {c.label} >
-			  { c.label}
-			  </MenuItem>
+		// 	  <MenuItem value={c.value} name= {c.symbol} >
+        //       {c.label}
+		// 	  </MenuItem>
 		
-			)
-		})
+		// 	)
+		// })
 
-		const officeSymbolDropDownItems = officeItems.map((c, i)=>{
+		const officeSymbolDropDownItems = registrationDropDownItems.officeSymbol.map((c, i)=>{
 			return(
 			 
 			  <MenuItem value={c.value} name= {c.label} >
@@ -59,7 +66,7 @@ const Signup = () => {
 			)
 			})
 
-			const userTypeDropDownItems = userItems.map((c, i)=>{
+			const userTypeDropDownItems = registrationDropDownItems.userType.map((c, i)=>{
 				console.log(c);
 				return(
 				 
@@ -95,59 +102,42 @@ const Signup = () => {
 	 setUser(event.target.value);
 	}
 
-	React.useEffect(() => {
-			api.get(`register/registrationDropDownData`,{}).then((response) => response.data).then((data) => {
-			console.log(data)
-			if(data.status !== 400){
-			  setDivisionItems(data.data.division.map(( properties ) => ({ label: properties.name, value: properties.id })));
-			  setDistrictItems(data.data.district.map(( properties ) => ({ label: properties.name, value: properties.id })));
-			  setOfficeItems(data.data.officeSymbol.map(( properties ) => ({ label: properties.name, value: properties.id })));
-			  setUserItems(data.data.userType.map(( properties ) => ({ label: properties.name, value: properties.id })));
-		  }
-		  }).catch(function (error) {
-			  setDivisionItems([])
-			  setDistrictItems([])
-			  setOfficeItems([])
-			  setUserItems([])
-		  }) 
-		}, []); 
 
+
+
+
+// Handle Chip Input
+function handleChipInput (e) {
+    if(formik.values.hras.length < 3){
+        e.target.value = e.target.value.replace(/[^0-9]/g, '')
+
+        if (e.target.value.length > 3) {
+            e.target.value = e.target.value.substring(0,3)
+        } 
+
+        return;
+    }
+
+    e.target.value = ''
+};
 
 // Handle Chip Input
 function onBeforeChipAdd (chip) {
     return (chip.length === 3)
 	//return ((chip.length === 3) && (Number.isInteger(chip)))
 };
-
 // Add Chip
 function handleChipAdd (chip) {
-    
-	//formik.values.hras.push(chip)
-    setInputChips([...inputChips,chip])
-	formik.values.hras = [...inputChips]
+    formik.setFieldValue('hras',[...formik.values.hras,chip])
 };
 
 // Delete Chip
 function handleChipDelete (c, index) {
- 
-	//console.log(inputChips,index)
-
-	const dataDelete = [...inputChips]
-	console.log(dataDelete)
-	dataDelete.splice(index,1)
-	//formik.values.hras = [...dataDelete]
-	//formik.values.hras = []
-	console.log(dataDelete)
-	setInputChips([...dataDelete])
-	formik.values.hras = [...dataDelete]
-    //formik.values.hras.filter((c) => c !== deletedChip)
-
-   /* const itemIndex = formik.values.hras.indexOf(deletedChip) 
-	if(itemIndex > -1){
-		formik.values.hras.remove(itemIndex)
-	} */
-    
+    const dataDelete = [...formik.values.hras]
+    dataDelete.splice(index,1)
+    formik.setFieldValue('hras',[...dataDelete])
 };
+
 //preventing submit on enter
 function onKeyDown(keyEvent) {
     if ((keyEvent.charCode || keyEvent.keyCode) === 13){
@@ -161,47 +151,71 @@ const handleAdd = async (formValues) => {
     //alert(JSON.stringify(formValues, null, 2));
     let result = {}
     //console.log('equipmentbyHraCall')
-    //setLoading(true)
     await api.post(`register/add`,{params: {newData: formValues}}).then((response) => response.data).then((data) => {
         result = data
         console.log(data)
-        //setLoading(false)
-        //setEquipments(data.status != 400 ? data.data : data)
-        // this.setState({
-        // 	equipments: data.status != 400 ? data.values: data,
-        // 	setequipment: data
-        // });
-        //console.log(this.state.equipment.values);
-        // console.log(this.props, this.state);
     }).catch(function (error) {
-        //setLoading(false)
-        //setEquipments([])
     });
 
     return result
 
 }
-const HRAFormField = () => { 
+const HRAFormField = () => {
     return(
         <div>
             <InputLabel>HRA Numbers</InputLabel>
             <ChipInput
+                required={formik.values.hras.length > 0 ? false : true}
                 fullWidth
                 id="hras"
                 name="hras"
-                //value={formik.values.hras}
-                value={inputChips}
+                value={formik.values.hras}
                 onBeforeAdd={(chip) => onBeforeChipAdd(chip)}
                 onAdd={(chip) => handleChipAdd(chip)}
                 onDelete={(c, index) => handleChipDelete(c,index)}
-                //onChange={formik.handleChange}
+                onInput={(e) => handleChipInput(e)}
+                helperText="Please hit enter after each HRA number you type"
                 //error={formik.touched.work_phone && Boolean(formik.errors.hras)}
                 //helperText={formik.touched.work_phone && formik.errors.hras}
-                 />
+            />
         </div>)
+} 
+
+const filteredDistricts = (e) => {
+
+    const division_value = e.target.value
+    const idx = findIndex(registrationDropDownItems.division,function(d){ return d.value === division_value})
+
+
+    if(idx !== -1){
+        const {symbol} =registrationDropDownItems.division[idx]
+        const ddItems = registrationDropDownItems.district[symbol].map((c, i)=>{
+			return(
+			 
+			  <MenuItem value={c.value} name={c.symbol} >
+              {c.label}
+			  </MenuItem>
+		
+			)
+		})
+
+        setDistrictDropDownItems([...ddItems])
+        //console.log(districtDropDownItems)
+        return
+    }
+
+    setDistrictDropDownItems([])
+    
+    //     return(
+         
+    //       <MenuItem value={c.value} name= {c.label} >
+    //       {c.label}
+    //       </MenuItem>
+    
+    //     )
+    // })
 }
 
-		
 		const validationSchema = yup.object({
 			first_name: yup
 				.string("Required")
@@ -268,10 +282,12 @@ const HRAFormField = () => {
                     </Avatar>
                     <h2 style={headerStyle}>Sign Up</h2>
                 </Grid>
-                <Grid align='left'>
+                <Grid align='center'>
                     <form onKeyDown={onKeyDown} onSubmit={formik.handleSubmit}>
                     <br/>
                     <br/>
+                    <Row>
+                    <Col style={{columnGap: "5px"}}>
                     <InputLabel>First Name</InputLabel>
                     <TextField
                         fullWidth
@@ -332,13 +348,17 @@ const HRAFormField = () => {
                     />
                     <br/>
                     <br/>
+                    </Col>
+                    <Col>
                     <InputLabel>Division</InputLabel>
                     <Select
                         fullWidth
                         id="division"
                         name="division"
                         value={formik.values.division}
-                        onChange={formik.handleChange}
+                        onChange={(e)=>{formik.handleChange(e);filteredDistricts(e);}}
+                       // onChange={"formik.handleChange; filteredDistricts(divisionDropDownItems.)"}
+                        //onm={filteredDistricts(divisionDropDownItems.userSelection.label)}
                         error={formik.touched.division && Boolean(formik.errors.division)}
                         helperText={formik.touched.division && formik.errors.division}
                         >	
@@ -351,6 +371,7 @@ const HRAFormField = () => {
                         fullWidth
                         id="district"
                         name="district"
+                        disabled={formik.values.division === ''}
                         value={formik.values.district}
                         onChange={formik.handleChange}
                         error={formik.touched.district && Boolean(formik.errors.district)}
@@ -389,9 +410,16 @@ const HRAFormField = () => {
                     <br/>
                     <br/>
                     {formik.values.user_type === 2 ? HRAFormField() : null}
-                    <Button color="primary" variant="contained" fullWidth type="submit">
+                    <br/>
+                    <br/>
+                    <br/>
+                    </Col>
+                    </Row>
+                    <Row>
+                    <Button color="primary" variant="contained" fullWidth type="submit" align="center">
                     Submit
                     </Button>
+                    </Row>
                 </form>
                 </Grid>
             </Paper>
