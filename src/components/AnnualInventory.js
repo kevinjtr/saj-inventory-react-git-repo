@@ -516,7 +516,6 @@ export default function AnnualInventory(props) {
 	//Render return.
 	return (
 	<>
-	<Header/>
 	<div>
 		<div style={{textAlign: 'center'}}>
 			<h2 >Annual Inventory</h2>

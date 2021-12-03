@@ -8,7 +8,6 @@ export class Home extends Component {
 
 		return (
 			<>
-			<Header/>
 			<div>
 				<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
 					{/* <TextField onClick={this.tfSubmit}/> */}

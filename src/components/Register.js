@@ -247,7 +247,6 @@ export default function Register(){
 	
 	return (
 		<>
-		<Header/>
 		<Grid>
 			<form  onSubmit={formik.handleSubmit}>
 			<div className={classesGrid.paper}>

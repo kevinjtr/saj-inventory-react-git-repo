@@ -1266,7 +1266,6 @@ export default function Eng4900(props) {
     <>
     {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={statusOptions}/> : null}
     {create4900.show ? <Eng4900Form action={"CREATE"} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
-    <Header/>
     <div>
       {displayTop()}
       {/* {cards.length > 0 && viewSearch == "card-view"  && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>

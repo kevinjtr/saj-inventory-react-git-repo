@@ -20,6 +20,7 @@ import {filter} from 'lodash'
 import api from '../../axios/Api';
 import Register from '../Register';
 import SignInOut from '../../containers/SignInOut'
+import {Tab} from '@mui/material'
 
 const routes_config = [
     {path:'/',label:'Home',component:Home,tab:true,level:'user'},
@@ -63,11 +64,12 @@ export const routes_tabs = (lvl) => {
     if(lvl == 'admin'){
         return (
             route_with_tabs.map(route => 
-                <li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
+                <Tab label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"29px", minHeight:"29px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(152, 152, 195,0.2)',textDecoration:'none',color:'black'}}}/>
+                /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
                     <Link to={route.path} className="nav-link">
                         {route.label}
                     </Link>
-                </li>)
+                </li>*/)
         )
     }
 
@@ -76,11 +78,12 @@ export const routes_tabs = (lvl) => {
     console.log(route_with_tabs_user_lvl,lvl)
     return (
         route_with_tabs_user_lvl.map(route => 
-            <li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
+                <Tab label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"29px", minHeight:"29px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(152, 152, 195,0.2)',textDecoration:'none',color:'black'}}}/>
+            /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
                 <Link to={route.path} className="nav-link">
                     {route.label}
                 </Link>
-            </li>)
+            </li>*/)
     )
 }
 

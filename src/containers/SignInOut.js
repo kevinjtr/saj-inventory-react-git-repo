@@ -37,7 +37,6 @@ const handleChange = (event, newValue) => {
   
     return (
       <>
-      <Header/>
         <Paper elevation={20} style={paperStyle}>
         <Tabs
           value={value}
