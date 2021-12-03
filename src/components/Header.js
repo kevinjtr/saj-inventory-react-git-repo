@@ -6,9 +6,9 @@ import { connect } from 'redux-bundler-react';
 function Header(props) {
 	const {user} = props
 	return (
-		<nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+		<nav className="navbar navbar-dark bg-dark flex-row justify-content-start">
 			<p className="navbar-brand">Inventory</p>
-			<ul className="navbar-nav">
+			<ul className="navbar-nav flex-row flex-wrap">
                 {routes_tabs(user)}
                 
 			</ul>

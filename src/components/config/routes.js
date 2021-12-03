@@ -63,7 +63,7 @@ export const routes_tabs = (lvl) => {
     if(lvl == 'admin'){
         return (
             route_with_tabs.map(route => 
-                <li className="nav-item">
+                <li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
                     <Link to={route.path} className="nav-link">
                         {route.label}
                     </Link>
@@ -76,7 +76,7 @@ export const routes_tabs = (lvl) => {
     console.log(route_with_tabs_user_lvl,lvl)
     return (
         route_with_tabs_user_lvl.map(route => 
-            <li className="nav-item">
+            <li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
                 <Link to={route.path} className="nav-link">
                     {route.label}
                 </Link>
