@@ -404,7 +404,6 @@ export default function Employee(props) {
 	//Render return.
 	return (
 		<>
-		<Header/>
 		<div>
 			<div style={{textAlign: 'center'}}>
 				<h2 >Employee</h2>

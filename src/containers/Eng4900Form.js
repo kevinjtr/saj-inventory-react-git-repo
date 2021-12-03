@@ -1849,7 +1849,6 @@ export default function Eng4900(props) {
 
   return (
     <>
-    <Header/>
       {displayTop()}
       <div style={{textAlign: 'center'}}> {loading.init ? LoadingCircle() : null} </div>
       {!loading.init ? form() : null}

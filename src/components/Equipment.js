@@ -869,7 +869,6 @@ export default function Equipment(props) {
 	//Render return.
 	return (
 	<>
-	<Header/>
 	<div>
 		<div style={{textAlign: 'center'}}>
 		<h2 >Equipment</h2>

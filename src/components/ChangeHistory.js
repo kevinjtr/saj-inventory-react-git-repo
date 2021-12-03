@@ -287,7 +287,6 @@ export default function ChangeHistory(props) {
 	//Render return.
 	return (
 	<>
-	<Header/>
 	<div>
 		<div style={{textAlign: 'center'}}>
 			<h2 >Change History</h2>

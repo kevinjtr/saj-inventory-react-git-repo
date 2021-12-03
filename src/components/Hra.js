@@ -398,7 +398,6 @@ export default function Hra(props) {
 	//Render return.
 	return (
 		<>
-		<Header/>
 		<div>
 		
 			<div style={{textAlign: 'center'}}>

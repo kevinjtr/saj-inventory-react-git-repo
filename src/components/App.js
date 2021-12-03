@@ -7,6 +7,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { createMuiTheme } from '@material-ui/core/styles/';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import AppBarHeader from './AppBarHeader';
 
 export default function App(props) {
 	
@@ -38,6 +39,7 @@ export default function App(props) {
 	<CssBaseline/>
 	{
 		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
+			<AppBarHeader/>
 			<Switch>
 			{/* <Route
 				exact
