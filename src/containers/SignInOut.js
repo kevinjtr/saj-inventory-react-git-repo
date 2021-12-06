@@ -7,6 +7,8 @@ import Box from '@material-ui/core/Box';
 import Login from '../components/Login'
 import Signup from '../components/Signup' 
 import Header from '../components/Header'
+import { Row, Col } from 'react-bootstrap';
+import { AlignHorizontalLeft } from '@mui/icons-material';
 
 const SignInOut = (props) => {
 const [value,setValue]=useState(0)
@@ -14,7 +16,8 @@ const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const paperStyle={width:340,margin:"20px auto"}
+
+  const paperStyle={width:340,marginTop:"20px", marginLeft: '150px'}
   function TabPanel(props) {
     const { children, value, index, ...other } = props;
   
@@ -37,7 +40,19 @@ const handleChange = (event, newValue) => {
   
     return (
       <>
+<<<<<<< HEAD
         <Paper elevation={20} style={paperStyle}>
+=======
+      <Header/>
+      <Row>
+      <Col style={{ columnWidth: '70%'}}>
+        <img src="usace-inventory.png" alt="image" height="290px" style={{ marginLeft: '300px', marginTop: '20px'}}/>
+        <h3 style={{textDecorationLine: 'underline', marginTop: '60px', textAlign:'left', marginLeft: '300px'}}>System Updates and Availability </h3>
+        <h4 style={{ marginTop: '60px', textAlign:'left', marginLeft: '300px' }}>System is current and no maintenance is scheduled at this time.</h4>
+      </Col>
+      <Col style={{columnWidth: '30%', alignSelf: 'center'}}>
+       <Paper elevation={20} style={paperStyle }>
+>>>>>>> master
         <Tabs
           value={value}
           indicatorColor="primary"
@@ -57,6 +72,8 @@ const handleChange = (event, newValue) => {
       <Signup/>
       </TabPanel>
       </Paper>
+      </Col>
+      </Row>
       </>
     )
 }
