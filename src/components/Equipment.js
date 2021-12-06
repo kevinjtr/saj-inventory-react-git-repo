@@ -21,7 +21,7 @@ import Typography from '@material-ui/core/Typography';
 import MaterialTable from '@material-table/core'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import { ExportCsv, ExportPdf } from '@material-table/exporters';
+import { ExportCsv } from '@material-table/exporters';
 
 const BLANKS = 'Blanks'
 const OPTS = 'Opts'
@@ -488,111 +488,157 @@ export default function Equipment(props) {
 			columns = orderBy(columns,'col_id','asc')
 		}
 
+		// Generate dates for report exports
+		const generateReportDate= (dateType) => {
+
+			const date = new Date();
+			var day = date.getDate();
+			if(day<=9)
+				day = '0' + day;
+			var month = date.getMonth() + 1;
+			if(month<=9)
+				month = '0' + month;
+			var fullyear = date.getFullYear();
+			
+
+			if(dateType === 'filename')
+				return fullyear.toString() + month.toString() + day.toString() ;
+			else if (dateType === 'footer'){
+				var hours = date.getHours();
+				var minutes = date.getMinutes();
+				var seconds = date.getSeconds();
+				var year = date.getYear() - 100;
+				return month.toString() + "/" + day.toString() + "/" + year.toString() + " " + hours.toString()+ ":" + minutes.toString()+ ":" + seconds.toString()
+			}
+		}
+
+
 		// Custom Pdf Export for Extended View
-		const downloadExtendedPdf=(columns, equipments)=>{
+		const downloadPdf=(columns, equipments, viewType)=>{
 		
 			/* Create new jsPDF() object */
 			const doc = new jsPDF({orientation:"landscape"})
 			//Title can go here
-			doc.text("Title",20,10)
+			doc.setFontSize(12)
+			doc.text("Equipment Report",15,10)
+			doc.setFontSize(8)
+			doc.text("Generated on " + generateReportDate('footer'),240,200)
 
-			/* Remove extraneous columns using filter */
-			let printColumns = columns.filter(col => 
-				col.field !== "updated_by_full_name" && col.field !== "employee_id" && col.field !== "hra_last_name" && col.field !== "employee_last_name" && col.field !== "model"
-				)
-		
-			/* Rename column titles using map function */
-			printColumns.map(col => 
-					{
-						if(col.field =="acquisition_date")
-							col.title = "Date"
-						if(col.field =="acquisition_price")
-							col.title = "Price"
-						if(col.field == "item_type")
-							col.title = "Description"
-						if(col.field =="employee_id")
-							col.title = "EmployeeID"
-						if(col.field =="hra_num")
-							col.title = "HRA #"
-						if(col.field =="hra_first_name"){
-							col.field = "hraLetterName" 			// note field column is renamed for letter name
-							col.title = "HRA Name"}
-						if(col.field =="employee_first_name"){
-							col.field = "employeeFullName" 			// note field column is renamed for full employee name
-							col.title = "Employee"}
-						if(col.field =="manufacturer"){
-							col.field = "mfgrModel"					
-							col.title = "Manufacturer/Model"}
-						if(col.field =="bar_tag_num")
-							col.title = "Bar Tag"
-						if(col.field =="catalog_num")
-							col.title = "Catalog"
-						if(col.field =="serial_num")
-							col.title = "Serial"
+			if(viewType === 'extended'){
+
+				/* Remove extraneous columns using filter */
+				let printColumns = columns.filter(col => 
+					col.field !== "updated_by_full_name" && col.field !== "employee_id" && col.field !== "hra_last_name" && col.field !== "employee_last_name" && col.field !== "model"
+					)
+			
+				/* Rename column titles using map function */
+				printColumns.map(col => 
+						{
+							if(col.field =="acquisition_date")
+								col.title = "Date"
+							if(col.field =="acquisition_price")
+								col.title = "Price"
+							if(col.field == "item_type")
+								col.title = "Description"
+							if(col.field =="employee_id")
+								col.title = "EmployeeID"
+							if(col.field =="hra_num")
+								col.title = "HRA #"
+							if(col.field =="hra_first_name"){
+								col.field = "hraLetterName" 			// note field column is renamed for letter name
+								col.title = "HRA Name"}
+							if(col.field =="employee_first_name"){
+								col.field = "employeeFullName" 			// note field column is renamed for full employee name
+								col.title = "Employee"}
+							if(col.field =="manufacturer"){
+								col.field = "mfgrModel"					
+								col.title = "Manufacturer/Model"}
+							if(col.field =="bar_tag_num")
+								col.title = "Bar Tag"
+							if(col.field =="catalog_num")
+								col.title = "Catalog"
+							if(col.field =="serial_num")
+								col.title = "Serial"
+						}
+					);
+
+			
+				// Convert array of arrays to array of objects
+				var printEquipments = equipments.map(function(x) {
+					var hraLetter = x[2] ? x[2].charAt(0) + ". " : ""
+
+					var firstName = x[7] ? x[7] + " " : ""
+					var lastName = x[8] ? x[8] : ""
+					var employeeFullName = firstName + lastName
+
+					var mfgr = x[12] ? x[12] + " " : ""
+					var model = x[13] ? x[13] : ""
+					var mfgrModel = mfgr + model	
+
+					return { 
+						acquisition_date: x[0],
+						hra_num: x[1],
+						hraLetterName: hraLetter + x[3],
+						item_type: x[4],
+						bar_tag_num: x[5],
+						employee_id: x[6],
+						employeeFullName: employeeFullName,
+						acquisition_price:x[9],
+						catalog_num: x[10],
+						serial_num: x[11],
+						mfgrModel: mfgrModel,
+						condition: x[14],
+						updated_by_full_name: x[15]
+					}; 
+				});
+
+				/* Format data, such as dates or currency */
+				printEquipments.map(row => {
+					const dateOptions = {day:'2-digit',month:'2-digit',year:'2-digit'}
+					row.acquisition_date = new Date(row.acquisition_date).toLocaleDateString('en-EN',dateOptions)
+					row.acquisition_price = (Math.round(row.acquisition_price * 100) / 100).toFixed(2);
+				})
+
+				/* Generate autoTable with custom column widths */
+				doc.autoTable({
+					columns:printColumns.map(col=>({...col,dataKey:col.field})),
+					body:printEquipments,
+					styles: {fontSize: 7},
+					columnStyles:{        // Set fixed width for columns
+						0: {cellWidth: 14},
+						1: {cellWidth: 11},
+						2: {cellWidth: 24},
+						3: {cellWidth: 52},
+						4: {cellWidth: 13},
+						5: {cellWidth: 30},
+						6: {cellWidth: 15},
+						7: {cellWidth: 25},
+						8: {cellWidth: 35},
+						9: {cellWidth: 35},
+						10: {cellWidth: 15}
 					}
-				);
+				}
+				)
 
-		
-			// Convert array of arrays to array of objects
-			var printEquipments = equipments.map(function(x) {
-				var hraLetter = x[2] ? x[2].charAt(0) + ". " : ""
-
-				var firstName = x[7] ? x[7] + " " : ""
-				var lastName = x[8] ? x[8] : ""
-				var employeeFullName = firstName + lastName
-
-				var mfgr = x[12] ? x[12] + " " : ""
-				var model = x[13] ? x[13] : ""
-				var mfgrModel = mfgr + model	
-
-				return { 
-					acquisition_date: x[0],
-					hra_num: x[1],
-					hraLetterName: hraLetter + x[3],
-					item_type: x[4],
-					bar_tag_num: x[5],
-					employee_id: x[6],
-					employeeFullName: employeeFullName,
-					acquisition_price:x[9],
-					catalog_num: x[10],
-					serial_num: x[11],
-					mfgrModel: mfgrModel,
-					condition: x[14],
-					updated_by_full_name: x[15]
-				}; 
-			});
-
-			/* Format data, such as dates or currency */
-			printEquipments.map(row => {
-				const dateOptions = {day:'2-digit',month:'2-digit',year:'2-digit'}
-				row.acquisition_date = new Date(row.acquisition_date).toLocaleDateString('en-EN',dateOptions)
-				row.acquisition_price = (Math.round(row.acquisition_price * 100) / 100).toFixed(2);
-			})
-
+				/* Output .pdf file */
+				doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')  
+				
+			}
+		else if (viewType === 'normal'){
 			/* Generate autoTable with custom column widths */
 			doc.autoTable({
-				columns:printColumns.map(col=>({...col,dataKey:col.field})),
-				body:printEquipments,
-				styles: {fontSize: 7},
-				columnStyles:{        // Set fixed width for columns
-					0: {cellWidth: 14},
-					1: {cellWidth: 11},
-					2: {cellWidth: 24},
-					3: {cellWidth: 52},
-					4: {cellWidth: 13},
-					5: {cellWidth: 30},
-					6: {cellWidth: 15},
-					7: {cellWidth: 25},
-					8: {cellWidth: 35},
-					9: {cellWidth: 35},
-					10: {cellWidth: 15}
-				}
+				columns:columns.map(col=>({...col,dataKey:col.field})),
+				body:equipments,
+				styles: {fontSize: 9}
 			}
 			)
-		
+
 			/* Output .pdf file */
-			doc.save('myPdfFileName.pdf')  												
+			doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')
 		}
+		}
+
+
 
 		return(
 			<div style={{ maxWidth: '100%',paddingTop:'25px' }}>
@@ -617,10 +663,10 @@ export default function Equipment(props) {
 					exportMenu:[
 						{
 							label: 'Export PDF',
-							exportFunc: (columns, equipments) => switches.checkedView ? downloadExtendedPdf(columns, equipments): ExportPdf(columns,equipments,'myPdfFileName')
+							exportFunc: (columns, equipments) => switches.checkedView ? downloadPdf(columns, equipments, 'extended'): downloadPdf(columns,equipments,'normal')
 						  }, {
 							label: 'Export CSV',
-							exportFunc: (columns, equipments) => ExportCsv(columns, equipments, 'myCsvFileName')
+							exportFunc: (columns, equipments) => ExportCsv(columns, equipments, 'EquipmentReport' + generateReportDate('filename'))
 						  }
 					],
 					exportAllData: true,
