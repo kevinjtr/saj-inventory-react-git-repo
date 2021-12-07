@@ -39,14 +39,27 @@ const handleChange = (event, newValue) => {
   
     return (
       <>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        <Paper elevation={20} style={paperStyle}>
+=======
+      <Header/>
+>>>>>>> ec33c21925b6ad99bb312e54cc82f5437379eced
       <Row>
       <Col>
         <img src="usace-inventory.png" alt="image" height="290px" style={{ marginLeft: '300px', marginTop: '20px'}}/>
         <h3 style={{textDecorationLine: 'underline', marginTop: '60px', textAlign:'left', marginLeft: '300px'}}>System Updates and Availability </h3>
         <h4 style={{ marginTop: '60px', textAlign:'left', marginLeft: '300px' }}>System is current and no maintenance is scheduled at this time.</h4>
       </Col>
+<<<<<<< HEAD
       <Col style={{ alignSelf: 'center'}}>
        <Paper elevation={20} style={paperStyle}>
+=======
+      <Col style={{columnWidth: '30%', alignSelf: 'center'}}>
+       <Paper elevation={20} style={paperStyle }>
+>>>>>>> master
+>>>>>>> ec33c21925b6ad99bb312e54cc82f5437379eced
         <Tabs
           value={value}
           indicatorColor="primary"

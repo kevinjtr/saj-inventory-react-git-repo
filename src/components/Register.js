@@ -256,8 +256,159 @@ export default function Register(){
 	} 
 	
 	return (
+<<<<<<< HEAD
 		<div>
 		<form onKeyDown={onKeyDown} onSubmit={formik.handleSubmit}>
+=======
+<<<<<<< HEAD
+		<>
+		<Grid>
+			<form  onSubmit={formik.handleSubmit}>
+			<div className={classesGrid.paper}>
+				<div textAlign='center'>
+					<h2>Register</h2>
+				</div>
+				<br/>
+				<br/>
+				<Grid container spacing={3}>
+					<Grid item xs={4}>
+						<InputLabel>First Name</InputLabel>
+						<TextField
+							id="first-name"
+							key="first-name"
+							name="first_name"
+							value={formik.values.first_name}
+							onChange={formik.handleChange}
+							error={formik.touched.first_name && Boolean(formik.errors.first_name)}
+							helperText={formik.touched.first_name && formik.errors.first_name}
+							style={{ width: 300 }}/>
+					</Grid>
+					<Grid item xs={4}>
+						<InputLabel>Last Name</InputLabel>
+						<TextField
+							id="last-name"
+							key="last-name"
+							name="last_name"
+							value={formik.values.last_name}
+							onChange={formik.handleChange}
+							error={formik.touched.last_name && Boolean(formik.errors.last_name)}
+							helperText={formik.touched.last_name && formik.errors.last_name}
+							style={{ width: 300 }} />
+					</Grid>
+					<Grid item xs={4}>
+					<InputLabel>Email</InputLabel>
+					<TextField
+						id="email"
+						key="email"
+						name="email"
+						value={formik.values.email}
+						onChange={formik.handleChange}
+						error={formik.touched.email && Boolean(formik.errors.email)}
+						helperText={formik.touched.email && formik.errors.email}
+						style={{ width: 300 }} />
+				</Grid>
+				<Grid item xs={4}>
+					<InputLabel>Work Phone Number</InputLabel>
+					<TextField
+						id="work-phone-number"
+						key="work-phone-number"
+						name="work_phone"
+						value={formik.values.work_phone}
+						onChange={formik.handleChange}
+						error={formik.touched.work_phone && Boolean(formik.errors.work_phone)}
+						helperText={formik.touched.work_phone && formik.errors.work_phone}
+						style={{ width: 300 }} />
+				</Grid>
+				<Grid item xs={4}>
+					<InputLabel>Division</InputLabel>
+					<FormControl className={dropDownClasses.formControl}>
+					<Select
+						id="Division"
+						name="division"
+						value={divisionSelection}
+						onChange={divisionSelectionChange}
+						error={formik.touched.division && Boolean(formik.errors.division)}
+						helperText={formik.touched.division && formik.errors.division}
+						style={{ width: 300 }}
+					>	
+					{divisionDropDownItems}
+					</Select>			
+					</FormControl>
+				</Grid>
+				<Grid item xs={4}>
+					<InputLabel>District</InputLabel>
+					<FormControl className={dropDownClasses.formControl}>
+					<Select
+					  id="District"
+					  name="district"
+					  value={districtSelection}
+					  onChange={districtSelectionChange}
+					  error={formik.touched.district && Boolean(formik.errors.district)}
+					  helperText={formik.touched.district && formik.errors.district}
+					  style={{ width: 300 }}
+					>
+					{districtDropDownItems}
+					</Select>
+					</FormControl>
+				</Grid>
+				<Grid item xs={4}>
+					<InputLabel>Office Symbol</InputLabel>
+					<FormControl className={dropDownClasses.formControl}>
+					<Select
+					  id="Office_Symbol"
+					  name="office_symbol"
+					  value={officeSelection}
+					  onChange={divisionSelectionChange}
+					  error={formik.touched.office_symbol && Boolean(formik.errors.office_symbol)}
+					  helperText={formik.touched.office_symbol && formik.errors.office_symbol}
+					  style={{ width: 300 }}
+					>
+					{officeSymbolDropDownItems}
+					</Select>
+				</FormControl>
+				</Grid>
+				<Grid item xs={4}>
+					<InputLabel>User Type</InputLabel>
+					<FormControl className={dropDownClasses.formControl}>
+					<Select
+					  id="User_Type"
+					  name="user_type"
+					  value={userSelection}
+					  onChange={userSelectionChange}
+					  error={formik.touched.user_type && Boolean(formik.errors.user_type)}
+					  helperText={formik.touched.user_type && formik.errors.user_type}
+					  style={{ width: 300 }}
+					>
+					{userTypeDropDownItems}
+					</Select>
+				</FormControl>
+				<br/>
+				<br/>
+				<br/>
+				<Button type="submit"  variant="contained">Submit</Button>
+				</Grid>
+				<br/>
+
+				</Grid>
+			</div>
+
+				  {/* <FormControl component="fieldset">
+					<FormLabel component="legend">User Type</FormLabel>
+					<RadioGroup row aria-label="position" name="position" defaultValue={requested_action} onChange={(event)=>setSelectedForm( {...selectedForm,requested_action:event.target.value} )}>
+					  <FormControlLabel id="radio-HRA" key="radio-HRA" value="Hand Reciept Account Holder" control={<Radio color="primary" />} label="Hand Reciept Account Holder" />
+					  <FormControlLabel id="radio-" key="radio-" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
+					  <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
+					</RadioGroup>
+				  </FormControl> */}
+			</form>
+		</Grid>
+		</>
+	)
+=======
+		<div>
+		<form onKeyDown={onKeyDown} onSubmit={formik.handleSubmit}>
+		<Header/>
+>>>>>>> ec33c21925b6ad99bb312e54cc82f5437379eced
 		<h2>Register</h2>
 		<InputLabel>First Name</InputLabel>
 		<TextField
@@ -269,8 +420,11 @@ export default function Register(){
 			error={formik.touched.first_name && Boolean(formik.errors.first_name)}
 			helperText={formik.touched.first_name && formik.errors.first_name}
 		  />
+<<<<<<< HEAD
 		  <br/>
 		  <br/>
+=======
+>>>>>>> ec33c21925b6ad99bb312e54cc82f5437379eced
 		  <InputLabel>Last Name</InputLabel>
 		  <TextField
 			fullWidth
@@ -281,8 +435,11 @@ export default function Register(){
 			error={formik.touched.last_name && Boolean(formik.errors.last_name)}
 			helperText={formik.touched.last_name && formik.errors.last_name}
 		  />
+<<<<<<< HEAD
 		    <br/>
 			<br/>
+=======
+>>>>>>> ec33c21925b6ad99bb312e54cc82f5437379eced
 		  <InputLabel>Title</InputLabel>
 		  <TextField
 			fullWidth
@@ -361,7 +518,12 @@ export default function Register(){
 			>	
 			{userTypeDropDownItems}
 		  </Select>
+<<<<<<< HEAD
 		  {formik.values.user_type === 2 ? HRAFormField() : null}
+=======
+		  {/* {formik.values.user_type === 2 ? HRAFormField() : null} */}
+		  {HRAFormField()}
+>>>>>>> ec33c21925b6ad99bb312e54cc82f5437379eced
 		   <Button color="primary" variant="contained" fullWidth type="submit">
           	Submit
            </Button>
@@ -369,5 +531,9 @@ export default function Register(){
     </div>
 	
 	);
+<<<<<<< HEAD
+=======
+>>>>>>> master
+>>>>>>> ec33c21925b6ad99bb312e54cc82f5437379eced
 	
 }
