@@ -24,6 +24,7 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import PublishIcon from '@material-ui/icons/Publish';
 import SendIcon from '@material-ui/icons/Send';
 import AssignmentIcon from '@material-ui/icons/Assignment';
+import SearchIcon from '@material-ui/icons/Search';
 
 export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
@@ -33,7 +34,7 @@ export const tableIcons = {
     DetailPanel: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
     Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref}/>),
     Export: React.forwardRef((props, ref) => <SaveAlt {...props} ref={ref} style= { {color:"#1E90FF"} }/>),
-    Filter: React.forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+    Filter:React.forwardRef((props, ref) => <SearchIcon fontSize="small" color="disabled" {...props} ref={ref} />),
     FirstPage: React.forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
     LastPage: React.forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
     NextPage: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
