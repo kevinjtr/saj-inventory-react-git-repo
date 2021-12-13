@@ -1,5 +1,5 @@
 import React from 'react';
-import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel, FormGroup} from '@material-ui/core';
+import {TextField, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel, FormGroup,Button} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import 'date-fns';
 import SearchIcon from '@material-ui/icons/Search';
@@ -13,12 +13,11 @@ import {texFieldStyles, gridStyles, itemMenuStyles } from './styles/material-ui'
 import Switch from '@material-ui/core/Switch';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import { useHistory } from 'react-router-dom'
-import Header from './Header'
-import { FormatAlignLeft } from '@material-ui/icons';
 //import Box from '@mui/material/Box';
 import Typography from '@material-ui/core/Typography';
 
-import MaterialTable from '@material-table/core'
+
+import MaterialTable, {MTableToolbar} from '@material-table/core'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import { ExportCsv } from '@material-table/exporters';
@@ -59,6 +58,8 @@ export default function Equipment(props) {
 	width: undefined,
 	height: undefined,
 	});
+	// state variable for showing/hiding column filters in material table
+	const [showFilter,setShowFilter] = React.useState(false)
 	//const [urlUpdatedByTextFields,setUrlUpdatedByTextFields] = React.useState(false)
 	const [editable,setEditable] = React.useState(false)
 
@@ -659,6 +660,24 @@ export default function Equipment(props) {
 					toolbar: {
 					searchPlaceholder: "Filter Search"
 					}}}
+				// Add custom show/hide filter button to material table toolbar
+				components={{   
+					Toolbar: props =>(
+						<>
+						<div style={{display:"flex", flexDirection:"row", justifyContent:"flex-end"}}>
+						<div style={{display:"flex", flexDirection:"column", justifyContent:"space-around"}}>
+							{showFilter ? (
+								<Button variant="outlined" size="small" color="primary" onClick={()=>setShowFilter(false)}>Hide Filters</Button>
+							) : (
+								<Button variant="contained" size="small" color="primary" onClick={()=>setShowFilter(true)}><><SearchIcon/> Show Filters</> </Button>
+							)	
+							}	
+						</div>
+						<MTableToolbar {...props} />
+						</div>
+						</>
+					)
+				}}
 				options={{
 					exportMenu:[
 						{
@@ -669,6 +688,8 @@ export default function Equipment(props) {
 							exportFunc: (columns, equipments) => ExportCsv(columns, equipments, 'EquipmentReport' + generateReportDate('filename'))
 						  }
 					],
+					filtering:showFilter,
+					search:false,
 					exportAllData: true,
 					headerStyle: {
 					backgroundColor: "#969696",
