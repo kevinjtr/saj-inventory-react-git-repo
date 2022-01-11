@@ -43,7 +43,7 @@ import {tableIcons} from '../components/material-table/config'
 import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../components/tools/tools'
 import clsx from 'clsx'
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from '../components/config/constants'
+import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from '../components/config/constants'
 import {orderBy, findIndex, filter} from 'lodash'
 //Styles Import
 import {texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles } from '../components/styles/material-ui';
@@ -121,7 +121,7 @@ const RESET_FORM = {
   individual_ror_prop: "",
   expiration_date: null,
   expiration_date_print: "",
-  new_equipments: 0,
+  //new_equipments: 0,
   temporary_loan: 2,
   hra: {
     losing: RESET_HRA,
@@ -146,11 +146,11 @@ export default function Eng4900(props) {
   console.log(props)
 
   //Constants Declarations.
-  const {formData, create4900, setCreate4900, type, eng4900s, setEng4900s, tab, hras} = props
-  const formId = props.match ? props.match.params.id : null
+  const {formData, formId, action, create4900, setCreate4900, type, eng4900s, setEng4900s, tab, hras} = props
+  //const formId = props.match ? props.match.params.id : null
 
   //Variables Declarations.
-  let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
+  //let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
 
   //Styles Declarations.
   const classesTextField = texFieldStyles();
@@ -173,15 +173,19 @@ export default function Eng4900(props) {
   const [selectedForm, setSelectedForm] = React.useState(RESET_FORM);
   //const [hras, setHras] = React.useState(RESET_HRAS_HOOK);
   const [editEnabled, setEditEnabled] = React.useState(false);
-  const [condition, setCondition] = React.useState([]);
+  //const [condition, setCondition] = React.useState([]);
 
   const handleCheckBoxChange = (event) => {
     setSelectedForm({ ...selectedForm, temporary_loan: (event.target.checked ? 1 : 2) });
   };
 
-  const handleNewEquipmentsCheckBoxChange = (event) => {
-    setSelectedForm({ ...selectedForm, new_equipments: Number(event.target.checked), hra: { ...selectedForm.hra, losing: RESET_HRA, gaining: RESET_HRA, equipment_group: [] } })
+  const handleRequestedActionChange = (event) => {
+    setSelectedForm( {...selectedForm,hra: { ...selectedForm.hra, losing: RESET_HRA, gaining: RESET_HRA}, equipment_group: [], requested_action: event.target.value} )
   };
+
+  // const handleNewEquipmentsCheckBoxChange = (event) => {
+  //   //setSelectedForm({ ...selectedForm, hra: { ...selectedForm.hra, losing: RESET_HRA, gaining: RESET_HRA, equipment_group: [] } })
+  // };
 
   const handleFormSelect = async () => {
 
@@ -211,6 +215,7 @@ export default function Eng4900(props) {
     setLoading({...loading,init:true})
 
     if(action === "CREATE"){
+      console.log("create-in")
       setEditEnabled(true)
       setLoading({...loading,init:false})
       //getHrasAndEquipments()
@@ -218,6 +223,7 @@ export default function Eng4900(props) {
     }
 
     if((action === "EDIT" || action === "VIEW") && formId){
+      console.log("edit-view-in")
       await api.get(`${ENG4900}/${formId}`).then((response) => response.data).then(async (data) => {
 
         if(data.data.status != 1 && action === "EDIT"){
@@ -377,20 +383,19 @@ export default function Eng4900(props) {
               <Grid item xs={12}>
               <Paper className={classesGrid.paper}>
                 <p>{`Form - ${formId ? formId : 'New'}`}</p> 
-                {editEnabled ? (
+                {/* {editEnabled ? (
                   <FormControlLabel
-                    control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.new_equipments} onChange={handleNewEquipmentsCheckBoxChange} name="TemporaryLoan" />}
+                    control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.requested_action == } onChange={handleNewEquipmentsCheckBoxChange} name="TemporaryLoan" />}
                     label="New Equipment"/> 
                 ) : (
                   <FormControlLabel
-                    control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.new_equipments} name="TemporaryLoan" />}
+                    control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.requested_action == "Issue"} name="TemporaryLoan" />}
                     label="New Equipment"/> 
-                )}
-
+                )} */}
                 {editEnabled ? (
                   <FormControl error={!selectedForm.requested_action} component="fieldset">
                   <FormLabel component="legend">Requested Action:</FormLabel>
-                  <RadioGroup row aria-label="position" name="position" value={selectedForm.requested_action} onChange={(event)=>setSelectedForm( {...selectedForm,requested_action:event.target.value} )}>
+                  <RadioGroup row aria-label="position" name="position" value={selectedForm.requested_action} onChange={handleRequestedActionChange}>
                     <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
                     <FormControlLabel id="radio-transfer" key="radio-transfer" value="Transfer" control={<Radio color="primary" />} label="Transfer" />
                     <FormControlLabel id="radio-end" key="radio-end" value="Repair" control={<Radio color="primary" />} label="Repair" />
@@ -453,146 +458,150 @@ export default function Eng4900(props) {
                 )}
             </Paper>
           </Grid>
-          
-          <Grid item xs={6}>
-            <Paper className={classesGrid.paper}>
-              <p>LOSING HAND RECEIPT HOLDER</p>
-              <TextField
-                id="standard-helperText-f-name"
-                key="standard-helperText-f-name"
-                label="2a. First Name"
-                name={"losing_hra_first_name"}
-                disabled={selectedForm.new_equipments}
-                value={selectedForm.hra.losing.hra_first_name}
-                //onChange={handleFormChange}
-                InputProps={{
-                  readOnly: true,
-                }}
-                style={{ width: 200 }}/>
-              <TextField
-                id="standard-helperText-l-name"
-                key="standard-helperText-l-name"
-                label="2a. Last Name"
-                name={"losing_hra_last_name"}
-                disabled={selectedForm.new_equipments}
-                value={selectedForm.hra.losing.hra_last_name}
-                //onChange={handleFormChange}
-                InputProps={{
-                  readOnly: true,
-                }}
-                style={{ width: 200 }}/>
-              <TextField
-                id="standard-helperText-os-alias"
-                key="standard-helperText-os-alias"
-                label="b. Office Symbol"
-                name={"losing_hra_os_alias"}
-                disabled={selectedForm.new_equipments}
-                value={selectedForm.hra.losing.hra_office_symbol_alias}
-                //onChange={handleFormChange}
-                InputProps={{
-                  readOnly: true,
-                }}
-                style={{ width: 200 }}/>
-              {editEnabled ?
+          {selectedForm.requested_action ? (
+            <>
+              <Grid item xs={6}>
+              <Paper className={classesGrid.paper}>
+                <p>LOSING HAND RECEIPT HOLDER</p>
+                <TextField
+                  id="standard-helperText-f-name"
+                  key="standard-helperText-f-name"
+                  label="2a. First Name"
+                  name={"losing_hra_first_name"}
+                  disabled={selectedForm.requested_action == "Issue"}
+                  value={selectedForm.hra.losing.hra_first_name}
+                  //onChange={handleFormChange}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  style={{ width: 200 }}/>
+                <TextField
+                  id="standard-helperText-l-name"
+                  key="standard-helperText-l-name"
+                  label="2a. Last Name"
+                  name={"losing_hra_last_name"}
+                  disabled={selectedForm.requested_action == "Issue"}
+                  value={selectedForm.hra.losing.hra_last_name}
+                  //onChange={handleFormChange}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  style={{ width: 200 }}/>
+                <TextField
+                  id="standard-helperText-os-alias"
+                  key="standard-helperText-os-alias"
+                  label="b. Office Symbol"
+                  name={"losing_hra_os_alias"}
+                  disabled={selectedForm.requested_action == "Issue"}
+                  value={selectedForm.hra.losing.hra_office_symbol_alias}
+                  //onChange={handleFormChange}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  style={{ width: 200 }}/>
+                {editEnabled ?
+                  <Autocomplete
+                    style={{ display:'inline-block' }}
+                    id="combo-box-losing"
+                    options={hras.losing}
+                    loading={loading.hra}
+                    disabled={selectedForm.requested_action == "Issue"}
+                    getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
+                    value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
+                    style={{ width: 300 }}
+                    onChange={handleLosingHraChange}
+                    
+                    renderInput={(params) => <TextField {...( (!selectedForm.hra.losing.hra_num && !selectedForm.requested_action == "Issue") && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
+                  :
+                  <TextField
+                    id="standard-helperText-l-hra-num"
+                    key="standard-helperText-l-hra-num"
+                    label="c. Hand Receipt Account Number"
+                    disabled={selectedForm.requested_action == "Issue"}
+                    value={selectedForm.hra.losing.hra_num}
+                    style={{ width: 300 }}/>
+                  }
+                  <TextField
+                  id="standard-helperText-l-hra-pnum"
+                  key="standard-helperText-l-hra-pnum"
+                  label="d. Work Phone Number"
+                  name="losing_hra_work_phone"
+                  disabled={selectedForm.requested_action == "Issue"}
+                  value={selectedForm.hra.losing.hra_work_phone ? formatPhoneNumber(selectedForm.hra.losing.hra_work_phone) : ""}
+                  style={{ width: 200 }}/>
+              </Paper>
+            </Grid>
+            <Grid item xs={6}>
+              <Paper className={classesGrid.paper}>
+                <p>GAINING HAND RECEIPT HOLDER</p>
+                <TextField
+                  id="standard-helperText-g-first-name"
+                  key="standard-helperText-g-first-name"
+                  label="3a. Name"
+                  name={"gaining_hra_first_name"}
+                  value={selectedForm.hra.gaining.hra_first_name}
+                  //onChange={handleFormChange}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  style={{ width: 200 }}/>
+                <TextField
+                  id="standard-helperText-g-last-name"
+                  key="standard-helperText-g-last-name"
+                  label="3a. Name"
+                  name={"gaining_hra_last_name"}
+                  value={selectedForm.hra.gaining.hra_last_name}
+                  //onChange={handleFormChange}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  style={{ width: 200 }}/>
+                  <TextField
+                  id="standard-helperText-g-name"
+                  key="standard-helperText-g-name"
+                  label="b. Office Symbol"
+                  name={"gaining_hra_os_alias"}
+                  value={selectedForm.hra.gaining.hra_office_symbol_alias}
+                  //onChange={handleFormChange}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  style={{ width: 200 }}/>
+                {editEnabled ? 
                 <Autocomplete
-                  style={{ display:'inline-block' }}
-                  id="combo-box-losing"
-                  options={hras.losing}
-                  loading={loading.hra}
-                  disabled={selectedForm.new_equipments}
-                  getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
-                  value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
-                  style={{ width: 300 }}
-                  onChange={handleLosingHraChange}
-                  
-                  renderInput={(params) => <TextField {...( (!selectedForm.hra.losing.hra_num && !selectedForm.new_equipments) && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
+                    style={{ display:'inline-block' }}
+                    id="combo-box-gaining"
+                    options={selectedForm.requested_action == "Issue" ? hras.losing : hras.gaining}
+                    getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
+                    loading={loading.hra}
+                    getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
+                    value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
+                    style={{ width: 300 }}
+                    onChange={handleGainingHraChange}
+                    renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
+                  />
                 :
                 <TextField
-                  id="standard-helperText-l-hra-num"
-                  key="standard-helperText-l-hra-num"
+                  id="standard-helperText-g-hra-num"
+                  key="standard-helperText-g-hra-num"
                   label="c. Hand Receipt Account Number"
-                  disabled={selectedForm.new_equipments}
-                  value={selectedForm.hra.losing.hra_num}
+                  value={selectedForm.hra.gaining.hra_num}
                   style={{ width: 300 }}/>
                 }
+                
                 <TextField
-                id="standard-helperText-l-hra-pnum"
-                key="standard-helperText-l-hra-pnum"
-                label="d. Work Phone Number"
-                name="losing_hra_work_phone"
-                disabled={selectedForm.new_equipments}
-                value={selectedForm.hra.losing.hra_work_phone ? formatPhoneNumber(selectedForm.hra.losing.hra_work_phone) : ""}
-                style={{ width: 200 }}/>
-            </Paper>
-          </Grid>
-          <Grid item xs={6}>
-            <Paper className={classesGrid.paper}>
-              <p>GAINING HAND RECEIPT HOLDER</p>
-              <TextField
-                id="standard-helperText-g-first-name"
-                key="standard-helperText-g-first-name"
-                label="3a. Name"
-                name={"gaining_hra_first_name"}
-                value={selectedForm.hra.gaining.hra_first_name}
-                //onChange={handleFormChange}
-                InputProps={{
-                  readOnly: true,
-                }}
-                style={{ width: 200 }}/>
-              <TextField
-                id="standard-helperText-g-last-name"
-                key="standard-helperText-g-last-name"
-                label="3a. Name"
-                name={"gaining_hra_last_name"}
-                value={selectedForm.hra.gaining.hra_last_name}
-                //onChange={handleFormChange}
-                InputProps={{
-                  readOnly: true,
-                }}
-                style={{ width: 200 }}/>
-                <TextField
-                id="standard-helperText-g-name"
-                key="standard-helperText-g-name"
-                label="b. Office Symbol"
-                name={"gaining_hra_os_alias"}
-                value={selectedForm.hra.gaining.hra_office_symbol_alias}
-                //onChange={handleFormChange}
-                InputProps={{
-                  readOnly: true,
-                }}
-                style={{ width: 200 }}/>
-              {editEnabled ? 
-              <Autocomplete
-                  style={{ display:'inline-block' }}
-                  id="combo-box-gaining"
-                  options={selectedForm.new_equipments ? hras.losing : hras.gaining}
-                  getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
-                  loading={loading.hra}
-                  getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
-                  value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
-                  style={{ width: 300 }}
-                  onChange={handleGainingHraChange}
-                  renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
-                />
-              :
-              <TextField
-                id="standard-helperText-g-hra-num"
-                key="standard-helperText-g-hra-num"
-                label="c. Hand Receipt Account Number"
-                value={selectedForm.hra.gaining.hra_num}
-                style={{ width: 300 }}/>
-              }
-              
-              <TextField
-                id="standard-helperText-g-hra-pnum"
-                key="standard-helperText-g-hra-pnum"
-                label="d. Work Phone Number"
-                name="gaining_hra_work_phone"
-                value={selectedForm.hra.gaining.hra_work_phone ? formatPhoneNumber(selectedForm.hra.gaining.hra_work_phone ) : ""}
-                style={{ width: 200 }}/>
-            </Paper>
-          </Grid>
-          {selectedForm.new_equipments ? materialTableNewEquipment() : materialTableSelect()}
+                  id="standard-helperText-g-hra-pnum"
+                  key="standard-helperText-g-hra-pnum"
+                  label="d. Work Phone Number"
+                  name="gaining_hra_work_phone"
+                  value={selectedForm.hra.gaining.hra_work_phone ? formatPhoneNumber(selectedForm.hra.gaining.hra_work_phone ) : ""}
+                  style={{ width: 200 }}/>
+              </Paper>
+            </Grid>
+          </>
+          ) : null}    
+          
+          {selectedForm.requested_action == "Issue" ? materialTableNewEquipment() : materialTableSelect()}
           <Grid item xs={6}>
             <Paper className={classesGrid.paper}>
             {editEnabled ? 
@@ -1620,7 +1629,7 @@ export default function Eng4900(props) {
         }
         }}
 				title=""
-				editable={{
+        {...(editEnabled && {editable:{
 					// isEditable: rowData => rowData.name === 'a', // only name(a) rows would be editable
 					//isEditHidden: rowData => rowData.name === 'x',
 					// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
@@ -1695,28 +1704,34 @@ export default function Eng4900(props) {
 					// },
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-					onRowAdd: async (newData) => {
-					//let result = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
-						return (new Promise((resolve, reject) => {
-							setTimeout(() => {
-							//console.log(result.error)
-							// if(!result.error){
-							// 	setAlertUser(ALERT.SUCCESS)
-							// 	resetEquipments();
-								resolve();
-							// 	return;
-							// }
+          onRowAdd: newData =>
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              setSelectedForm({...selectedForm, equipment_group:[...selectedForm.equipment_group, newData]});
+              resolve();
+            }, 1000)
+          }),
+          onRowUpdate: (newData, oldData) =>
+          new Promise((resolve, reject) => {
+            setTimeout(() => {
+              const dataUpdate = [...selectedForm.equipment_group];
+              const index = oldData.tableData.id;
+              dataUpdate[index] = newData;
+              setSelectedForm({...selectedForm,equipment_group:[...dataUpdate]});
 
-							// if(result.hasOwnProperty('columnErrors')) {
-							// 	if(result.columnErrors.hasOwnProperty('rows')) {
-							// 		setAlertUser( result.columnErrors.rows[0] ? ALERT.FAIL( JSON.stringify(result.columnErrors.rows[0])) : ALERT.FAIL())
-							// 	}
-							// }
-							// 	//setEquipments([...equipments, newData]);
-							// 	reject();
-							}, 1000);
-						}))
-					},
+              resolve();
+            }, 1000)
+          }),
+          onRowDelete: (oldData) => new Promise((resolve, reject) => {
+              setTimeout(() => {
+                const dataDelete = [...selectedForm.equipment_group];
+                const index = oldData.tableData.id;
+                dataDelete.splice(index, 1);
+                setSelectedForm({...selectedForm,equipment_group:[...dataDelete]});
+
+                resolve();
+              }, 1000);
+          }),
 					// onRowUpdate: async (newData, oldData) => {
 					// let result = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
 					// let errorResult = result.columnErrors
@@ -1752,7 +1767,7 @@ export default function Eng4900(props) {
 					// 		}, 1000);
 					// 	})
 					// }
-				}}
+        }})}
 				/>
 		</div>
 		)
@@ -1768,7 +1783,7 @@ export default function Eng4900(props) {
 
     if(action === "CREATE"){
       console.log(selectedForm)
-      if(isDateValid(selectedForm.expiration_date) && selectedForm.requested_action && (selectedForm.hra.losing.hra_num || !selectedForm.new_equipments) && selectedForm.hra.gaining.hra_num && selectedForm.equipment_group.length > 0){
+      if(isDateValid(selectedForm.expiration_date) && selectedForm.requested_action && (selectedForm.hra.losing.hra_num || selectedForm.requested_action == "Issue") && selectedForm.hra.gaining.hra_num && selectedForm.equipment_group.length > 0){
         setSubmitButton({...submitButton,active:true})
         return;
       }

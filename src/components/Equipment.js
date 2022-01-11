@@ -682,10 +682,10 @@ export default function Equipment(props) {
 					exportMenu:[
 						{
 							label: 'Export PDF',
-							exportFunc: (columns, equipments) => switches.checkedView ? downloadPdf(columns, equipments, 'extended'): downloadPdf(columns,equipments,'normal')
+							exportFunc: (columns, [...equipments]) => switches.checkedView ? downloadPdf(columns, equipments, 'extended'): downloadPdf(columns,equipments,'normal')
 						  }, {
 							label: 'Export CSV',
-							exportFunc: (columns, equipments) => ExportCsv(columns, equipments, 'EquipmentReport' + generateReportDate('filename'))
+							exportFunc: (columns, [...equipments]) => ExportCsv(columns, equipments, 'EquipmentReport' + generateReportDate('filename'))
 						  }
 					],
 					filtering:showFilter,

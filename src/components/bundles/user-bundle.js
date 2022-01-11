@@ -1,11 +1,14 @@
 import api from '../../axios/Api';
+import jwt_decode from "jwt-decode";
 
 export default {
   name: "user",
   getReducer: () => {
 
     const initialState = {
-        user: 'user',
+        user: '',
+        'x-access-token-expiration':'',
+        auth:'',
     }
 
     return (state = initialState, { type, payload }) => {
@@ -35,14 +38,19 @@ export default {
       api
         .get(`login`)
         .then((response) => {
+          //const decoded_token = jwt_decode(response.data.token)
+          //console.log(decoded_token)
+         // const {iat} = decoded_token
           localStorage.setItem('auth', response.data.token);
           localStorage.setItem('user', response.data.user);
-          localStorage.setItem('x-access-token-expiration', Date.now() + 15 * 60 * 1000);//15min token duration.
+          localStorage.setItem('x-access-token-expiration', response.data.exp);//15min token duration.
           
           dispatch({
             type: "SET_USER_LVL",
             payload: {
                 user: response.data.user ? response.data.user : 'user',
+                auth: response.data.token,
+                'x-access-token-expiration': response.data.exp
             }
           });  
         })
@@ -87,7 +95,8 @@ export default {
     return state.user.user;
   },
   selectIsLoggedIn: state => {
-    return localStorage.getItem('auth') && localStorage.getItem('user') && localStorage.getItem('x-access-token-expiration') > Date.now();
+    console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
+    return localStorage.getItem('auth') && localStorage.getItem('user') && localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000);
   },
   init: store => {
     // export function isAuthenticated() {
@@ -96,10 +105,10 @@ export default {
     
     // action creators are bound and attached to store as methods
     //if(false){
-      if(!store.selectIsLoggedIn()) {
-        store.doLogin()
-        return
-      }
+      // if(!store.selectIsLoggedIn()) {
+      //   store.doLogin()
+      //   return
+      // }
 
       store.doSetUserFromLocalStorage()
 

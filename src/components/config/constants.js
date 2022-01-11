@@ -304,4 +304,5 @@ export const registrationDropDownItems = {
         "label": "Regular Employee"
       }
     ]
-  }
+}
+export const condition = [{"id":1,"alias":"A","name":"Serviceable"},{"id":2,"alias":"F","name":"Repairable"},{"id":3,"alias":"S","name":"Unserviceable"}]

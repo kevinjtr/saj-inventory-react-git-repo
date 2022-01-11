@@ -9,14 +9,14 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBarHeader from './AppBarHeader';
 
-export default function App(props) {
-	
+function App(props) {
+	const {user} = props
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const theme = React.useMemo(
 	() =>
 	createMuiTheme({
 		palette: {
-			type: prefersDarkMode ? 'dark' : 'light',
+			type: !prefersDarkMode ? 'dark' : 'light',
 		},
 		}),
 	[prefersDarkMode],
@@ -41,11 +41,11 @@ export default function App(props) {
 		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
 			<AppBarHeader/>
 			<Switch>
-			{/* <Route
+			<Route
 				exact
 				path={'/'}
-				render={() => <Redirect to={'/equipment'} />}
-			/> */}
+				render={() => user ? <Redirect to={'/Home'}/> : <Redirect to={'/login'}/>}
+			/>
 				{routes}
 			<Route render={() => <Redirect to={'/404'} />}/>
 			</Switch>
@@ -59,7 +59,6 @@ export default function App(props) {
 	// );
 }
 
-// export default connect(
-// 	'selectUser',
-// 	'doFetchUserLevel',
-// 	App);
+export default connect(
+	'selectUser',
+	App);

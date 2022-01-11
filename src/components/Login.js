@@ -5,8 +5,9 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
+import { connect } from 'redux-bundler-react';
 
-const Login = ({ handleChange }) => {
+const Login = ({ handleChange, doLogin, isLoggedIn, history }) => {
 
     const paperStyle = { padding: 20, height: '73vh', width: 300, margin: "0 auto" }
     const avatarStyle = { backgroundColor: '#1bbd7e' }
@@ -20,14 +21,33 @@ const Login = ({ handleChange }) => {
         username: Yup.string().email('please enter valid email').required("Required"),
         password: Yup.string().required("Required")
     })
-    const onSubmit = (values, props) => {
-        console.log(values)
-        setTimeout(() => {
-            props.resetForm()
-            props.setSubmitting(false)
-        }, 2000)
+    // const onSubmit = async (values, props) => {
+    //     //console.log(values)
+    //     await doLogin()
+    //     setTimeout(() => {
+    //         //props.resetForm()
+    //         if(isLoggedIn)
+    //         history.push('/home')
+    //         props.setSubmitting(false)
+    //     }, 1000)
+    // }
 
+    const onSubmit = (values, props) => {
+        //console.log(values)
+        doLogin().then(()=>{
+
+            setTimeout(() => {
+                //props.resetForm()
+                if(isLoggedIn)
+                    history.push('/home')
+    
+                props.setSubmitting(false)
+            }, 2000)
+        }).error(()=>{
+            props.setSubmitting(false)
+        })
     }
+
     return (
         <Grid>
             <Paper style={paperStyle}>
@@ -35,10 +55,10 @@ const Login = ({ handleChange }) => {
                     <Avatar style={avatarStyle}><LockOutlinedIcon /></Avatar>
                     <h2>Sign In</h2>
                 </Grid>
-                <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
+                <Formik initialValues={initialValues} onSubmit={onSubmit}>
                     {(props) => (
                         <Form>
-                            <Field as={TextField} label='Username' name="username"
+                            {/* <Field as={TextField} label='Username' name="username"
                                 placeholder='Enter username' fullWidth required
                                 helperText={<ErrorMessage name="username" />}
                             />
@@ -53,14 +73,14 @@ const Login = ({ handleChange }) => {
                                     />
                                 }
                                 label="Remember me"
-                            />
+                            /> */}
                             <Button type='submit' color='primary' variant="contained" disabled={props.isSubmitting}
-                                style={btnstyle} fullWidth>{props.isSubmitting ? "Loading" : "Sign in"}</Button>
+                                style={btnstyle} fullWidth>{props.isSubmitting ? "Loading" : "CAC Sign in"}</Button>
 
                         </Form>
                     )}
                 </Formik>
-                <Typography >
+                {/* <Typography >
                     <Link href="#" >
                         Forgot password ?
                 </Link>
@@ -69,10 +89,13 @@ const Login = ({ handleChange }) => {
                      <Link href="#" onClick={() => handleChange("event", 1)} >
                         Sign Up
                 </Link>
-                </Typography>
+                </Typography> */}
             </Paper>
         </Grid>
     )
 }
 
-export default Login
+ export default connect(
+    'selectIsLoggedIn',
+    'doLogin',
+	Login);

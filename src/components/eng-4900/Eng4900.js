@@ -55,7 +55,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from '../config/constants'
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
-import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles } from '../styles/material-ui';
+import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from '../styles/material-ui';
 import Header from '../Header'
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -71,6 +71,10 @@ import Badge from '@material-ui/core/Badge';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Switch from '@material-ui/core/Switch';
 import Typography from 'material-ui/styles/typography';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -89,8 +93,14 @@ export default function Eng4900(props) {
   const formId = props.match.params.id
   const search = getQueryStringParams(props.location.search)
   const PAGE_URL = `/${ENG4900}`
-  const statusOptions = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY',3:'LOSING HRA SIGNATURE REQUIRED', 4:'COMPLETED LOSING HRA SIGNATURE',  5:'GAINING HRA SIGNATURE REQUIRED', 6:'COMPLETED GAINING HRA SIGNATURE',
-  7:'SENT TO PBO', 8:'SENT TO LOGISTICS'}
+  const FORM_STATUS = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY',3:'LOSING HRA SIGNATURE REQUIRED', 4:'COMPLETED LOSING HRA SIGNATURE',  5:'GAINING HRA SIGNATURE REQUIRED', 6:'COMPLETED GAINING HRA SIGNATURE',
+  7:'SENT TO PBO', 8:'SENT TO LOGISTICS',9:'COMPLETED'}
+  const stsOptions = {
+    single: [{id:1,label:'FORM CREATED'}, {id:2,label:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY'},{id:5,label:'GAINING HRA SIGNATURE REQUIRED'}, {id:6,label:'COMPLETED GAINING HRA SIGNATURE'},
+              {id:7,label:'SENT TO PBO'}, {id:8,label:'SENT TO LOGISTICS'},{id:9,label:'COMPLETED'}],
+    double: [{id:1,label:'FORM CREATED'}, {id:2,label:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY'}, {id:3,label:'LOSING HRA SIGNATURE REQUIRED'}, {id:4,label:'COMPLETED LOSING HRA SIGNATURE'}, {id:5,label:'GAINING HRA SIGNATURE REQUIRED'}, {id:6,label:'COMPLETED GAINING HRA SIGNATURE'},
+              {id:7,label:'SENT TO PBO'}, {id:8,label:'SENT TO LOGISTICS'},{id:9,label:'COMPLETED'}],
+  }
   const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_forms', label:'Completed Forms'}}
   const SEARCH_FIELD_RESET = {
     id: {label: 'ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -132,6 +142,7 @@ export default function Eng4900(props) {
   });
   const classDialog = dialogStyles();
   const tabClasses = tabStyles();
+  const StepClasses = stepStyles();
 
   //Hooks Declarations.
   const [uploadPdf, setUploadPdf] = React.useState({
@@ -141,7 +152,8 @@ export default function Eng4900(props) {
   const [create4900, setCreate4900] = React.useState({
     show: false,
     formData: null,
-    formId:null
+    formId: null,
+    action: 'CREATE'
   })
   const [searchFields, setSearchFields] = React.useState({
     0: SEARCH_FIELD_RESET,
@@ -487,13 +499,14 @@ export default function Eng4900(props) {
 
   const searchForm = (tab) => {
 
+    console.log('tab',tab)
       return(
         <div style={{textAlign: 'center'}}>
         <Grid container justify="center">
           <Grid>
             <FormGroup>
               <FormControlLabel
-                control={<Switch color="primary" id={`switch-${tab}`} id={`switch-${tab}`} checked={switches[tab].showSearch} onChange={handleSwitchesChange} name={`showSearch-${tab}`} />}
+                control={<Switch color="primary" id={`switch-${tab}`} key={`switch-${tab}`} checked={switches[tab].showSearch} onChange={handleSwitchesChange} name={`showSearch-${tab}`} />}
                 label={switches[tab].showSearch ? "Hide Search Fields" : "Show Search Fields"}
               />
             </FormGroup>
@@ -502,7 +515,7 @@ export default function Eng4900(props) {
         {switches[tab].showSearch ?
         <>
         <FormControl component="fieldset">
-          <RadioGroup row aria-label="position" name={tab} id={`radio-group-${tab}`} id={`radio-group-${tab}`} value={searchView[tab]} onChange={handleSearchView}>
+          <RadioGroup row aria-label="position" name={tab} id={`radio-group-${tab}`} key={`radio-group-${tab}`} value={searchView[tab]} onChange={handleSearchView}>
           <FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
           <FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Search" />
           </RadioGroup>
@@ -513,7 +526,7 @@ export default function Eng4900(props) {
         <form className={classesTextField.root} noValidate autoComplete="off">
           <div className={classesGrid.options}>
           <Grid container spacing={2}>
-            {searchTextFieldsGridItems(tab)}
+            {/* {searchTextFieldsGridItems(tab)} */}
             {searchButtonGridItem(tab)}
           </Grid>
           </div>
@@ -562,21 +575,40 @@ export default function Eng4900(props) {
   const materialTableMyForms = (tab_idx) => {
 
     let columns = [
-      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
-      lookup: statusOptions, validate: (rowData) => {		
+      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+      editComponent: ({ value, onChange, rowData }) => (
+        <Select
+           value={value}
+           onChange={(event) => {
+              onChange(event.target.value);
+           }}
+        >
+           {(rowData.requested_action == "Issue" ? stsOptions.single : stsOptions.double).map((option) => (
+            <MenuItem key={option.id} value={option.id}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      ),
+       validate: (rowData) => {		
         if(rowData.hasOwnProperty('status')){
           if(rowData.status) {
             if(rowData.hasOwnProperty('tableData')){
-              if(rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status){
+
+              if(rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
+                return ({ isValid: false, helperText: 'Please select a different Status.' })
+
+              //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
                 return true
-              }
             }
           }
         }
         
         return ({ isValid: false, helperText: 'Status selection is incorrect.' })
   
-      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      }},
+      //Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
       { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
@@ -608,6 +640,32 @@ export default function Eng4900(props) {
             }
             }}
             title=""
+            detailPanel={[{
+              tooltip: 'Show Status',
+              render: rowData => {
+                return (
+                  // <div
+                  //   style={{
+                  //     fontSize: 100,
+                  //     textAlign: 'center',
+                  //     color: 'white',
+                  //     backgroundColor: '#43A047',
+                  //   }}
+                  // >
+                  //   {rowData.status}
+                  // </div>
+                  <div className={StepClasses.root}>
+                  <Stepper activeStep={rowData.status - 1} alternativeLabel>
+                    {steps.map((label) => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </div>
+                )
+              },
+            }]}
             actions={[
               // {
               //   icon: 'View',
@@ -639,7 +697,7 @@ export default function Eng4900(props) {
                   icon: form4900Icons.Assignment,
                   tooltip: 'Edit Form',
                   onClick: (event, rowData) => alert(JSON.stringify(rowData)),//EditFormById(rowData.form_id), // + rowData.name),
-                  disabled: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
+                  hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
                 }),
               rowData => ({
                 icon: form4900Icons.Pdf,
@@ -740,8 +798,22 @@ export default function Eng4900(props) {
   const materialTableHraForms = (tab_idx) => {
 
     let columns = [
-      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
-      lookup: statusOptions, validate: (rowData) => {		
+      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+      editComponent: ({ value, onChange, rowData }) => (
+        <Select
+           value={value}
+           onChange={(event) => {
+              onChange(event.target.value);
+           }}
+        >
+           {(rowData.requested_action == "Issue" ? stsOptions.single : stsOptions.double).map((option) => (
+            <MenuItem key={option.id} value={option.id}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      ),
+       validate: (rowData) => {		
         if(rowData.hasOwnProperty('status')){
           if(rowData.status) {
             if(rowData.hasOwnProperty('tableData')){
@@ -757,7 +829,8 @@ export default function Eng4900(props) {
         
         return ({ isValid: false, helperText: 'Status selection is incorrect.' })
   
-      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      }},//Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
       { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
@@ -789,6 +862,32 @@ export default function Eng4900(props) {
             }
             }}
             title=""
+            detailPanel={[{
+              tooltip: 'Show Status',
+              render: rowData => {
+                return (
+                  // <div
+                  //   style={{
+                  //     fontSize: 100,
+                  //     textAlign: 'center',
+                  //     color: 'white',
+                  //     backgroundColor: '#43A047',
+                  //   }}
+                  // >
+                  //   {rowData.status}
+                  // </div>
+                  <div className={StepClasses.root}>
+                  <Stepper activeStep={rowData.status - 1} alternativeLabel>
+                    {steps.map((label) => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </div>
+                )
+              },
+            }]}
             actions={[
               // {
               //   icon: 'View',
@@ -807,20 +906,21 @@ export default function Eng4900(props) {
                 ),
                 tooltip: "Create New Form",
                 position: "toolbar",
-                onClick: () => setCreate4900({...create4900,show:true}),
+                onClick: () => setCreate4900({...create4900, show:true, action:'CREATE', formId:null}),
                 hidden: hras[tab_idx].losing.length == 0
               },
               rowData => ({
                 icon: form4900Icons.View,
                 tooltip: 'View Form',
-                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
+                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
                   icon: form4900Icons.Assignment,
                   tooltip: 'Edit Form',
-                  onClick: (event, rowData) => alert(JSON.stringify(rowData)),//EditFormById(rowData.form_id), // + rowData.name),
-                  disabled: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
+                  onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
+                  hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
                 }),
               rowData => ({
                 icon: form4900Icons.Pdf,
@@ -844,7 +944,7 @@ export default function Eng4900(props) {
               //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
               //isEditHidden: rowData => rowData.name === 'x',
               // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
-              isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
+              //isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
               // onBulkUpdate: async(changes) => {
               //   const errorResult = await handleTableUpdate({changes:changes})
               //     return(new Promise((resolve, reject) => {
@@ -914,10 +1014,10 @@ export default function Eng4900(props) {
                     }  
     
                     reject();
-                  }, 1000);
-                }
-              ))
-                }
+                    }, 1000);
+                  }
+                ))
+              }
             }})}
           />
     </div>
@@ -927,21 +1027,9 @@ export default function Eng4900(props) {
   const materialTableSignForms = (tab_idx) => {
     
     let columns = [
-      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
-      lookup: statusOptions, validate: (rowData) => {		
-        if(rowData.hasOwnProperty('status')){
-          if(rowData.status) {
-            if(rowData.hasOwnProperty('tableData')){
-              if(rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status){
-                return true
-              }
-            }
-          }
-        }
-        
-        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
-  
-      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Status', field: 'status', editable:'never', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>},
+      //Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
       { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
@@ -973,6 +1061,32 @@ export default function Eng4900(props) {
             }
             }}
             title=""
+            detailPanel={[{
+              tooltip: 'Show Status',
+              render: rowData => {
+                return (
+                  // <div
+                  //   style={{
+                  //     fontSize: 100,
+                  //     textAlign: 'center',
+                  //     color: 'white',
+                  //     backgroundColor: '#43A047',
+                  //   }}
+                  // >
+                  //   {rowData.status}
+                  // </div>
+                  <div className={StepClasses.root}>
+                  <Stepper activeStep={rowData.status - 1} alternativeLabel>
+                    {steps.map((label) => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </div>
+                )
+              },
+            }]}
             actions={[
               rowData => ({
                 icon: form4900Icons.View,
@@ -1080,8 +1194,8 @@ export default function Eng4900(props) {
   const materialTableCompletedForms = (tab_idx) => {
     
     let columns = [
-      { title: 'Status', field: 'status', editable:'never', type:'numeric', render: rowData => <a value={rowData.status} >{statusOptions[rowData.status]}</a>,
-      lookup: statusOptions, validate: (rowData) => {		
+      { title: 'Status', field: 'status', editable:'never', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>
+      ,validate: (rowData) => {		
         if(rowData.hasOwnProperty('status')){
           if(rowData.status) {
             if(rowData.hasOwnProperty('tableData')){
@@ -1094,7 +1208,8 @@ export default function Eng4900(props) {
         
         return ({ isValid: false, helperText: 'Status selection is incorrect.' })
   
-      }},//Object.fromEntries(Object.entries(statusOptions).filter(([key, value]) => Number(key) >= rowData.status))},
+      }},//Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
+      { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
       { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
@@ -1124,6 +1239,32 @@ export default function Eng4900(props) {
             }
             }}
             title=""
+            detailPanel={[{
+              tooltip: 'Show Status',
+              render: rowData => {
+                return (
+                  // <div
+                  //   style={{
+                  //     fontSize: 100,
+                  //     textAlign: 'center',
+                  //     color: 'white',
+                  //     backgroundColor: '#43A047',
+                  //   }}
+                  // >
+                  //   {rowData.status}
+                  // </div>
+                  <div className={StepClasses.root}>
+                  <Stepper activeStep={rowData.status - 1} alternativeLabel>
+                    {steps.map((label) => (
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
+                      </Step>
+                    ))}
+                  </Stepper>
+                </div>
+                )
+              },
+            }]}
             actions={[
               rowData => ({
                 icon: form4900Icons.View,
@@ -1264,8 +1405,8 @@ export default function Eng4900(props) {
   //Render return.
   return (
     <>
-    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={statusOptions}/> : null}
-    {create4900.show ? <Eng4900Form action={"CREATE"} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
+    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={FORM_STATUS}/> : null}
+    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <div>
       {displayTop()}
       {/* {cards.length > 0 && viewSearch == "card-view"  && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
