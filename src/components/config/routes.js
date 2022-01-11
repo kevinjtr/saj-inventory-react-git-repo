@@ -21,10 +21,11 @@ import api from '../../axios/Api';
 import Register from '../Register';
 import SignInOut from '../../containers/SignInOut'
 import {Tab} from '@mui/material'
+import LogoutConfirm from '../LogoutConfirm';
 
 const routes_config = [
-    {path:'/',label:'Home',component:Home,tab:true,level:'user'},
-    {path:'/signin',label:'SignIn/Out',component:SignInOut,tab:true,level:'user'},
+    {path:'/',label:'Home',component:SignInOut,tab:true,level:'user'},
+    {path:'/signin',label:'SignIn/Out',component:SignInOut,tab:false,level:'user'},
     {path:'/equipment',label:'Equipment',component:Equipment,tab:true,level:'user'},
     {path:'/annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin'},
     {path:'/annualinventory/:id',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin'},
@@ -40,6 +41,7 @@ const routes_config = [
     // {path:'/problemreportviewer',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'user'},
     {path:'/changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin'},
     {path:'/404',label:'Not Found',component:NotFound,tab:false},
+    {path:'/Logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user'}
     //{path:'/register',label:'Register',component:Register,tab:true,level:'user'},
 ]
 
@@ -64,7 +66,7 @@ export const routes_tabs = (lvl) => {
     if(lvl == 'admin'){
         return (
             route_with_tabs.map(route => 
-                <Tab label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"29px", minHeight:"29px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(152, 152, 195,0.2)',textDecoration:'none',color:'black'}}}/>
+                <Tab label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
                 /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
                     <Link to={route.path} className="nav-link">
                         {route.label}
@@ -78,7 +80,7 @@ export const routes_tabs = (lvl) => {
     console.log(route_with_tabs_user_lvl,lvl)
     return (
         route_with_tabs_user_lvl.map(route => 
-                <Tab label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"29px", minHeight:"29px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(152, 152, 195,0.2)',textDecoration:'none',color:'black'}}}/>
+                <Tab label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
             /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
                 <Link to={route.path} className="nav-link">
                     {route.label}
