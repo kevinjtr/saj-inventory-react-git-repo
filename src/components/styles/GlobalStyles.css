@@ -1,16 +1,16 @@
 html{
-    background-color: rgb(12, 13, 20)!important;
+    /*background-color: rgb(12, 13, 20)!important;*/
     height:100%!important;
 }
 body{
     background-color: rgb(253,253,253)!important;
-    max-width:1000px!important;
+    /* max-width:1000px!important; */
     min-width:500px!important;
     margin-left: auto!important;
     margin-right: auto!important;
     min-height: 100%!important;
-    border-left: 1px solid rgba(255, 217, 0, 0.4)!important;
-    border-right: 1px solid rgba(255, 217, 0, 0.4)!important;
+    /* border-left: 1px solid rgba(255, 217, 0, 0.4)!important;
+    border-right: 1px solid rgba(255, 217, 0, 0.4)!important; */
     overflow-y: scroll;
 }
 

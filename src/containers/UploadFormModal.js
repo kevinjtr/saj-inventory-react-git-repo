@@ -21,6 +21,7 @@ import {useDropzone} from 'react-dropzone';
 import api from '../axios/Api';
 import DeleteIcon from '@material-ui/icons/Delete';
 import debounce from 'lodash/debounce'
+import { connect } from 'redux-bundler-react';
 
 const baseStyle = {
     flex: 1,
@@ -127,10 +128,9 @@ const plusButtonStyles = makeStyles((theme) => ({
     },
   }));
 
-export default function UploadFormModal(props) {
+function UploadFormModal({type, uploadPdf, setUploadPdf, statusOptions, userToken}) {
 
     //constant declarations
-    const {type, uploadPdf, setUploadPdf, statusOptions} = props;
 
     //hooks declaration.
     const [modal,setModal] = React.useState({
@@ -161,11 +161,13 @@ export default function UploadFormModal(props) {
             formData.append('file', files[0]);
 
             await api.post('eng4900/upload', formData, {
+                headers: {auth:userToken},
                 onUploadProgress: (ProgressEvent) => {
                     let progress = Math.round(
                     ProgressEvent.loaded / ProgressEvent.total * 100);
                     setProgress(progress);
-                }}).then((response) => {
+                }})
+                .then((response) => {
                 console.log(response)
             }).catch(function (error) {
                 //do nothing.
@@ -372,3 +374,7 @@ export default function UploadFormModal(props) {
 
     return(null)
 }
+
+export default connect(
+	'selectUserToken',
+	UploadFormModal);  

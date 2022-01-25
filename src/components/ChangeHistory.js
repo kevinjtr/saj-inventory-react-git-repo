@@ -14,6 +14,8 @@ import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, 
 import {Alert} from '@material-ui/lab';
 import {ALERT} from './tools/tools';
 import Header from './Header'
+import {updateChangeHistoryByViewApi, getChangeHistoryByViewApi} from '../publics/actions/change-history-api'
+import { connect } from 'redux-bundler-react';
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
 const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
@@ -23,7 +25,7 @@ const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
 // 	RESET: {success:{active:false,text:''},error:{active:false,text:''}},
 // }
 
-export default function ChangeHistory(props) {
+function ChangeHistory({history, userToken}) {
 	//Hooks Declarations
 	const [loading, setLoading] = React.useState(false);
 	const [searchView, setSearchView] = React.useState(DEFAULT_CHANGES_VIEW);
@@ -37,7 +39,9 @@ export default function ChangeHistory(props) {
 	//setLoading(true)
 	let result = {error:true}
 
-		await api.post(`${searchView}/update`,{params:rowData}).then((response) => response.data).then((data) => {
+	await updateChangeHistoryByViewApi[searchView](rowData, userToken)
+		// await api.post(`${searchView}/update`,{params:rowData})
+		.then((response) => response.data).then((data) => {
 			result = data
 			//setLoading(false)
 			//setEquipments(data.status != 400 ? data.data : data)
@@ -229,7 +233,9 @@ export default function ChangeHistory(props) {
 
 	const resetTable = () => {
 		setLoading(true)
-		api.get(`change-history/${searchView}`).then((response) => response.data).then((data) => {
+		getChangeHistoryByViewApi(searchView, userToken)
+		//api.get(`change-history/${searchView}`)
+		.then((response) => response.data).then((data) => {
 		console.log(data)
 		setLoading(false)
 		setChangeHistoryData(data.status != 400 ? data.data : data)
@@ -249,7 +255,9 @@ export default function ChangeHistory(props) {
 	React.useEffect(() => {
 	console.log('change-history call')
 	setLoading(true)
-		api.get(`change-history/${searchView}`).then((response) => response.data).then((data) => {
+	getChangeHistoryByViewApi(searchView, userToken)
+		//api.get(`change-history/${searchView}`)
+		.then((response) => response.data).then((data) => {
 		console.log(data)
 		setLoading(false)
 		setChangeHistoryData(data.status != 400 ? data.data : data)
@@ -279,10 +287,10 @@ export default function ChangeHistory(props) {
 	}, [searchView]);
 
 	React.useEffect(() => {
-		if(props.history.action == "PUSH"){
+		if(history.action == "PUSH"){
 			reloadPage()
 		}
-	}, [props.history.action]);
+	}, [history.action]);
 
 	//Render return.
 	return (
@@ -309,3 +317,7 @@ export default function ChangeHistory(props) {
 	</>
 	);
 }
+
+export default connect(
+	'selectUserToken',
+	ChangeHistory);  

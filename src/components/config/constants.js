@@ -1,7 +1,12 @@
 export const SEARCH_FIELD_OPTIONS = [{value:"includes",label:"Includes"}, {value:"excludes",label:"Excludes"}, {value:"equals",label:"Equals"}, {value:"notEquals",label:"Not Equals"}]
 export const SEARCH_FIELD_BLANKS = [{value:"displayBlanks",label:"Display Blanks"}, {value:"hideBlanks",label:"Hide Blanks"}, {value:"onlyBlanks",label:"Only Blanks"}]
 export const EQUIPMENT = 'equipment'
+export const EMPLOYEE = 'employee'
+export const HRA = 'hra'
 export const ENG4900 = 'eng4900'
+export const ANNUAL_INVENTORY = 'annualinventory'
+export const REGISTER = 'register'
+export const CHANGE_HISTORY = 'change-history'
 export const AVD_SEARCH = 'adv'
 export const BASIC_SEARCH = 'std'
 export const OPTIONS_DEFAULT = 'includes'
@@ -306,3 +311,13 @@ export const registrationDropDownItems = {
     ]
 }
 export const condition = [{"id":1,"alias":"A","name":"Serviceable"},{"id":2,"alias":"F","name":"Repairable"},{"id":3,"alias":"S","name":"Unserviceable"}]
+export const officesSymbol = [{"id":14,"alias":"CD-C","name":"CD-C"},{"id":15,"alias":"CD-G","name":"CD-G"},{"id":16,"alias":"CD-GC","name":"CD-GC"},{"id":17,"alias":"CD-GS","name":"CD-GS"},
+{"id":18,"alias":"CD-GT","name":"CD-GT"},{"id":19,"alias":"CD-M","name":"CD-M"},{"id":20,"alias":"CD-N","name":"CD-N"},{"id":21,"alias":"CD-NC","name":"CD-NC"},{"id":22,"alias":"CD-NM","name":"CD-NM"},
+{"id":23,"alias":"CD-Q","name":"CD-Q"},{"id":24,"alias":"CD-W","name":"CD-W"},{"id":25,"alias":"CD-WC","name":"CD-WC"},{"id":26,"alias":"CD-WH","name":"CD-WH"},{"id":27,"alias":"CD-WM","name":"CD-WM"},
+{"id":28,"alias":"CD-WW","name":"CD-WW"},{"id":29,"alias":"DS-CD","name":"DS-CD"},{"id":30,"alias":"EN-D","name":"EN-D"},{"id":31,"alias":"EN-DG","name":"EN-DG"},{"id":32,"alias":"EN-DL","name":"EN-DL"},
+{"id":33,"alias":"EN-DM","name":"EN-DM"},{"id":34,"alias":"EN-G","name":"EN-G"},{"id":35,"alias":"EN-T","name":"EN-T"},{"id":36,"alias":"EN-TA","name":"EN-TA"},{"id":37,"alias":"EN-TC","name":"EN-TC"},
+{"id":38,"alias":"PD-D","name":"PD-D"},{"id":39,"alias":"PD-E","name":"PD-E"},{"id":40,"alias":"PD-EC","name":"PD-EC"},{"id":41,"alias":"PD-ES","name":"PD-ES"},{"id":42,"alias":"PD-PN","name":"PD-PN"},
+{"id":43,"alias":"PD-PW","name":"PD-PW"},{"id":44,"alias":"PM-PD","name":"PM-PD"},{"id":45,"alias":"PD-PD","name":"PD-PD"},{"id":46,"alias":"EN-DS","name":"EN-DS"},{"id":47,"alias":"EN-DW","name":"EN-DW"},
+{"id":48,"alias":"PD-P","name":"PD-P"},{"id":49,"alias":"EN-DC","name":"EN-DC"},{"id":50,"alias":"EN-DP","name":"EN-DP"}]
+
+export const lockOptions = {2:'UNLOCK',1:'LOCK'}

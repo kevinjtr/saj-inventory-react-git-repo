@@ -14,11 +14,14 @@ import {findIndex} from 'lodash'
 import Header from './Header'
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import {updateAnnualInventoryApi, destroyAnnualInventoryApi, addAnnualInventoryApi, getAllAnnualInventorysApi, annualInventorySearchApi} from '../publics/actions/annual-inventory-api'
+import {getAllHrasApi} from '../publics/actions/hra-api'
+import {lockOptions} from './config/constants'
+import { connect } from 'redux-bundler-react';
 
-const lockOptions = {2:'UNLOCK',1:'LOCK'}
-
-export default function AnnualInventory(props) {
+function AnnualInventory({history, userToken}) {
 	const PAGE_URL = '/annualinventory'
+
 	//Hooks Declarations
 	const [initialize, setInitialize] = React.useState(true);
 	const [loading, setLoading] = React.useState(false);
@@ -33,7 +36,7 @@ export default function AnnualInventory(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-		await api.post(`annualinventory/update`,{params:rowData}).then((response) => response.data).then((data) => {
+		await updateAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -69,7 +72,7 @@ export default function AnnualInventory(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-		await api.post(`annualinventory/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+		await destroyAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -107,7 +110,7 @@ export default function AnnualInventory(props) {
 	//setLoading(true)
 	let resultReturn = {errorFound:false}
 
-	await api.post(`annualinventory/add`,{params:rowData}).then((response) => response.data).then((data) => {
+	await addAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -354,7 +357,7 @@ export default function AnnualInventory(props) {
 					icon: tableIcons.View,
 					tooltip: 'View',
 					onClick: async (event, rowData) => {
-						props.history.replace(`${PAGE_URL}/${rowData.id}`)
+						history.replace(`${PAGE_URL}/${rowData.id}`)
 						//await handleTableUpdate({changes:{'0':{newData:{...rowData,update:true}}}});
 						//resetAnnualInventory();
 					}
@@ -443,7 +446,7 @@ export default function AnnualInventory(props) {
 
 	const resetAnnualInventory = () => {
 		setLoading(true)
-	api.get(`annualinventory`).then((response) => response.data).then((data) => {
+	getAllAnnualInventorysApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		setAnnualInv(data.status == 200 ? data.data : data)
 		setLoading(false)
@@ -473,7 +476,7 @@ export default function AnnualInventory(props) {
 	React.useEffect(() => {
 	console.log('AnnualInvCall')
 	setInitialize(true)
-		api.get(`annualinventory`).then((response) => response.data).then((data) => {
+		getAllAnnualInventorysApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		setAnnualInv(data.status == 200 ? data.data : data)
 
@@ -495,7 +498,7 @@ export default function AnnualInventory(props) {
 		});
 
 	console.log('HRACall')
-	api.get(`hra`,{}).then((response) => response.data).then((data) => {
+	getAllHrasApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data.data)
 		// setLoading(false)
 		setHras(data.status != 400 ? data.data : data)
@@ -529,3 +532,7 @@ export default function AnnualInventory(props) {
 	</>
 	);
 }
+
+export default connect(
+	'selectUserToken',
+	AnnualInventory);  

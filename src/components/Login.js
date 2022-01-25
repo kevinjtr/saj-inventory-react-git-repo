@@ -7,7 +7,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { connect } from 'redux-bundler-react';
 
-const Login = ({ handleChange, doLogin, isLoggedIn, history }) => {
+const Login = ({ handleChange, doLogin, userIsLoggedIn, history }) => {
 
     const paperStyle = { padding: 20, height: '73vh', width: 300, margin: "0 auto" }
     const avatarStyle = { backgroundColor: '#1bbd7e' }
@@ -26,7 +26,7 @@ const Login = ({ handleChange, doLogin, isLoggedIn, history }) => {
     //     await doLogin()
     //     setTimeout(() => {
     //         //props.resetForm()
-    //         if(isLoggedIn)
+    //         if(userIsLoggedIn)
     //         history.push('/home')
     //         props.setSubmitting(false)
     //     }, 1000)
@@ -38,7 +38,7 @@ const Login = ({ handleChange, doLogin, isLoggedIn, history }) => {
 
             setTimeout(() => {
                 //props.resetForm()
-                if(isLoggedIn)
+                if(userIsLoggedIn)
                     history.push('/home')
     
                 props.setSubmitting(false)
@@ -96,6 +96,6 @@ const Login = ({ handleChange, doLogin, isLoggedIn, history }) => {
 }
 
  export default connect(
-    'selectIsLoggedIn',
+    'selectUserIsLoggedIn',
     'doLogin',
 	Login);

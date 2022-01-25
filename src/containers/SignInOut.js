@@ -7,8 +7,14 @@ import ReportProblem from '../components/ReportProblem';
 import PersonIcon from '@mui/icons-material/Person';
 import { CircularProgress } from '@material-ui/core';
 import CheckIcon from '@mui/icons-material/Check';
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+import { connect } from 'redux-bundler-react';
+import { Grid, Paper, Avatar, TextField, Button, Typography, Link } from '@material-ui/core'
+import {alertStyles} from '../components/styles/material-ui'
+import Alert from '@material-ui/lab/Alert';
 
-const SignInOut = () => {
+const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure}) => {
 
     // State for the configuration of tabs
     const [selectedTab, setSelectedTab] = useState(0); // 0 = no tabs, 1 = tabs with sign in tab selected, 2 = tabs with new account tab selected
@@ -25,6 +31,11 @@ const SignInOut = () => {
     })
 
     const [loading,setLoading] = useState(false)
+
+    //const [isSubmitting,setIsSubmitting] = useState(false)
+
+    //Styling
+    const alertClass = alertStyles();
 
     const handleLoading = () => {
         setLoading(true);
@@ -63,11 +74,39 @@ const SignInOut = () => {
         setSelectedTab(2)
     }
 
+    const onSmartcardButtonSubmit = async (e) => {
+        //setIsSubmitting(true)
+        e.preventDefault()
+        doLogin()
+
+        //setTimeout(() => {setIsSubmitting(false) }, 10000)
+        
+        // .then(()=>{
+
+  
+        // }).error(()=>{
+        //     props.setSubmitting(false)
+        // })
+    }
+
+
+
+    // const handleButtonClick = (e) => {
+    //     e.preventDefault()
+    // }
+    
+
     // Since problems state is updated asynchronously, apply useEffect to set local storage
     useEffect(() => { localStorage.setItem('Problems', JSON.stringify(problems)) }, [problems])
 
     return (
+        <div className='page-container' style={{display:'flex',justifyContent:'center'}}>
         <div className="login-container">
+       {userLoginFailure ? <div className={alertClass.root}>
+            <Alert variant="outlined" severity="error">
+                Login Failed
+            </Alert>
+        </div> : null}
             <div className="login-right-column">
                 <div className="login-panel">
 
@@ -85,11 +124,42 @@ const SignInOut = () => {
                     {selectedTab <= 1 &&
                         <>
                         {/* Check if user is logged in */}
-                        {localUser.level === '' ? (
+                        {/* {localUser.level === '' ? ( */}
                             <div className="login-buttons-container">
+                            
                                 {selectedTab === 0 && <div className="login-title">Sign in</div>}
+
                                 {/* Smart Card Button */}
-                                <div className="login-cac-button" onClick={handleSignInClick}>
+
+                                                {/* <Formik onSubmit={onSmartcardButtonSubmit}>
+                                                    { */}
+                                                        <div className="login-cac-button-container">
+                                                            <Button onClick={onSmartcardButtonSubmit} className="login-cac-button" type='submit' color='primary' variant="contained" disabled={userIsLoggingIn} fullWidth>
+                                                            <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                                                                <div style={{height:'34px',width:'26px',border:'2px solid white',borderRadius:'3px',alignSelf:'center',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+                                                                    <PersonIcon style={{fontSize:'14px'}}/>
+                                                                    <div style={{width:'18px',height:'13px',display:'flex',justifyContent:'space-between',alignSelf:'center'}}>
+                                                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
+                                                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
+                                                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className='login-cac-button-text-container'>
+                                                                {userIsLoggingIn ? (
+                                                                    <div className='login-cac-button-text-row1'>Loading</div>
+                                                                ) : (
+                                                                    <>
+                                                                    <div className='login-cac-button-text-row1'>Smart Card</div>
+                                                                    <div className='login-cac-button-text-row2'>Access</div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                            </Button>
+                                                        </div>
+                                                    {/* }
+                                                </Formik> */}
+                                {/* <div className="login-cac-button" onClick={handleSignInClick}>
                                     <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
                                         <div style={{height:'34px',width:'26px',border:'2px solid white',borderRadius:'3px',alignSelf:'center',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
                                             <PersonIcon style={{fontSize:'14px'}}/>
@@ -104,7 +174,7 @@ const SignInOut = () => {
                                         <div className='login-cac-button-text-row1'>Smart Card</div>
                                         <div className='login-cac-button-text-row2'>Access</div>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {/* New Account Button */}
                                 <div className="login-register-button" onClick={handleNewAccountClick}>New Account</div>
@@ -119,7 +189,9 @@ const SignInOut = () => {
                                 {showProblemForm === 2 && <><div className="report-problem-button"></div><div style={{textAlign:'center'}}><div className="report-problem-message"><CheckIcon className="report-problem-message-icon" />&nbsp;&nbsp;Problem has been reported</div></div></>}
 
                             </div>   
-                        ) : (     
+                        {/*) 
+                        
+                         : (     
                             <div className="user-info-container">
                                 <table style={{ fontSize: '11px', marginLeft: '25px', marginBottom: '25px' }}>
                                     <thead><th>Local Storage User Info</th></thead>
@@ -131,7 +203,8 @@ const SignInOut = () => {
                                     </tbody>
                                 </table>
                             </div>
-                        )}
+                        )
+                        } */}
 
                         </>
                     }
@@ -150,6 +223,7 @@ const SignInOut = () => {
                     <div className="login-alert-item">System is current and no maintenance is scheduled at this time.</div>
                 </div>
             </div>
+        </div>
         </div>
     )
 }
@@ -179,4 +253,10 @@ const RegistrationMessage = ({registrationResult}) =>{
     }
 }
 
-export default SignInOut
+export default connect(
+    'selectUserIsLoggedIn',
+    'doLogin',
+    'doFetchLogin',
+    'selectUserIsLoggingIn',
+    'selectUserLoginFailure',
+	SignInOut);

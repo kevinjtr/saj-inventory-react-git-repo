@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import api from '../axios/Api';
 import TextField from '@material-ui/core/TextField';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { green,grey } from '@material-ui/core/colors';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -55,6 +55,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Header from '../components/Header'
 import AdornedButton from './AdornedButton'
 import debounce from 'lodash/debounce'
+import {addEng4900Api, getEng4900ByIdApi} from '../publics/actions/eng4900-api'
+import {getHraFormApi} from '../publics/actions/hra-api'
+import { connect } from 'redux-bundler-react';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -130,8 +133,6 @@ const RESET_FORM = {
   equipment_group: []
 }
 
-//const RESET_HRAS_HOOK = {losing:[],gaining:[]}
-
 function formatPhoneNumber(phoneNumberString) {
   var cleaned = ('' + phoneNumberString).replace(/\D/g, '');
   var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
@@ -141,16 +142,10 @@ function formatPhoneNumber(phoneNumberString) {
   return null;
 }
 
-
-export default function Eng4900(props) {
-  console.log(props)
-
+function Eng4900Form({formData, formId, action, create4900, setCreate4900, type, eng4900s, setEng4900s, tab, hras, userToken}) {
   //Constants Declarations.
-  const {formData, formId, action, create4900, setCreate4900, type, eng4900s, setEng4900s, tab, hras} = props
-  //const formId = props.match ? props.match.params.id : null
 
   //Variables Declarations.
-  //let action = props.location ? (props.location.pathname.split('/')[2].toUpperCase()) : (props.action ? props.action.toUpperCase() : "VIEW")
 
   //Styles Declarations.
   const classesTextField = texFieldStyles();
@@ -224,7 +219,9 @@ export default function Eng4900(props) {
 
     if((action === "EDIT" || action === "VIEW") && formId){
       console.log("edit-view-in")
-      await api.get(`${ENG4900}/${formId}`).then((response) => response.data).then(async (data) => {
+      await getEng4900ByIdApi(formId, userToken)
+      //await api.get(`${ENG4900}/${formId}`)
+      .then((response) => response.data).then(async (data) => {
 
         if(data.data.status != 1 && action === "EDIT"){
           setEditEnabled(false)
@@ -322,7 +319,9 @@ export default function Eng4900(props) {
 
   const submitForm = debounce(async () => {
     if(editEnabled){
-      api.post(`${ENG4900}/add`,{form:selectedForm,type:action}).then((response) => response.data).then((data) => {
+      //api.post(`${ENG4900}/add`,{form:selectedForm,type:action})
+      addEng4900Api({form:selectedForm,type:action},userToken)
+      .then((response) => response.data).then((data) => {
         if(!data.error){
           setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
 
@@ -1883,3 +1882,7 @@ export default function Eng4900(props) {
   //   </>
   // );
 }
+
+export default connect(
+  'selectUserToken',
+  Eng4900Form);

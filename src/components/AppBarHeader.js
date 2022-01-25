@@ -11,7 +11,7 @@ import "./styles/AppBarStyles.css";
 import LogoutButton from './LogoutButton';
 
 function Header(props) {
-	const {user} = props;
+	const {user, userIsLoggedIn, doLogout} = props;
 
 	// Temporary Authentication from Local Storage
 	const[localUser,setLocalUser] = useState(() => {
@@ -19,13 +19,13 @@ function Header(props) {
 		return storedUser || {firstName:'',lastName:'',level:''}
 	})
 
-	const handleLogout = () => {
-		setLocalUser({firstName:'',lastName:'',level:''})
-	}
+	// const handleLogout = () => {
+	// 	setLocalUser({firstName:'',lastName:'',level:''})
+	// }
 
 	return (
 		<Route path="/" render={(history) => (
-			<AppBar className="appbar-main" position="static" elevation="0">
+			<AppBar className="appbar-main" position="static" elevation={0}>
 				<Grid container sx={{justifyContent:"space-between",flexWrap:"nowrap",paddingLeft:"15px",paddingRight:"10px",position:"relative",height:"45px",borderBottom:"1px solid rgba(0,0,0,0.25)",boxShadow:"inset 0 -1px 4px -2px gray",}}>
 				<img src={getsitelogo} style={{position:"absolute",transform:"rotate(-15deg)",opacity:"0.15",height:"125px",width:"auto",top:"-20px",left:"50px",zIndex:"1"}} />
 				
@@ -51,19 +51,20 @@ function Header(props) {
 					
                 </Grid>}
 				</Grid>
-				{localUser.level != '' && <Box className="appbar-tabs">
+				{userIsLoggedIn && 
+				<Box className="appbar-tabs">
 					<Tabs 
 						variant="scrollable"
-						scrollsButtons="auto"
+						scrollButtons="auto"
 						allowScrollButtonsMobile
 						value={history.location.pathname}
 						TabIndicatorProps={{sx:{backgroundColor:"rgba(230,0,0,0.75)", height:"0.10rem"}}}
-						textColor="rgb(0,0,0)"
-						style={{height:"25px;", minHeight:"25px",color:"black"}}
+						textColor="inherit"
+						style={{height:"25px", minHeight:"25px",color:"black"}}
 					>
 						{routes_tabs(user)}
 					</Tabs>
-					<LogoutButton handleLogout={handleLogout}/>
+					<LogoutButton/>
 				</Box>}
 			</AppBar>
 			)} 
@@ -74,4 +75,6 @@ function Header(props) {
 
 export default connect(
 	'selectUser',
+	'selectUserIsLoggedIn',
+	'doLogout',
 	Header);

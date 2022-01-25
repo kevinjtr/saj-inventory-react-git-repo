@@ -16,14 +16,16 @@ import {Autocomplete, Alert} from '@material-ui/lab';
 import findIndex from 'lodash/findIndex'
 import Header from './Header'
 import {ALERT} from './tools/tools'
+import {getAnnualInventoryByIdApi} from '../publics/actions/annual-inventory-api'
+import { connect } from 'redux-bundler-react';
 
-export default function ViewAnnualInventory(props) {
+function ViewAnnualInventory({match, userToken}) {
 
-    const invId = props.match.params.id
+    const invId = match.params.id
 
 	//Hooks Declarations.
 	const [loading, setLoading] = React.useState(false);
-	const [officesSymbol, setOfficesSymbol] = React.useState([]);
+	//const [officesSymbol, setOfficesSymbol] = React.useState([]);
 	const [annualInventories, setAnnualInventories] = React.useState([]);
 	const [editable,setEditable] = React.useState(false)
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
@@ -59,7 +61,7 @@ export default function ViewAnnualInventory(props) {
 		
 
 	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+	//  const searchResult = await tempgetEquipmentByHraID(hraId)
 	//  if(!searchResult.error){
 	//   equipments = searchResult.data
 	//  }
@@ -95,7 +97,7 @@ export default function ViewAnnualInventory(props) {
 		
 
 	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+	//  const searchResult = await tempgetEquipmentByHraID(hraId)
 	//  if(!searchResult.error){
 	//   equipments = searchResult.data
 	//  }
@@ -131,7 +133,7 @@ export default function ViewAnnualInventory(props) {
 		
 
 	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
+	//  const searchResult = await tempgetEquipmentByHraID(hraId)
 	//  if(!searchResult.error){
 	//   equipments = searchResult.data
 	//  }
@@ -141,7 +143,8 @@ export default function ViewAnnualInventory(props) {
 
 	//Functions Declarations.
 	const resetAnnualInventories = () => {
-	api.get(`annualinventory/${invId}`).then((response) => response.data).then((data) => {
+	getAnnualInventoryByIdApi(invId, userToken)
+	.then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
 		setAnnualInventories(data.status === 200 ? data.data : data)
@@ -237,7 +240,8 @@ export default function ViewAnnualInventory(props) {
 
         if(invId){
             setLoading(true)
-            api.get(`annualinventory/${invId}`).then((response) => response.data).then((data) => {
+			getAnnualInventoryByIdApi(invId, userToken)
+			.then((response) => response.data).then((data) => {
             console.log(data)
             setLoading(false)
             setAnnualInventories(data.status == 200 ? data.data : data)
@@ -277,3 +281,7 @@ export default function ViewAnnualInventory(props) {
 		</>
 	);
   }
+
+  export default connect(
+	'selectUserToken',
+	ViewAnnualInventory);  

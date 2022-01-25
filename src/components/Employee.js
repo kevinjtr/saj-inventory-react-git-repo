@@ -16,12 +16,15 @@ import {Autocomplete, Alert} from '@material-ui/lab';
 import findIndex from 'lodash/findIndex'
 import Header from './Header'
 import {ALERT} from './tools/tools'
+import {updateEmployeeApi,destroyEmployeeApi,addEmployeeApi,getAllEmployeesApi} from '../publics/actions/employee-api'
+import { connect } from 'redux-bundler-react';
+import {officesSymbol} from './config/constants'
 
-export default function Employee(props) {
+function Employee({history, userToken}) {
 
 	//Hooks Declarations.
 	const [loading, setLoading] = React.useState(false);
-	const [officesSymbol, setOfficesSymbol] = React.useState([]);
+	//const [officesSymbol, setOfficesSymbol] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
 	const [editable,setEditable] = React.useState(false)
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
@@ -32,7 +35,7 @@ export default function Employee(props) {
 		let errorFound = true
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-		await api.post(`employee/update`,{params:rowData}).then((response) => response.data).then((data) => {
+		await updateEmployeeApi(rowData, userToken).then((response) => response.data).then((data) => {
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
 		const error = data.hasOwnProperty('error') ? data.error : false
@@ -70,7 +73,7 @@ export default function Employee(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-		await api.post(`employee/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+		await destroyEmployeeApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -108,7 +111,7 @@ export default function Employee(props) {
 	//setLoading(true)
 	let errorFound = true
 
-	await api.post(`employee/add`,{params:rowData}).then((response) => response.data).then((data) => {
+	await addEmployeeApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -149,7 +152,7 @@ export default function Employee(props) {
 	//Functions Declarations.
 	const resetEmployees = () => {
 		setLoading(true)
-	api.get(`employee`).then((response) => response.data).then((data) => {
+		getAllEmployeesApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
 		setEmployees(data.status === 200 ? data.data : data)
@@ -356,7 +359,7 @@ export default function Employee(props) {
 	React.useEffect(() => {
 	console.log('employeeCall')
 	setLoading(true)
-		api.get(`employee`).then((response) => response.data).then((data) => {
+		getAllEmployeesApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		setLoading(false)
 		setEmployees(data.status == 200 ? data.data : data)
@@ -376,30 +379,30 @@ export default function Employee(props) {
 		setEmployees([])
 		});
 
-		console.log('officeSymbolCall')
-	api.get(`officesymbol`,{}).then((response) => response.data).then((data) => {
-		console.log(data)
-		// setLoading(false)
-		setOfficesSymbol(data.status === 200 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		//setLoading(false)
-		setOfficesSymbol([])
-		});
+	// 	console.log('officeSymbolCall')
+	// api.get(`officesymbol`,{}).then((response) => response.data).then((data) => {
+	// 	console.log(data)
+	// 	// setLoading(false)
+	// 	setOfficesSymbol(data.status === 200 ? data.data : data)
+	// 	// this.setState({
+	// 	// 	equipments: data.status != 400 ? data.values: data,
+	// 	// 	setequipment: data
+	// 	// });
+	// 	//console.log(this.state.equipment.values);
+	// 	// console.log(this.props, this.state);
+	// 	}).catch(function (error) {
+	// 	//setLoading(false)
+	// 	setOfficesSymbol([])
+	// 	});
 
 
 	}, []);//will run once.
 
 	React.useEffect(() => {
-		if(props.history.action == "PUSH"){
+		if(history.action == "PUSH"){
 			reloadPage()
 		}
-	}, [props.history.action]);
+	}, [history.action]);
 
 	//Render return.
 	return (
@@ -418,7 +421,9 @@ export default function Employee(props) {
 	);
   }
 
-
+export default connect(
+'selectUserToken',
+Employee);
 
 
 
@@ -534,8 +539,8 @@ export default function Employee(props) {
 
 // 	handlerSubmit = async () => {
 // 		//window.event.preventDefault();
-// 		//await this.props.dispatch(addProduct(this.state));
-// 		//this.props.history.push('/products');
+// 		//await this.dispatch(addProduct(this.state));
+// 		//this.history.push('/products');
 // 	};
 
 // 	render() {

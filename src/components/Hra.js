@@ -13,8 +13,11 @@ import {Autocomplete, Alert} from '@material-ui/lab';
 import findIndex from 'lodash/findIndex'
 import Header from './Header'
 import {ALERT} from './tools/tools'
+import {updateHraApi,destroyHraApi,addHraApi,getAllHrasApi, hraSearchApi} from '../publics/actions/hra-api'
+import {getAllEmployeesApi} from '../publics/actions/employee-api'
+import { connect } from 'redux-bundler-react';
 
-export default function Hra(props) {
+function Hra({history, userToken}) {
 	//Hooks Declarations
 	const [loading, setLoading] = React.useState(false);
 	const [employees, setEmployees] = React.useState([]);
@@ -28,7 +31,7 @@ export default function Hra(props) {
 		//setLoading(true)
 		let errorFound = true
 
-		await api.post(`hra/update`,{params:rowData}).then((response) => response.data).then((data) => {
+		await updateHraApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -66,7 +69,7 @@ export default function Hra(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-		await api.post(`hra/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+		await destroyHraApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 
 		const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -103,7 +106,7 @@ export default function Hra(props) {
 		//console.log('equipmentbyHraCall')
 		//setLoading(true)
 		let errorFound = true
-		await api.post(`hra/add`,{params:rowData}).then((response) => response.data).then((data) => {
+		await addHraApi(rowData, userToken).then((response) => response.data).then((data) => {
 			console.log(data)
 
 			const status = data.hasOwnProperty('status') ? data.status == 400 : false
@@ -309,7 +312,7 @@ export default function Hra(props) {
 
 	const resetHras = () => {
 		setLoading(true)
-	api.get(`hra`).then((response) => response.data).then((data) => {
+	getAllHrasApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
 		setHras(data.status == 200 ? data.data : data)
@@ -351,7 +354,7 @@ export default function Hra(props) {
 	React.useEffect(() => {
 	console.log('HraCall')
 	setLoading(true)
-		api.get(`hra`).then((response) => response.data).then((data) => {
+		getAllHrasApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		setLoading(false)
 		setHras(data.status == 200 ? data.data : data)
@@ -371,7 +374,7 @@ export default function Hra(props) {
 		});
 
 	console.log('employeeCall')
-	api.get(`employee`,{}).then((response) => response.data).then((data) => {
+	getAllEmployeesApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data.data)
 		// setLoading(false)
 		setEmployees(data.status != 400 ? data.data : data)
@@ -390,10 +393,10 @@ export default function Hra(props) {
 	}, []);//will run once.
 
 	React.useEffect(() => {
-		if(props.history.action == "PUSH"){
+		if(history.action == "PUSH"){
 			reloadPage()
 		}
-	}, [props.history.action]);
+	}, [history.action]);
 
 	//Render return.
 	return (
@@ -412,6 +415,10 @@ export default function Hra(props) {
 		</>
 	);
 }
+
+export default connect(
+	'selectUserToken',
+	Hra);
 
 
 

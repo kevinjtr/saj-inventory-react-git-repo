@@ -2,11 +2,11 @@
 // import API from "../axios/Api";
 // import Header from "./Header";Box
 //import { connect } from 'react-redux';
-//import { addProduct } from '../../publics/actions/eng4900s';
+//import { addProduct } from '../publics/actions/eng4900s';
 //import Eng4900Form from './forms/eng4900';
 //-start-//
 import React from 'react';
-import api from '../../axios/Api';
+import api from '../axios/Api';
 import TextField from '@material-ui/core/TextField';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
@@ -16,7 +16,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import './eng4900.css';
-//import Card4900 from '../Card4900';
+//import Card4900 from 'Card4900';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -47,23 +47,22 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormLabel from '@material-ui/core/FormLabel';
 import MaterialTable, { MTableToolbar } from 'material-table'
-import {form4900Icons} from '../material-table/config'
+import {form4900Icons} from './material-table/config'
 //import Pdf from './eng4900-26-2.pdf';
-import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../tools/tools'
+import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from './tools/tools'
 import clsx from 'clsx'
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from '../config/constants'
+import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
-import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from '../styles/material-ui';
-import Header from '../Header'
+import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from './styles/material-ui';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
-import UploadFormModal from '../../containers/UploadFormModal'
-import Eng4900Form from '../../containers/Eng4900Form'
+import UploadFormModal from '../containers/UploadFormModal'
+import Eng4900Form from '../containers/Eng4900Form'
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -74,8 +73,8 @@ import Typography from 'material-ui/styles/typography';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import {updateEng4900Api, destroyEng4900Api, addEng4900Api, getAllEng4900sApi, eng4900SearchApi, getEng4900PdfByIdApi} from '../../publics/actions/eng4900-api'
-import {getHraFormApi} from '../../publics/actions/hra-api'
+import {updateEng4900Api, destroyEng4900Api, addEng4900Api, getAllEng4900sApi, eng4900SearchApi, getEng4900PdfByIdApi} from '../publics/actions/eng4900-api'
+import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
 
 const dialogStyles = makeStyles(theme => ({

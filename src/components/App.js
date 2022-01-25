@@ -4,18 +4,20 @@ import {routes} from './config/routes'
 import axios from 'axios';
 import { connect } from 'redux-bundler-react';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { createMuiTheme } from '@material-ui/core/styles/';
+import { createTheme } from '@material-ui/core/styles/';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBarHeader from './AppBarHeader';
 import "./styles/GlobalStyles.css";
+import LogoutConfirm from './LogoutConfirm'
 
 function App(props) {
-	const {user} = props
+	const {userIsLoggedIn, userIsLoggedOut} = props
+	console.log(props)
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const theme = React.useMemo(
 	() =>
-	createMuiTheme({
+	createTheme({
 		palette: {
 			type: !prefersDarkMode ? 'dark' : 'light',
 		},
@@ -47,7 +49,7 @@ function App(props) {
 			<Route
 				exact
 				path={'/'}
-				render={() => user ? <Redirect to={'/Home'}/> : <Redirect to={'/login'}/>}
+				render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggedOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
 			/>
 				{routes}
 			<Route render={() => <Redirect to={'/404'} />}/>
@@ -66,5 +68,6 @@ function App(props) {
 }
 
 export default connect(
-	'selectUser',
+	'selectUserIsLoggedIn',
+	'selectUserIsLoggedOut',
 	App);

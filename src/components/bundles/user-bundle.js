@@ -1,5 +1,6 @@
 import api from '../../axios/Api';
 import jwt_decode from "jwt-decode";
+import { RepeatOneSharp } from '../../../node_modules/@material-ui/icons';
 
 export default {
   name: "user",
@@ -9,12 +10,17 @@ export default {
         user: '',
         'x-access-token-expiration':'',
         auth:'',
+        loginFailure: false,
+        isLoggingIn: false,
+        isLoggedOut: false
     }
 
     return (state = initialState, { type, payload }) => {
         switch (type) {
-            case 'GET_USER_LVL':
-            case 'SET_USER_LVL':
+            case 'LOGIN_REQUEST':
+            case 'LOGIN_SUCCESS':
+            case 'LOGIN_FAILURE':
+            case 'USER_LOGOUT':
             case 'SET_USER_LVL_FROM_LOCAL':
               return Object.assign({}, state, payload);
             default:
@@ -23,18 +29,42 @@ export default {
       return state;
     }
     },
-    doFetchUserLevel: (val, cascade, silent) => ({ dispatch, store }) => {
-    console.log('userDataCALL')
-    api.get('user').then((response) => response.data).then((data) => {
-        dispatch({
-            type: "GET_USER_LVL",
-            payload: {
-                user: data.status != 400 ? data.level : 'user',
-              }
-          });  
-    });
-    },
+    // doFetchUserLevel: (val, cascade, silent) => ({ dispatch, store }) => {
+    // console.log('userDataCALL')
+    // api.get('user').then((response) => response.data).then((data) => {
+    //     dispatch({
+    //         type: "GET_USER_LVL",
+    //         payload: {
+    //             user: data.status != 400 ? data.level : 'user',
+    //           }
+    //       });  
+    // });
+    // },
+    // doFetchLogin: (val, cascade, silent) => ({ dispatch, store }) => {
+    //   let login = {sucess: false}
+    //   api
+    //     .get(`login`)
+    //     .then((response) => {
+    //       login = {...login, ...response.data, loginFailure: true}
+    //     })
+    //     .catch((err) => Promise.reject('Authentication Failed!'));
+
+    //     return login
+    // },
     doLogin: (val, cascade, silent) => ({ dispatch, store }) => {
+
+      dispatch({
+        type: "LOGIN_REQUEST",
+        payload: {
+            user: '',
+            auth: '',
+            'x-access-token-expiration': '',
+            isLoggingIn: true,
+            loginFailure: false,
+            isLoggedOut: false
+        }
+      });  
+
       api
         .get(`login`)
         .then((response) => {
@@ -46,36 +76,61 @@ export default {
           localStorage.setItem('x-access-token-expiration', response.data.exp);//15min token duration.
           
           dispatch({
-            type: "SET_USER_LVL",
+            type: "LOGIN_SUCCESS",
             payload: {
-                user: response.data.user ? response.data.user : 'user',
+                user: response.data.user,
                 auth: response.data.token,
-                'x-access-token-expiration': response.data.exp
+                'x-access-token-expiration': response.data.exp,
+                isLoggingIn: false,
+                loginFailure: false
             }
-          });  
+          }); 
+
         })
-        .catch((err) => Promise.reject('Authentication Failed!'));
+        .catch((err) => {
+          localStorage.setItem('auth', '');
+          localStorage.setItem('user','');
+          localStorage.setItem('x-access-token-expiration','');//15min token duration.
+
+          dispatch({
+            type: "LOGIN_FAILURE",
+            payload: {
+                user: '',
+                auth: '',
+                'x-access-token-expiration': '',
+                isLoggingIn: false,
+                loginFailure: true
+            }
+          }); 
+        });
     },
     doLogout: (val, cascade, silent) => ({ dispatch, store }) => {
 
           localStorage.setItem('auth', '');
           localStorage.setItem('user', '');
-          localStorage.setItem('x-access-token-expiration', Date.now());//15min token duration.
+          localStorage.setItem('x-access-token-expiration', '');//15min token duration.
           
           dispatch({
-            type: 'SET_USER_LVL_FROM_LOCAL',
+            type: 'USER_LOGOUT',
             payload: {
-                user: localStorage.getItem('user')
+              user: '',
+              auth: '',
+              'x-access-token-expiration': '',
+              isLoggingIn: false,
+              loginFailure: false,
+              isLoggedOut: true
             }
           });
 
     },
     doSetUserFromLocalStorage: (val, cascade, silent) => ({ dispatch, store }) => {
-      if(store.selectIsLoggedIn()){
+      if(store.selectUserIsLoggedIn()){
         dispatch({
           type: 'SET_USER_LVL_FROM_LOCAL',
           payload: {
-              user: localStorage.getItem('user')
+            user: localStorage.getItem('user'),
+            auth: localStorage.getItem('auth'),
+            'x-access-token-expiration': localStorage.getItem('x-access-token-expiration'),
           }
         });
       }
@@ -91,12 +146,31 @@ export default {
     //         });  
     //     });  
     // },
+  selectUserRaw: state => {
+    return state.user;
+  },
   selectUser: state => {
     return state.user.user;
   },
-  selectIsLoggedIn: state => {
-    console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
+  selectUserToken: state => {
+    return state.user.auth;
+  },
+  selectUserLoginFailure: state => {
+    return state.user.loginFailure;
+  },
+  selectUserIsLoggedIn: state => {
+    //console.log(state)
+    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
     return localStorage.getItem('auth') && localStorage.getItem('user') && localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000);
+    //return !state.user.isLoggingIn && state.user.auth && state.user.user && (state.user['x-access-token-expiration'] > Math.floor(Date.now() / 1000));
+  },
+  selectUserIsLoggedOut: state => {
+    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
+    return state.user.isLoggedOut;
+  },
+  selectUserIsLoggingIn: state => {
+    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
+    return state.user.isLoggingIn;
   },
   init: store => {
     // export function isAuthenticated() {
@@ -105,11 +179,12 @@ export default {
     
     // action creators are bound and attached to store as methods
     //if(false){
-      // if(!store.selectIsLoggedIn()) {
+      // if(!store.selectUserIsLoggedIn()) {
       //   store.doLogin()
       //   return
       // }
 
+      //console.log(store.selectUserIsLoggedIn())
       store.doSetUserFromLocalStorage()
 
     //} else {

@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 
 import App from "./components/App.js";
 import {Provider} from 'redux-bundler-react'
-//import cache from './components/utils/cache';
+import cache from './components/utils/cache';
 import createStore from './components/bundles'
 // import './index.css';
 // import App from './App';
@@ -22,7 +22,15 @@ import * as serviceWorker from './serviceWorker';
       //console.log('starting with locally cache data:', initialData);
     //}
     
-ReactDOM.render(<Provider store={createStore()}><App /></Provider>, document.getElementById("root"));
+
+    cache.getAll().then(initialData => {
+      if (initialData) {
+        console.log('starting with locally cache data:', initialData)
+      }
+      ReactDOM.render(<Provider store={createStore(initialData)}><App /></Provider>, document.getElementById("root"));
+    })
+
+
   //});
 
 

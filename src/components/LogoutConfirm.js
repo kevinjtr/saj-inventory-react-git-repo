@@ -7,7 +7,7 @@ const LogoutConfirm = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            history.push('/')
+            history.push('/login')
         }, 2000)
     }, [])
 

@@ -11,11 +11,14 @@ import api from '../axios/Api';
 import {orderBy, findIndex, filter} from 'lodash'
 import {texFieldStyles, gridStyles, itemMenuStyles } from './styles/material-ui';
 import Switch from '@material-ui/core/Switch';
-import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
+import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from './config/constants'
 import { useHistory } from 'react-router-dom'
 //import Box from '@mui/material/Box';
 import Typography from '@material-ui/core/Typography';
-
+import {updateEquipmentApi,destroyEquipmentApi,addEquipmentApi,getAllEquipmentsApi, equipmentSearchApi} from '../publics/actions/equipment-api'
+import {getAllEmployeesApi} from '../publics/actions/employee-api'
+import {getAllHrasApi} from '../publics/actions/hra-api'
+import { connect } from 'redux-bundler-react';
 
 import MaterialTable, {MTableToolbar} from '@material-table/core'
 import jsPDF from 'jspdf'
@@ -25,12 +28,12 @@ import { ExportCsv } from '@material-table/exporters';
 const BLANKS = 'Blanks'
 const OPTS = 'Opts'
 
-export default function Equipment(props) {
+function Equipment({history, location, userToken}) {
 
 	//console.log(props)
 	//constants declarations
-	const history = useHistory()
-	const search = getQueryStringParams(props.location.search)
+	const useHistory_ = useHistory()
+	const search = getQueryStringParams(location.search)
 	const PAGE_URL = `/${EQUIPMENT}`
 
 	//React Hooks Declarations.
@@ -40,7 +43,7 @@ export default function Equipment(props) {
 	//const [cols, setCols] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
-	const [condition, setCondition] = React.useState([]);
+	//const [condition, setCondition] = React.useState([]);
 	const [searchView, setSearchView] = React.useState(BASIC_SEARCH);
 	const [searchFields, setSearchFields] = React.useState({
 		hraNum: {label: 'HRA Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -128,11 +131,11 @@ export default function Equipment(props) {
 
 	console.log(fields_obj,opts)
 
-	api.post(`${EQUIPMENT}/search`,{
+	equipmentSearchApi({
 		'fields': fields_obj,
 		'options':opts
-
-	}).then((response) => response.data).then((data) => {
+	}, userToken)
+	.then((response) => response.data).then((data) => {
 		console.log(data)
 		if(data.status == 200 && data.editable){
 			setEditable(data.editable)
@@ -158,7 +161,8 @@ export default function Equipment(props) {
 		let result = {}
 		console.log(`${EQUIPMENT} Call`)
 		//setLoading(true)
-		await api.post(`${EQUIPMENT}/update`,{params:rowData}).then((response) => response.data).then((data) => {
+		await updateEquipmentApi(rowData, userToken)
+		.then((response) => response.data).then((data) => {
 			result = data
 			//setLoading(false)
 			//setEquipments(data.status != 400 ? data.data : data)
@@ -180,7 +184,7 @@ export default function Equipment(props) {
 
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-	await api.post(`${EQUIPMENT}/destroy`,{params:rowData}).then((response) => response.data).then((data) => {
+	await destroyEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
@@ -202,7 +206,7 @@ export default function Equipment(props) {
 	let result = {}
 	//console.log('equipmentbyHraCall')
 	//setLoading(true)
-	await api.post(`${EQUIPMENT}/add`,{params:rowData}).then((response) => response.data).then((data) => {
+	await addEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
 		result = data
 		console.log(data)
 		//setLoading(false)
@@ -362,7 +366,7 @@ export default function Equipment(props) {
 								const propTableData = rowData.hasOwnProperty('tableData')//exists: editing, not exists: adding.
 
 								if(propTableData && idx != -1){
-									if(rowData.tableData.id != idx){
+									if(rowData.id != equipments[idx].id){
 										return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
 									}
 								}else if (idx != -1 && !propTableData && !rowData.hasOwnProperty('id')){
@@ -704,74 +708,74 @@ export default function Equipment(props) {
 					//isEditHidden: rowData => rowData.name === 'x',
 					// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 					// isDeleteHidden: rowData => rowData.name === 'y',
-					onBulkUpdate: async (changes) => {
-					let result = await handleUpdate({changes:changes})
-					let errorResult = result.columnErrors
-					let {errorFound} = errorResult
-					return(
-						new Promise((resolve, reject) => {
-						setTimeout(() => {
-							/* setEquipments([...equipments, newData]); */
-							console.log('bulk update')
-							//console.log(changes)
-							const keys = Object.keys(changes)//0 ,1,2
-							let alert_ = ''
+					// onBulkUpdate: async (changes) => {
+					// let result = await handleUpdate({changes:changes})
+					// let errorResult = result.columnErrors
+					// let {errorFound} = errorResult
+					// return(
+					// 	new Promise((resolve, reject) => {
+					// 	setTimeout(() => {
+					// 		/* setEquipments([...equipments, newData]); */
+					// 		console.log('bulk update')
+					// 		//console.log(changes)
+					// 		const keys = Object.keys(changes)//0 ,1,2
+					// 		let alert_ = ''
 
-							for(const key of keys){
-								const {newData,oldData} = changes[key]
-								const errorStatus = errorResult.rows[key]
+					// 		for(const key of keys){
+					// 			const {newData,oldData} = changes[key]
+					// 			const errorStatus = errorResult.rows[key]
 
-								console.log(newData,errorStatus)
-								if(!errorFound){
-								//no error
-								resetEquipments()
-								//const dataUpdate = [...equipments];
-								//const index = oldData.tableData.id;
-								//dataUpdate[index] = newData;
-								//setEquipments([...dataUpdate]);
-								}else{
-								//error found.
-								console.log('error found')
-								//dataIsOnDatabase[Object.keys(errorStatus)[0]] = true
-								const col_name = Object.keys(errorStatus)[0]
-								const errorText = errorStatus[col_name]
-								alert_ = alert_ + `row ${Number(key)+1}: ${col_name} - ${errorText}\n`
-								}
+					// 			console.log(newData,errorStatus)
+					// 			if(!errorFound){
+					// 			//no error
+					// 			resetEquipments()
+					// 			//const dataUpdate = [...equipments];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataUpdate[index] = newData;
+					// 			//setEquipments([...dataUpdate]);
+					// 			}else{
+					// 			//error found.
+					// 			console.log('error found')
+					// 			//dataIsOnDatabase[Object.keys(errorStatus)[0]] = true
+					// 			const col_name = Object.keys(errorStatus)[0]
+					// 			const errorText = errorStatus[col_name]
+					// 			alert_ = alert_ + `row ${Number(key)+1}: ${col_name} - ${errorText}\n`
+					// 			}
 
 								
-								//console.log(errorStatus,newData)
-								//const dataUpdate = [...equipments];
-								//const index = oldData.tableData.id;
-								//dataUpdate[index] = newData;
-								//setEquipments([...dataUpdate]);
-								//resolve();
-							}
+					// 			//console.log(errorStatus,newData)
+					// 			//const dataUpdate = [...equipments];
+					// 			//const index = oldData.tableData.id;
+					// 			//dataUpdate[index] = newData;
+					// 			//setEquipments([...dataUpdate]);
+					// 			//resolve();
+					// 		}
 
-							if(alert_){
-								//setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
-								setAlertUser(ALERT.FAIL(alert_))
-								reject();
-							}else{
-								setAlertUser(ALERT.SUCCESS)
-								resolve();
-							}
-							//for(const rowid of errorResult){}
-							// if(Object.keys(errorResult).length > 0){
-							//   console.log(errorResult)
-							//   dataIsOnDatabase[Object.keys(errorResult)[0]] = true
-							//   reject();
-							// }else{
-							//   for(const {newData,oldData} of changes){
-							//     const dataUpdate = [...equipments];
-							//     const index = oldData.tableData.id;
-							//     dataUpdate[index] = newData;
-							//     setEquipments([...dataUpdate]);
-							//     resolve();
-							//   }
-							// }
-						}, 1000);
-					}))
-					},
+					// 		if(alert_){
+					// 			//setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
+					// 			setAlertUser(ALERT.FAIL(alert_))
+					// 			reject();
+					// 		}else{
+					// 			setAlertUser(ALERT.SUCCESS)
+					// 			resolve();
+					// 		}
+					// 		//for(const rowid of errorResult){}
+					// 		// if(Object.keys(errorResult).length > 0){
+					// 		//   console.log(errorResult)
+					// 		//   dataIsOnDatabase[Object.keys(errorResult)[0]] = true
+					// 		//   reject();
+					// 		// }else{
+					// 		//   for(const {newData,oldData} of changes){
+					// 		//     const dataUpdate = [...equipments];
+					// 		//     const index = oldData.tableData.id;
+					// 		//     dataUpdate[index] = newData;
+					// 		//     setEquipments([...dataUpdate]);
+					// 		//     resolve();
+					// 		//   }
+					// 		// }
+					// 	}, 1000);
+					// }))
+					// },
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 					onRowAdd: async (newData) => {
@@ -885,7 +889,7 @@ export default function Equipment(props) {
 		if(searchView != BASIC_SEARCH & searchFields[key].blanks != BLANKS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + BLANKS}=${searchFields[key].blanks}`
 	}
 
-	props.history.replace(PAGE_URL + (url != '?' ? url : ''))
+	history.replace(PAGE_URL + (url != '?' ? url : ''))
 	}
 
 	const reloadPage = () => {
@@ -896,7 +900,7 @@ export default function Equipment(props) {
 			
 		console.log('employeeCall')
 		setLoading(true)
-		api.get(`employee`,{}).then((response) => response.data).then((data) => {
+		getAllEmployeesApi(userToken).then((response) => response.data).then((data) => {
 			console.log(data)
 			setLoading(false)
 			setEmployees(data.status == 200 ? data.data : data)
@@ -912,7 +916,7 @@ export default function Equipment(props) {
 			});
 	
 		console.log('hraCall')
-		api.get(`hra`,{}).then((response) => response.data).then((data) => {
+		getAllHrasApi(userToken).then((response) => response.data).then((data) => {
 			console.log(data)
 			//setLoading(false)
 			setHras(data.status == 200 ? data.data : data)
@@ -927,21 +931,21 @@ export default function Equipment(props) {
 			setHras([])
 			});
 		
-		console.log('conditionsCall')
-		api.get(`condition`,{}).then((response) => response.data).then((data) => {
-			console.log(data)
-			//setLoading(false)
-			setCondition(data.status == 200 ? data.data : data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
-			}).catch(function (error) {
-			//setLoading(false)
-			setCondition([])
-			});
+		// console.log('conditionsCall')
+		// api.get(`condition`,{}).then((response) => response.data).then((data) => {
+		// 	console.log(data)
+		// 	//setLoading(false)
+		// 	setCondition(data.status == 200 ? data.data : data)
+		// 	// this.setState({
+		// 	// 	equipments: data.status != 400 ? data.values: data,
+		// 	// 	setequipment: data
+		// 	// });
+		// 	//console.log(this.state.equipment.values);
+		// 	// console.log(this.props, this.state);
+		// 	}).catch(function (error) {
+		// 	//setLoading(false)
+		// 	setCondition([])
+		// 	});
 		}
 
 	const pageStart = async () => {
@@ -952,7 +956,7 @@ export default function Equipment(props) {
 			UpdateTextFields()
 			handleSearch(null,true)
 		}else{
-			await api.get(EQUIPMENT,{}).then((response) => response.data).then((data) => {
+			await getAllEquipmentsApi(userToken).then((response) => response.data).then((data) => {
 				console.log(data)
 				//setLoading(false)
 				if(data.status == 200 && data.editable){
@@ -1005,11 +1009,11 @@ export default function Equipment(props) {
 	}, []);// Empty array ensures that effect is only run on mount
 
 	React.useEffect(() => {
-		console.log(history.action)
-		if(props.history.action == "PUSH"){
-			history.go(0)
+		console.log(useHistory_.action)
+		if(history.action == "PUSH"){
+			useHistory_.go(0)
 		}
-	}, [history.action]);
+	}, [useHistory_.action]);
 
 	const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
 		const nFields = Object.keys(searchFields).length
@@ -1058,7 +1062,7 @@ export default function Equipment(props) {
 	<div>
 		<div style={{textAlign: 'center'}}>
 		<h2 >Equipment</h2>
-		<Grid container justify="center">
+		<Grid container justifyContent="center">
 			<Grid>
 				<FormGroup>
 					<FormControlLabel
@@ -1100,6 +1104,10 @@ export default function Equipment(props) {
 	</>
 	);
 }
+
+export default connect(
+	'selectUserToken',
+	Equipment);
 
 // export class AddProduct extends Component {
 
@@ -1206,8 +1214,8 @@ export default function Equipment(props) {
 
 // 	handlerSubmit = async () => {
 // 		//window.event.preventDefault();
-// 		//await this.props.dispatch(addProduct(this.state));
-// 		//this.props.history.push('/products');
+// 		//await this.dispatch(addProduct(this.state));
+// 		//this.history.push('/products');
 // 	};
 
 // 	render() {

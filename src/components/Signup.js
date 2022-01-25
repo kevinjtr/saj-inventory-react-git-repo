@@ -3,6 +3,7 @@ import api from '../axios/Api';
 import ChipInput from 'material-ui-chip-input';
 import {registrationDropDownItems} from './config/constants'
 import findIndex from 'lodash/findIndex'
+import {registerUserApi} from '../publics/actions/register-api'
 
 const Signup = ({hideNewAccountForm, handleLoading}) => {
 
@@ -142,7 +143,9 @@ const Signup = ({hideNewAccountForm, handleLoading}) => {
             //alert(JSON.stringify(formValues, null, 2));
             let result = {}
             //console.log('equipmentbyHraCall')
-            await api.post(`register/add`,{params: {newData: formValues}}).then((response) => response.data).then((data) => {
+            await registerUserApi(formValues)
+            //await api.post(`register/add`,{params: {newData: formValues}})
+            .then((response) => response.data).then((data) => {
                 
                 result = data
                 console.log(data)

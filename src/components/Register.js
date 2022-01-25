@@ -24,6 +24,7 @@ import * as yup from 'yup'
 import ChipInput from 'material-ui-chip-input';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { values } from 'lodash';
+import {registerUserApi} from '../publics/actions/register-api'
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
   
@@ -159,22 +160,22 @@ export default function Register(){
 		},
 	  });
 
-	React.useEffect(() => {
-			api.get(`register/registrationDropDownData`,{}).then((response) => response.data).then((data) => {
-			console.log(data)
-			if(data.status !== 400){
-				setDivisionItems(data.data.division.map(( properties ) => ({ label: properties.name, value: properties.id })));
-				setDistrictItems(data.data.district.map(( properties ) => ({ label: properties.name, value: properties.id })));
-				setOfficeItems(data.data.officeSymbol.map(( properties ) => ({ label: properties.name, value: properties.id })));
-				setUserItems(data.data.userType.map(( properties ) => ({ label: properties.name, value: properties.id })));
-			}
-			}).catch(function (error) {
-				setDivisionItems([])
-				setDistrictItems([])
-				setOfficeItems([])
-				setUserItems([])
-			}) 
-	}, []); 
+	// React.useEffect(() => {
+	// 		api.get(`register/registrationDropDownData`,{}).then((response) => response.data).then((data) => {
+	// 		console.log(data)
+	// 		if(data.status !== 400){
+	// 			setDivisionItems(data.data.division.map(( properties ) => ({ label: properties.name, value: properties.id })));
+	// 			setDistrictItems(data.data.district.map(( properties ) => ({ label: properties.name, value: properties.id })));
+	// 			setOfficeItems(data.data.officeSymbol.map(( properties ) => ({ label: properties.name, value: properties.id })));
+	// 			setUserItems(data.data.userType.map(( properties ) => ({ label: properties.name, value: properties.id })));
+	// 		}
+	// 		}).catch(function (error) {
+	// 			setDivisionItems([])
+	// 			setDistrictItems([])
+	// 			setOfficeItems([])
+	// 			setUserItems([])
+	// 		}) 
+	// }, []); 
 
 	// Handle Chip Input
 	function handleChipInput (e) {
@@ -217,7 +218,9 @@ export default function Register(){
 		let result = {}
 		//console.log('equipmentbyHraCall')
 		//setLoading(true)
-		await api.post(`register/add`,{params: {newData: formValues}}).then((response) => response.data).then((data) => {
+		await registerUserApi(formValues)
+		// api.post(`register/add`,{params: {newData: formValues}})
+		.then((response) => response.data).then((data) => {
 			result = data
 			console.log(data)
 			//setLoading(false)
