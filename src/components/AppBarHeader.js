@@ -1,27 +1,21 @@
 import {routes_tabs} from './config/routes'
-import React, { useState, useEffect} from 'react'
+import React, { useState } from 'react'
 import { connect } from 'redux-bundler-react';
-import { AppBar, Grid, Box, Tabs, IconButton, Badge} from '@mui/material';
+import { AppBar, Grid, Box, Tabs, IconButton, Badge, Alert, Snackbar} from '@mui/material';
 import { Route } from 'react-router-dom';
 import getsitelogo from '../../src/img/getsitelogo.png';
-import BedtimeOutlinedIcon from '@mui/icons-material/BedtimeOutlined';
+import ErrorIcon from '@mui/icons-material/Error';
 import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import "./styles/AppBarStyles.css";
 import LogoutButton from './LogoutButton';
+import ProblemReportPopup from './ProblemReportPopup.js'
 
 function Header(props) {
 	const {user, userIsLoggedIn, doLogout} = props;
 
-	// Temporary Authentication from Local Storage
-	const[localUser,setLocalUser] = useState(() => {
-		const storedUser = JSON.parse(localStorage.getItem("LocalUser"))
-		return storedUser || {firstName:'',lastName:'',level:''}
-	})
-
-	// const handleLogout = () => {
-	// 	setLocalUser({firstName:'',lastName:'',level:''})
-	// }
+	const [openProblem,setOpenProblem] = useState(false);
+	const [snackBar,setSnackBar] = useState({open:false,message:'',severity:''})
 
 	return (
 		<Route path="/" render={(history) => (
@@ -36,14 +30,14 @@ function Header(props) {
 					</div>
 					<div style={{display:"flex", flexDirection:"column", justifyContent:"center",height:"30px",marginTop:"auto",marginBottom:"auto",marginLeft:"5px"}}><p style={{textTransform:"uppercase", letterSpacing:"0.15rem", fontSize:"1.8rem", color:"rgba(50,50,50,1)", fontWeight:"bold",textShadow:"0 0 1px #000",backgroundImage:'url("../../src/img/appbarBackground.jfif")',backgroundClip:'text'}}>Inventory</p></div>
                 </Grid>
-				{localUser.level !== '' && <Grid item sx={{display:"flex",justifyContent:"flex-end",zIndex:"2",position:"relative"}} >
-                    <IconButton sx={{height:'40px',width:'40px',marginTop:'auto',marginBottom:'auto','&:active':{outline:'0px',border:'none'},'&:focus':{outline:'0px',border:'none'}}} style={{color:"gray"}}>
+				{userIsLoggedIn && <Grid item sx={{display:"flex",justifyContent:"flex-end",zIndex:"2",position:"relative"}} >
+					<IconButton sx={{height:'40px',width:'40px',marginTop:'auto',marginBottom:'auto','&:active':{outline:'0px',border:'none'},'&:focus':{outline:'0px',border:'none'}}} style={{color:"gray"}}>
 						<Badge variant="dot" color="primary" >
 							<NotificationsNoneIcon fontSize="small" />
 						</Badge>
 					</IconButton>
-					<IconButton sx={{height:'40px',width:'40px',marginTop:'auto',marginBottom:'auto','&:active':{outline:'0px',border:'none'},'&:focus':{outline:'0px',border:'none'}}} style={{color:"gray"}}>
-						<BedtimeOutlinedIcon fontSize="small"/>
+					<IconButton onClick={()=>setOpenProblem(true)} sx={{height:'40px',width:'40px',marginTop:'auto',marginBottom:'auto','&:active':{outline:'0px',border:'none'},'&:focus':{outline:'0px',border:'none'}}} style={{color:"gray"}}>
+						<ErrorIcon fontSize="small"/>
 					</IconButton>
 					<IconButton sx={{height:'40px',width:'40px',marginTop:'auto',marginBottom:'auto','&:active':{outline:'0px',border:'none'},'&:focus':{outline:'0px',border:'none'}}}>
 						<AccountCircle fontSize="small" />
@@ -66,6 +60,10 @@ function Header(props) {
 					</Tabs>
 					<LogoutButton/>
 				</Box>}
+				<ProblemReportPopup title="Report a problem" openPopup={openProblem} setOpenPopup={setOpenProblem} setSnackBar={setSnackBar}/>
+				<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}>
+					<Alert severity={snackBar.severity}>{snackBar.message}</Alert>
+				</Snackbar>
 			</AppBar>
 			)} 
 			/>

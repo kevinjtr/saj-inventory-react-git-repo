@@ -21,14 +21,9 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
     const [registrationResult, setRegistrationResult] = useState(false)
 
     // State of the report problem form
-    const [showProblemForm, setShowProblemForm] = useState(0); // 0 = hide form, 1 = show form, 2 = hide form and show success message
+    //const [showProblemForm, setShowProblemForm] = useState(0); // 0 = hide form, 1 = show form, 2 = hide form and show success message
     const [problems, setProblems] = useState([]);
 
-    // Temporary Authentication from Local Storage
-    const [localUser, setLocalUser] = useState(() => {
-        const storedUser = JSON.parse(localStorage.getItem("LocalUser"))
-        return storedUser || { firstName: '', lastName: '', level: '' }
-    })
 
     const [loading,setLoading] = useState(false)
 
@@ -41,12 +36,7 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
         setLoading(true);
     }
 
-    // Temporary action for sign-in, write user to local storage
-    const handleSignInClick = () => {
-        localStorage.setItem('LocalUser', JSON.stringify({ firstName: 'Jon', lastName: 'Freed', level: 'admin', time: new Date() }))
-        window.location.reload();
-    }
-
+    {/*
     const hideProblemForm = (status) => {
         if (status === 'success') {
             setShowProblemForm(2)
@@ -54,7 +44,7 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
         }
         else
             setShowProblemForm(0)
-    }
+    } */}
 
     // Hide tabs and display account creation success message
     const hideNewAccountForm = (result) => {
@@ -97,7 +87,7 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
     
 
     // Since problems state is updated asynchronously, apply useEffect to set local storage
-    useEffect(() => { localStorage.setItem('Problems', JSON.stringify(problems)) }, [problems])
+    //useEffect(() => { localStorage.setItem('Problems', JSON.stringify(problems)) }, [problems])
 
     return (
         <div className='page-container' style={{display:'flex',justifyContent:'center'}}>
@@ -179,32 +169,15 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
                                 {/* New Account Button */}
                                 <div className="login-register-button" onClick={handleNewAccountClick}>New Account</div>
 
-                                {/* Report Problem Link */}
+                                {/*
                                 {showProblemForm === 0 && <div className="report-problem-button"><span className="report-problem-button-span" onClick={() => setShowProblemForm(1)}><OutlinedFlagSharpIcon className="report-problem-button-icon" /> Trouble signing in?</span></div>}
 
-                                {/* Report Problem Form */}
                                 {showProblemForm === 1 && <ReportProblem handleAddProblem={handleAddProblem} hideProblemForm={hideProblemForm} />}
 
-                                {/* Report Problem Message */}
                                 {showProblemForm === 2 && <><div className="report-problem-button"></div><div style={{textAlign:'center'}}><div className="report-problem-message"><CheckIcon className="report-problem-message-icon" />&nbsp;&nbsp;Problem has been reported</div></div></>}
+                                */}
 
                             </div>   
-                        {/*) 
-                        
-                         : (     
-                            <div className="user-info-container">
-                                <table style={{ fontSize: '11px', marginLeft: '25px', marginBottom: '25px' }}>
-                                    <thead><th>Local Storage User Info</th></thead>
-                                    <tbody>
-                                        <tr><td>User Level:</td><td>{localUser.level}</td></tr>
-                                        <tr><td>First Name:</td><td>{localUser.firstName}</td></tr>
-                                        <tr><td>Last Name:</td><td>{localUser.lastName}</td></tr>
-                                        <tr><td>Time of Login:</td><td>{localUser.time}</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        )
-                        } */}
 
                         </>
                     }
