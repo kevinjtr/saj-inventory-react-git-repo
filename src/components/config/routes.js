@@ -42,7 +42,7 @@ const routes_config = [
     // {path:'/problemreportviewer',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'user'},
 
     {path:'/changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
-    {path:'/404',label:'Not Found',component:NotFound,tab:false},
+    {path:'/404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
     //{path:'/register',label:'Register',component:Register,tab:true,level:'user'},
 ]

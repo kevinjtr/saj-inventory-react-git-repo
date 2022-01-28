@@ -8,6 +8,7 @@ export default {
 
     const initialState = {
         user: '',
+        user_name:'',
         'x-access-token-expiration':'',
         auth:'',
         loginFailure: false,
@@ -57,6 +58,7 @@ export default {
         type: "LOGIN_REQUEST",
         payload: {
             user: '',
+            user_name:'',
             auth: '',
             'x-access-token-expiration': '',
             isLoggingIn: true,
@@ -74,11 +76,13 @@ export default {
           localStorage.setItem('auth', response.data.token);
           localStorage.setItem('user', response.data.user);
           localStorage.setItem('x-access-token-expiration', response.data.exp);//15min token duration.
-          
+          localStorage.setItem('user-name', response.data.user_name);
+
           dispatch({
             type: "LOGIN_SUCCESS",
             payload: {
                 user: response.data.user,
+                user_name: response.data.user_name,
                 auth: response.data.token,
                 'x-access-token-expiration': response.data.exp,
                 isLoggingIn: false,
@@ -91,11 +95,13 @@ export default {
           localStorage.setItem('auth', '');
           localStorage.setItem('user','');
           localStorage.setItem('x-access-token-expiration','');//15min token duration.
+          localStorage.setItem('user-name','');
 
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
                 user: '',
+                user_name:'',
                 auth: '',
                 'x-access-token-expiration': '',
                 isLoggingIn: false,
@@ -109,11 +115,13 @@ export default {
           localStorage.setItem('auth', '');
           localStorage.setItem('user', '');
           localStorage.setItem('x-access-token-expiration', '');//15min token duration.
-          
+          localStorage.setItem('user-name', '');
+
           dispatch({
             type: 'USER_LOGOUT',
             payload: {
               user: '',
+              user_name:'',
               auth: '',
               'x-access-token-expiration': '',
               isLoggingIn: false,
@@ -131,6 +139,7 @@ export default {
             user: localStorage.getItem('user'),
             auth: localStorage.getItem('auth'),
             'x-access-token-expiration': localStorage.getItem('x-access-token-expiration'),
+            user_name: localStorage.getItem('user-name'),
           }
         });
       }
@@ -146,6 +155,9 @@ export default {
     //         });  
     //     });  
     // },
+  selectUserName: state => {
+    return state.user.user_name;
+  },
   selectUserRaw: state => {
     return state.user;
   },

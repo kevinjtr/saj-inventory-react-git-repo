@@ -706,13 +706,14 @@ function Eng4900({history, location, match, userToken}) {
               rowData => ({
                 icon: form4900Icons.View,
                 tooltip: 'View Form',
-                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
+                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
                   icon: form4900Icons.Assignment,
                   tooltip: 'Edit Form',
-                  onClick: (event, rowData) => alert(JSON.stringify(rowData)),//EditFormById(rowData.form_id), // + rowData.name),
+                  onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
                   hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
                 }),
               rowData => ({
@@ -720,7 +721,7 @@ function Eng4900({history, location, match, userToken}) {
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
-                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
@@ -1107,7 +1108,8 @@ function Eng4900({history, location, match, userToken}) {
               rowData => ({
                 icon: form4900Icons.View,
                 tooltip: 'View Form',
-                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
+                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
@@ -1115,7 +1117,7 @@ function Eng4900({history, location, match, userToken}) {
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
-                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
@@ -1285,7 +1287,8 @@ function Eng4900({history, location, match, userToken}) {
               rowData => ({
                 icon: form4900Icons.View,
                 tooltip: 'View Form',
-                onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
+                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
               rowData => ({
@@ -1293,7 +1296,7 @@ function Eng4900({history, location, match, userToken}) {
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
-                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),           

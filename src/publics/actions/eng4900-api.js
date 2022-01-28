@@ -22,7 +22,8 @@ export const getEng4900PdfByIdApi = async (id, token) => {
 };
 
 export const getEng4900ByIdApi = async (id, token) => {
-	return api.get(`${ENG4900}/${id}`,{headers:{auth:token},responseType: 'blob'})
+
+	return api.get(`${ENG4900}/${id}`,{headers:{auth:token}})
 };
 
 export const eng4900SearchApi = async (searchParams, token) => {
