@@ -2,8 +2,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,Te
 import React, {useState} from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import api from '../axios/Api';
-
+import {addProblemReportApi} from '../publics/actions/problem-report'
 
 const ProblemReportPopup = (props) => {
 
@@ -91,7 +90,9 @@ const ProblemReportPopup = (props) => {
 
         let result = {}
 
-        await api.post(`problem/add`,{params: {newData: newProblem}}).then((response) => response.data).then((data) => {
+        
+        
+        await addProblemReportApi({newData: newProblem}).then((response) => response.data).then((data) => {
             result = data
         }).catch(function (error) {
             result = {status:400,error:true,message:error.message}

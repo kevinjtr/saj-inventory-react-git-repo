@@ -13,7 +13,8 @@ export default {
         auth:'',
         loginFailure: false,
         isLoggingIn: false,
-        isLoggedOut: false
+        isLoggedOut: false,
+        access: {}       
     }
 
     return (state = initialState, { type, payload }) => {
@@ -63,7 +64,8 @@ export default {
             'x-access-token-expiration': '',
             isLoggingIn: true,
             loginFailure: false,
-            isLoggedOut: false
+            isLoggedOut: false,
+            access: {}
         }
       });  
 
@@ -73,10 +75,12 @@ export default {
           //const decoded_token = jwt_decode(response.data.token)
           //console.log(decoded_token)
          // const {iat} = decoded_token
+         console.log(response.data)
           localStorage.setItem('auth', response.data.token);
           localStorage.setItem('user', response.data.user);
           localStorage.setItem('x-access-token-expiration', response.data.exp);//15min token duration.
           localStorage.setItem('user-name', response.data.user_name);
+          localStorage.setItem('access', JSON.stringify(response.data.access));
 
           dispatch({
             type: "LOGIN_SUCCESS",
@@ -86,7 +90,8 @@ export default {
                 auth: response.data.token,
                 'x-access-token-expiration': response.data.exp,
                 isLoggingIn: false,
-                loginFailure: false
+                loginFailure: false,
+                access: response.data.access
             }
           }); 
 
@@ -96,7 +101,8 @@ export default {
           localStorage.setItem('user','');
           localStorage.setItem('x-access-token-expiration','');//15min token duration.
           localStorage.setItem('user-name','');
-
+          localStorage.setItem('access', JSON.stringify({}));
+          
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
@@ -105,7 +111,8 @@ export default {
                 auth: '',
                 'x-access-token-expiration': '',
                 isLoggingIn: false,
-                loginFailure: true
+                loginFailure: true,
+                access: {}
             }
           }); 
         });
@@ -116,6 +123,7 @@ export default {
           localStorage.setItem('user', '');
           localStorage.setItem('x-access-token-expiration', '');//15min token duration.
           localStorage.setItem('user-name', '');
+          localStorage.setItem('access', JSON.stringify({}));
 
           dispatch({
             type: 'USER_LOGOUT',
@@ -126,13 +134,16 @@ export default {
               'x-access-token-expiration': '',
               isLoggingIn: false,
               loginFailure: false,
-              isLoggedOut: true
+              isLoggedOut: true,
+              access: JSON.stringify({})
             }
           });
 
     },
     doSetUserFromLocalStorage: (val, cascade, silent) => ({ dispatch, store }) => {
       if(store.selectUserIsLoggedIn()){
+
+        console.log(localStorage.getItem('access'))
         dispatch({
           type: 'SET_USER_LVL_FROM_LOCAL',
           payload: {
@@ -140,6 +151,7 @@ export default {
             auth: localStorage.getItem('auth'),
             'x-access-token-expiration': localStorage.getItem('x-access-token-expiration'),
             user_name: localStorage.getItem('user-name'),
+            access: JSON.parse(localStorage.getItem('access')),
           }
         });
       }
@@ -169,6 +181,9 @@ export default {
   },
   selectUserLoginFailure: state => {
     return state.user.loginFailure;
+  },
+  selectUserAccess: state => {
+    return state.user.access;
   },
   selectUserIsLoggedIn: state => {
     //console.log(state)

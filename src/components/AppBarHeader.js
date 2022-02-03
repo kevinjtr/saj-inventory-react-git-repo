@@ -12,10 +12,9 @@ import LogoutButton from './LogoutButton';
 import ProblemReportPopup from './ProblemReportPopup.js'
 
 function Header(props) {
-	const {user, userIsLoggedIn, doLogout} = props;
-
+	const {user, userIsLoggedIn, doLogout, userAccess} = props;
 	const [openProblem,setOpenProblem] = useState(false);
-	const [snackBar,setSnackBar] = useState({open:false,message:'',severity:''})
+	const [snackBar,setSnackBar] = useState({open:false,message:'',severity:'warning'})
 
 	return (
 		<Route path="/" render={(history) => (
@@ -56,7 +55,7 @@ function Header(props) {
 						textColor="inherit"
 						style={{height:"25px", minHeight:"25px",color:"black"}}
 					>
-						{routes_tabs(user)}
+						{routes_tabs(userAccess).tabs}
 					</Tabs>
 					<LogoutButton/>
 				</Box>}
@@ -73,6 +72,7 @@ function Header(props) {
 
 export default connect(
 	'selectUser',
+	'selectUserAccess',
 	'selectUserIsLoggedIn',
 	'doLogout',
 	Header);

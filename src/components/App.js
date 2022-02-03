@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Switch ,Route, Redirect} from "react-router-dom";
-import {routes} from './config/routes'
+import {routes_tabs} from './config/routes'
 import axios from 'axios';
 import { connect } from 'redux-bundler-react';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -12,14 +12,14 @@ import "./styles/GlobalStyles.css";
 import LogoutConfirm from './LogoutConfirm'
 
 function App(props) {
-	const {userIsLoggedIn, userIsLoggedOut} = props
+	const {userIsLoggedIn, userIsLoggedOut, userAccess} = props
 	console.log(props)
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const theme = React.useMemo(
 	() =>
 	createTheme({
 		palette: {
-			type: prefersDarkMode ? 'dark' : 'light',
+			type: !prefersDarkMode ? 'dark' : 'light',
 		},
 		}),
 	[prefersDarkMode],
@@ -51,7 +51,7 @@ function App(props) {
 				path={'/'}
 				render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggedOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
 			/>
-				{routes}
+				{routes_tabs(userAccess).routes}
 			<Route render={() => <Redirect to={'/404'} />}/>
 			</Switch>
 			</div>
@@ -68,6 +68,7 @@ function App(props) {
 }
 
 export default connect(
+	'selectUserAccess',
 	'selectUserIsLoggedIn',
 	'selectUserIsLoggedOut',
 	App);

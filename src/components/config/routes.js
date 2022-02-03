@@ -21,110 +21,125 @@ import {Tab} from '@mui/material'
 import LogoutConfirm from '../LogoutConfirm';
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
-import LoginRoute from '../LoginRoute'
 
 const routes_config = [
-
-    {path:'/home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
-    {path:'/login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
-    {path:'/equipment',label:'Equipment',component:Equipment,tab:true,level:'user',type:'private'},
-    {path:'/annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin',type:'private'},
-    {path:'/annualinventory/:id',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin',type:'private'},
-    {path:'/hra',label:'HRA',component:Hra,tab:true,level:'user',type:'private'},
-    {path:'/employee',label:'Employee',component:Employee,tab:true,level:'user',type:'private'},
-    {path:'/eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin',type:'private'},
+    {path:'/home',alias:'home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
+    {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
+    {path:'/equipment',alias:'equipment',label:'Equipment',component:Equipment,tab:true,level:'user',type:'private'},
+    {path:'/annualinventory',alias:'annualInventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin',type:'private'},
+    {path:'/annualinventory/:id',alias:'annualInventory',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin',type:'private'},
+    {path:'/hra',label:'HRA',alias:'hra',component:Hra,tab:true,level:'user',type:'private'},
+    {path:'/employee',alias:'employee',label:'Employee',component:Employee,tab:true,level:'user',type:'private'},
+    {path:'/eng4900',alias:'eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin',type:'private'},
     //{path:'/eng4900/view/:id',label:'Eng 4900 View Form',component:Eng4900FormContainer,tab:false,level:'admin',props:{action:"VIEW"}},
     //{path:'/eng4900/edit/:id',label:'Eng 4900 Edit Form',component:Eng4900FormContainer,tab:false,level:'admin',props:{action:"EDIT"}},
     //{path:'/eng4900/create',label:'Eng 4900 Create Form',component:Eng4900Form,tab:false,level:'admin'},
     //{path:'/eng4844',label:'Eng 4844',component:Eng4844,tab:true},
     //{path:'/findeng4844',label:'Find Eng4844',component:FindEng4844,tab:true},
     // {path:'/problemreport',label:'Problem Report',component:ProblemReport,tab:true,level:'user'},
+<<<<<<< Updated upstream
     {path:'/problemreportviewer',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin'},
 
     {path:'/changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
     {path:'/404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
+=======
+    {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
+    {path:'/changehistory',alias:'changeHistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
+    {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
+    {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
+>>>>>>> Stashed changes
     //{path:'/register',label:'Register',component:Register,tab:true,level:'user'},
 ]
 
-export const routes_tabs = (lvl) => {
-    // await api.post(`/user`,{}).then((response) => response.data).then((data) => {
-	// 	console.log(data)
-	// 	//setLoading(false)
-	// 	//setEquipments(data.status != 400 ? data.data : data)
-	// 	// this.setState({
-	// 	// 	equipments: data.status != 400 ? data.values: data,
-	// 	// 	setequipment: data
-	// 	// });
-	// 	//console.log(this.state.equipment.values);
-	// 	// console.log(this.props, this.state);
-	// 	}).catch(function (error) {
-	// 	//setLoading(false)
-	// 	//setEquipments([])
-    //     });
-        
-    const route_with_tabs = filter(routes_config,function(r){return r.tab})
-
-    if(lvl == 'admin'){
-        return (
-            route_with_tabs.map((route, i) => 
-                <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
-                /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
-                    <Link to={route.path} className="nav-link">
-                        {route.label}
-                    </Link>
-                </li>*/)
-        )
+export const routes_tabs = (user_access) => {
+    const return_routes = {
+        routes:[],
+        tabs:[]
     }
 
-    const route_with_tabs_user_lvl = filter(route_with_tabs,function(r){return r.level == 'user'})
+    //Tabs are created
+    const route_with_tabs = filter(routes_config,function(r){
+        if(Object.keys(user_access).includes(r.alias))
+            return r.tab && user_access[r.alias].view 
 
-    console.log(route_with_tabs_user_lvl,lvl)
-    return (
-        route_with_tabs_user_lvl.map((route, i) => 
-                <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
-            /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
-                <Link to={route.path} className="nav-link">
-                    {route.label}
-                </Link>
-            </li>*/)
-    )
+        return r.tab
+    })
+
+    return_routes.tabs = route_with_tabs.map((route, i) => 
+        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
+        /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
+            <Link to={route.path} className="nav-link">
+                {route.label}
+            </Link>
+        </li>*/)
+
+    //Routes are created
+    const access_routes = filter(routes_config,function(r){
+
+        if(r.type == "private" && Object.keys(user_access).includes(r.alias)){
+            console.log(user_access[r.alias],user_access[r.alias].view)
+
+            return user_access[r.alias].view
+        }
+
+        return true 
+     })
+
+     return_routes.routes = access_routes.map((route, i) => {
+
+        if(route.type == 'private'){
+            return (
+                <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+            )
+        }
+    
+        if(route.path == '/login'){
+            return (
+                <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+            )
+        }
+    
+        return (
+            <Route exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
+        )
+    })
+
+    return return_routes
+
 }
 
-export let routes = routes_config.map((route, i) => { 
+// export const routes = (user_access) => {
+//     const access_routes = filter(routes_config,function(r){
 
-    // if(route.routes){
-    //     if(route.routes.length > 0){
-    //         let routesWithSub = []
-    //         routesWithSub.push(
-    //             <Route exact path={route.path} component={route.component}/>
-    //         )
+//         if(r.type == "private" && Object.keys(user_access).includes(r.alias)){
+//             console.log(user_access[r.alias],user_access[r.alias].view)
 
-    //         for(const sub_route of route.routes){
-    //             routesWithSub.push(
-    //                 <Route path={sub_route.path} component={sub_route.component}/>
-    //             )
-    //         }
+//             return user_access[r.alias].view
+//         }
 
-    //         return routesWithSub
-    //     }
-    // }
+//         return true 
+//      })
 
-    if(route.type == 'private'){
-        return (
-            <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
-        )
-    }
+//     const routes = access_routes.map((route, i) => {
 
-    if(route.path == '/login'){
-        return (
-            <LoginRoute exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
-        )
-    }
+//         if(route.type == 'private'){
+//             return (
+//                 <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+//             )
+//         }
+    
+//         if(route.path == '/login'){
+//             return (
+//                 <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+//             )
+//         }
+    
+//         return (
+//             <Route exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
+//         )
+//     })
 
-    return (
-        <Route exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
-    )
-   
-})
+//     return routes
+// }
 

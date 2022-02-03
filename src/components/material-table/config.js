@@ -25,6 +25,7 @@ import PublishIcon from '@material-ui/icons/Publish';
 import SendIcon from '@material-ui/icons/Send';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import SearchIcon from '@material-ui/icons/Search';
+import {TextField} from '@material-ui/core'
 
 export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
@@ -54,13 +55,19 @@ export const tableIcons = {
     Send: React.forwardRef((props, ref) => <SendIcon {...props} ref={ref} />),
   };
 
+
+
 export const form4900Icons = {
   Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
     Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
     Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} style={{color:'#FF0000'}}/>),
     DetailPanel: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref}/>),
+    Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+//     Edit: React.forwardRef((props, ref) =>   <div style={{position: 'relative'}}>
+//     <Edit  {...props} ref={ref} style={{position: 'absolute', width: 20, height: 20}}/>
+//     <a style={{fontSize:5, position:'absolute'}}>Status</a>
+// </div>),
     Export: React.forwardRef((props, ref) => <SaveAlt {...props} ref={ref} style= { {color:"#1E90FF"} }/>),
     Filter: React.forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
     FirstPage: React.forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),

@@ -1,5 +1,6 @@
 import React from 'react';
 import '../img/style.css';
+<<<<<<< Updated upstream
 import api from '../axios/Api';
 import MaterialTable from '@material-table/core'
 import SearchIcon from '@material-ui/icons/Search';
@@ -12,6 +13,22 @@ import {LoadingCircle, getQueryStringParams, ALERT} from './tools/tools';
 //import Header from './Header'
 
 export default function ProblemReportViewer(props) {
+=======
+// import api from '../axios/Api';
+import MaterialTable from '@material-table/core'
+// import SearchIcon from '@material-ui/icons/Search';
+import {tableIcons} from './material-table/config'
+// import Typography from '@material-ui/core/Typography';
+import {Autocomplete, Alert} from '@material-ui/lab';
+// import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel, FormGroup} from '@material-ui/core';
+// import {orderBy, findIndex, filter} from 'lodash'
+import {LoadingCircle, getQueryStringParams, ALERT} from './tools/tools';
+import {updateProblemReportApi, getAllProblemReportsApi} from '../publics/actions/problem-report'
+import { connect } from 'redux-bundler-react';
+//import Header from './Header'
+
+function ProblemReportViewer({userToken}) {
+>>>>>>> Stashed changes
     //React Hooks Declarations.
     const [initialize, setInitialize] = React.useState(true);
     const [problems, setProblems] = React.useState([]);
@@ -19,6 +36,7 @@ export default function ProblemReportViewer(props) {
     const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
     const [editable,setEditable] = React.useState(false)
     const Resolved_Deleted_Options = {'No':'No','Yes':'Yes'}
+<<<<<<< Updated upstream
     const [windowSize, setWindowSize] = React.useState({
         width: undefined,
         height: undefined,
@@ -28,6 +46,17 @@ export default function ProblemReportViewer(props) {
     const reloadPage = () => {
             window.location.reload()
     }
+=======
+    // const [windowSize, setWindowSize] = React.useState({
+    //     width: undefined,
+    //     height: undefined,
+    //     });
+
+
+    // const reloadPage = () => {
+    //         window.location.reload()
+    // }
+>>>>>>> Stashed changes
 
     const AlertUser = (x) => {
 		console.log('alert user activated')
@@ -47,6 +76,7 @@ export default function ProblemReportViewer(props) {
         let errorFound = false
         //console.log('equipmentbyHraCall')
         //setLoading(true)
+<<<<<<< Updated upstream
             await api.post(`problemreportviewer/update`,{params:rowData}).then((response) => response.data).then((data) => {
             console.log(data)
     
@@ -74,6 +104,35 @@ export default function ProblemReportViewer(props) {
 			height: window.innerHeight,
 		});
 	}
+=======
+        await updateProblemReportApi(rowData, userToken).then((response) => response.data).then((data) => {
+        console.log(data)
+
+        const status = data.hasOwnProperty('status') ? data.status == 400 : false
+        errorFound = data.hasOwnProperty('error') ? data.error : false
+
+        if(status || errorFound){
+            setAlertUser(ALERT.FAIL())
+        }else {
+            setAlertUser(ALERT.SUCCESS)
+        }
+    
+        }).catch(function (error) {
+        
+        });
+            
+        return errorFound
+     
+    }
+
+	// function handleResize() {
+	// 	// Set window width/height to state
+	// 	setWindowSize({
+	// 		width: window.innerWidth,
+	// 		height: window.innerHeight,
+	// 	});
+	// }
+>>>>>>> Stashed changes
 
 
     const materialTableSelect = () => {
@@ -150,7 +209,11 @@ export default function ProblemReportViewer(props) {
 
     const resetProblems = () => {
 		setLoading(true)
+<<<<<<< Updated upstream
 	api.get(`problemreportviewer`).then((response) => response.data).then((data) => {
+=======
+        getAllProblemReportsApi(userToken).then((response) => response.data).then((data) => {
+>>>>>>> Stashed changes
 		console.log(data)
 		setProblems(data.status == 200 ? data.data : data)
 		setLoading(false)
@@ -164,7 +227,11 @@ React.useEffect(() => {
     console.log(`Problem Report Call`)
         setInitialize(true)
         setLoading(true)
+<<<<<<< Updated upstream
         api.get('problemreportviewer',{}).then((response) => response.data).then((data) => {
+=======
+        getAllProblemReportsApi(userToken).then((response) => response.data).then((data) => {
+>>>>>>> Stashed changes
         setLoading(false)
         console.log(data)
         setProblems(data.status == 200 ? data.data : data)
@@ -201,3 +268,10 @@ React.useEffect(() => {
         </>
 	);
 }
+<<<<<<< Updated upstream
+=======
+
+export default connect(
+    'selectUserToken',
+    ProblemReportViewer);
+>>>>>>> Stashed changes
