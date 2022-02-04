@@ -16,14 +16,8 @@ import Alert from '@material-ui/lab/Alert';
 
 const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure}) => {
 
-    // State for the configuration of tabs
-    const [selectedTab, setSelectedTab] = useState(0); // 0 = no tabs, 1 = tabs with sign in tab selected, 2 = tabs with new account tab selected
+    const [selectedTab, setSelectedTab] = useState(1); // 1 = show sign in buttons, 2 = show new account form
     const [registrationResult, setRegistrationResult] = useState(false)
-
-    // State of the report problem form
-    //const [showProblemForm, setShowProblemForm] = useState(0); // 0 = hide form, 1 = show form, 2 = hide form and show success message
-    const [problems, setProblems] = useState([]);
-
 
     const [loading,setLoading] = useState(false)
 
@@ -36,27 +30,11 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
         setLoading(true);
     }
 
-    {/*
-    const hideProblemForm = (status) => {
-        if (status === 'success') {
-            setShowProblemForm(2)
-            setTimeout(() => { setShowProblemForm(0) }, 3000)
-        }
-        else
-            setShowProblemForm(0)
-    } */}
-
-    // Hide tabs and display account creation success message
+    // Return to signin buttons and set registration result
     const hideNewAccountForm = (result) => {
         setRegistrationResult([result])
-        
-        setSelectedTab(0)
+        setSelectedTab(1)
         setLoading(false)
-    }
-
-    const handleAddProblem = (newProblem) => {
-        const newProblems = [...problems, newProblem]
-        setProblems(newProblems)
     }
 
     const handleNewAccountClick = () => {
@@ -78,125 +56,61 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
         //     props.setSubmitting(false)
         // })
     }
-
-
-
-    // const handleButtonClick = (e) => {
-    //     e.preventDefault()
-    // }
     
-
-    // Since problems state is updated asynchronously, apply useEffect to set local storage
-    //useEffect(() => { localStorage.setItem('Problems', JSON.stringify(problems)) }, [problems])
-
     return (
-        <div className='page-container' style={{display:'flex',justifyContent:'center'}}>
-        <div className="login-container">
-       {userLoginFailure ? <div className={alertClass.root}>
-            <Alert variant="outlined" severity="error">
-                Login Failed
-            </Alert>
-        </div> : null}
-            <div className="login-right-column">
-                <div className="login-panel">
+        <div className='signin-page-container' style={{display:'flex',justifyContent:'center'}}>
+            {userLoginFailure ? <div className={alertClass.root}>
+                                    <Alert variant="outlined" severity="error">
+                                        Login Failed
+                                    </Alert>
+                                </div> : null}
+            {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
+            <div className="signin-box">
+                {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Creating account...</div></div>}
+                        
+                <div className='signin-box-logo'><img src="usace-inventory.png" alt="image" style={{ height: "75px"}} /></div>
 
-                    {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Creating account...</div></div>}
 
-                    {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
-                    
-                    {selectedTab > 0 && 
-                            <div className="login-tabs-container">
-                                <div className={selectedTab === 1 ? "login-tabs-login-selected" : "login-tabs-login"} onClick={() => setSelectedTab(1)}>Sign in </div>
-                                <div className={selectedTab === 2 ? "login-tabs-register-selected" : "login-tabs-register"} onClick={() => setSelectedTab(2)}>New Account </div>
-                            </div>
-                    }
+                {selectedTab === 1 &&
+                <div className="signin-buttons-container">
 
-                    {selectedTab <= 1 &&
-                        <>
-                        {/* Check if user is logged in */}
-                        {/* {localUser.level === '' ? ( */}
-                            <div className="login-buttons-container">
-                            
-                                {selectedTab === 0 && <div className="login-title">Sign in</div>}
+                    <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>Sign In</div>
 
-                                {/* Smart Card Button */}
-
-                                                {/* <Formik onSubmit={onSmartcardButtonSubmit}>
-                                                    { */}
-                                                        <div className="login-cac-button-container">
-                                                            <Button onClick={onSmartcardButtonSubmit} className="login-cac-button" type='submit' color='primary' variant="contained" disabled={userIsLoggingIn} fullWidth>
-                                                            <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                                                                <div style={{height:'34px',width:'26px',border:'2px solid white',borderRadius:'3px',alignSelf:'center',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
-                                                                    <PersonIcon style={{fontSize:'14px'}}/>
-                                                                    <div style={{width:'18px',height:'13px',display:'flex',justifyContent:'space-between',alignSelf:'center'}}>
-                                                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
-                                                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
-                                                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div className='login-cac-button-text-container'>
-                                                                {userIsLoggingIn ? (
-                                                                    <div className='login-cac-button-text-row1'>Loading</div>
-                                                                ) : (
-                                                                    <>
-                                                                    <div className='login-cac-button-text-row1'>Smart Card</div>
-                                                                    <div className='login-cac-button-text-row2'>Access</div>
-                                                                    </>
-                                                                )}
-                                                            </div>
-                                                            </Button>
-                                                        </div>
-                                                    {/* }
-                                                </Formik> */}
-                                {/* <div className="login-cac-button" onClick={handleSignInClick}>
-                                    <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                                        <div style={{height:'34px',width:'26px',border:'2px solid white',borderRadius:'3px',alignSelf:'center',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
-                                            <PersonIcon style={{fontSize:'14px'}}/>
-                                            <div style={{width:'18px',height:'13px',display:'flex',justifyContent:'space-between',alignSelf:'center'}}>
-                                                <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
-                                                <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
-                                                <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div style={{height:'4px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div><div style={{height:'7px',width:'4px',backgroundColor:'white',borderRadius:'1px'}}></div></div>
-                                            </div>
+                    <div className="login-cac-button-container">
+                        <Button onClick={onSmartcardButtonSubmit} className="login-cac-button" type='submit' color='primary' variant="contained" disabled={userIsLoggingIn} fullWidth>
+                            <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                                <div className="cac-icon-outline" style={userIsLoggingIn ? {border:'2px solid rgba(255,255,255,0.2)'}:{}}>
+                                    <PersonIcon style={{fontSize:'14px'}}/>
+                                        <div style={{width:'18px',height:'13px',display:'flex',justifyContent:'space-between',alignSelf:'center'}}>
+                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
+                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
+                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
                                         </div>
                                     </div>
-                                    <div className='login-cac-button-text-container'>
-                                        <div className='login-cac-button-text-row1'>Smart Card</div>
-                                        <div className='login-cac-button-text-row2'>Access</div>
-                                    </div>
-                                </div> */}
+                            </div>
+                        <div className='login-cac-button-text-container'>
+                            {userIsLoggingIn ? (
+                                <div className='login-cac-button-text-row1'>Loading</div>
+                                    ) : (
+                                    <>
+                                <div className='login-cac-button-text-row1'>Smart Card</div>
+                                <div className='login-cac-button-text-row2'>Access</div>
+                                    </>
+                                )}
+                            </div>
+                        </Button>
+                    </div>
+                                                
+                    <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
 
-                                {/* New Account Button */}
-                                <div className="login-register-button" onClick={handleNewAccountClick}>New Account</div>
+                    <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div>
+                </div>   
+                }
 
-                                {/*
-                                {showProblemForm === 0 && <div className="report-problem-button"><span className="report-problem-button-span" onClick={() => setShowProblemForm(1)}><OutlinedFlagSharpIcon className="report-problem-button-icon" /> Trouble signing in?</span></div>}
-
-                                {showProblemForm === 1 && <ReportProblem handleAddProblem={handleAddProblem} hideProblemForm={hideProblemForm} />}
-
-                                {showProblemForm === 2 && <><div className="report-problem-button"></div><div style={{textAlign:'center'}}><div className="report-problem-message"><CheckIcon className="report-problem-message-icon" />&nbsp;&nbsp;Problem has been reported</div></div></>}
-                                */}
-
-                            </div>   
-
-                        </>
-                    }
-
-                    {/*If the new account tab is selected, show the sign up form*/}
-                    {selectedTab === 2 && <Signup hideNewAccountForm={hideNewAccountForm} handleLoading={handleLoading}/> }
-                </div>
+                {selectedTab === 2 && 
+                    <Signup hideNewAccountForm={hideNewAccountForm} handleLoading={handleLoading} setSelectedTab={setSelectedTab}/>
+                }
             </div>
-
-            <div className="login-left-column">
-                <div className="login-image-panel">
-                    <div className="testing-image"><img src="usace-inventory.png" alt="image" style={{ height: "100px", opacity: "0.75" }} /></div>
-                </div>
-                <div className="login-alert-panel">
-                    <div className="login-alert-title">System Info</div>
-                    <div className="login-alert-item">System is current and no maintenance is scheduled at this time.</div>
-                </div>
-            </div>
-        </div>
         </div>
     )
 }
