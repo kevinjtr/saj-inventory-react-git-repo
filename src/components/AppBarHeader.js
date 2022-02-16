@@ -9,12 +9,12 @@ import "./styles/AppBarStyles.css";
 import LogoutButton from './LogoutButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-import UserDropDown from './header/UserDropDown';
+import UserDropdown from './header/UserDropdown';
 
 function Header(props) {
 	const {user, userIsLoggedIn, doLogout, userAccess} = props;
 
-	const [showUserDropDown,setShowUserDropDown] = useState(false)
+	const [showUserDropdown,setShowUserDropdown] = useState(false)
 
 	return (
 		<Route path="/" render={(history) => (
@@ -31,7 +31,7 @@ function Header(props) {
                 </Grid>
 				{userIsLoggedIn && 
 					<Grid item sx={{display:"flex",justifyContent:"flex-end",zIndex:"2",position:"relative"}} >
-						<button onClick={()=>setShowUserDropDown(true)} style={{border:'0px',padding:'0px',backgroundColor:'rgba(0,0,0,0)',outline:'0'}} >
+						<button onClick={()=>setShowUserDropdown(true)} style={{border:'0px',padding:'0px',backgroundColor:'rgba(0,0,0,0)',outline:'0'}} >
 							<AccountCircle style={{color:'rgb(100,100,100)',fontSize:'20px'}} />
 							<ArrowDropDownIcon style={{color:'rgb(100,100,100)',fontSize:'20px'}}/>
 						</button>
@@ -53,7 +53,7 @@ function Header(props) {
 					<LogoutButton/>
 				</Box>}
 			</AppBar>
-			{showUserDropDown && <UserDropDown setShowUserDropDown={setShowUserDropDown} />}
+			{showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown} />}
 			</>
 			)} 
 			/>

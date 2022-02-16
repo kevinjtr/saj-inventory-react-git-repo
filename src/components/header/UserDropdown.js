@@ -6,13 +6,13 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { connect } from 'redux-bundler-react';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
-const UserDropDown = ({setShowUserDropDown, userName}) => {
+const UserDropDown = ({setShowUserDropdown, userName}) => {
 	
 	const [openProblem,setOpenProblem] = useState(false);
 	const [snackBar,setSnackBar] = useState({open:false,message:'',severity:'warning'})
 
 	return (
-		<ClickAwayListener onClickAway={()=>setShowUserDropDown(false)}>
+		<ClickAwayListener onClickAway={()=>setShowUserDropdown(false)}>
 			<div style={{position:'absolute', width:'200px',right:'10px',top:'35px',border:'1px solid rgb(230,230,230)',backgroundColor:'rgb(255,255,255)',zIndex:'2',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
 				<div style={{borderBottom:'1px solid rgb(230,230,230)',padding:'10px',display:'flex',flexDirection:'column'}}>
 					<div style={{textAlign:'center'}}><AccountCircle style={{fontSize:'48px',color:'rgb(230,230,230)'}}/></div>
