@@ -149,9 +149,9 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             .then((response) => response.data).then((data) => {
                 
                 result = data
-                console.log(data)
-                console.log([data])
-                console.log([data][0])
+                //console.log(data)
+                //console.log([data])
+                //console.log([data][0])
             }).catch(function (error) {
                 
             });

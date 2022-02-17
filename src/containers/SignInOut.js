@@ -118,26 +118,30 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
 // Message to be returned after a user submits registration form
 const RegistrationMessage = ({registrationResult}) =>{
 
-    // If single message returned
-    if(typeof(registrationResult[0].message) === 'string'){
-    return(
-        <div className="new-account-message">
-            <div style={{fontSize:'0.65rem',fontWeight:'bold'}}>{registrationResult[0].message}</div>
-            <div style={{fontSize:'0.55rem'}}>{registrationResult[0].error ? 'There is an error' : 'There are no errors'  }</div>
-        </div>
-    )
-    }
+    const messages = []
 
-    // If multiple messages returned
     if(typeof(registrationResult[0].message) === 'object'){
+        const keys = Object.keys(registrationResult[0].message)
+    
+        keys.forEach((key, index) => {
+            messages.push(`${key}: ${registrationResult[0].message[key]}`)
+        })
+    } else {
+        messages[0]=registrationResult[0].message
+    }
+ 
+    const messageList = messages.map((message)=>{
         return(
+            <div>{message}</div>
+        )
+    })
+    
+    return(
             <div className="new-account-message">
-                <div style={{fontSize:'0.55rem'}}>Object containing HRAs and messages:</div>
-                <div style={{fontSize:'0.65rem',fontWeight:'bold'}}>{JSON.stringify(registrationResult[0].message)}</div>
-                <div style={{fontSize:'0.55rem'}}>{registrationResult[0].error ? 'There is an error' : 'There are no errors'  }</div>
+                <div style={{fontSize:'0.65rem',fontWeight:'bold'}}>{messageList}</div>
             </div>
     )
-    }
+    
 }
 
 export default connect(
