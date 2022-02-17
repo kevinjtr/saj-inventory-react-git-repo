@@ -38,7 +38,7 @@ function App(props) {
 
 
 	  return (
-	<ThemeProvider theme={theme}>
+	<ThemeProvider>
 	<CssBaseline/>
 	{
 		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
