@@ -8,7 +8,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-//import './eng4900.css';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -505,7 +504,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                     options={hras.losing}
                     loading={loading.hra}
                     disabled={selectedForm.requested_action == "Issue"}
-                    getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
+                    getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}
                     value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
                     style={{ width: 300 }}
                     onChange={handleLosingHraChange}
@@ -573,7 +572,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                     options={selectedForm.requested_action == "Issue" ? hras.losing : hras.gaining}
                     getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
                     loading={loading.hra}
-                    getOptionLabel={(option) => option.hra_num + ' - ' + option.hra_first_name + ' ' + option.hra_last_name}
+                    getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}
                     value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
                     style={{ width: 300 }}
                     onChange={handleGainingHraChange}

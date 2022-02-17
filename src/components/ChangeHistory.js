@@ -286,11 +286,11 @@ function ChangeHistory({history, userToken}) {
 
 	}, [searchView]);
 
-	React.useEffect(() => {
-		if(history.action == "PUSH"){
-			reloadPage()
-		}
-	}, [history.action]);
+	// React.useEffect(() => {
+	// 	if(history.action == "PUSH"){
+	// 		reloadPage()
+	// 	}
+	// }, [history.action]);
 
 	//Render return.
 	return (

@@ -398,11 +398,11 @@ function Employee({history, userToken}) {
 
 	}, []);//will run once.
 
-	React.useEffect(() => {
-		if(history.action == "PUSH"){
-			reloadPage()
-		}
-	}, [history.action]);
+	// React.useEffect(() => {
+	// 	if(history.action == "POP"){
+	// 		reloadPage()
+	// 	}
+	// }, [history.action]);
 
 	//Render return.
 	return (
@@ -432,7 +432,6 @@ Employee);
 // import { connect } from 'react-redux';
 // import { addProduct } from '../publics/actions/eng4900s';
 // import api from '../axios/Api';
-// import EmployeeForm from './forms/employee';
 
 // export class AddProduct extends Component {
 

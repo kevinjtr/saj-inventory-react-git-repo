@@ -6,7 +6,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import './eng4900.css';
 
 import Card4900 from '../Card4900';
 

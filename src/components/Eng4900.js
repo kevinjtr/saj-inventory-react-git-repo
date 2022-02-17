@@ -3,7 +3,6 @@
 // import Header from "./Header";Box
 //import { connect } from 'react-redux';
 //import { addProduct } from '../publics/actions/eng4900s';
-//import Eng4900Form from './forms/eng4900';
 //-start-//
 import React from 'react';
 import api from '../axios/Api';
@@ -15,7 +14,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import './eng4900.css';
 //import Card4900 from 'Card4900';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -400,23 +398,11 @@ function Eng4900({history, location, match, userToken}) {
   }
 
   const handleTableUpdate = async (rowData) => {
-
     let result = {error:true}
     
-		//setLoading(true)
 		await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
 			result = data
-			//setLoading(false)
-			//setEquipments(data.status != 400 ? data.data : data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
 		}).catch(function (error) {
-			//setLoading(false)
-			//setEquipments([])
 		});
 
 		return(result)
@@ -999,9 +985,8 @@ function Eng4900({history, location, match, userToken}) {
 
                 return(new Promise((resolve, reject) => {
                   setTimeout(() => {
-                    const keys = Object.keys(result.data)
 
-                    if(result.error || keys.length == 0){
+                    if(result.error){
                       reject()
                       return;
                     }
@@ -1168,6 +1153,7 @@ function Eng4900({history, location, match, userToken}) {
               //     }))
               //   },
               onRowUpdate: async (newData, oldData) =>{
+                console.log(newData, oldData)
                 const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
 
                 return(new Promise((resolve, reject) => {
@@ -1411,11 +1397,11 @@ function Eng4900({history, location, match, userToken}) {
     console.log(eng4900s)
   }, [eng4900s]);
 
-  React.useEffect(() => {
-		if(history.action == "PUSH"){
-			reloadPage()
-		}
-	}, [history.action]);
+  // React.useEffect(() => {
+	// 	if(history.action == "PUSH"){
+	// 		reloadPage()
+	// 	}
+	// }, [history.action]);
   
   React.useEffect(() => {
 		console.log(hras)
@@ -1612,7 +1598,6 @@ export default connect(
 // ]
 
 //--end--//
-//import './eng4900.css';
 // export class AddProduct extends Component {
 
 // 	constructor(props) {

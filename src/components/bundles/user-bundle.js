@@ -78,7 +78,7 @@ export default {
          console.log(response.data)
           localStorage.setItem('auth', response.data.token);
           localStorage.setItem('user', response.data.user);
-          localStorage.setItem('x-access-token-expiration', response.data.exp);//15min token duration.
+          localStorage.setItem('x-access-token-expiration', response.data.exp);//token duration.
           localStorage.setItem('user-name', response.data.user_name);
           localStorage.setItem('access', JSON.stringify(response.data.access));
 

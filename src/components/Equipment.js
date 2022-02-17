@@ -1008,12 +1008,12 @@ function Equipment({history, location, userToken}) {
 	
 	}, []);// Empty array ensures that effect is only run on mount
 
-	React.useEffect(() => {
-		console.log(useHistory_.action)
-		if(history.action == "PUSH"){
-			useHistory_.go(0)
-		}
-	}, [useHistory_.action]);
+	// React.useEffect(() => {
+	// 	console.log(useHistory_.action)
+	// 	if(history.action == "PUSH"){
+	// 		useHistory_.go(0)
+	// 	}
+	// }, [useHistory_.action]);
 
 	const searchTextFieldsGridItems = () => Object.keys(searchFields).map(key => {
 		const nFields = Object.keys(searchFields).length

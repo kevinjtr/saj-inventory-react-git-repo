@@ -392,11 +392,11 @@ function Hra({history, userToken}) {
 
 	}, []);//will run once.
 
-	React.useEffect(() => {
-		if(history.action == "PUSH"){
-			reloadPage()
-		}
-	}, [history.action]);
+	// React.useEffect(() => {
+	// 	if(history.action == "PUSH"){
+	// 		reloadPage()
+	// 	}
+	// }, [history.action]);
 
 	//Render return.
 	return (
@@ -429,7 +429,6 @@ export default connect(
 // import { connect } from 'react-redux';
 // import { addProduct } from '../publics/actions/eng4900s';
 // import api from '../axios/Api';
-// import HraForm from './forms/hra';
 
 // export class AddProduct extends Component {
 
