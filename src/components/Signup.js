@@ -64,6 +64,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         }
 
         validateFormData(newFormData);
+
     }
 
     const validateEmail = (email) => {
@@ -127,7 +128,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                 division: division.fieldValue,
                 district: district.fieldValue,
                 office_symbol: officeSymbol.fieldValue,
-                user_type: userType.fieldValue,
+                user_type: parseInt(userType.fieldValue),
                 hras: hras.fieldValue,
             }
 
