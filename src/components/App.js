@@ -18,9 +18,9 @@ function App(props) {
 	const theme = React.useMemo(
 	() =>
 	createTheme({
-		palette: {
-			type: prefersDarkMode ? 'dark' : 'light',
-		},
+		// palette: {
+		// 	type: prefersDarkMode ? 'dark' : 'light',
+		// },
 		}),
 	[prefersDarkMode],
 	);
@@ -38,7 +38,7 @@ function App(props) {
 
 
 	  return (
-	<ThemeProvider>
+	<ThemeProvider theme={theme}>
 	<CssBaseline/>
 	{
 		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>

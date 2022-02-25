@@ -981,7 +981,7 @@ function Eng4900({history, location, match, userToken}) {
               //     }))
               //   },
               onRowUpdate: async (newData, oldData) => {
-                const result = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                const result = await handleTableUpdate({changes:{'0':{newData:{ form_id:newData.form_id, status:newData.status}}}})
 
                 return(new Promise((resolve, reject) => {
                   setTimeout(() => {
