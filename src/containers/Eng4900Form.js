@@ -261,19 +261,21 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
   }
 
   const handleGainingHraChange = (event,val) => {
+    const new_value = val ? val : RESET_HRA
 
-    if(val){
-      setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, gaining: val} })
-      return;
+    if(selectedForm.hra.losing.hra_num && ["FOI","Transfer","Repair"].includes(selectedForm.requested_action)){
+      setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, gaining: new_value} })
+    }else{
+      setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, gaining: new_value}, equipment_group:[] })
     }
-
-    setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, gaining: RESET_HRA} })
+      
+    return;
   }
 
   const handleLosingHraChange = (event,val) => {
 
     if(val){
-      setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: val} })
+      setSelectedForm({...selectedForm,  hra: {...selectedForm.hra, losing: val}, equipment_group:[] })
       setEquipments([])
 
       console.log(val)
@@ -508,8 +510,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                     value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
                     style={{ width: 300 }}
                     onChange={handleLosingHraChange}
-                    
-                    renderInput={(params) => <TextField {...( (!selectedForm.hra.losing.hra_num && !selectedForm.requested_action == "Issue") && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
+                    renderInput={(params) => <TextField {...(!selectedForm.hra.losing.hra_num && !["Issue"].includes(selectedForm.requested_action) && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
                   :
                   <TextField
                     id="standard-helperText-l-hra-num"
@@ -537,6 +538,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-g-first-name"
                   label="3a. Name"
                   name={"gaining_hra_first_name"}
+                  disabled={["Excess"].includes(selectedForm.requested_action)}
                   value={selectedForm.hra.gaining.hra_first_name}
                   //onChange={handleFormChange}
                   InputProps={{
@@ -548,6 +550,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-g-last-name"
                   label="3a. Name"
                   name={"gaining_hra_last_name"}
+                  disabled={["Excess"].includes(selectedForm.requested_action)}
                   value={selectedForm.hra.gaining.hra_last_name}
                   //onChange={handleFormChange}
                   InputProps={{
@@ -559,6 +562,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-g-name"
                   label="b. Office Symbol"
                   name={"gaining_hra_os_alias"}
+                  disabled={["Excess"].includes(selectedForm.requested_action)}
                   value={selectedForm.hra.gaining.hra_office_symbol_alias}
                   //onChange={handleFormChange}
                   InputProps={{
@@ -573,16 +577,18 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                     getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
                     loading={loading.hra}
                     getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}
+                    disabled={["Excess"].includes(selectedForm.requested_action)}
                     value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
                     style={{ width: 300 }}
                     onChange={handleGainingHraChange}
-                    renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
+                    renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && !["Excess"].includes(selectedForm.requested_action) && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
                   />
                 :
                 <TextField
                   id="standard-helperText-g-hra-num"
                   key="standard-helperText-g-hra-num"
                   label="c. Hand Receipt Account Number"
+                  disabled={["Excess"].includes(selectedForm.requested_action)}
                   value={selectedForm.hra.gaining.hra_num}
                   style={{ width: 300 }}/>
                 }
@@ -592,6 +598,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-g-hra-pnum"
                   label="d. Work Phone Number"
                   name="gaining_hra_work_phone"
+                  disabled={["Excess"].includes(selectedForm.requested_action)}
                   value={selectedForm.hra.gaining.hra_work_phone ? formatPhoneNumber(selectedForm.hra.gaining.hra_work_phone ) : ""}
                   style={{ width: 200 }}/>
               </Paper>
@@ -1776,12 +1783,40 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
     handleFormSelect()
   }, []);//will run once.
 
+
+  const IsRequestedActionSelectedHraValid = (form) => {
+    let return_result = false
+
+    switch (form.requested_action) {
+      case "Issue":
+        return_result = !form.hra.losing.hra_num && form.hra.gaining.hra_num
+        break;
+      case "Transfer":
+        return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
+        break;
+      case "Repair":
+        return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
+        break;
+      case "Excess":
+        return_result = form.hra.losing.hra_num && !form.hra.gaining.hra_num
+        break;
+      case "FOI":
+        return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
+        break;
+      default:
+        //do nothing.
+        break;
+    }
+
+    return return_result
+  }
+
   useEffect(()=>{
     console.log(selectedForm)
 
     if(action === "CREATE"){
       console.log(selectedForm)
-      if(isDateValid(selectedForm.expiration_date) && selectedForm.requested_action && (selectedForm.hra.losing.hra_num || selectedForm.requested_action == "Issue") && selectedForm.hra.gaining.hra_num && selectedForm.equipment_group.length > 0){
+      if(isDateValid(selectedForm.expiration_date) && IsRequestedActionSelectedHraValid(selectedForm) && selectedForm.equipment_group.length > 0){
         setSubmitButton({...submitButton,active:true})
         return;
       }

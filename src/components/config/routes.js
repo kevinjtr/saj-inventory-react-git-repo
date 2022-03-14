@@ -31,17 +31,10 @@ const routes_config = [
     {path:'/hra',label:'HRA',alias:'hra',component:Hra,tab:true,level:'user',type:'private'},
     {path:'/employee',alias:'employee',label:'Employee',component:Employee,tab:true,level:'user',type:'private'},
     {path:'/eng4900',alias:'eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin',type:'private'},
-    //{path:'/eng4900/view/:id',label:'Eng 4900 View Form',component:Eng4900FormContainer,tab:false,level:'admin',props:{action:"VIEW"}},
-    //{path:'/eng4900/edit/:id',label:'Eng 4900 Edit Form',component:Eng4900FormContainer,tab:false,level:'admin',props:{action:"EDIT"}},
-    //{path:'/eng4900/create',label:'Eng 4900 Create Form',component:Eng4900Form,tab:false,level:'admin'},
-    //{path:'/eng4844',label:'Eng 4844',component:Eng4844,tab:true},
-    //{path:'/findeng4844',label:'Find Eng4844',component:FindEng4844,tab:true},
-    // {path:'/problemreport',label:'Problem Report',component:ProblemReport,tab:true,level:'user'},
     {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
     {path:'/changehistory',alias:'changeHistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
-    //{path:'/register',label:'Register',component:Register,tab:true,level:'user'},
 ]
 
 export const routes_tabs = (user_access) => {
@@ -51,11 +44,16 @@ export const routes_tabs = (user_access) => {
     }
 
     //Tabs are created
-    const route_with_tabs = filter(routes_config,function(r){
-        if(Object.keys(user_access).includes(r.alias))
-            return r.tab && user_access[r.alias].view 
+    const route_with_tabs = filter(routes_config, function(r){
+        if(r.hasOwnProperty('alias')){
+            if(Object.keys(user_access).indexOf(r.alias) > -1){
+                return r.tab && user_access[r.alias].view 
+            }else{
+                return false
+            }
+        }
 
-        return r.tab
+        return r.type == "public" && r.tab
     })
 
     return_routes.tabs = route_with_tabs.map((route, i) => 
@@ -67,15 +65,15 @@ export const routes_tabs = (user_access) => {
         </li>*/)
 
     //Routes are created
-    const access_routes = filter(routes_config,function(r){
-
-        if(r.type == "private" && Object.keys(user_access).includes(r.alias)){
-            console.log(user_access[r.alias],user_access[r.alias].view)
-
-            return user_access[r.alias].view
+    const access_routes = filter(routes_config, function(r){
+        if(r.hasOwnProperty('alias')){
+            if(r.type == "private" && Object.keys(user_access).indexOf(r.alias) > -1){
+                console.log(user_access[r.alias],user_access[r.alias].view)
+                return user_access[r.alias].view
+            }
         }
-
-        return true 
+        
+        return r.type == "public"
      })
 
      return_routes.routes = access_routes.map((route, i) => {
@@ -98,40 +96,4 @@ export const routes_tabs = (user_access) => {
     })
 
     return return_routes
-
 }
-
-// export const routes = (user_access) => {
-//     const access_routes = filter(routes_config,function(r){
-
-//         if(r.type == "private" && Object.keys(user_access).includes(r.alias)){
-//             console.log(user_access[r.alias],user_access[r.alias].view)
-
-//             return user_access[r.alias].view
-//         }
-
-//         return true 
-//      })
-
-//     const routes = access_routes.map((route, i) => {
-
-//         if(route.type == 'private'){
-//             return (
-//                 <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
-//             )
-//         }
-    
-//         if(route.path == '/login'){
-//             return (
-//                 <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
-//             )
-//         }
-    
-//         return (
-//             <Route exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
-//         )
-//     })
-
-//     return routes
-// }
-
