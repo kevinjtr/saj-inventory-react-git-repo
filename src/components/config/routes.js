@@ -37,7 +37,7 @@ const routes_config = [
     //{path:'/eng4844',label:'Eng 4844',component:Eng4844,tab:true},
     //{path:'/findeng4844',label:'Find Eng4844',component:FindEng4844,tab:true},
     // {path:'/problemreport',label:'Problem Report',component:ProblemReport,tab:true,level:'user'},
-    {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
+    {path:'/problemreportviewer',alias:'problemReportViewer',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
     {path:'/changehistory',alias:'changeHistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
