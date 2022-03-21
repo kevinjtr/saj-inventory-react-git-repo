@@ -128,7 +128,7 @@ const plusButtonStyles = makeStyles((theme) => ({
     },
   }));
 
-function UploadFormModal({type, uploadPdf, setUploadPdf, statusOptions, userToken}) {
+function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
 
     //constant declarations
 
@@ -263,24 +263,24 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, statusOptions, userToke
             return (<p>Upload is Complete. </p>)
         }
 
-        const keys = filter(Object.keys(statusOptions),function(k){ 
-           const {rowData} = uploadPdf
+        const keys = filter(uploadPdf.rowData.status_options,function(option){ 
+            const {rowData} = uploadPdf
         
             if(Object.keys(rowData).length > 0){
                 const {status, originator} = rowData
 
                 if(status && originator){
-                    return Number(k) >= status
+                    return Number(option.id) >= status
                 }
 
-                return Number(k) >= rowData.status && Number(k) <= rowData.status + 1
+                return Number(option.id) >= rowData.status && Number(option.id) <= rowData.status + 1
             }
             
             return false
         })
 
-        const uploadStatusItems = keys.map(k => {
-                return <MenuItem value={k}>{statusOptions[k]}</MenuItem>
+        const uploadStatusItems = keys.map(option => {
+                return <MenuItem value={option.id}>{option.label}</MenuItem>
         })
 
         const {getRootProps, getInputProps, isDragActive, isDragAccept, isDragReject} = useDropzone({

@@ -53,7 +53,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
-import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from './styles/material-ui';
+import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles } from './styles/material-ui';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -92,12 +92,6 @@ function Eng4900({history, location, match, userToken}) {
   const search = getQueryStringParams(location.search)
   const FORM_STATUS = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY',3:'LOSING HRA SIGNATURE REQUIRED', 4:'COMPLETED LOSING HRA SIGNATURE',  5:'GAINING HRA SIGNATURE REQUIRED', 6:'COMPLETED GAINING HRA SIGNATURE',
   7:'SENT TO PBO', 8:'SENT TO LOGISTICS',9:'COMPLETED'}
-  const stsOptions = {
-    single: [{id:1,label:'FORM CREATED'}, {id:2,label:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY'},{id:5,label:'GAINING HRA SIGNATURE REQUIRED'}, {id:6,label:'COMPLETED GAINING HRA SIGNATURE'},
-              {id:7,label:'SENT TO PBO'}, {id:8,label:'SENT TO LOGISTICS'},{id:9,label:'COMPLETED'}],
-    double: [{id:1,label:'FORM CREATED'}, {id:2,label:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY'}, {id:3,label:'LOSING HRA SIGNATURE REQUIRED'}, {id:4,label:'COMPLETED LOSING HRA SIGNATURE'}, {id:5,label:'GAINING HRA SIGNATURE REQUIRED'}, {id:6,label:'COMPLETED GAINING HRA SIGNATURE'},
-              {id:7,label:'SENT TO PBO'}, {id:8,label:'SENT TO LOGISTICS'},{id:9,label:'COMPLETED'}],
-  }
   const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_forms', label:'Completed Forms'}}
   const SEARCH_FIELD_RESET = {
     id: {label: 'Form ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -287,6 +281,12 @@ function Eng4900({history, location, match, userToken}) {
         setEditable(data.editable)
         setEng4900s(data.data)
 
+        if(data.hasOwnProperty('hras')){
+          for(const key in data.hras){
+            setHras({...hras, [key]: data.hras[key] })
+          }        
+        }
+
         if(data.data[0].length == 0){
           setTabs(1)
         }
@@ -359,6 +359,21 @@ function Eng4900({history, location, match, userToken}) {
 		});
 
 		return(result)
+  }
+
+  const getHrasAndEquipments = () => {
+
+    //api.get(`hra/form`)
+    getHraFormApi(userToken).then((hra_res) => hra_res.data).then((h_data) => {
+        console.log('hra_download',h_data)
+
+        for(const key in h_data.data){
+          setHras({...hras, [key]: (h_data.status != 400 ? h_data.data[key] : RESET_HRAS) })
+        }        
+
+      }).catch(function (error) {
+        setHras(RESET_HRAS)
+      });
   }
   
   //Function Declarations.
@@ -505,7 +520,7 @@ function Eng4900({history, location, match, userToken}) {
               onChange(event.target.value);
            }}
         >
-           {(rowData.requested_action == "Issue" ? stsOptions.single : stsOptions.double).map((option) => (
+           {(rowData.status_options).map((option) => (
             <MenuItem key={option.id} value={option.id}>
               {option.label}
             </MenuItem>
@@ -529,7 +544,6 @@ function Eng4900({history, location, match, userToken}) {
         return ({ isValid: false, helperText: 'Status selection is incorrect.' })
   
       }},
-      //Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
       { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
@@ -578,9 +592,9 @@ function Eng4900({history, location, match, userToken}) {
                   // </div>
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
+                  {rowData.status_options.map((option) => (
+                      <Step key={option.label}>
+                        <StepLabel>{option.label}</StepLabel>
                       </Step>
                     ))}
                   </Stepper>
@@ -729,7 +743,7 @@ function Eng4900({history, location, match, userToken}) {
               onChange(event.target.value);
            }}
         >
-           {(rowData.requested_action == "Issue" ? stsOptions.single : stsOptions.double).map((option) => (
+           {(rowData.status_options).map((option) => (
             <MenuItem key={option.id} value={option.id}>
               {option.label}
             </MenuItem>
@@ -752,7 +766,7 @@ function Eng4900({history, location, match, userToken}) {
         
         return ({ isValid: false, helperText: 'Status selection is incorrect.' })
   
-      }},//Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
+      }},
       { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
@@ -801,9 +815,9 @@ function Eng4900({history, location, match, userToken}) {
                   // </div>
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
+                  {rowData.status_options.map((option) => (
+                      <Step key={option.label}>
+                        <StepLabel>{option.label}</StepLabel>
                       </Step>
                     ))}
                   </Stepper>
@@ -950,7 +964,6 @@ function Eng4900({history, location, match, userToken}) {
     
     let columns = [
       { title: 'Status', field: 'status', editable:'never', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>},
-      //Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
       { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
@@ -999,9 +1012,9 @@ function Eng4900({history, location, match, userToken}) {
                   // </div>
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
+                  {rowData.status_options.map((option) => (
+                      <Step key={option.label}>
+                        <StepLabel>{option.label}</StepLabel>
                       </Step>
                     ))}
                   </Stepper>
@@ -1132,7 +1145,7 @@ function Eng4900({history, location, match, userToken}) {
         
         return ({ isValid: false, helperText: 'Status selection is incorrect.' })
   
-      }},//Object.fromEntries(Object.entries(FORM_STATUS).filter(([key, value]) => Number(key) >= rowData.status))},
+      }},
       { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
@@ -1169,9 +1182,9 @@ function Eng4900({history, location, match, userToken}) {
                 return (
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                    {steps.map((label) => (
-                      <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
+                    {rowData.status_options.map((option) => (
+                      <Step key={option.label}>
+                        <StepLabel>{option.label}</StepLabel>
                       </Step>
                     ))}
                   </Stepper>

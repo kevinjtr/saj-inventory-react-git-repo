@@ -183,13 +183,3 @@ export const stepStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
 }));
-
-export const steps = ['Form created',
-  'Completed Individual/Vendor ROR Property',
-  'Losing HRA signature required',
-  'Completed losing HRA signature',
-  'Gaining HRA signature required',
-  'Completed gaining HRA signature',
-  'Sent to Logistics',
-  'Sent to PBO',
-  'Completed']
