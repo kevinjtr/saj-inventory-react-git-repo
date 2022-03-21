@@ -21,7 +21,7 @@ import {Tab} from '@mui/material'
 import LogoutConfirm from '../LogoutConfirm';
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
-
+import AuthorizedUsers from '../AuthorizedUsers'
 const routes_config = [
     {path:'/home',alias:'home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
     {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
@@ -31,6 +31,7 @@ const routes_config = [
     {path:'/hra',label:'HRA',alias:'hra',component:Hra,tab:true,level:'user',type:'private'},
     {path:'/employee',alias:'employee',label:'Employee',component:Employee,tab:true,level:'user',type:'private'},
     {path:'/eng4900',alias:'eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin',type:'private'},
+<<<<<<< Updated upstream
     //{path:'/eng4900/view/:id',label:'Eng 4900 View Form',component:Eng4900FormContainer,tab:false,level:'admin',props:{action:"VIEW"}},
     //{path:'/eng4900/edit/:id',label:'Eng 4900 Edit Form',component:Eng4900FormContainer,tab:false,level:'admin',props:{action:"EDIT"}},
     //{path:'/eng4900/create',label:'Eng 4900 Create Form',component:Eng4900Form,tab:false,level:'admin'},
@@ -38,6 +39,10 @@ const routes_config = [
     //{path:'/findeng4844',label:'Find Eng4844',component:FindEng4844,tab:true},
     // {path:'/problemreport',label:'Problem Report',component:ProblemReport,tab:true,level:'user'},
     {path:'/problemreportviewer',alias:'problemReportViewer',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
+=======
+    {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
+    { path: '/authorizedusers', alias: 'authorizedUsers', label: 'Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
+>>>>>>> Stashed changes
     {path:'/changehistory',alias:'changeHistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
