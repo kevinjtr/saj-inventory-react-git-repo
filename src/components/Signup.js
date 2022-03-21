@@ -4,8 +4,10 @@ import ChipInput from 'material-ui-chip-input';
 import {registrationDropDownItems} from './config/constants'
 import findIndex from 'lodash/findIndex'
 import {registerUserApi} from '../publics/actions/register-api'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { Button } from '@material-ui/core';
 
-const Signup = ({hideNewAccountForm, handleLoading}) => {
+const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
     // Create state array for registration form data
     const[formData,setFormData] = useState([
@@ -62,6 +64,7 @@ const Signup = ({hideNewAccountForm, handleLoading}) => {
         }
 
         validateFormData(newFormData);
+
     }
 
     const validateEmail = (email) => {
@@ -95,8 +98,6 @@ const Signup = ({hideNewAccountForm, handleLoading}) => {
             if(field.fieldType === 'phone'){
                 field.fieldError = validatePhone(field.fieldValue.trim()) ? '' : 'Enter a valid phone number.';
             }   
-
-            
         })
     
         setFormData(formData)
@@ -127,7 +128,7 @@ const Signup = ({hideNewAccountForm, handleLoading}) => {
                 division: division.fieldValue,
                 district: district.fieldValue,
                 office_symbol: officeSymbol.fieldValue,
-                user_type: userType.fieldValue,
+                user_type: parseInt(userType.fieldValue),
                 hras: hras.fieldValue,
             }
 
@@ -148,9 +149,9 @@ const Signup = ({hideNewAccountForm, handleLoading}) => {
             .then((response) => response.data).then((data) => {
                 
                 result = data
-                console.log(data)
-                console.log([data])
-                console.log([data][0])
+                //console.log(data)
+                //console.log([data])
+                //console.log([data][0])
             }).catch(function (error) {
                 
             });
@@ -253,7 +254,12 @@ const Signup = ({hideNewAccountForm, handleLoading}) => {
     }
 
     return (
-        <div className="signin-form-container">        
+        <div className="signin-form-container">
+            <div style={{fontSize:'12px',cursor:'pointer'}} onClick={()=>setSelectedTab(1)}>
+                
+                <Button color="primary" size="small"><ArrowBackIosIcon style={{fontSize:'11px'}}/>Sign In</Button>
+            </div>
+            <div style={{fontWeight:'bold',marginBottom:'10px',marginTop:'5px'}}>Create New Account</div>        
             <form onKeyDown={onKeyDown} onSubmit={handleSubmit}>
                 <div className="signin-form-row">
                     <div className="signin-form-item">
@@ -391,7 +397,6 @@ const Signup = ({hideNewAccountForm, handleLoading}) => {
                                     fullWidth
                                     placeholder='Type HRA number and press enter to add'
                                     className='new-account-chip'
-
                                     value={myChips}
                                     onAdd={(chip) => handleChipAdd(chip)}
                                     onDelete={(chip,index) => handleChipDelete(chip,index)}

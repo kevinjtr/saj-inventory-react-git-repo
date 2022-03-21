@@ -3,7 +3,6 @@
 // import Header from "./Header";Box
 //import { connect } from 'react-redux';
 //import { addProduct } from '../../publics/actions/eng4900s';
-//import Eng4900Form from './forms/eng4900';
 //-start-//
 import React from 'react';
 import api from '../../axios/Api';
@@ -15,7 +14,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import './eng4900.css';
 //import Card4900 from '../Card4900';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -772,19 +770,20 @@ function Eng4900({history, location, match, userToken}) {
               //     }))
               //   },
               onRowUpdate: async (newData, oldData) =>{
-                const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-                return(new Promise((resolve, reject) => {
-                  setTimeout(() => {
-                    if(errorResult){
-                      reject()
-                      return;
-                    }
+                console(newData, oldData)
+                // const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                // return(new Promise((resolve, reject) => {
+                //   setTimeout(() => {
+                //     if(errorResult){
+                //       reject()
+                //       return;
+                //     }
     
-                    //resetEmployees();
-                    resolve();
+                //     //resetEmployees();
+                //     resolve();
                       
-                  }, 1000);
-                }))
+                //   }, 1000);
+                // }))
                 },
               onRowDelete: async (oldData) => {
                 const result = await handleTableDelete(oldData)
@@ -995,25 +994,26 @@ function Eng4900({history, location, match, userToken}) {
               //     }))
               //   },
               onRowUpdate: async (newData, oldData) => {
-                const result = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                console.log(newData, oldData)
+                //const result = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
 
-                return(new Promise((resolve, reject) => {
-                  setTimeout(() => {
-                    const keys = Object.keys(result.data)
+                // return(new Promise((resolve, reject) => {
+                //   setTimeout(() => {
+                //     const keys = Object.keys(result.data)
 
-                    if(result.error || keys.length == 0){
-                      reject()
-                      return;
-                    }
+                //     if(result.error || keys.length == 0){
+                //       reject()
+                //       return;
+                //     }
 
-                    const dataUpdate = [...eng4900s[tab_idx]];
-                    const index = oldData.tableData.id;
-                    dataUpdate[index] = result.data;
-                    setEng4900s({...eng4900s, [tab_idx]: [...dataUpdate]});
-                    resolve();
+                //     const dataUpdate = [...eng4900s[tab_idx]];
+                //     const index = oldData.tableData.id;
+                //     dataUpdate[index] = result.data;
+                //     setEng4900s({...eng4900s, [tab_idx]: [...dataUpdate]});
+                //     resolve();
                       
-                  }, 1000);
-                }))
+                //   }, 1000);
+                //}))
               },
               onRowDelete: async (oldData) => {
                 const result = await handleTableDelete(oldData)
@@ -1610,7 +1610,6 @@ export default connect(
 // ]
 
 //--end--//
-//import './eng4900.css';
 // export class AddProduct extends Component {
 
 // 	constructor(props) {

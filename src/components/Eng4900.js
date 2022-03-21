@@ -3,7 +3,6 @@
 // import Header from "./Header";Box
 //import { connect } from 'react-redux';
 //import { addProduct } from '../publics/actions/eng4900s';
-//import Eng4900Form from './forms/eng4900';
 //-start-//
 import React from 'react';
 import api from '../axios/Api';
@@ -15,7 +14,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import './eng4900.css';
 //import Card4900 from 'Card4900';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
@@ -69,7 +67,7 @@ import Tab from '@material-ui/core/Tab';
 import Badge from '@material-ui/core/Badge';
 import DescriptionIcon from '@material-ui/icons/Description';
 import Switch from '@material-ui/core/Switch';
-import Typography from 'material-ui/styles/typography';
+import Typography from '@material-ui/core/Typography';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -91,9 +89,7 @@ const dialogStyles = makeStyles(theme => ({
 function Eng4900({history, location, match, userToken}) {
   
   //Constants Declarations.
-  const formId = match.params.id
   const search = getQueryStringParams(location.search)
-  const PAGE_URL = `/${ENG4900}`
   const FORM_STATUS = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY',3:'LOSING HRA SIGNATURE REQUIRED', 4:'COMPLETED LOSING HRA SIGNATURE',  5:'GAINING HRA SIGNATURE REQUIRED', 6:'COMPLETED GAINING HRA SIGNATURE',
   7:'SENT TO PBO', 8:'SENT TO LOGISTICS',9:'COMPLETED'}
   const stsOptions = {
@@ -104,17 +100,17 @@ function Eng4900({history, location, match, userToken}) {
   }
   const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_forms', label:'Completed Forms'}}
   const SEARCH_FIELD_RESET = {
-    id: {label: 'ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    id: {label: 'Form ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     losingHra: {label: 'Losing HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     losingHraName: {label: 'Losing HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     gainingHra: {label: 'Gaining HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     gainingHraName: {label: 'Gaining HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    catalogNum: {label: 'Catalog Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    acqPrice: {label: 'Acquisition Price', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    serialNum: {label: 'Serial Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    // itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    // catalogNum: {label: 'Catalog Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    // acqPrice: {label: 'Acquisition Price', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    // serialNum: {label: 'Serial Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
   }
   const OPTS_RESET = {
     includes: {},
@@ -214,20 +210,13 @@ function Eng4900({history, location, match, userToken}) {
   }
 
 	const handleSearchFieldsChange = (event) => {
-		console.log(event.target.value)
-    //const tab = event.target.id.split('-')[1]
 
     if(event.target.value == ''){
       setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], value: event.target.value, options: OPTIONS_DEFAULT}} })
 		}else{
-			setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], value: event.target.value}} })
-    }
 
-		// if(event.target.value == ''){
-		// 	setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value, options: OPTIONS_DEFAULT} })
-		// }else{
-		// 	setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], value: event.target.value} })
-		// }
+			setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], value: event.target.value, blanks : BLANKS_DEFAULT}} })
+    }
 	};
 
 	const handleSearchFieldsOptions = (event) => {
@@ -241,19 +230,12 @@ function Eng4900({history, location, match, userToken}) {
 
 	const handleSearchFieldsBlanks = (event) => {
     const blks = SEARCH_FIELD_BLANKS.map(x=>x.value).includes(event.target.value) ? event.target.value : BLANKS_DEFAULT
-    //const tab = event.target.id.split('-')[1]
-
-    //setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], blanks : blks} })
-    
     setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], blanks : blks}} })
   }
   
   const handleSearch = async (e=null,onLoad=false) => {
-    //if(!onLoad) await UpdateUrl()
-
     setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
-    //setAlertUser({success:{active:false,text:''},error:{active:false,text:''}})
-  
+
     let opts = {
       includes: {},
       blanks: {}
@@ -268,11 +250,6 @@ function Eng4900({history, location, match, userToken}) {
       opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
     })
   
-    // api.post(`${ENG4900}/search2`,{
-    //   'fields': fields_obj,
-    //   'options':opts,
-    //   'tab': formTabs[tabs].id
-    // })
     eng4900SearchApi({
       'fields': fields_obj,
       'options':opts,
@@ -282,7 +259,6 @@ function Eng4900({history, location, match, userToken}) {
       console.log(data)
       setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
       setEng4900s({...eng4900s, [tabs]: data.status != 400 ? data.data[tabs] : []})
-      //setEng4900s()
 
       if(data.status == 200 && data.editable){
         setEditable(data.editable)
@@ -298,13 +274,6 @@ function Eng4900({history, location, match, userToken}) {
 
   const pageInitialize = () => {
     setLoading({...loading,init:true})
-  
-    // api.post(`${ENG4900}/search2`, {
-    //   'fields': {},
-    //   'options':OPTS_RESET,
-    //   'tab': formTabs[tabs].id,
-    //   'init': true
-    // })
     eng4900SearchApi({
       'fields': {},
       'options':OPTS_RESET,
@@ -331,7 +300,7 @@ function Eng4900({history, location, match, userToken}) {
   
     });
 
-    getHrasAndEquipments()
+    //getHrasAndEquipments()
   }
   
   const handleSearchView = (e) => {
@@ -345,9 +314,6 @@ function Eng4900({history, location, match, userToken}) {
     setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
     if(typeof form_id != 'undefined'){
       await getEng4900PdfByIdApi(form_id, userToken)
-      // await api.get(`${ENG4900}/pdf/${form_id}`, {
-      //   responseType: 'blob', //Force to receive data in a Blob Format
-      // })
       .then(response => {
       //Create a Blob from the PDF Stream
           const file = new Blob(
@@ -384,46 +350,19 @@ function Eng4900({history, location, match, userToken}) {
     setTabs(newValue);
   };
 
-  const getHrasAndEquipments = () => {
-
-    //api.get(`hra/form`)
-    getHraFormApi(userToken).then((hra_res) => hra_res.data).then((h_data) => {
-        console.log('hra_download',h_data)
-
-        for(const key in h_data.data){
-          setHras({...hras, [key]: (h_data.status != 400 ? h_data.data[key] : RESET_HRAS) })
-        }        
-
-      }).catch(function (error) {
-        setHras(RESET_HRAS)
-      });
-  }
-
   const handleTableUpdate = async (rowData) => {
-
     let result = {error:true}
     
-		//setLoading(true)
 		await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
 			result = data
-			//setLoading(false)
-			//setEquipments(data.status != 400 ? data.data : data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
 		}).catch(function (error) {
-			//setLoading(false)
-			//setEquipments([])
 		});
 
 		return(result)
   }
   
   //Function Declarations.
-  const SearchCriteriaOptions = (val,text="Options",w=200) => {
+	const SearchCriteriaOptions = (tab, val,text="Options") => {
 
 		const menuItems = SEARCH_FIELD_OPTIONS.map(x => {
 			return(
@@ -432,86 +371,54 @@ function Eng4900({history, location, match, userToken}) {
 		})
 
 		return (
-      <div>
-			<Typography noWrap>{text}</Typography>
-			<Select
-        id={`select-${tabs}-opts`}
-        key={`select-${tabs}-opts`}
-				value={searchFields[tabs][val].options ? searchFields[tabs][val].options : OPTIONS_DEFAULT}
-				name={val}
-				onChange={handleSearchFieldsOptions}
-				style={{width:w,paddingRight:'0px'}}
-				label="Sort By"
-				>
-				{menuItems}
-			</Select>
-      </div>
+		<div>
+				<Typography noWrap>{text}</Typography>
+				<Select
+					//labelId="demo-simple-select-outlined-label"
+					id={`opts-${tab}-${text}`}
+					key={`opts-${tab}-${text}`}
+					select
+					value={searchFields[tab][val].options ? searchFields[tab][val].options : OPTIONS_DEFAULT}
+					name={val}
+					onChange={handleSearchFieldsOptions}
+					style={{width:'80%'}}
+					//InputLabelProps={{style: {fontSize: '8vw'}}}
+					//label={text}
+					variant="outlined"
+					>
+					{menuItems}
+				</Select>
+			
+		</div>	
 		);
-    
 	}
 
-	const SearchBlanksOptions = (val,text="Blanks Options",w=200) => {
+	const SearchBlanksOptions = (tab, val,text="") => {
 
 		const menuItems = SEARCH_FIELD_BLANKS.map(x => {
 			return <MenuItem value={x.value}>{x.label}</MenuItem>
 		})
 
 		return (
-		<div>
-			<Typography noWrap>{text}</Typography>
-			<Select
-        id={`select-${tabs}-blanks`}
-				value={searchFields[tabs][val].blanks ? searchFields[tabs][val].blanks : BLANKS_DEFAULT}
-				name={val}
-				onChange={handleSearchFieldsBlanks}
-				//label="Sort By"
-				style={{width:w,paddingRight:'0px'}}
+			<div>
+				<Typography noWrap>{text}</Typography>
+				<Select
+					id={`blanks-${tab}-${text}`}
+					key={`blanks-${tab}-${text}`}
+					select
+					value={searchFields[tab][val].blanks ? searchFields[tab][val].blanks : BLANKS_DEFAULT}
+					name={val}
+					onChange={handleSearchFieldsBlanks}
+					style={{width:'80%'}}
+				    //label="Sort By"
+					//style={{width:'100%',paddingLeft:'20px'}}
+					variant="outlined"
 				>
-				{menuItems}
-			</Select>
-		</div>
+					{menuItems}
+				</Select>
+			</div>
 		);
-  }
-
-	// const UpdateUrl = () => {
-
-	// let url = '?'
-	// const searchFieldKeys = Object.keys(searchFields)
-
-	// for(const key of searchFieldKeys) {
-	// 	if(searchFields[key].value) url = `${url}${url != '?' ? '&':''}${key}=${searchFields[key].value}`
-	// 	if(searchView != BASIC_SEARCH & searchFields[key].options != OPTIONS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Opts'}=${searchFields[key].options}`
-	// 	if(searchView != BASIC_SEARCH & searchFields[key].blanks != BLANKS_DEFAULT) url = `${url}${url != '?' ? '&':''}${key + 'Blanks'}=${searchFields[key].blanks}`
-	// }
-
-	// history.replace(PAGE_URL + (url != '?' ? url : ''))
-	// }
-
-	const reloadPage = () => {
-		window.location.reload()
-  }
-
-  const ViewForm = (e) => {
-    const eId = (e.target.id).split('-')[1]
-    history.replace(PAGE_URL + '/view/' + eId)
-  }
-
-  const ViewFormById = (id) => {
-    if(id){
-      history.replace(PAGE_URL + '/view/' + id)
-    }
-  }
-
-  const EditForm = (e) => {
-    const eId = (e.target.id).split('-')[1]
-    history.replace(PAGE_URL + '/edit/' + eId)
-  }
-
-  const EditFormById = (id) => {
-    if(id){
-      history.replace(PAGE_URL + '/edit/' + id)
-    }
-  }
+	}
 
   const searchForm = (tab) => {
 
@@ -529,20 +436,19 @@ function Eng4900({history, location, match, userToken}) {
           </Grid>
         </Grid>
         {switches[tab].showSearch ?
-        <>
         <FormControl component="fieldset">
           <RadioGroup row aria-label="position" name={tab} id={`radio-group-${tab}`} key={`radio-group-${tab}`} value={searchView[tab]} onChange={handleSearchView}>
           <FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
           <FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Search" />
           </RadioGroup>
-        </FormControl></> : null
+        </FormControl> : null
         }		
         {switches[tab].showSearch ?
         <div style={{textAlign: 'center'}}>
         <form className={classesTextField.root} noValidate autoComplete="off">
           <div className={classesGrid.options}>
-          <Grid container spacing={2}>
-            {/* {searchTextFieldsGridItems(tab)} */}
+          <Grid container spacing={2} justifyContent={'center'}>
+            {searchTextFieldsGridItems(tab)}
             {searchButtonGridItem(tab)}
           </Grid>
           </div>
@@ -995,21 +901,20 @@ function Eng4900({history, location, match, userToken}) {
               //     }))
               //   },
               onRowUpdate: async (newData, oldData) => {
-                const result = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                const result = await handleTableUpdate({changes:{'0':{newData:{ form_id: newData.form_id, status:newData.status}}}})
 
                 return(new Promise((resolve, reject) => {
                   setTimeout(() => {
-                    const keys = Object.keys(result.data)
 
-                    if(result.error || keys.length == 0){
+                    if(result.error){
                       reject()
                       return;
                     }
 
-                    const dataUpdate = [...eng4900s[tab_idx]];
-                    const index = oldData.tableData.id;
-                    dataUpdate[index] = result.data;
-                    setEng4900s({...eng4900s, [tab_idx]: [...dataUpdate]});
+                    // const dataUpdate = [...eng4900s[tab_idx]];
+                    // const index = oldData.tableData.id;
+                    // dataUpdate[index] = result.data;
+                    // setEng4900s({...eng4900s, [tab_idx]: [...dataUpdate]});
                     resolve();
                       
                   }, 1000);
@@ -1168,6 +1073,7 @@ function Eng4900({history, location, match, userToken}) {
               //     }))
               //   },
               onRowUpdate: async (newData, oldData) =>{
+                console.log(newData, oldData)
                 const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
 
                 return(new Promise((resolve, reject) => {
@@ -1261,16 +1167,6 @@ function Eng4900({history, location, match, userToken}) {
               tooltip: 'Show Status',
               render: rowData => {
                 return (
-                  // <div
-                  //   style={{
-                  //     fontSize: 100,
-                  //     textAlign: 'center',
-                  //     color: 'white',
-                  //     backgroundColor: '#43A047',
-                  //   }}
-                  // >
-                  //   {rowData.status}
-                  // </div>
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
                     {steps.map((label) => (
@@ -1288,17 +1184,15 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.View,
                 tooltip: 'View Form',
                 onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
-                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
-                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+                disabled: !(rowData.document_source != 2)
               }),
               rowData => ({
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
-                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+                },
+                disabled: ! (rowData.document_source != 2)
               }),           
             ]}
           />
@@ -1309,80 +1203,48 @@ function Eng4900({history, location, match, userToken}) {
   //Render Variables
   const searchTextFieldsGridItems = (tab) => Object.keys(searchFields[tab]).map(key => {
 		const nFields = Object.keys(searchFields[tab]).length
-    const w = windowSize.width*.75 / nFields
-    
+    const w = windowSize.width*.75 / nFields >= 100 && 120 >= windowSize.width*.75 / nFields ? windowSize.width*.75 / nFields : 120
 	return(	
-	<>
-	<Grid item xs={Math.ceil(12/(nFields + 1))}>  
-  <Typography noWrap>{`Search ${searchFields[tab][key].label}`}</Typography>         
-		<TextField
-      id={`search-${tab}-${key}`}
-      key={`search-${tab}-${key}`} 
-			name={key}
-			type="search" variant="outlined" 
-			value={searchFields[tab][key].value} 
-			onChange={handleSearchFieldsChange}
-			onKeyPress={handleSearchKeyPress}
-			style={{width:'100%',paddingRight:'20px'}}
-		//	InputLabelProps={{style: {fontSize: '.6vw'}}}
-		/>
-		{searchFields[tab][key].value && searchView[tab] != BASIC_SEARCH ? <><br/>{SearchCriteriaOptions(key,`${searchFields[tab][key].label} Options`,w)}</> : null}
-		<br/>
-		{searchView[tab] != BASIC_SEARCH ? SearchBlanksOptions(key,`${searchFields[tab][key].label} Blanks Options`,w) : null}
-	</Grid>
-	</>)
+    <div>
+      <Typography noWrap>{`Search ${searchFields[tab][key].label}`}</Typography>         
+      <TextField
+        id={`outlined-search-${key}`}
+        key={`outlined-search-${key}`}
+        name={key} 
+        type="search" variant="outlined" 
+        value={searchFields[tab][key].value} 
+        onChange={handleSearchFieldsChange}
+        onKeyPress={handleSearchKeyPress}
+        style={{paddingRight:'10px'}}
+      />
+      {searchFields[tab][key].value && searchView[tab] !== BASIC_SEARCH ? SearchCriteriaOptions(tab, key, `${searchFields[tab][key].label} Options`) :
+      !searchFields[tab][key].value && searchView[tab] !== BASIC_SEARCH ? SearchBlanksOptions(tab, key, `${searchFields[tab][key].label}`) : null
+      }
+    </div>
+	)
   });
 
 	const searchButtonGridItem = (tab) => { 
 		return(
-			<Grid item style={{textAlign:'left',paddingLeft:'20px'}}  xs={Math.floor(12/(Object.keys(searchFields[tab]).length))}>
+			<div style={{paddingTop:'27px'}}>
 				<IconButton id={`search-${tab}`} key={`search-${tab}`} name={tab} aria-label="search" color="primary" onClick={handleSearch}>
 					<SearchIcon style={{ fontSize: 40 }}/>
 				</IconButton>
-			</Grid>)
+			</div>)
 	}
 
-  const displayTop = () => {
-    // if(location.pathname.includes(`${ENG4900}/edit/`))
-    // {
-    //   return(
-    //   <div style={{textAlign: 'center'}}>
-    //     <h2>Eng 4900 - Edit Form</h2>
-    //   </div>
-    //   )
-    // }
-
-    // if(location.pathname.includes(`${ENG4900}/view/`))
-    // {
-    //   return(
-    //   <div style={{textAlign: 'center'}}>
-    //     <h2>Eng 4900 - View Form</h2>
-    //   </div>
-    //   )
-    // }
-
-    // if(location.pathname.includes(`${ENG4900}/create`))
-    // {
-    //   return(
-    //   <div style={{textAlign: 'center'}}>
-    //     <h2>Eng 4900 - Create Form</h2>
-    //   </div>
-    //   )
-    // }
-
-    return(
-      <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 Form</h2>     
-      </div>
-    )
-  }
-
-  const disableFields = {
-    PBO: true,
-    logistics: true,
-    HRA: false,
-    user: false
-  }
+  const displayTop = () => (
+  <div style={{textAlign: 'center'}}>
+    <h2>Eng 4900 Form</h2>     
+  </div>
+)
+      
+const disableFields = {
+  PBO: true,
+  logistics: true,
+  HRA: false,
+  user: false
+}
 
   //will run once.
   React.useEffect(() => {
@@ -1412,12 +1274,6 @@ function Eng4900({history, location, match, userToken}) {
   }, [eng4900s]);
 
   React.useEffect(() => {
-		if(history.action == "PUSH"){
-			reloadPage()
-		}
-	}, [history.action]);
-  
-  React.useEffect(() => {
 		console.log(hras)
 	}, [hras]);
 
@@ -1428,10 +1284,6 @@ function Eng4900({history, location, match, userToken}) {
     {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <div>
       {displayTop()}
-      {/* {cards.length > 0 && viewSearch == "card-view"  && !selectedForm ? (<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
-          <h3 style={{ justifyContent: 'center' }}>Available 4900s</h3>
-              <div style={{ justifyContent: 'center' }}>{cards}</div>
-      </div>) : null} */}
       {!loading.init ? TabsEng4900() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
     </div>
     </>
@@ -1441,229 +1293,3 @@ function Eng4900({history, location, match, userToken}) {
 export default connect(
   'selectUserToken',
   Eng4900);
-
-// const textFieldsLosingHandConfig1 = [
-//   {label:'2a. Name', width:300},
-//   {label:'b. Office Symbol', width:300},
-//   {label:'c. Hand Receipt Account Number', width:300},
-// ]
-
-// const textFieldsGainingHandConfig1 = [
-//   {label:'a. Name', width:300},
-//   {label:'b. Office Symbol', width:300},
-//   {label:'c. Hand Receipt Account Number', width:300},
-// ]
-
-// const textFieldsGainingHandConfig2 = [
-//   {label:'13a. Individual/Vendor Removing or Recieving Property', width:600},
-
-// ]
-
-// const textFieldsGainingHandConfig3 = [
-//   {label:'b. Date', width:120},
-//   {label:'c. Signature', width:120},
-// ]
-
-// const textFieldsGainingHandConfig4 = [
-//   {label:'13a. Individual/Vendor Removing or Recieving Property', width:600},
-
-// ]
-
-// const textFieldsGainingHandConfig5 = [
-//   {label:'14a. Losing HRH Signature', width:300},
-//   {label:'b. Date', width:120},
-// ]
-
-// const textFieldsGainingHandConfig6 = [
-//   {label:'15a. Gaining HRH Signature', width:300},
-//   {label:'b. Date', width:120},
-// ]
-
-// const textFieldsGainingHandConfig7 = [
-//   {label:'16a. Losing Command', width:250},
-//   {label:'b. UIC', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }},
-//   // {...(disableFields.PBO && {variant:"filled"})}}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig8 = [
-//   {label:'17a. Gaining Command', width:250
-//   // style={{ width: 250 }}
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-
-// },
-//   {label:'b. UIC', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig9 = [
-//   {label:'c. Ship From', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig10 = [
-//   {label:'c. Ship To:', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig11 = [
-//   {label:'c. Ship To:', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig12 = [
-//   {label:'d. PBO', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig13 = [
-//   {label:'d. PBO', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig14 = [
-//   {label:'e. Losing Command Signature', width:300
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   },
-//   {label:'f. Date', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig15 = [
-//   {label:'e. Gaining Command Signature', width:300
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   },
-//   {label:'f. Date', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.PBO,
-//   // }}
-//   // {...(disableFields.PBO && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig16 = [
-//   {label:'18a. Received By', width:300
-//   // InputProps={{
-//   //   readOnly: disableFields.logistics,
-//   // }}
-//   // {...(disableFields.logistics && {variant:"filled"})}
-//   },
-//   {label:'b. Date', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.logistics,
-//   // }}
-//   // {...(disableFields.logistics && {variant:"filled"})}
-//   }
-// ]
-
-// const textFieldsGainingHandConfig17 = [
-//   {label:'19a. Posted By', width:300
-//   // InputProps={{
-//   //   readOnly: disableFields.logistics,
-//   // }}
-//   // {...(disableFields.logistics && {variant:"filled"})}
-//   },
-//   {label:'b. Date', width:120
-//   // InputProps={{
-//   //   readOnly: disableFields.logistics,
-//   // }}
-//   // {...(disableFields.logistics && {variant:"filled"})}
-//   }
-// ]
-
-//--end--//
-//import './eng4900.css';
-// export class AddProduct extends Component {
-
-// 	constructor(props) {
-// 		super(props);
-
-// 		this.state = {
-// 			product_name: '',
-// 			description: '',
-// 			image: '',
-// 			id_category: '',
-// 			quantity: '',
-// 			categories: [],
-// 		};
-// 	}
-
-// 	componentDidMount() {
-// 		//this.refreshCategoryTable();
-// 	}
-
-// 	refreshCategoryTable() {
-// 		this.categoriesData = api.get('categories', this.state).then((response) => response.data).then((data) => {
-// 			this.setState({
-// 				categories: data.status != 400 ? data.values: data,
-// 				setCategories: data
-// 			});
-// 			//console.log(this.state.categories.values);
-// 			// console.log(this.props, this.state);
-// 		});
-// 	}
-
-// 	handlerChange = (e) => {
-// 		this.setState({ [e.target.name]: e.target.value });
-// 	};
-
-// 	handlerSubmit = async () => {
-// 		window.event.preventDefault();
-// 		await this.dispatch(addProduct(this.state));
-// 		this.history.push('/products');
-// 	};
-
-// 	render() {
-// 		return(
-// 			<Eng4900Form/>
-// 		);
-// 	}
-// }
-
-// const mapStateToProps = (state) => {
-// 	return {
-// 		products: state.products
-// 	};
-// };
-
-// export default connect(mapStateToProps)(AddProduct);

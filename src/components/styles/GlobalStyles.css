@@ -11,7 +11,7 @@ body{
     min-height: 100%!important;
     /* border-left: 1px solid rgba(255, 217, 0, 0.4)!important;
     border-right: 1px solid rgba(255, 217, 0, 0.4)!important; */
-    overflow-y: scroll;
+
 }
 
 .flex-wrapper{
@@ -36,5 +36,8 @@ body{
 
 .content{
     padding:25px;
+    flex-grow: 1;
+    background-color: rgb(250, 250, 250);
+
 }
 

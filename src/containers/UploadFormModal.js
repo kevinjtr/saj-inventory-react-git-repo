@@ -160,16 +160,22 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, statusOptions, userToke
             var formData = new FormData();
             formData.append('file', files[0]);
 
-            await api.post('eng4900/upload', formData, {
-                headers: {auth:userToken},
-                onUploadProgress: (ProgressEvent) => {
-                    let progress = Math.round(
-                    ProgressEvent.loaded / ProgressEvent.total * 100);
-                    setProgress(progress);
-                }})
-                .then((response) => {
+            const {form_id} = uploadPdf.rowData
+
+            console.log(uploadPdf)
+            await api.post(`eng4900/upload/${form_id}`, formData, { headers: {auth: userToken, changes: JSON.stringify({status: modal.newStatus})},
+                // onUploadProgress: (ProgressEvent) => {
+                //     let progress = Math.round(
+                //     ProgressEvent.loaded / ProgressEvent.total * 100);
+                //     setProgress(progress);
+                // }
+            })
+            .then(response => {
+
                 console.log(response)
-            }).catch(function (error) {
+
+            })
+            .catch(function (error) {
                 //do nothing.
             });
         }

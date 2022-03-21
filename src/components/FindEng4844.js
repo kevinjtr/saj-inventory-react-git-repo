@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import { addProduct } from '../publics/actions/eng4900s';
 import api from '../axios/Api';
 import FormPropsTextFields from './forms/findeng4844';
-//import './eng4900.css';
 
 export class AddProduct extends Component {
 

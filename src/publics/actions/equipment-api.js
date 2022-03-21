@@ -20,3 +20,7 @@ export const getAllEquipmentsApi = async (token) => {
 export const equipmentSearchApi = async (searchParams, token) => {
 	return api.post(`${EQUIPMENT}/search`,searchParams,{headers:{auth:token}})
 };
+
+export const equipmentSearchApi2 = async (searchParams, token) => {
+	return api.post(`${EQUIPMENT}/search2`,searchParams,{headers:{auth:token}})
+};
