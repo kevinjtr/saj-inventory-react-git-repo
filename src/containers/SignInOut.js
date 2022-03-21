@@ -66,7 +66,7 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
                                 </div> : null}
             {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
             <div className="signin-box">
-                {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Creating account...</div></div>}
+                {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Please wait...</div></div>}
                         
                 <div className='signin-box-logo'><img src="usace-inventory.png" alt="image" style={{ height: "75px"}} /></div>
 
@@ -118,27 +118,27 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
 // Message to be returned after a user submits registration form
 const RegistrationMessage = ({registrationResult}) =>{
 
-    const messages = []
+    let message = ""
+
+    if(typeof(registrationResult[0].message) === 'string'){
+        message = registrationResult[0].message
+    }
 
     if(typeof(registrationResult[0].message) === 'object'){
         const keys = Object.keys(registrationResult[0].message)
-    
+
+        message = "Your registration request has been submitted and is now pending approval."
+        
         keys.forEach((key, index) => {
-            messages.push(`${key}: ${registrationResult[0].message[key]}`)
+            if(registrationResult[0].message[key] === 'HRA user rights granted'){
+                message = "Your registration request has been approved and you may now log in using CAC authentication."
+            }
         })
-    } else {
-        messages[0]=registrationResult[0].message
     }
- 
-    const messageList = messages.map((message)=>{
-        return(
-            <div>{message}</div>
-        )
-    })
-    
+     
     return(
             <div className="new-account-message">
-                <div style={{fontSize:'0.65rem',fontWeight:'bold'}}>{messageList}</div>
+                <div style={{fontSize:'0.65rem',fontWeight:'bold'}}>{message}</div>
             </div>
     )
     
