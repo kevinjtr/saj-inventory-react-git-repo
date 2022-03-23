@@ -40,11 +40,11 @@ import { ExportCsv } from '@material-table/exporters';
 
 import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from './tools/tools'
 import clsx from 'clsx'
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {Autocomplete, Alert} from '@material-ui/lab';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from './config/constants'
 import {tableIcons} from './material-table/config'
 
-import {orderBy, findIndex, filter as _filter} from 'lodash'
+import {orderBy, findIndex, filter} from 'lodash'
 //Styles Import
 import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from './styles/material-ui';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -65,6 +65,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import {updateEquipmentApi, destroyEquipmentApi, addEquipmentApi, equipmentSearchApi2} from '../publics/actions/equipment-api'
 import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
+import {ALERT} from './tools/tools'
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -136,6 +137,7 @@ function Equipment({history, location, match, userToken}) {
 	width: undefined,
 	height: undefined,
 	});
+  const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
   const [loading, setLoading] = React.useState({init:true,refresh:{
     0: false,
     1: false,
@@ -175,75 +177,103 @@ function Equipment({history, location, match, userToken}) {
 
   //Events Declarations.
   const handleUpdate = async (rowData) => {
+      let errorFound = true
 
-    let result = {}
-    console.log(`${EQUIPMENT} Call`)
-    //setLoading(true)
-    await updateEquipmentApi(rowData, userToken)
-    .then((response) => response.data).then((data) => {
-        result = data
-        //setLoading(false)
-        //setEquipments(data.status != 400 ? data.data : data)
-        // this.setState({
-        // 	equipments: data.status != 400 ? data.values: data,
-        // 	setequipment: data
-        // });
-        //console.log(this.state.equipment.values);
-        // console.log(this.props, this.state);
+      await updateEquipmentApi(rowData, userToken)
+      .then((response) => response.data).then((data) => {
+        const {tabChanges, error} = data
+        errorFound = error
+
+        if(error){
+          setAlertUser(ALERT.FAIL())
+        }else {
+          setAlertUser(ALERT.SUCCESS)
+        }
+
+        for(const tab_number in tabChanges){
+            const equipments_copy = [...equipments[tab_number]]
+
+          for(const eq_change of tabChanges[tab_number]){
+            console.log(tab_number)
+            const idx = findIndex(equipments_copy,function(eq){return eq.bar_tag_num == eq_change.bar_tag_num})
+
+            if(idx != -1){
+              equipments_copy[idx] = eq_change
+              console.log(equipments_copy[idx])
+              setEquipments({...equipments,[tab_number]: equipments_copy})
+            }
+          }
+        }
+
+        
+
+      }).catch(function (error) {
+        console.log(error)
+        setAlertUser(ALERT.FAIL())
+      });
+
+      return(errorFound)
+  }
+
+  const handleDelete = async (rowData) => {
+    let errorFound = true
+
+    await destroyEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
+        const {tabChanges, error} = data
+        errorFound = error
+
+        if(error){
+          setAlertUser(ALERT.FAIL())
+        }else {
+          setAlertUser(ALERT.SUCCESS)
+        }
+
+        for(const tab_number in tabChanges){
+          let equipments_copy = [...equipments[tab_number]]
+
+        for(const eq_change of tabChanges[tab_number]){
+          equipments_copy = filter(equipments_copy,function(eq){return eq.bar_tag_num != eq_change.bar_tag_num})
+          setEquipments({...equipments,[tab_number]: equipments_copy})
+        }
+      }
+      
     }).catch(function (error) {
-        //setLoading(false)
-        //setEquipments([])
+        console.log(error)
+        setAlertUser(ALERT.FAIL())
     });
 
-    return(result)
-}
+    return errorFound
+  }
 
-const handleDelete = async (rowData) => {
+  const handleAdd = async (rowData) => {
+  let errorFound = true
 
-//console.log('equipmentbyHraCall')
-//setLoading(true)
-await destroyEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
+  await addEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
+    const {tabChanges, error} = data
+    errorFound = error
     console.log(data)
-    //setLoading(false)
-    //setEquipments(data.status != 400 ? data.data : data)
-    // this.setState({
-    // 	equipments: data.status != 400 ? data.values: data,
-    // 	setequipment: data
-    // });
-    //console.log(this.state.equipment.values);
-    // console.log(this.props, this.state);
-}).catch(function (error) {
-    //setLoading(false)
-    //setEquipments([])
-});
 
-}
+    if(error){
+      setAlertUser(ALERT.FAIL())
+    }else {
+      setAlertUser(ALERT.SUCCESS)
+    }
 
-const handleAdd = async (rowData) => {
+    for(const tab_number in tabChanges){
+      for(const eq_change of tabChanges[tab_number]){
+        console.log(eq_change,tab_number)
+          setEquipments({...equipments,[tab_number]: [eq_change,...equipments[tab_number]]})
+      }
+    }
 
-let result = {}
-//console.log('equipmentbyHraCall')
-//setLoading(true)
-await addEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
-    result = data
-    console.log(data)
-    //setLoading(false)
-    //setEquipments(data.status != 400 ? data.data : data)
-    // this.setState({
-    // 	equipments: data.status != 400 ? data.values: data,
-    // 	setequipment: data
-    // });
-    //console.log(this.state.equipment.values);
-    // console.log(this.props, this.state);
-}).catch(function (error) {
-    //setLoading(false)
-    //setEquipments([])
-});
+  }).catch(function (error) {
+    console.log(error)
+    setAlertUser(ALERT.FAIL())
+  });
 
-return result
+  return errorFound
 
-}
-
+  }
 
 	const handleSearchFieldsChange = (event) => {
 		console.log(event.target.value)
@@ -283,7 +313,7 @@ return result
   
   const handleSearch = async (e=null,onLoad=false) => {
     //if(!onLoad) await UpdateUrl()
-
+    setAlertUser(ALERT.RESET)
     setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
   
     let opts = {
@@ -897,51 +927,66 @@ return result
                 onRowAddCancelled: rowData => console.log('Row adding cancelled'),
                 onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
                 onRowAdd: async (newData) => {
-                let result = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
+                let errorFound = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
+
                     return (new Promise((resolve, reject) => {
                         setTimeout(() => {
-                        console.log(result.error)
-                        if(!result.error){
-                            //setAlertUser(ALERT.SUCCESS)
-                            //resetEquipments();
-                            resolve();
-                            return;
-                        }
+                          if(errorFound){
+                              reject();
+                              return;
+                          }
 
-                        if(result.hasOwnProperty('columnErrors')) {
-                            if(result.columnErrors.hasOwnProperty('rows')) {
-                                //setAlertUser( result.columnErrors.rows[0] ? ALERT.FAIL( JSON.stringify(result.columnErrors.rows[0])) : ALERT.FAIL())
-                            }
-                        }
-                            //setEquipments([...equipments, newData]);
-                            reject();
+                          resolve();
                         }, 1000);
                     }))
                     },
                 onRowUpdate: async (newData, oldData) => {
-                let result = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-                let errorResult = result.columnErrors
+                let errorFound = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
                     return (new Promise((resolve, reject) => {
-                        setTimeout(() => {
-                            
-                        if(errorResult.errorFound){
-                            const col_name = Object.keys(errorResult.rows[0])[0]
-                            dataIsOnDatabase[col_name] = true
-                            //setAlertUser(ALERT.FAIL())
-                            reject();
-                            return;
-                        }
-                            //resetEquipments();
-                            //setAlertUser(ALERT.SUCCESS)
-                            resolve();
+                        setTimeout(() => {  
+                          if(errorFound){
+                              reject();
+                              return;
+                          }
+
+                          resolve();
                         }, 1000);
                     }))
                 },
+                onRowDelete: async (newData, oldData) => {
+                  let errorFound = await handleDelete({changes:{'0':{newData:newData, oldData:oldData}}})
+                      return (new Promise((resolve, reject) => {
+                          setTimeout(() => {  
+                            if(errorFound){
+                                reject();
+                                return;
+                            }
+  
+                            resolve();
+                          }, 1000);
+                      }))
+                  },
 
             }})}
             />
     </div>
     )
+}
+
+const AlertUser = (x) => {
+
+  console.log('alert user activated')
+
+  if(x.error.active){
+    return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+  }else if(x.success.active){
+    return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
+  }
+
+  //Sucessfully added data to database!
+
+  setAlertUser(ALERT.RESET)
+  return(null)
 }
 
   //Render Variables
@@ -1046,6 +1091,7 @@ return result
     <>
     <div>
       {displayTop}
+      {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
       {!loading.init ? TabsEquipment() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
     </div>
     </>

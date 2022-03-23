@@ -22,6 +22,7 @@ import api from '../axios/Api';
 import DeleteIcon from '@material-ui/icons/Delete';
 import debounce from 'lodash/debounce'
 import { connect } from 'redux-bundler-react';
+import {updateEng4900Api} from '../publics/actions/eng4900-api'
 
 const baseStyle = {
     flex: 1,
@@ -147,6 +148,10 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
         active:false,
         send:false,
       });
+      const [uploadButton, setUploadButton] = React.useState({
+        active:false,
+        send:false,
+      });
     const [progress, setProgress] = useState(0); // progess bar
 
     //Styles declaration
@@ -180,19 +185,50 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
             });
         }
         
-        setSubmitButton({...submitButton,send:false})
+        setUploadButton({...submitButton,send:false})
     }, 1500);
 
     //Events declaration
     const handleSubmit = async (event) => {
-
         setProgress(0)
-        setSubmitButton({...submitButton,send:true})
-        formUpload()
+        if(isFormRejected){
+            const {form_id} = uploadPdf.rowData
+            const rowData = {changes:{'0':{newData:{ form_id: form_id, status:modal.newStatus}}}}
+            setSubmitButton({...submitButton,send:true})
+            console.log(rowData)
+            await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
+                setSubmitButton({...submitButton,send:false})
+            }).catch(function (error) {
+                console.log(error)
+                setSubmitButton({...submitButton,send:false})
+            });
+
+            
+
+            setTimeout( () => {
+                setSubmitButton({...submitButton,send:false})
+            }, 1500);
+        }
+    }
+
+    const handleUpload = async (event) => {
+        setProgress(0)
+        if(!isFormRejected){
+            setUploadButton({...uploadButton,send:true})
+            formUpload()
+        }
     }
 
     const handleModalStatusChange = (e) => {
-        setModal({...modal,newStatus:e.target.value})
+        console.log(e.target.value == 11)
+        if(e.target.value == 11){
+            setSubmitButton({...uploadButton,active:true})
+            setModal({...modal,newStatus:e.target.value})
+        }else{
+            setSubmitButton({...uploadButton,active:false})
+            setModal({...modal,newStatus:e.target.value})
+        }
+        
     }
 
     const resetModalData = () => {
@@ -209,6 +245,8 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
         return;
     }
 
+    const isFormRejected = () => modal.newStatus == 11
+
     const UploadModal = () => {
 
         const returnUploadDropZone = () => {
@@ -222,64 +260,64 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
                 ));
 
             //const description = files.map((file) => <li key={file.path}>{file.path}  <i className="fa fa-trash text-red" style={{color:'#FF0000'}} title="Remove Attachment" onClick={() => remove(file)}></i></li>);
-            
-
+        
             const description = files.map((file) => <li key={file.path}>{file.path}
               <IconButton style={{color:'#FF0000'}} size="small" title="Remove Attachment" aria-label="delete" onClick={() => remove(file)}>
                 <DeleteIcon />
             </IconButton>
               </li>);
             
-            
-
-
-            return (
-                <section className="container">
-                <div {...getRootProps({className: 'dropzone',style})}>
-                    <input {...getInputProps()} />
-                    <p>Drag 'n' drop some files here, or click to select files</p>
-                    <em>(Only *.pdf files are accepted)</em>
-                </div>
-                <aside style={thumbsContainer}>
-                    {thumbs}
-                </aside>
-                <aside style={thumbsContainer}>
-                    <ul>
-                    {description}
-                    </ul>
-                </aside>
-                <aside>
-                    {progress > 0 ? (
-                        <div className="progessBar" style={{ width: progress }}>
-                        {'Upload Progress:' + progress + '%'}
+            if(!isFormRejected()){
+                return(
+                    <section className="container">
+                        <div {...getRootProps({className: 'dropzone',style})}>
+                            <input {...getInputProps()} />
+                            <p>Drag 'n' drop some files here, or click to select files</p>
+                            <em>(Only *.pdf files are accepted)</em>
                         </div>
-                    ) : null}
-                </aside>
-                </section>
-            );
+                        <aside style={thumbsContainer}>
+                            {thumbs}
+                        </aside>
+                        <aside style={thumbsContainer}>
+                            <ul>
+                            {description}
+                            </ul>
+                        </aside>
+                        <aside>
+                            {progress > 0 ? (
+                                <div className="progessBar" style={{ width: progress }}>
+                                {'Upload Progress:' + progress + '%'}
+                                </div>
+                            ) : null}
+                        </aside>
+                    </section>
+                )
+            }
+
+            return (<br/>)
         }
 
         const returnCompleteLabel = () => {
             return (<p>Upload is Complete. </p>)
         }
 
-        const keys = filter(uploadPdf.rowData.status_options,function(option){ 
-            const {rowData} = uploadPdf
+        // const keys = filter(uploadPdf.rowData.status_options,function(option){ 
+        //     const {rowData} = uploadPdf
         
-            if(Object.keys(rowData).length > 0){
-                const {status, originator} = rowData
+        //     if(Object.keys(rowData).length > 0){
+        //         const {status, originator} = rowData
 
-                if(status && originator){
-                    return Number(option.id) >= status
-                }
+        //         if(status && originator){
+        //             return Number(option.id) >= status
+        //         }
 
-                return Number(option.id) >= rowData.status && Number(option.id) <= rowData.status + 1
-            }
+        //         return Number(option.id) >= rowData.status && Number(option.id) <= rowData.status + 1
+        //     }
             
-            return false
-        })
+        //     return false
+        // })
 
-        const uploadStatusItems = keys.map(option => {
+        const uploadStatusItems = uploadPdf.rowData.status_options.map(option => {
                 return <MenuItem value={option.id}>{option.label}</MenuItem>
         })
 
@@ -291,9 +329,9 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
                 })));
             },
             maxFiles: 1,
-            onDropAccepted: () => setSubmitButton({...submitButton,active:true}),
-            onDropRejected: () => setSubmitButton({...submitButton,active:false}),
-            });
+            onDropAccepted: () => setUploadButton({...submitButton,active:true}),
+            onDropRejected: () => setUploadButton({...submitButton,active:false}),
+        });
 
         const remove = file => {
             const newFiles = [...files];     // make a var for the new array
@@ -301,7 +339,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
             setFiles(newFiles);              // update the state
 
             if(newFiles.length == 0){
-                setSubmitButton({...submitButton,active:false})
+                setUploadButton({...submitButton,active:false})
             }
         };
             
@@ -314,8 +352,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
             isDragActive,
             isDragReject,
             isDragAccept
-            ]);
-            
+        ]); 
         
         useEffect(() => () => {
             // Make sure to revoke the data uris to avoid memory leaks
@@ -327,6 +364,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
         }, [submitButton]);
 
         const newStatusSelected = modal.newStatus && ( modal.newStatus != uploadPdf.rowData.status)
+        
 
         return(
             <Dialog open={uploadPdf.show} class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
@@ -365,11 +403,19 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
                 ) : null}
                 
                 { newStatusSelected ? (modal.uploadDone ? returnCompleteLabel() : returnUploadDropZone()) : null}
-                <div style={{textAlign:'center'}}>
-                    <AdornedButton onClick={handleSubmit} className={ submitButton.active && newStatusSelected ? clsx(plusButtonClasses.fabBlue) : clsx(plusButtonClasses.fabGrey)} {...(( !submitButton.active || submitButton.send || !newStatusSelected) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
-                    Upload
-                    </AdornedButton>
-                </div>
+                {isFormRejected() ? (
+                    <div style={{textAlign:'center'}}>
+                        <AdornedButton onClick={handleSubmit} className={ submitButton.active && newStatusSelected ? clsx(plusButtonClasses.fabBlue) : clsx(plusButtonClasses.fabGrey)} {...(( !submitButton.active || submitButton.send || !newStatusSelected) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
+                        Submit
+                        </AdornedButton>
+                    </div>
+                ):(
+                    <div style={{textAlign:'center'}}>
+                        <AdornedButton onClick={handleUpload} className={ uploadButton.active && newStatusSelected ? clsx(plusButtonClasses.fabBlue) : clsx(plusButtonClasses.fabGrey)} {...(( !uploadButton.active || uploadButton.send || !newStatusSelected) && {disabled:true})} {...((uploadButton.send) && {loading:true})}> 
+                        Upload
+                        </AdornedButton>
+                    </div>
+                )}
                 </DialogContent>
             </Dialog>
         )

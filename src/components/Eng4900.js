@@ -90,8 +90,19 @@ function Eng4900({history, location, match, userToken}) {
   
   //Constants Declarations.
   const search = getQueryStringParams(location.search)
-  const FORM_STATUS = {1:'FORM CREATED', 2:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY',3:'LOSING HRA SIGNATURE REQUIRED', 4:'COMPLETED LOSING HRA SIGNATURE',  5:'GAINING HRA SIGNATURE REQUIRED', 6:'COMPLETED GAINING HRA SIGNATURE',
-  7:'SENT TO PBO', 8:'SENT TO LOGISTICS',9:'COMPLETED'}
+  const FORM_STATUS = {
+    1:"Form Edit",
+    2:"Individual/Vendor signature required",
+    3:"Completed Individual/Vendor signature",
+    4:"Losing HRA signature required",
+    5:"Completed losing HRA signature",
+    6:"Gaining HRA signature required",
+    7:"Completed gaining HRA signature",
+    8:"Sent to Logistics",
+    9:"Sent to PBO",
+    10:"Completed",
+    11:"Form Rejected"
+}
   const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_forms', label:'Completed Forms'}}
   const SEARCH_FIELD_RESET = {
     id: {label: 'Form ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -138,7 +149,8 @@ function Eng4900({history, location, match, userToken}) {
   //Hooks Declarations.
   const [uploadPdf, setUploadPdf] = React.useState({
     show: false,
-    rowData: null
+    rowData: null,
+    refresh:false
   })
   const [create4900, setCreate4900] = React.useState({
     show: false,
@@ -1290,10 +1302,16 @@ const disableFields = {
 		console.log(hras)
 	}, [hras]);
 
+  React.useEffect(() => {
+		if(uploadPdf.refresh){
+      
+    }
+	}, [uploadPdf.refresh]);
+
   //Render return.
   return (
     <>
-    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} statusOptions={FORM_STATUS}/> : null}
+    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s}/> : null}
     {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <div>
       {displayTop()}
