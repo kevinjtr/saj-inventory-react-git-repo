@@ -12,7 +12,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import UserDropdown from './header/UserDropdown';
 
 function Header(props) {
-	const {user, userIsLoggedIn, doLogout, userAccess} = props;
+	const {user, userIsLoggedIn, userAccess} = props;
 
 	const [showUserDropdown,setShowUserDropdown] = useState(false)
 

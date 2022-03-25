@@ -87,7 +87,7 @@ const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
     padding: theme.spacing(2),
     position:'absolute',
-    top: theme.spacing(5)
+    top: theme.spacing(5),
   },
   dialogTitle: {
     float:'right'
@@ -367,7 +367,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
         
 
         return(
-            <Dialog open={uploadPdf.show} class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
+            <Dialog open={uploadPdf.show} fullWidth class={{paper:classDialog.dialogWrapper}} onClose={(event, reason) => {
                 if (reason !== 'backdropClick') {
                     //setModal({...modal,active:false})
                 }
@@ -388,7 +388,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
                 
                 {!modal.uploadDone ? (
                 <div style={{textAlign:'center'}}>
-                    <FormControl style={{paddingBottom:20}}>
+                    <FormControl style={{paddingBottom:20, width:'50%',justifyContent:'center'}}>
                         <InputLabel id="demo-simple-select-label">Status</InputLabel>
                         <Select
                         labelId="demo-simple-select-label"

@@ -33,16 +33,13 @@ function AnnualInventory({history, userToken}) {
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
-
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
+		let error_found = true
 		await updateAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
+		const {status, error} = data
+		error_found = error
 		console.log(data)
 
-		const status = data.hasOwnProperty('status') ? data.status == 400 : false
-		const error = data.hasOwnProperty('error') ? data.error : false
-
-		if(status || error){
+		if(error){
 			setAlertUser(ALERT.FAIL())
 		}else {
 			setAlertUser(ALERT.SUCCESS)
@@ -56,16 +53,11 @@ function AnnualInventory({history, userToken}) {
 		//console.log(this.state.equipment.values);
 		// console.log(this.props, this.state);
 		}).catch(function (error) {
-		//setLoading(false)
-		//setEquipments([])
+			console.log(error)
+			setAlertUser(ALERT.FAIL())
 		});
-		
 
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
+		return error_found
 	}
 
 	const handleTableDelete = async (rowData) => {
@@ -105,45 +97,25 @@ function AnnualInventory({history, userToken}) {
 	}
 
 	const handleTableAdd = async (rowData) => {
-
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
-	let resultReturn = {errorFound:false}
+	let error_found = true
 
 	await addAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
+		const {status, error} = data
+		error_found = error
 
-		const status = data.hasOwnProperty('status') ? data.status == 400 : false
-		const error = data.hasOwnProperty('error') ? data.error : false
-
-		if(status || error){
+		if(error){
 			setAlertUser(ALERT.FAIL())
 		}else {
 			setAlertUser(ALERT.SUCCESS)
 		}
 
-		resultReturn = data.columnErrors
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
 		}).catch(function (error) {
-			resultReturn = {...resultReturn,errorFound:false}
-		//setLoading(false)
-		//setEquipments([])
+			console.log(error)
+			setAlertUser(ALERT.FAIL())
 		});
 		
-		return resultReturn
-
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
+		return error_found
 	}
 
 	//Functions.
@@ -397,11 +369,10 @@ function AnnualInventory({history, userToken}) {
 				onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 				onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 				onRowAdd: async (newData) => {
-				const result = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
+				const errorFound = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
 					return (new Promise((resolve, reject) => {
 						setTimeout(() => {
-							//setHras([...hras, newData]);
-							if(result.errorFound){
+							if(errorFound){
 								reject()
 							}else{
 								resetAnnualInventory()
@@ -412,17 +383,17 @@ function AnnualInventory({history, userToken}) {
 					}))
 				},
 				onRowUpdate: async(newData, oldData) =>{
-				await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+				const errorFound = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+
 					new Promise((resolve, reject) => {
 						setTimeout(() => {
-							
-							//const dataUpdate = [...hras];
-							//const index = oldData.tableData.id;
-							//dataUpdate[index] = newData;
-							resetAnnualInventory()
-							//setHras([...dataUpdate]);
-		
+							if(errorFound){
+								reject();
+								return;
+							}
+
 							resolve();
+							resetAnnualInventory();
 						}, 1000);
 					})
 				},
@@ -482,7 +453,7 @@ function AnnualInventory({history, userToken}) {
 
 		if(data.status == 200 && data.editable){
 			setEditable(data.editable)
-
+			setHras(data.hras.length > 0 ? data.hras : [])
 			console.log('is editable')
 		}
 		// this.setState({
@@ -497,21 +468,21 @@ function AnnualInventory({history, userToken}) {
 		setInitialize(false)
 		});
 
-	console.log('HRACall')
-	getAllHrasApi(userToken).then((response) => response.data).then((data) => {
-		console.log(data.data)
-		// setLoading(false)
-		setHras(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		//setLoading(false)
-		setHras([])
-		});
+	// console.log('HRACall')
+	// getAllHrasApi(userToken).then((response) => response.data).then((data) => {
+	// 	console.log(data.data)
+	// 	// setLoading(false)
+	// 	setHras(data.status != 400 ? data.data : data)
+	// 	// this.setState({
+	// 	// 	equipments: data.status != 400 ? data.values: data,
+	// 	// 	setequipment: data
+	// 	// });
+	// 	//console.log(this.state.equipment.values);
+	// 	// console.log(this.props, this.state);
+	// 	}).catch(function (error) {
+	// 	//setLoading(false)
+	// 	setHras([])
+	// 	});
 
 
 	}, []);

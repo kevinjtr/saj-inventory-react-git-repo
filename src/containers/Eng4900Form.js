@@ -417,7 +417,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                 </FormControl>
                 )}
                 
-                {editEnabled ? (
+                {/* {editEnabled ? (
                   <FormControlLabel
                     control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.temporary_loan == 1 ? true : false} onChange={handleCheckBoxChange} name="TemporaryLoan" />}
                     label="Temporary Loan"/> 
@@ -425,7 +425,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   <FormControlLabel
                     control={<Checkbox color="primary" id="check-temporary-loan" key="check-temporary-loan" checked={selectedForm.temporary_loan == 1 ? true: false} name="TemporaryLoan" />}
                     label="Temporary Loan"/> 
-                )}
+                )} */}
     
                 {editEnabled ? (
                   <MuiPickersUtilsProvider utils={DateFnsUtils}>
@@ -468,7 +468,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-f-name"
                   label="2a. First Name"
                   name={"losing_hra_first_name"}
-                  disabled={selectedForm.requested_action == "Issue"}
+                  //disabled={selectedForm.requested_action == "Issue"}
                   value={selectedForm.hra.losing.hra_first_name}
                   //onChange={handleFormChange}
                   InputProps={{
@@ -480,7 +480,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-l-name"
                   label="2a. Last Name"
                   name={"losing_hra_last_name"}
-                  disabled={selectedForm.requested_action == "Issue"}
+                  //disabled={selectedForm.requested_action == "Issue"}
                   value={selectedForm.hra.losing.hra_last_name}
                   //onChange={handleFormChange}
                   InputProps={{
@@ -492,7 +492,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-os-alias"
                   label="b. Office Symbol"
                   name={"losing_hra_os_alias"}
-                  disabled={selectedForm.requested_action == "Issue"}
+                  //disabled={selectedForm.requested_action == "Issue"}
                   value={selectedForm.hra.losing.hra_office_symbol_alias}
                   //onChange={handleFormChange}
                   InputProps={{
@@ -505,18 +505,18 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                     id="combo-box-losing"
                     options={hras.losing}
                     loading={loading.hra}
-                    disabled={selectedForm.requested_action == "Issue"}
+                    //disabled={selectedForm.requested_action == "Issue"}
                     getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}
                     value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
                     style={{ width: 300 }}
                     onChange={handleLosingHraChange}
-                    renderInput={(params) => <TextField {...(!selectedForm.hra.losing.hra_num && !["Issue"].includes(selectedForm.requested_action) && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
+                    renderInput={(params) => <TextField {...(!selectedForm.hra.losing.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
                   :
                   <TextField
                     id="standard-helperText-l-hra-num"
                     key="standard-helperText-l-hra-num"
                     label="c. Hand Receipt Account Number"
-                    disabled={selectedForm.requested_action == "Issue"}
+                    //disabled={selectedForm.requested_action == "Issue"}
                     value={selectedForm.hra.losing.hra_num}
                     style={{ width: 300 }}/>
                   }
@@ -525,7 +525,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   key="standard-helperText-l-hra-pnum"
                   label="d. Work Phone Number"
                   name="losing_hra_work_phone"
-                  disabled={selectedForm.requested_action == "Issue"}
+                  //disabled={selectedForm.requested_action == "Issue"}
                   value={selectedForm.hra.losing.hra_work_phone ? formatPhoneNumber(selectedForm.hra.losing.hra_work_phone) : ""}
                   style={{ width: 200 }}/>
               </Paper>
@@ -573,7 +573,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                 <Autocomplete
                     style={{ display:'inline-block' }}
                     id="combo-box-gaining"
-                    options={selectedForm.requested_action == "Issue" ? hras.losing : hras.gaining}
+                    options={hras.gaining}
                     getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
                     loading={loading.hra}
                     getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}
@@ -581,7 +581,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                     value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
                     style={{ width: 300 }}
                     onChange={handleGainingHraChange}
-                    renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && !["Excess"].includes(selectedForm.requested_action) && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
+                    renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
                   />
                 :
                 <TextField
@@ -1784,31 +1784,33 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
   }, []);//will run once.
 
 
-  const IsRequestedActionSelectedHraValid = (form) => {
-    let return_result = false
+  const IsSelectedHrasValid = (form) => {
+    // let return_result = false
 
-    switch (form.requested_action) {
-      case "Issue":
-        return_result = !form.hra.losing.hra_num && form.hra.gaining.hra_num
-        break;
-      case "Transfer":
-        return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
-        break;
-      case "Repair":
-        return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
-        break;
-      case "Excess":
-        return_result = form.hra.losing.hra_num && !form.hra.gaining.hra_num
-        break;
-      case "FOI":
-        return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
-        break;
-      default:
-        //do nothing.
-        break;
-    }
+    // switch (form.requested_action) {
+    //   case "Issue":
+    //     return_result = !form.hra.losing.hra_num && form.hra.gaining.hra_num
+    //     break;
+    //   case "Transfer":
+    //     return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
+    //     break;
+    //   case "Repair":
+    //     return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
+    //     break;
+    //   case "Excess":
+    //     return_result = form.hra.losing.hra_num && !form.hra.gaining.hra_num
+    //     break;
+    //   case "FOI":
+    //     return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
+    //     break;
+    //   default:
+    //     //do nothing.
+    //     break;
+    // }
 
-    return return_result
+    // return return_result
+
+    return form.hra.losing.hra_num && form.hra.gaining.hra_num
   }
 
   useEffect(()=>{
@@ -1816,7 +1818,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
 
     if(action === "CREATE"){
       console.log(selectedForm)
-      if(isDateValid(selectedForm.expiration_date) && IsRequestedActionSelectedHraValid(selectedForm) && selectedForm.equipment_group.length > 0){
+      if(isDateValid(selectedForm.expiration_date) && IsSelectedHrasValid(selectedForm) && selectedForm.equipment_group.length > 0){
         setSubmitButton({...submitButton,active:true})
         return;
       }

@@ -67,18 +67,18 @@ export const routes_tabs = (user_access) => {
         </li>*/)
 
     //Routes are created
-    const access_routes = filter(routes_config, function(r){
-        if(r.hasOwnProperty('alias')){
-            if(r.type == "private" && Object.keys(user_access).indexOf(r.alias) > -1){
-                console.log(user_access[r.alias],user_access[r.alias].view)
-                return user_access[r.alias].view
-            }
-        }
+    // const access_routes = filter(routes_config, function(r){
+    //     if(r.hasOwnProperty('alias')){
+    //         if(r.type == "private" && Object.keys(user_access).indexOf(r.alias) > -1){
+    //             console.log(user_access[r.alias],user_access[r.alias].view)
+    //             return user_access[r.alias].view
+    //         }
+    //     }
         
-        return r.type == "public"
-     })
+    //     return r.type == "public"
+    //  })
 
-     return_routes.routes = access_routes.map((route, i) => {
+     return_routes.routes = routes_config.map((route, i) => {
 
         if(route.type == 'private'){
             return (

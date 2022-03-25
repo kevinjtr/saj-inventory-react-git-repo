@@ -12,7 +12,7 @@ import "./styles/GlobalStyles.css";
 import LogoutConfirm from './LogoutConfirm'
 
 function App(props) {
-	const {userIsLoggedIn, userIsLoggedOut, userAccess} = props
+	const {userIsLoggedIn, userIsLoggingOut, userAccess} = props
 	console.log(props)
 	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 	const theme = React.useMemo(
@@ -49,7 +49,7 @@ function App(props) {
 			<Route
 				exact
 				path={'/'}
-				render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggedOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
+				render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
 			/>
 				{routes_tabs(userAccess).routes}
 			<Route render={() => <Redirect to={'/404'} />}/>
@@ -70,5 +70,5 @@ function App(props) {
 export default connect(
 	'selectUserAccess',
 	'selectUserIsLoggedIn',
-	'selectUserIsLoggedOut',
+	'selectUserIsLoggingOut',
 	App);

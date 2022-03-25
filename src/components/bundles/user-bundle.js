@@ -13,8 +13,10 @@ export default {
         auth:'',
         loginFailure: false,
         isLoggingIn: false,
+        isLoggingOut: false,
         isLoggedOut: false,
-        access: {}       
+        access: {},
+        loginMessage: ""    
     }
 
     return (state = initialState, { type, payload }) => {
@@ -76,6 +78,8 @@ export default {
           //console.log(decoded_token)
          // const {iat} = decoded_token
          console.log(response.data)
+
+         if(response.data.token){
           localStorage.setItem('auth', response.data.token);
           localStorage.setItem('user', response.data.user);
           localStorage.setItem('x-access-token-expiration', response.data.exp);//token duration.
@@ -91,9 +95,32 @@ export default {
                 'x-access-token-expiration': response.data.exp,
                 isLoggingIn: false,
                 loginFailure: false,
+                loginMessage:response.data.message,
                 access: response.data.access
             }
           }); 
+         }else{
+          localStorage.setItem('auth', '');
+          localStorage.setItem('user','');
+          localStorage.setItem('x-access-token-expiration','');//15min token duration.
+          localStorage.setItem('user-name','');
+          localStorage.setItem('access', JSON.stringify({}));
+          
+          dispatch({
+            type: "LOGIN_FAILURE",
+            payload: {
+                user: '',
+                user_name:'',
+                auth: '',
+                'x-access-token-expiration': '',
+                isLoggingIn: false,
+                loginFailure: true,
+                loginMessage:response.data.message,
+                access: {}
+            }
+          }); 
+         }
+
 
         })
         .catch((err) => {
@@ -112,6 +139,7 @@ export default {
                 'x-access-token-expiration': '',
                 isLoggingIn: false,
                 loginFailure: true,
+                loginMessage:'a server error occured.',
                 access: {}
             }
           }); 
@@ -133,6 +161,7 @@ export default {
               auth: '',
               'x-access-token-expiration': '',
               isLoggingIn: false,
+              isLoggingOut: true,
               loginFailure: false,
               isLoggedOut: true,
               access: JSON.stringify({})
@@ -182,13 +211,16 @@ export default {
   selectUserLoginFailure: state => {
     return state.user.loginFailure;
   },
+  selectUserLoginMessage: state => {
+    return state.user.loginMessage;
+  },
   selectUserAccess: state => {
     return state.user.access;
   },
   selectUserIsLoggedIn: state => {
     //console.log(state)
     //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
-    return localStorage.getItem('auth') && localStorage.getItem('user') && localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000);
+    return localStorage.getItem('auth') != "" && localStorage.getItem('user') != "" && localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000);
     //return !state.user.isLoggingIn && state.user.auth && state.user.user && (state.user['x-access-token-expiration'] > Math.floor(Date.now() / 1000));
   },
   selectUserIsLoggedOut: state => {
@@ -198,6 +230,10 @@ export default {
   selectUserIsLoggingIn: state => {
     //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
     return state.user.isLoggingIn;
+  },
+  selectUserIsLoggingOut: state => {
+    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
+    return state.user.isLoggingOut;
   },
   init: store => {
     // export function isAuthenticated() {

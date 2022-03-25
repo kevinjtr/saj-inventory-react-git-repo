@@ -14,7 +14,7 @@ import { Grid, Paper, Avatar, TextField, Button, Typography, Link } from '@mater
 import {alertStyles} from '../components/styles/material-ui'
 import Alert from '@material-ui/lab/Alert';
 
-const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure}) => {
+const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage}) => {
 
     const [selectedTab, setSelectedTab] = useState(1); // 1 = show sign in buttons, 2 = show new account form
     const [registrationResult, setRegistrationResult] = useState(false)
@@ -61,7 +61,7 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
         <div className='signin-page-container' style={{display:'flex',justifyContent:'center'}}>
             {userLoginFailure ? <div className={alertClass.root}>
                                     <Alert variant="outlined" severity="error">
-                                        Login Failed
+                                        {`Login Failed${userLoginMessage ? ` - ${userLoginMessage}` : ""}`}
                                     </Alert>
                                 </div> : null}
             {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
@@ -150,4 +150,5 @@ export default connect(
     'doFetchLogin',
     'selectUserIsLoggingIn',
     'selectUserLoginFailure',
+    'selectUserLoginMessage',
 	SignInOut);

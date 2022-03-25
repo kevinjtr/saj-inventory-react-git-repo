@@ -1262,14 +1262,14 @@ function Eng4900({history, location, match, userToken}) {
   <div style={{textAlign: 'center'}}>
     <h2>Eng 4900 Form</h2>     
   </div>
-)
+  )
       
-const disableFields = {
-  PBO: true,
-  logistics: true,
-  HRA: false,
-  user: false
-}
+  const disableFields = {
+    PBO: true,
+    logistics: true,
+    HRA: false,
+    user: false
+  }
 
   //will run once.
   React.useEffect(() => {
