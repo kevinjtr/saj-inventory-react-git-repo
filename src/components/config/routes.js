@@ -59,7 +59,7 @@ export const routes_tabs = (user_access) => {
     })
 
     return_routes.tabs = route_with_tabs.map((route, i) => 
-        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
+        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{height:"32px", minHeight:"32px",paddingTop:'20px!important',fontSize:'0.8em','&:hover':{backgroundColor:'rgba(255,255,255,0.1)',textDecoration:'none',color:'white'}}}/>
         /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
             <Link to={route.path} className="nav-link">
                 {route.label}
