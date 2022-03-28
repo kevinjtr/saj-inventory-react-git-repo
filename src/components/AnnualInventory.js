@@ -34,74 +34,53 @@ function AnnualInventory({history, userToken}) {
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
 		let error_found = true
+		setLoading(true)
+
 		await updateAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		const {status, error} = data
 		error_found = error
-		console.log(data)
 
 		if(error){
 			setAlertUser(ALERT.FAIL())
 		}else {
+			if(data.hasOwnProperty('changes')){
+				const {changes} = data
+				if(data.changes.length > 0){
+					const annualInv_copy = [...annualInv]
+	
+					for(const inv_record_change of changes){
+					  const idx = findIndex(annualInv_copy,function(c){return c.id == inv_record_change.id})
+		  
+					  if(idx != -1){
+						annualInv_copy[idx] = inv_record_change
+						console.log(annualInv_copy[idx])
+						setAnnualInv(annualInv_copy)
+					  }			  
+					}
+				}
+			}
+
 			setAlertUser(ALERT.SUCCESS)
 		}
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
+
+		setLoading(false)
+
 		}).catch(function (error) {
 			console.log(error)
 			setAlertUser(ALERT.FAIL())
+			setLoading(false)
 		});
 
 		return error_found
 	}
 
 	const handleTableDelete = async (rowData) => {
+		let error_found = true
+		setLoading(true)
 
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
 		await destroyAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		console.log(data)
-
-		const status = data.hasOwnProperty('status') ? data.status == 400 : false
 		const error = data.hasOwnProperty('error') ? data.error : false
-
-		if(status || error){
-			setAlertUser(ALERT.FAIL())
-		}else {
-			setAlertUser(ALERT.SUCCESS)
-		}
-		//setLoading(false)
-		//setEquipments(data.status != 400 ? data.data : data)
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
-		}).catch(function (error) {
-		//setLoading(false)
-		//setEquipments([])
-		});
-		
-
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
-	}
-
-	const handleTableAdd = async (rowData) => {
-	let error_found = true
-
-	await addAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
-		console.log(data)
-		const {status, error} = data
 		error_found = error
 
 		if(error){
@@ -113,6 +92,49 @@ function AnnualInventory({history, userToken}) {
 		}).catch(function (error) {
 			console.log(error)
 			setAlertUser(ALERT.FAIL())
+			setLoading(false)
+		});
+
+		return error_found
+	}
+
+	const handleTableAdd = async (rowData) => {
+		let error_found = true
+		setLoading(true)
+
+		await addAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
+			console.log(data)
+			const {status, error} = data
+			error_found = error
+
+			if(error){
+				setAlertUser(ALERT.FAIL())
+			}else {
+				if(data.hasOwnProperty('changes')){
+					const {changes} = data
+					if(data.changes.length > 0){
+						const annualInv_copy = [...annualInv]
+		
+						for(const inv_record_change of changes){
+							const idx = findIndex(annualInv_copy,function(c){return c.id == inv_record_change.id})
+				
+							if(idx != -1){
+								annualInv_copy[idx] = inv_record_change
+								console.log(annualInv_copy[idx])
+								setAnnualInv(annualInv_copy)
+							}			  
+						}
+					}
+				}
+
+				setAlertUser(ALERT.SUCCESS)
+				setLoading(false)
+			}
+
+		}).catch(function (error) {
+			console.log(error)
+			setAlertUser(ALERT.FAIL())
+			setLoading(false)
 		});
 		
 		return error_found
@@ -321,7 +343,7 @@ function AnnualInventory({history, userToken}) {
 					tooltip: 'Update',
 					onClick: async (event, rowData) => {
 						await handleTableUpdate({changes:{'0':{newData:{...rowData,update:true}}}});
-						resetAnnualInventory();
+						//resetAnnualInventory();
 					},
 					disabled: (rowData.locked != 2) //rowData.birthYear < 2000
 				}),
@@ -350,24 +372,8 @@ function AnnualInventory({history, userToken}) {
 			  ]}
 			{...(editable && {editable:{
 				isEditable: rowData => rowData.locked === 2, // only name(a) rows would be editable
-				//isEditHidden: rowData => rowData.name === 'x',
-				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
-				// isDeleteHidden: rowData => rowData.name === 'y',
-				// onBulkUpdate: async (changes) => {
-				// 	await handleTableUpdate({changes:changes})
-				// 		new Promise((resolve, reject) => {
-						
-				// 			setTimeout(() => {
-				// 				//setHras([...hras, newData]);
-				// 				//console.log('bulk update')
-								
-				// 				resetAnnualInventory()
-				// 				resolve();
-				// 			}, 1000);
-				// 		})
-				// },
-				onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-				onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+				// onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+				// onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 				onRowAdd: async (newData) => {
 				const errorFound = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
 					return (new Promise((resolve, reject) => {
@@ -375,7 +381,7 @@ function AnnualInventory({history, userToken}) {
 							if(errorFound){
 								reject()
 							}else{
-								resetAnnualInventory()
+								//resetAnnualInventory()
 								resolve();
 							}
 							
@@ -393,22 +399,10 @@ function AnnualInventory({history, userToken}) {
 							}
 
 							resolve();
-							resetAnnualInventory();
+							//resetAnnualInventory();
 						}, 1000);
 					})
 				},
-				// onRowDelete: async (oldData) =>{
-				// await handleTableDelete({changes:{'0':{newData:null, oldData:oldData}}})
-				// 	new Promise((resolve, reject) => {
-				// 		setTimeout(() => {
-				// 			const dataDelete = [...hras];
-				// 			const index = oldData.tableData.id;
-				// 			dataDelete.splice(index, 1);
-				// 			setHras([...dataDelete]);
-				// 			resolve();
-				// 		}, 1000);
-				// 	})
-				// }
 			}})}
 			/>
 		</div>
@@ -456,35 +450,11 @@ function AnnualInventory({history, userToken}) {
 			setHras(data.hras.length > 0 ? data.hras : [])
 			console.log('is editable')
 		}
-		// this.setState({
-		// 	equipments: data.status != 400 ? data.values: data,
-		// 	setequipment: data
-		// });
-		//console.log(this.state.equipment.values);
-		// console.log(this.props, this.state);
 		setInitialize(false)
 		}).catch(function (error) {
 		setLoading(false)
 		setInitialize(false)
 		});
-
-	// console.log('HRACall')
-	// getAllHrasApi(userToken).then((response) => response.data).then((data) => {
-	// 	console.log(data.data)
-	// 	// setLoading(false)
-	// 	setHras(data.status != 400 ? data.data : data)
-	// 	// this.setState({
-	// 	// 	equipments: data.status != 400 ? data.values: data,
-	// 	// 	setequipment: data
-	// 	// });
-	// 	//console.log(this.state.equipment.values);
-	// 	// console.log(this.props, this.state);
-	// 	}).catch(function (error) {
-	// 	//setLoading(false)
-	// 	setHras([])
-	// 	});
-
-
 	}, []);
 
 	//Render return.

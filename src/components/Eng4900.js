@@ -363,14 +363,45 @@ function Eng4900({history, location, match, userToken}) {
   };
 
   const handleTableUpdate = async (rowData) => {
-    let result = {error:true}
+    let result_error = true
     
 		await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
-			result = data
+      console.log(data)
+      const {error, tabUpdatedData} = data
+      result_error = error
+
+      if(error){
+
+      }else{
+        let eng4900s_copy = {...eng4900s}
+
+        for(const tab_number in tabUpdatedData){
+          eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
+
+          // for(const eng4900_change of tabUpdatedData[tab_number]){
+          //   const idx = findIndex(eng4900s_tab,function(f){return f.form_id == eng4900_change.form_id})
+
+          //   if(idx != -1){
+          //     eng4900s_tab[idx] = eng4900_change
+          //     eng4900s_copy = {...eng4900s_copy,[tab_number]: eng4900s_tab}
+
+          //   }else{
+          //     if(eng4900s_tab.length > 0){
+          //       eng4900s_copy = {...eng4900s_copy,[tab_number]: [eng4900_change, ...eng4900s_tab]}
+          //     }else{
+          //       eng4900s_copy = {...eng4900s_copy,[tab_number]: [eng4900_change]}
+          //     }
+          //   }
+          // }
+        }
+
+        setEng4900s(eng4900s_copy)
+      }			
 		}).catch(function (error) {
+      console.log(error)
 		});
 
-		return(result)
+		return(result_error)
   }
 
   const getHrasAndEquipments = () => {
@@ -653,7 +684,6 @@ function Eng4900({history, location, match, userToken}) {
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
-                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
@@ -667,44 +697,9 @@ function Eng4900({history, location, match, userToken}) {
               })               
             ]}
             {...(editable && {editable:{
-              //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
-              //isEditHidden: rowData => rowData.name === 'x',
-              // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
               isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
-              // onBulkUpdate: async(changes) => {
-              //   const errorResult = await handleTableUpdate({changes:changes})
-              //     return(new Promise((resolve, reject) => {
-              //       setTimeout(() => {
-              //         if(errorResult){
-              //           reject()
-              //           return;
-              //         }
-      
-              //         resetEmployees();
-              //         resolve();
-                      
-              //       }, 1000);
-              //     }))
-              //   },
-              //   onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-              //   onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-              //   onRowAdd: async (newData) =>{
-              //   const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-              //     return(new Promise((resolve, reject) => {
-              //       setTimeout(() => {
-              //         if(errorResult){
-              //           reject()
-              //           return;
-              //         }
-      
-              //         resetEmployees();
-              //         resolve();
-                      
-              //       }, 1000);
-              //     }))
-              //   },
               onRowUpdate: async (newData, oldData) =>{
-                const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                const errorResult = false
                 return(new Promise((resolve, reject) => {
                   setTimeout(() => {
                     if(errorResult){
@@ -815,16 +810,6 @@ function Eng4900({history, location, match, userToken}) {
               tooltip: 'Show Status',
               render: rowData => {
                 return (
-                  // <div
-                  //   style={{
-                  //     fontSize: 100,
-                  //     textAlign: 'center',
-                  //     color: 'white',
-                  //     backgroundColor: '#43A047',
-                  //   }}
-                  // >
-                  //   {rowData.status}
-                  // </div>
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
                   {rowData.status_options.map((option) => (
@@ -838,11 +823,6 @@ function Eng4900({history, location, match, userToken}) {
               },
             }]}
             actions={[
-              // {
-              //   icon: 'View',
-              //   tooltip: 'Save User',
-              //   onClick: (event, rowData) => alert("You saved "),// + rowData.name)
-              // },
               {
                 icon: () => (
                 <Tooltip title="Create New Form" aria-label="add">
@@ -879,60 +859,16 @@ function Eng4900({history, location, match, userToken}) {
                   //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              }),
-              // rowData => ({
-              //   icon: form4900Icons.Publish,
-              //   tooltip: 'Upload PDF',
-              //   onClick: (event, rowData) => {
-              //     setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-              //   },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-              //   disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              // })               
+              }),            
             ]}
             {...(editable && {editable:{
-              //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
-              //isEditHidden: rowData => rowData.name === 'x',
-              // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
-              //isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
-              // onBulkUpdate: async(changes) => {
-              //   const errorResult = await handleTableUpdate({changes:changes})
-              //     return(new Promise((resolve, reject) => {
-              //       setTimeout(() => {
-              //         if(errorResult){
-              //           reject()
-              //           return;
-              //         }
-      
-              //         resetEmployees();
-              //         resolve();
-                      
-              //       }, 1000);
-              //     }))
-              //   },
-              //   onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-              //   onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-              //   onRowAdd: async (newData) =>{
-              //   const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-              //     return(new Promise((resolve, reject) => {
-              //       setTimeout(() => {
-              //         if(errorResult){
-              //           reject()
-              //           return;
-              //         }
-      
-              //         resetEmployees();
-              //         resolve();
-                      
-              //       }, 1000);
-              //     }))
-              //   },
               onRowUpdate: async (newData, oldData) => {
-                const result = await handleTableUpdate({changes:{'0':{newData:{ form_id: newData.form_id, status:newData.status}}}})
+                const errorFound = await handleTableUpdate({changes:{'0':{newData:{ form_id: newData.form_id, status:newData.status, tab: tab_idx}}}})
 
                 return(new Promise((resolve, reject) => {
                   setTimeout(() => {
 
-                    if(result.error){
+                    if(errorFound){
                       reject()
                       return;
                     }
@@ -1063,43 +999,9 @@ function Eng4900({history, location, match, userToken}) {
             {...(editable && {editable:{
               //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
               isEditHidden: () => true,
-              // isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
-              //isDeleteHidden: rowData => rowData.originator !== 1,
-              // onBulkUpdate: async(changes) => {
-              //   const errorResult = await handleTableUpdate({changes:changes})
-              //     return(new Promise((resolve, reject) => {
-              //       setTimeout(() => {
-              //         if(errorResult){
-              //           reject()
-              //           return;
-              //         }
-      
-              //         resetEmployees();
-              //         resolve();
-                      
-              //       }, 1000);
-              //     }))
-              //   },
-              //   onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-              //   onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-              //   onRowAdd: async (newData) =>{
-              //   const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
-              //     return(new Promise((resolve, reject) => {
-              //       setTimeout(() => {
-              //         if(errorResult){
-              //           reject()
-              //           return;
-              //         }
-      
-              //         resetEmployees();
-              //         resolve();
-                      
-              //       }, 1000);
-              //     }))
-              //   },
               onRowUpdate: async (newData, oldData) =>{
                 console.log(newData, oldData)
-                const errorResult = false//await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+                const errorResult = false
 
                 return(new Promise((resolve, reject) => {
                   setTimeout(() => {
@@ -1114,26 +1016,6 @@ function Eng4900({history, location, match, userToken}) {
                   }, 1000);
                 }))
                 },
-              // onRowDelete: async (oldData) => {
-              //   const result = await handleTableDelete(oldData)
-
-              //   return(new Promise((resolve, reject) => {
-              //     setTimeout(() => {
-
-              //       if(!result.error){
-              //         const dataDelete = [...eng4900s[1]];
-              //         const index = oldData.tableData.id;
-              //         dataDelete.splice(index, 1);
-              //         //setEng4900s([...dataDelete]);
-              //         resolve()
-              //         return;
-              //       }  
-    
-              //       reject();
-              //     }, 1000);
-              //   }
-              // ))
-              //   }
             }})}
           />
     </div>

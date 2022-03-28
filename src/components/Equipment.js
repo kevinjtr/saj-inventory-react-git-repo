@@ -187,25 +187,23 @@ function Equipment({history, location, match, userToken}) {
         if(error){
           setAlertUser(ALERT.FAIL())
         }else {
-          setAlertUser(ALERT.SUCCESS)
-        }
-
-        for(const tab_number in tabChanges){
+          for(const tab_number in tabChanges){
             const equipments_copy = [...equipments[tab_number]]
 
-          for(const eq_change of tabChanges[tab_number]){
-            console.log(tab_number)
-            const idx = findIndex(equipments_copy,function(eq){return eq.bar_tag_num == eq_change.bar_tag_num})
+            for(const eq_change of tabChanges[tab_number]){
+              console.log(tab_number)
+              const idx = findIndex(equipments_copy,function(eq){return eq.bar_tag_num == eq_change.bar_tag_num})
 
-            if(idx != -1){
-              equipments_copy[idx] = eq_change
-              console.log(equipments_copy[idx])
-              setEquipments({...equipments,[tab_number]: equipments_copy})
+              if(idx != -1){
+                equipments_copy[idx] = eq_change
+                console.log(equipments_copy[idx])
+                setEquipments({...equipments,[tab_number]: equipments_copy})
+              }
             }
           }
-        }
 
-        
+          setAlertUser(ALERT.SUCCESS)
+        }        
 
       }).catch(function (error) {
         console.log(error)
@@ -225,17 +223,17 @@ function Equipment({history, location, match, userToken}) {
         if(error){
           setAlertUser(ALERT.FAIL())
         }else {
+          for(const tab_number in tabChanges){
+            let equipments_copy = [...equipments[tab_number]]
+    
+            for(const eq_change of tabChanges[tab_number]){
+              equipments_copy = filter(equipments_copy,function(eq){return eq.bar_tag_num != eq_change.bar_tag_num})
+              setEquipments({...equipments,[tab_number]: equipments_copy})
+            }
+          }
+
           setAlertUser(ALERT.SUCCESS)
         }
-
-        for(const tab_number in tabChanges){
-          let equipments_copy = [...equipments[tab_number]]
-
-        for(const eq_change of tabChanges[tab_number]){
-          equipments_copy = filter(equipments_copy,function(eq){return eq.bar_tag_num != eq_change.bar_tag_num})
-          setEquipments({...equipments,[tab_number]: equipments_copy})
-        }
-      }
       
     }).catch(function (error) {
         console.log(error)
@@ -256,14 +254,14 @@ function Equipment({history, location, match, userToken}) {
     if(error){
       setAlertUser(ALERT.FAIL())
     }else {
-      setAlertUser(ALERT.SUCCESS)
-    }
-
-    for(const tab_number in tabChanges){
-      for(const eq_change of tabChanges[tab_number]){
-        console.log(eq_change,tab_number)
-          setEquipments({...equipments,[tab_number]: [eq_change,...equipments[tab_number]]})
+      for(const tab_number in tabChanges){
+        for(const eq_change of tabChanges[tab_number]){
+            console.log(eq_change,tab_number)
+            setEquipments({...equipments,[tab_number]: [eq_change,...equipments[tab_number]]})
+        }
       }
+
+      setAlertUser(ALERT.SUCCESS)
     }
 
   }).catch(function (error) {
@@ -971,23 +969,23 @@ function Equipment({history, location, match, userToken}) {
             />
     </div>
     )
-}
-
-const AlertUser = (x) => {
-
-  console.log('alert user activated')
-
-  if(x.error.active){
-    return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-  }else if(x.success.active){
-    return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
   }
 
-  //Sucessfully added data to database!
+  const AlertUser = (x) => {
 
-  setAlertUser(ALERT.RESET)
-  return(null)
-}
+    console.log('alert user activated')
+
+    if(x.error.active){
+      return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+    }else if(x.success.active){
+      return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
+    }
+
+    //Sucessfully added data to database!
+
+    setAlertUser(ALERT.RESET)
+    return(null)
+  }
 
   //Render Variables
 	const searchTextFieldsGridItems = (tab) => Object.keys(searchFields[tab]).map(key => {
@@ -1034,7 +1032,7 @@ const AlertUser = (x) => {
       <div style={{textAlign: 'center'}}>
         <h2>Equipment</h2>     
       </div>
-    )
+  )
 
   const disableFields = {
     PBO: true,
