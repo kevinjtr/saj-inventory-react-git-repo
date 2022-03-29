@@ -178,6 +178,7 @@ function Equipment({history, location, match, userToken}) {
   //Events Declarations.
   const handleUpdate = async (rowData) => {
       let errorFound = true
+      setAlertUser(ALERT.RESET)
 
       await updateEquipmentApi(rowData, userToken)
       .then((response) => response.data).then((data) => {
@@ -215,6 +216,7 @@ function Equipment({history, location, match, userToken}) {
 
   const handleDelete = async (rowData) => {
     let errorFound = true
+    setAlertUser(ALERT.RESET)
 
     await destroyEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
         const {tabChanges, error} = data
@@ -245,7 +247,8 @@ function Equipment({history, location, match, userToken}) {
 
   const handleAdd = async (rowData) => {
   let errorFound = true
-
+  setAlertUser(ALERT.RESET)
+  
   await addEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
     const {tabChanges, error} = data
     errorFound = error

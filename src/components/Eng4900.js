@@ -49,7 +49,7 @@ import {form4900Icons} from './material-table/config'
 //import Pdf from './eng4900-26-2.pdf';
 import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from './tools/tools'
 import clsx from 'clsx'
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {Autocomplete, Alert} from '@material-ui/lab';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
@@ -74,6 +74,7 @@ import StepLabel from '@material-ui/core/StepLabel';
 import {updateEng4900Api, destroyEng4900Api, addEng4900Api, getAllEng4900sApi, eng4900SearchApi, getEng4900PdfByIdApi} from '../publics/actions/eng4900-api'
 import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
+import {ALERT} from './tools/tools'
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -103,7 +104,7 @@ function Eng4900({history, location, match, userToken}) {
     10:"Completed",
     11:"Form Rejected"
 }
-  const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_forms', label:'Completed Forms'}}
+  const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_and_ipg_forms', label:'Completed & IP Gaining HRA Forms'}}
   const SEARCH_FIELD_RESET = {
     id: {label: 'Form ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -200,6 +201,7 @@ function Eng4900({history, location, match, userToken}) {
     2: RESET_HRAS,
     4: RESET_HRAS,
   });
+  const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 
   //Events Declarations.
   const handleTableDelete = async (rowData) => {
@@ -364,6 +366,7 @@ function Eng4900({history, location, match, userToken}) {
 
   const handleTableUpdate = async (rowData) => {
     let result_error = true
+    setAlertUser(ALERT.RESET)
     
 		await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
       console.log(data)
@@ -371,34 +374,21 @@ function Eng4900({history, location, match, userToken}) {
       result_error = error
 
       if(error){
-
-      }else{
+        setAlertUser(ALERT.FAIL())
+      }else {
         let eng4900s_copy = {...eng4900s}
 
         for(const tab_number in tabUpdatedData){
           eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
-
-          // for(const eng4900_change of tabUpdatedData[tab_number]){
-          //   const idx = findIndex(eng4900s_tab,function(f){return f.form_id == eng4900_change.form_id})
-
-          //   if(idx != -1){
-          //     eng4900s_tab[idx] = eng4900_change
-          //     eng4900s_copy = {...eng4900s_copy,[tab_number]: eng4900s_tab}
-
-          //   }else{
-          //     if(eng4900s_tab.length > 0){
-          //       eng4900s_copy = {...eng4900s_copy,[tab_number]: [eng4900_change, ...eng4900s_tab]}
-          //     }else{
-          //       eng4900s_copy = {...eng4900s_copy,[tab_number]: [eng4900_change]}
-          //     }
-          //   }
-          // }
         }
 
         setEng4900s(eng4900s_copy)
-      }			
+        setAlertUser(ALERT.SUCCESS)
+      }
+
 		}).catch(function (error) {
       console.log(error)
+      setAlertUser(ALERT.FAIL())
 		});
 
 		return(result_error)
@@ -420,6 +410,22 @@ function Eng4900({history, location, match, userToken}) {
   }
   
   //Function Declarations.
+  const AlertUser = (x) => {
+
+    console.log('alert user activated')
+
+    if(x.error.active){
+      return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
+    }else if(x.success.active){
+      return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
+    }
+
+    //Sucessfully added data to database!
+
+    setAlertUser(ALERT.RESET)
+    return(null)
+  }
+
 	const SearchCriteriaOptions = (tab, val,text="Options") => {
 
 		const menuItems = SEARCH_FIELD_OPTIONS.map(x => {
@@ -522,7 +528,7 @@ function Eng4900({history, location, match, userToken}) {
       <div className={tabClasses.root}>
         <AppBar position="static" color="default">
           <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
-            <Tab label={formTabs[0].label.toUpperCase()} hidden={eng4900s[0].length == 0} icon={<DescriptionIcon/>} {...a11yProps(0)} />
+            <Tab label={formTabs[0].label.toUpperCase()} hidden={true} icon={<DescriptionIcon/>} {...a11yProps(0)} />
             <Tab label={formTabs[1].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(1)} />
             <Tab label={formTabs[2].label.toUpperCase()} icon= {
             <Badge badgeContent={eng4900s[2].length} color="secondary">
@@ -623,23 +629,29 @@ function Eng4900({history, location, match, userToken}) {
               tooltip: 'Show Status',
               render: rowData => {
                 return (
-                  // <div
-                  //   style={{
-                  //     fontSize: 100,
-                  //     textAlign: 'center',
-                  //     color: 'white',
-                  //     backgroundColor: '#43A047',
-                  //   }}
-                  // >
-                  //   {rowData.status}
-                  // </div>
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                  {rowData.status_options.map((option) => (
-                      <Step key={option.label}>
-                        <StepLabel>{option.label}</StepLabel>
-                      </Step>
-                    ))}
+                  {rowData.all_status_steps.map((option, i) => {
+                    const labelProps = {};
+
+                    if(rowData.status == 11) {
+                      if(i == 10){
+                        labelProps.error = true
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+                      
+                    }else if(i != 10){
+                      return (<Step key={option.label}>
+                        <StepLabel {...labelProps}>{option.label}</StepLabel>
+                      </Step>)
+                    }
+
+                    return;
+                  }
+                      
+                    )}
                   </Stepper>
                 </div>
                 )
@@ -683,6 +695,7 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
+                  setAlertUser(ALERT.RESET)
                   get4900Pdf(rowData)
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
@@ -812,11 +825,27 @@ function Eng4900({history, location, match, userToken}) {
                 return (
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                  {rowData.status_options.map((option) => (
-                      <Step key={option.label}>
-                        <StepLabel>{option.label}</StepLabel>
-                      </Step>
-                    ))}
+                  {rowData.all_status_steps.map((option, i) => {
+                    const labelProps = {};
+
+                    if(rowData.status == 11) {
+                      if(i == 10){
+                        labelProps.error = true
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+                      
+                    }else if(i != 10){
+                      return (<Step key={option.label}>
+                        <StepLabel {...labelProps}>{option.label}</StepLabel>
+                      </Step>)
+                    }
+
+                    return;
+                  }
+                      
+                    )}
                   </Stepper>
                 </div>
                 )
@@ -855,6 +884,7 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
+                  setAlertUser(ALERT.RESET)
                   get4900Pdf(rowData)
                   //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
@@ -948,23 +978,29 @@ function Eng4900({history, location, match, userToken}) {
               tooltip: 'Show Status',
               render: rowData => {
                 return (
-                  // <div
-                  //   style={{
-                  //     fontSize: 100,
-                  //     textAlign: 'center',
-                  //     color: 'white',
-                  //     backgroundColor: '#43A047',
-                  //   }}
-                  // >
-                  //   {rowData.status}
-                  // </div>
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                  {rowData.status_options.map((option) => (
-                      <Step key={option.label}>
-                        <StepLabel>{option.label}</StepLabel>
-                      </Step>
-                    ))}
+                  {rowData.all_status_steps.map((option, i) => {
+                    const labelProps = {};
+
+                    if(rowData.status == 11) {
+                      if(i == 10){
+                        labelProps.error = true
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+                      
+                    }else if(i != 10){
+                      return (<Step key={option.label}>
+                        <StepLabel {...labelProps}>{option.label}</StepLabel>
+                      </Step>)
+                    }
+
+                    return;
+                  }
+                      
+                    )}
                   </Stepper>
                 </div>
                 )
@@ -982,6 +1018,7 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
+                  setAlertUser(ALERT.RESET)
                   get4900Pdf(rowData)
                   //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
                 },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
@@ -1076,11 +1113,27 @@ function Eng4900({history, location, match, userToken}) {
                 return (
                   <div className={StepClasses.root}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                    {rowData.status_options.map((option) => (
-                      <Step key={option.label}>
-                        <StepLabel>{option.label}</StepLabel>
-                      </Step>
-                    ))}
+                  {rowData.all_status_steps.map((option, i) => {
+                    const labelProps = {};
+
+                    if(rowData.status == 11) {
+                      if(i == 10){
+                        labelProps.error = true
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+                      
+                    }else if(i != 10){
+                      return (<Step key={option.label}>
+                        <StepLabel {...labelProps}>{option.label}</StepLabel>
+                      </Step>)
+                    }
+
+                    return;
+                  }
+                      
+                    )}
                   </Stepper>
                 </div>
                 )
@@ -1097,6 +1150,7 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
+                  setAlertUser(ALERT.RESET)
                   get4900Pdf(rowData)
                 },
                 disabled: ! (rowData.document_source != 2)
@@ -1193,10 +1247,11 @@ function Eng4900({history, location, match, userToken}) {
   //Render return.
   return (
     <>
-    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s}/> : null}
-    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
+    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} alertUser={alertUser} setAlertUser={setAlertUser}/> : null}
+    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900} alertUser={alertUser} setAlertUser={setAlertUser}/> : null}
     <div>
       {displayTop()}
+      {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
       {!loading.init ? TabsEng4900() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
     </div>
     </>

@@ -319,9 +319,9 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
   }
 
   const submitForm = debounce(async () => {
-    if(editEnabled){
+    if(editEnabled && action == "CREATE"){
       //api.post(`${ENG4900}/add`,{form:selectedForm,type:action})
-      addEng4900Api({form:selectedForm,type:action},userToken)
+      addEng4900Api({form:selectedForm,type:action, tab:tab},userToken)
       .then((response) => response.data).then((data) => {
         if(!data.error){
           setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
@@ -335,6 +335,33 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
       }).catch(function (error) {
         setSubmitButton({...submitButton,send:false})
       });
+
+    }else if(editEnabled && action == "EDIT"){
+      // const form_data_updates = {changes:{'0':{newData:{...selectedForm, tab: tab_idx}}}}
+      // setAlertUser(ALERT.RESET)
+    
+      // await updateEng4900Api(form_data_updates, userToken).then((response) => response.data).then((data) => {
+      //   console.log(data)
+      //   const {error, tabUpdatedData} = data
+      //   result_error = error
+  
+      //   if(error){
+      //     setAlertUser(ALERT.FAIL())
+      //   }else {
+      //     let eng4900s_copy = {...eng4900s}
+  
+      //     for(const tab_number in tabUpdatedData){
+      //       eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
+      //     }
+  
+      //     setEng4900s(eng4900s_copy)
+      //     setAlertUser(ALERT.SUCCESS)
+      //   }
+  
+      // }).catch(function (error) {
+      //   console.log(error)
+      //   setAlertUser(ALERT.FAIL())
+      // });
     }
   }, 1000, {maxWait:2000})
 
@@ -1130,6 +1157,14 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
     console.log(selectedForm)
 
     if(action === "CREATE"){
+      console.log(selectedForm)
+      if(isDateValid(selectedForm.expiration_date) && IsSelectedHrasValid(selectedForm) && selectedForm.equipment_group.length > 0){
+        setSubmitButton({...submitButton,active:true})
+        return;
+      }
+        
+      setSubmitButton({...submitButton,active:false})
+    }else if(action === "EDIT"){
       console.log(selectedForm)
       if(isDateValid(selectedForm.expiration_date) && IsSelectedHrasValid(selectedForm) && selectedForm.equipment_group.length > 0){
         setSubmitButton({...submitButton,active:true})

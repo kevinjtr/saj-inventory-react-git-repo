@@ -35,7 +35,8 @@ function AnnualInventory({history, userToken}) {
 	const handleTableUpdate = async (rowData) => {
 		let error_found = true
 		setLoading(true)
-
+		setAlertUser(ALERT.RESET)
+		
 		await updateAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		const {status, error} = data
 		error_found = error
@@ -101,6 +102,7 @@ function AnnualInventory({history, userToken}) {
 	const handleTableAdd = async (rowData) => {
 		let error_found = true
 		setLoading(true)
+		setAlertUser(ALERT.RESET)
 
 		await addAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 			console.log(data)

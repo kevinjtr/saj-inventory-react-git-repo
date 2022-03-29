@@ -101,7 +101,7 @@ function Eng4900({history, location, match, userToken}) {
     double: [{id:1,label:'FORM CREATED'}, {id:2,label:'COMPLETED INDIVIDUAL/VENDOR ROR PROPERTY'}, {id:3,label:'LOSING HRA SIGNATURE REQUIRED'}, {id:4,label:'COMPLETED LOSING HRA SIGNATURE'}, {id:5,label:'GAINING HRA SIGNATURE REQUIRED'}, {id:6,label:'COMPLETED GAINING HRA SIGNATURE'},
               {id:7,label:'SENT TO PBO'}, {id:8,label:'SENT TO LOGISTICS'},{id:9,label:'COMPLETED'}],
   }
-  const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_forms', label:'Completed Forms'}}
+  const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_and_ipg_forms', label:'Completed Forms'}}
   const SEARCH_FIELD_RESET = {
     id: {label: 'ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},

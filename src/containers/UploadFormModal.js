@@ -23,6 +23,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import debounce from 'lodash/debounce'
 import { connect } from 'redux-bundler-react';
 import {updateEng4900Api} from '../publics/actions/eng4900-api'
+import {ALERT} from '../components/tools/tools'
 
 const baseStyle = {
     flex: 1,
@@ -129,7 +130,7 @@ const plusButtonStyles = makeStyles((theme) => ({
     },
   }));
 
-function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
+function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, alertUser, setAlertUser, userToken}) {
 
     //constant declarations
 
@@ -164,10 +165,9 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
         if(files.length != 0){
             var formData = new FormData();
             formData.append('file', files[0]);
-
             const {form_id} = uploadPdf.rowData
-
             console.log(uploadPdf)
+
             await api.post(`eng4900/upload/${form_id}`, formData, { headers: {auth: userToken, changes: JSON.stringify({status: modal.newStatus})},
                 // onUploadProgress: (ProgressEvent) => {
                 //     let progress = Math.round(
@@ -175,47 +175,82 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
                 //     setProgress(progress);
                 // }
             })
-            .then(response => {
-
-                console.log(response)
-
+            .then((response) => response.data).then((data) => {
+                console.log(data)
+                const {error, tabUpdatedData} = data
+          
+                if(error){
+                  setAlertUser(ALERT.FAIL())
+                  setUploadButton({...uploadButton,send:false})
+                }else {
+                  let eng4900s_copy = {...eng4900s}
+          
+                  for(const tab_number in tabUpdatedData){
+                    eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
+                  }
+          
+                  setEng4900s(eng4900s_copy)
+                  setAlertUser(ALERT.SUCCESS)
+                  setUploadPdf({...uploadPdf,show:false})
+                }                
             })
             .catch(function (error) {
-                //do nothing.
+                console.log(error)
+                setAlertUser(ALERT.FAIL())
+                setUploadButton({...uploadButton,send:false})
             });
         }
         
-        setUploadButton({...submitButton,send:false})
+        
     }, 1500);
 
     //Events declaration
     const handleSubmit = async (event) => {
-        setProgress(0)
-        if(isFormRejected){
+        //setProgress(0)
+        setSubmitButton({...submitButton,send:true})
+        setAlertUser(ALERT.RESET)
+
+        if(isFormRejected()){
             const {form_id} = uploadPdf.rowData
             const rowData = {changes:{'0':{newData:{ form_id: form_id, status:modal.newStatus}}}}
-            setSubmitButton({...submitButton,send:true})
             console.log(rowData)
             await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
-                setSubmitButton({...submitButton,send:false})
+                console.log(data)
+                const {error, tabUpdatedData} = data
+          
+                if(error){
+                  setAlertUser(ALERT.FAIL())
+                }else {
+                  let eng4900s_copy = {...eng4900s}
+          
+                  for(const tab_number in tabUpdatedData){
+                    eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
+                  }
+          
+                  setEng4900s(eng4900s_copy)
+                  setAlertUser(ALERT.SUCCESS)
+                  setUploadPdf({...uploadPdf,show:false})
+                }
+
             }).catch(function (error) {
                 console.log(error)
-                setSubmitButton({...submitButton,send:false})
+                setAlertUser(ALERT.FAIL())
             });
 
-            
-
-            setTimeout( () => {
-                setSubmitButton({...submitButton,send:false})
-            }, 1500);
+        }else{
+            setSubmitButton({...submitButton,send:false})
         }
     }
 
     const handleUpload = async (event) => {
-        setProgress(0)
-        if(!isFormRejected){
-            setUploadButton({...uploadButton,send:true})
+        //setProgress(0)
+        setUploadButton({...uploadButton,send:true})
+        setAlertUser(ALERT.RESET)
+        
+        if(!isFormRejected()){
             formUpload()
+        }else{
+            setUploadButton({...uploadButton,send:false})
         }
     }
 
@@ -262,7 +297,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
             //const description = files.map((file) => <li key={file.path}>{file.path}  <i className="fa fa-trash text-red" style={{color:'#FF0000'}} title="Remove Attachment" onClick={() => remove(file)}></i></li>);
         
             const description = files.map((file) => <li key={file.path}>{file.path}
-              <IconButton style={{color:'#FF0000'}} size="small" title="Remove Attachment" aria-label="delete" onClick={() => remove(file)}>
+              <IconButton style={{color:'#FF0000'}} size="small" title="Remove Attachment" aria-label="delete" disabled={uploadButton.send} onClick={() => remove(file)}>
                 <DeleteIcon />
             </IconButton>
               </li>);
@@ -329,8 +364,8 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
                 })));
             },
             maxFiles: 1,
-            onDropAccepted: () => setUploadButton({...submitButton,active:true}),
-            onDropRejected: () => setUploadButton({...submitButton,active:false}),
+            onDropAccepted: () => setUploadButton({...uploadButton,active:true}),
+            onDropRejected: () => setUploadButton({...uploadButton,active:false}),
         });
 
         const remove = file => {
@@ -339,7 +374,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, userToken}) {
             setFiles(newFiles);              // update the state
 
             if(newFiles.length == 0){
-                setUploadButton({...submitButton,active:false})
+                setUploadButton({...uploadButton,active:false})
             }
         };
             
