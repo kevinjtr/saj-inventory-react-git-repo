@@ -14,12 +14,12 @@ import LogoutConfirm from './LogoutConfirm'
 function App(props) {
 	const {userIsLoggedIn, userIsLoggingOut, userAccess} = props
 	console.log(props)
-	const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+	const prefersDarkMode = true//useMediaQuery('(prefers-color-scheme: dark)');
 	const theme = React.useMemo(
 	() =>
 	createTheme({
 		palette: {
-			type: !prefersDarkMode ? 'dark' : 'light',
+			type: prefersDarkMode ? 'dark' : 'light',
 		},
 		}),
 	[prefersDarkMode],
@@ -35,7 +35,7 @@ function App(props) {
 	// 	<CssBaseline/>
 	// 	<Routes />
   	// </ThemeProvider>
-
+	  
 
 	  return (
 	<ThemeProvider theme={theme}>
@@ -44,7 +44,7 @@ function App(props) {
 		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
 			<div className='flex-wrapper'>
 			<AppBarHeader/>
-			<div className='content'>
+			<div {...(prefersDarkMode && {style:{background:'#999'}})}className='content'>
 			<Switch>
 			<Route
 				exact

@@ -27,14 +27,14 @@ const routes_config = [
     {path:'/home',alias:'home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
     {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
     {path:'/equipment',alias:'equipment',label:'Equipment',component:Equipment,tab:true,level:'user',type:'private'},
-    {path:'/annualinventory',alias:'annualInventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin',type:'private'},
-    {path:'/annualinventory/:id',alias:'annualInventory',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin',type:'private'},
+    {path:'/annualinventory',alias:'annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin',type:'private'},
+    {path:'/annualinventory/:id',alias:'annualinventory',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin',type:'private'},
     {path:'/hra',label:'HRA',alias:'hra',component:Hra,tab:true,level:'user',type:'private'},
     {path:'/employee',alias:'employee',label:'Employee',component:Employee,tab:true,level:'user',type:'private'},
     {path:'/eng4900',alias:'eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin',type:'private'},
     {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
-    {path:'/authorizedusers', alias: 'authorizedUsers', label: 'Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
-    {path:'/changehistory',alias:'changeHistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
+    {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
+    {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]

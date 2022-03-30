@@ -163,7 +163,8 @@ function Equipment({history, location, match, userToken}) {
       2: SWITCH_RESET,
       3: SWITCH_RESET,
     });
-    const [hras, setHras] = React.useState([]);
+  const [hras, setHras] = React.useState([]);
+  const [my_hras, setMyHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
 
   // state variable for showing/hiding column filters in material table
@@ -248,7 +249,7 @@ function Equipment({history, location, match, userToken}) {
   const handleAdd = async (rowData) => {
   let errorFound = true
   setAlertUser(ALERT.RESET)
-  
+
   await addEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
     const {tabChanges, error} = data
     errorFound = error
@@ -367,6 +368,7 @@ function Equipment({history, location, match, userToken}) {
       if(data.status == 200){
         setEquipments(data.data)
         setHras(data.hras)
+        setMyHras(data.my_hras)
         setEmployees(data.employees)
       }
 
@@ -397,20 +399,6 @@ function Equipment({history, location, match, userToken}) {
   const handleTabChange = (event, newValue) => {
     setTabs(newValue);
   };
-
-  // const getHrasAndEmployees = () => {
-
-  //   getHraFormApi(userToken).then((hra_res) => hra_res.data).then((h_data) => {
-  //       console.log('hra_download',h_data)
-
-  //       for(const key in h_data.data){
-  //         setHras({...hras, [key]: (h_data.status != 400 ? h_data.data[key] : []) })
-  //       }        
-
-  //     }).catch(function (error) {
-  //       setHras([])
-  //     });
-  // }
 
   const handleSwitchesChange = (event) => {
     const target = event.target.name.split('-')
@@ -551,6 +539,9 @@ function Equipment({history, location, match, userToken}) {
   }
 
   const materialTableSelect = (tab_idx) => {
+    const isHraTab = equipmentTabs[tab_idx].id == "my_hra_equipment"
+    const hras_array = isHraTab ? my_hras : hras
+
     let columns = []
     const dataIsOnDatabase = {
     bar_tag_num:false
@@ -563,7 +554,7 @@ function Equipment({history, location, match, userToken}) {
         let idx = -1
     
         if(x.rowData.hra_num){
-            idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
+            idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
         }
     
         return(
@@ -572,9 +563,9 @@ function Equipment({history, location, match, userToken}) {
             id={`combo-box-employee`}
             //size="small"
             //style={{width:'80%'}}
-            options={hras}
+            options={hras_array}
             getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
-            value={idx != -1 ? hras[idx] : null}
+            value={idx != -1 ? hras_array[idx] : null}
             //defaultValue={idx != -1 ? employees[idx] : null}
             onChange ={e => {
             const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null

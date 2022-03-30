@@ -188,7 +188,7 @@ function Eng4900({history, location, match, userToken}) {
       3: []
     });
   const [editable,setEditable] = React.useState(false)
-  const [tabs, setTabs] = React.useState(0);
+  const [tabs, setTabs] = React.useState(1);
   const [switches, setSwitches] = React.useState({
       0: SWITCH_RESET,
       1: SWITCH_RESET,
@@ -205,16 +205,34 @@ function Eng4900({history, location, match, userToken}) {
 
   //Events Declarations.
   const handleTableDelete = async (rowData) => {
-    let result = {error:true}
-
+    let result_error = true
+    setAlertUser(ALERT.RESET)
+    
     await destroyEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
-      result = data
+      console.log(data)
+      const {error, tabUpdatedData} = data
+      result_error = error
+
+      if(error){
+        setAlertUser(ALERT.FAIL())
+      }else {
+        let eng4900s_copy = {...eng4900s}
+
+        for(const tab_number in tabUpdatedData){
+          eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
+        }
+
+        setEng4900s(eng4900s_copy)
+        setAlertUser(ALERT.SUCCESS)
+      }
+
 
     }).catch(function (error) {
-      //do nothing.
+      console.log(error)
+      setAlertUser(ALERT.FAIL())
     });
 
-    return result
+    return result_error
   }
 
 	const handleSearchFieldsChange = (event) => {
@@ -295,15 +313,23 @@ function Eng4900({history, location, match, userToken}) {
         setEditable(data.editable)
         setEng4900s(data.data)
 
+        // for(const tab_num in data.data){
+        //   if(data.data[tab_num].length > 0){
+        //     const num = Number(tab_num)
+        //     setTabs(num)
+        //     break;
+        //   }
+        // }
+
         if(data.hasOwnProperty('hras')){
           for(const key in data.hras){
             setHras({...hras, [key]: data.hras[key] })
           }        
         }
 
-        if(data.data[0].length == 0){
-          setTabs(1)
-        }
+        // if(data.data[0].length == 0){
+        //   setTabs(1)
+        // }
       }
       
       setLoading({...loading,init:false})
@@ -601,7 +627,7 @@ function Eng4900({history, location, match, userToken}) {
     ]
   
     return(
-      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
           icons={form4900Icons}
             columns={columns}
@@ -657,96 +683,96 @@ function Eng4900({history, location, match, userToken}) {
                 )
               },
             }]}
-            actions={[
-              // {
-              //   icon: 'View',
-              //   tooltip: 'Save User',
-              //   onClick: (event, rowData) => alert("You saved "),// + rowData.name)
-              // },
-              {
-                icon: () => (
-                <Tooltip title="Crate New Form" aria-label="add">
-                  <ThemeProvider>
-                    <Fab  variant="extended" size="medium" color="inherit" className={ plusButtonClasses.fabGreen}>
-                    Create 4900
-                    </Fab>
-                  </ThemeProvider>
-                </Tooltip>
-                ),
-                tooltip: "Create New Form",
-                position: "toolbar",
-                onClick: () => setCreate4900({...create4900,show:true}),
-                hidden: hras[tab_idx].losing.length == 0
-              },
-              rowData => ({
-                icon: form4900Icons.View,
-                tooltip: 'View Form',
-                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
-                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
-                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
-              }),
-              rowData => ({
-                  icon: form4900Icons.Assignment,
-                  tooltip: 'Edit Form',
-                  onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
-                  hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
-                }),
-              rowData => ({
-                icon: form4900Icons.Pdf,
-                tooltip: 'View PDF',
-                onClick: (event, rowData) => {
-                  setAlertUser(ALERT.RESET)
-                  get4900Pdf(rowData)
-                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              }),
-              rowData => ({
-                icon: form4900Icons.Publish,
-                tooltip: 'Upload PDF',
-                onClick: (event, rowData) => {
-                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              })               
-            ]}
-            {...(editable && {editable:{
-              isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
-              onRowUpdate: async (newData, oldData) =>{
-                const errorResult = false
-                return(new Promise((resolve, reject) => {
-                  setTimeout(() => {
-                    if(errorResult){
-                      reject()
-                      return;
-                    }
+            // actions={[
+            //   // {
+            //   //   icon: 'View',
+            //   //   tooltip: 'Save User',
+            //   //   onClick: (event, rowData) => alert("You saved "),// + rowData.name)
+            //   // },
+            //   {
+            //     icon: () => (
+            //     <Tooltip title="Crate New Form" aria-label="add">
+            //       <ThemeProvider>
+            //         <Fab  variant="extended" size="medium" color="inherit" className={ plusButtonClasses.fabGreen}>
+            //         Create 4900
+            //         </Fab>
+            //       </ThemeProvider>
+            //     </Tooltip>
+            //     ),
+            //     tooltip: "Create New Form",
+            //     position: "toolbar",
+            //     onClick: () => setCreate4900({...create4900,show:true}),
+            //     hidden: hras[tab_idx].losing.length == 0
+            //   },
+            //   rowData => ({
+            //     icon: form4900Icons.View,
+            //     tooltip: 'View Form',
+            //     onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
+            //     //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+            //     disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+            //   }),
+            //   // rowData => ({
+            //   //     icon: form4900Icons.Assignment,
+            //   //     tooltip: 'Edit Form',
+            //   //     onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
+            //   //     hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
+            //   //   }),
+            //   // rowData => ({
+            //   //   icon: form4900Icons.Pdf,
+            //   //   tooltip: 'View PDF',
+            //   //   onClick: (event, rowData) => {
+            //   //     setAlertUser(ALERT.RESET)
+            //   //     get4900Pdf(rowData)
+            //   //   },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+            //   //   disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+            //   // }),
+            //   // rowData => ({
+            //   //   icon: form4900Icons.Publish,
+            //   //   tooltip: 'Upload PDF',
+            //   //   onClick: (event, rowData) => {
+            //   //     setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+            //   //   },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+            //   //   disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
+            //   // })               
+            // ]}
+            // {...(editable && {editable:{
+            //   isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
+            //   onRowUpdate: async (newData, oldData) =>{
+            //     const errorResult = false
+            //     return(new Promise((resolve, reject) => {
+            //       setTimeout(() => {
+            //         if(errorResult){
+            //           reject()
+            //           return;
+            //         }
     
-                    //resetEmployees();
-                    resolve();
+            //         //resetEmployees();
+            //         resolve();
                       
-                  }, 1000);
-                }))
-                },
-              onRowDelete: async (oldData) => {
-                const result = await handleTableDelete(oldData)
+            //       }, 1000);
+            //     }))
+            //     },
+            //   // onRowDelete: async (oldData) => {
+            //   //   const result = await handleTableDelete(oldData)
 
-                return(new Promise((resolve, reject) => {
-                  setTimeout(() => {
+            //   //   return(new Promise((resolve, reject) => {
+            //   //     setTimeout(() => {
 
-                    if(!result.error){
-                      const dataDelete = [...eng4900s[tab_idx]];
-                      const index = oldData.tableData.id;
-                      dataDelete.splice(index, 1);
-                      //setEng4900s([...dataDelete]);
-                      resolve()
-                      return;
-                    }  
+            //   //       if(!result.error){
+            //   //         const dataDelete = [...eng4900s[tab_idx]];
+            //   //         const index = oldData.tableData.id;
+            //   //         dataDelete.splice(index, 1);
+            //   //         //setEng4900s([...dataDelete]);
+            //   //         resolve()
+            //   //         return;
+            //   //       }  
     
-                    reject();
-                  }, 1000);
-                }
-              ))
-                }
-            }})}
+            //   //       reject();
+            //   //     }, 1000);
+            //   //   }
+            //   // ))
+            //   //   }
+            // }})}
           />
     </div>
     )
@@ -755,7 +781,7 @@ function Eng4900({history, location, match, userToken}) {
   const materialTableHraForms = (tab_idx) => {
 
     let columns = [
-      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+      { title: 'Status', field: 'status', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
       editComponent: ({ value, onChange, rowData }) => (
         <Select
            value={value}
@@ -771,9 +797,14 @@ function Eng4900({history, location, match, userToken}) {
         </Select>
       ),
        validate: (rowData) => {		
+         console.log(rowData)
         if(rowData.hasOwnProperty('status')){
           if(rowData.status) {
             if(rowData.hasOwnProperty('tableData')){
+
+              if(rowData.tableData.editing == "delete" && rowData.status == 1){
+                return true
+              }
 
               if(rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
                 return ({ isValid: false, helperText: 'Please select a different Status.' })
@@ -786,7 +817,8 @@ function Eng4900({history, location, match, userToken}) {
         
         return ({ isValid: false, helperText: 'Status selection is incorrect.' })
   
-      }},
+      }
+    },
       { title: 'Requested Action', field: "requested_action",editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable:'never'},
       { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
@@ -795,7 +827,7 @@ function Eng4900({history, location, match, userToken}) {
     ]
   
     return(
-      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
           icons={form4900Icons}
             columns={columns}
@@ -874,12 +906,12 @@ function Eng4900({history, location, match, userToken}) {
                 //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
                 disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
               }),
-              rowData => ({
-                  icon: form4900Icons.Assignment,
-                  tooltip: 'Edit Form',
-                  onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
-                  hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
-                }),
+              // rowData => ({
+              //     icon: form4900Icons.Assignment,
+              //     tooltip: 'Edit Form',
+              //     onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
+              //     hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
+              //   }),
               rowData => ({
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
@@ -892,6 +924,8 @@ function Eng4900({history, location, match, userToken}) {
               }),            
             ]}
             {...(editable && {editable:{
+              isDeletable: rowData => rowData.status == 1,
+              isDeleteHidden: rowData => rowData.status != 1,
               onRowUpdate: async (newData, oldData) => {
                 const errorFound = await handleTableUpdate({changes:{'0':{newData:{ form_id: newData.form_id, status:newData.status, tab: tab_idx}}}})
 
@@ -913,23 +947,19 @@ function Eng4900({history, location, match, userToken}) {
                 }))
               },
               onRowDelete: async (oldData) => {
-                const result = await handleTableDelete(oldData)
+                const errorFound = await handleTableDelete(oldData)
 
                 return(new Promise((resolve, reject) => {
                   setTimeout(() => {
 
-                    if(!result.error){
-                      const dataDelete = [...eng4900s[tab_idx]];
-                      const index = oldData.tableData.id;
-                      dataDelete.splice(index, 1);
-                      //setEng4900s([...dataDelete]);
+                    if(!errorFound){
                       resolve()
                       return;
                     }  
     
                     reject();
-                    }, 1000);
-                  }
+                  }, 1000);
+                }
                 ))
               }
             }})}
@@ -950,7 +980,7 @@ function Eng4900({history, location, match, userToken}) {
     ]
   
     return(
-      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
           icons={form4900Icons}
             columns={columns}
@@ -1085,7 +1115,7 @@ function Eng4900({history, location, match, userToken}) {
     ]
   
     return(
-      <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
           icons={form4900Icons}
             columns={columns}
