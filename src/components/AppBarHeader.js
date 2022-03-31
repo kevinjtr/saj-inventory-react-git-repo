@@ -28,25 +28,21 @@ function Header(props) {
 						<div style={{fontSize:"0.6rem", color:"rgba(0,0,0,1)", paddingLeft:"5px", fontWeight:"bold",textShadow:"0 0 2px #878787"}}>US Army Corps of Engineers</div>
 						<div style={{fontSize:"0.6rem", letterSpacing:"0.13rem", color:"rgba(75,75,75,1)", paddingLeft:"5px", fontWeight:"bold",textShadow:"0 0 2px #878787"}}>Jacksonville District</div>
 					</div>
-					<div style={{display:"flex", flexDirection:"column", justifyContent:"center",height:"30px",marginBottom:"auto",marginLeft:"5px", alignContent:'center'}}>
+					<div style={{display:"flex", flexDirection:"column", justifyContent:"center",height:"30px",marginTop:"auto",marginBottom:"auto",marginLeft:"5px", alignContent:'center'}}>
 						<p style={{textTransform:"uppercase", letterSpacing:"0.15rem", fontSize:"1.8rem", color:"rgba(50,50,50,1)", fontWeight:"bold",textShadow:"0 0 1px #000",backgroundClip:'text'}}>Inventory Beta</p>
 					</div>
                 </Grid>
 				{userIsLoggedIn && (
 					<Grid item sx={{display:"flex",justifyContent:"flex-end",zIndex:"2",position:"relative",gap:'10px',alignItems:'center'}} >
-						<Button style={{outline:'0'}}>
-							<BrightnessLowIcon onClick={()=>setPrefersDarkMode(!prefersDarkMode)} style={{color:'#000000',height:'20px',width:'20px'}} />
+						<Button onClick={()=>setPrefersDarkMode(!prefersDarkMode)} style={{outline:'0'}}>
+							<BrightnessLowIcon style={{color:'#000000',height:'20px',width:'20px'}} />
 						</Button>
-						
 						<Button onClick={()=>setShowUserDropdown(true)} style={{border:'0px',outline:'0'}} >
 							<AccountCircle style={{color:'rgb(100,100,100)',fontSize:'20px'}} />
 							<ArrowDropDownIcon style={{color:'rgb(100,100,100)',fontSize:'20px'}}/>
 						</Button>
-
 					</Grid>
-				)
-
-					}
+				)}
 				</Grid>
 				{userIsLoggedIn && 
 				<Box className="appbar-tabs">
