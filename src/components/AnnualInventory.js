@@ -46,22 +46,26 @@ function AnnualInventory({history, userToken}) {
 		}else {
 			if(data.hasOwnProperty('changes')){
 				const {changes} = data
-				if(data.changes.length > 0){
-					const annualInv_copy = [...annualInv]
-	
-					for(const inv_record_change of changes){
-					  const idx = findIndex(annualInv_copy,function(c){return c.id == inv_record_change.id})
-		  
-					  if(idx != -1){
-						annualInv_copy[idx] = inv_record_change
-						console.log(annualInv_copy[idx])
-						setAnnualInv(annualInv_copy)
-					  }			  
-					}
-				}
-			}
+				if(changes.length > 0){
 
-			setAlertUser(ALERT.SUCCESS)
+					//const annualInv_copy = [...annualInv]
+	
+					// for(const inv_record_change of changes){
+					//   const idx = findIndex(annualInv_copy,function(c){return c.id == inv_record_change.id})
+		  
+					//   if(idx != -1){
+					// 	annualInv_copy[idx] = inv_record_change
+					// 	console.log(annualInv_copy[idx])
+					setAnnualInv(changes)
+					setAlertUser(ALERT.SUCCESS)
+					//   }			  
+					// }
+				}else{
+					setAlertUser(ALERT.FAIL())
+				}
+			}else{
+				setAlertUser(ALERT.FAIL())
+			}			
 		}
 
 		setLoading(false)
@@ -101,7 +105,6 @@ function AnnualInventory({history, userToken}) {
 
 	const handleTableAdd = async (rowData) => {
 		let error_found = true
-		setLoading(true)
 		setAlertUser(ALERT.RESET)
 
 		await addAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
@@ -114,23 +117,26 @@ function AnnualInventory({history, userToken}) {
 			}else {
 				if(data.hasOwnProperty('changes')){
 					const {changes} = data
-					if(data.changes.length > 0){
-						const annualInv_copy = [...annualInv]
+					if(changes.length > 0){
+	
+						//const annualInv_copy = [...annualInv]
 		
-						for(const inv_record_change of changes){
-							const idx = findIndex(annualInv_copy,function(c){return c.id == inv_record_change.id})
-				
-							if(idx != -1){
-								annualInv_copy[idx] = inv_record_change
-								console.log(annualInv_copy[idx])
-								setAnnualInv(annualInv_copy)
-							}			  
-						}
+						// for(const inv_record_change of changes){
+						//   const idx = findIndex(annualInv_copy,function(c){return c.id == inv_record_change.id})
+			  
+						//   if(idx != -1){
+						// 	annualInv_copy[idx] = inv_record_change
+						// 	console.log(annualInv_copy[idx])
+						setAnnualInv(changes)
+						setAlertUser(ALERT.SUCCESS)
+						//   }			  
+						// }
+					}else{
+						setAlertUser(ALERT.FAIL())
 					}
-				}
-
-				setAlertUser(ALERT.SUCCESS)
-				setLoading(false)
+				}else{
+					setAlertUser(ALERT.FAIL())
+				}			
 			}
 
 		}).catch(function (error) {

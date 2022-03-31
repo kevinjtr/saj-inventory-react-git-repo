@@ -10,11 +10,14 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBarHeader from './AppBarHeader';
 import "./styles/GlobalStyles.css";
 import LogoutConfirm from './LogoutConfirm'
+//import appinfo from 'app-info.json'
 
 function App(props) {
 	const {userIsLoggedIn, userIsLoggingOut, userAccess} = props
 	console.log(props)
-	const prefersDarkMode = true//useMediaQuery('(prefers-color-scheme: dark)');
+	const [darkModeBackgroundColor, setDarkModeBackgroundColor] = React.useState('#999')//useMediaQuery('(prefers-color-scheme: dark)');
+	const [prefersDarkMode, setPrefersDarkMode] = React.useState(false)//useMediaQuery('(prefers-color-scheme: dark)');
+
 	const theme = React.useMemo(
 	() =>
 	createTheme({
@@ -43,8 +46,8 @@ function App(props) {
 	{
 		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
 			<div className='flex-wrapper'>
-			<AppBarHeader/>
-			<div {...(prefersDarkMode && {style:{background:'#999'}})}className='content'>
+			<AppBarHeader darkModeBackgroundColor={darkModeBackgroundColor} prefersDarkMode={prefersDarkMode} setPrefersDarkMode={setPrefersDarkMode}/>
+			<div {...(prefersDarkMode && {style:{background:darkModeBackgroundColor}})}className='content'>
 			<Switch>
 			<Route
 				exact
@@ -55,7 +58,7 @@ function App(props) {
 			<Route render={() => <Redirect to={'/404'} />}/>
 			</Switch>
 			</div>
-			<div className="footer"><span style={{fontWeight:'bold'}}>Inventory App</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.1.0</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
+			<div className="footer"><span style={{fontWeight:'bold'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.0</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
 			</div>
 		</BrowserRouter>
 	}

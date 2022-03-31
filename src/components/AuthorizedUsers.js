@@ -1,5 +1,6 @@
 import React from 'react';
 import '../img/style.css';
+import api from '../axios/Api';
 import MaterialTable from '@material-table/core'
 import SearchIcon from '@material-ui/icons/Search';
 import { tableIcons } from './material-table/config'
@@ -21,7 +22,7 @@ function AuthorizedUsers({ userToken }) {
     const [loading, setLoading] = React.useState(false);
     const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
     const [editable, setEditable] = React.useState(false)
- 
+
     const AlertUser = (x) => {
         console.log('alert user activated')
         if (x.error.active) {
@@ -38,20 +39,25 @@ function AuthorizedUsers({ userToken }) {
     const handleTableAdd = async (newData) => {
 
         let errorFound = false
+        setAlertUser(ALERT.RESET)
+
         await addAuthorizedUsersApi(newData, userToken).then((response) => response.data).then((data) => {
-            console.log(data)
+            const {error} = data
+            errorFound = error
 
-            const status = data.hasOwnProperty('status') ? data.status == 400 : false
-            errorFound = data.hasOwnProperty('error') ? data.error : false
-
-            if (status || errorFound) {
+            if (error) {
                 setAlertUser(ALERT.FAIL())
             } else {
+                if(data.authorizedUsers){
+                    setAuthorizedUsers(data.authorizedUsers)
+                }
+                
                 setAlertUser(ALERT.SUCCESS)
             }
 
         }).catch(function (error) {
-
+            console.log(error)
+            setAlertUser(ALERT.FAIL())
         });
 
         return errorFound
@@ -59,43 +65,44 @@ function AuthorizedUsers({ userToken }) {
     }
 
     const handleTableDelete = async (rowData) => {
-
         let errorFound = false
+        setAlertUser(ALERT.RESET)
+
         await deleteAuthorizedUsersApi(rowData, userToken).then((response) => response.data).then((data) => {
-            console.log(data)
+            const {error} = data
+            errorFound = error
 
-            const status = data.hasOwnProperty('status') ? data.status == 400 : false
-            errorFound = data.hasOwnProperty('error') ? data.error : false
-
-            if (status || errorFound) {
+            if (error) {
                 setAlertUser(ALERT.FAIL())
             } else {
+                if(data.authorizedUsers){
+                    setAuthorizedUsers(data.authorizedUsers)
+                }
+                
                 setAlertUser(ALERT.SUCCESS)
             }
 
         }).catch(function (error) {
-
+            console.log(error)
+            setAlertUser(ALERT.FAIL())
         });
 
         return errorFound
-
     }
 
-
     const materialTableSelect = () => {
-    //    if (authorizedUsers.length > 0) {
-            //const cols = Object.keys(authorizedUsers[0])
+
             let columns = []
-            
+
             const authorizedUsers_cols_config = [
                 { title: 'Full Name', field: 'registered_users_id', col_id: 2.0, render: rowData => <a value={rowData.registered_users_id} >{rowData.full_name}</a>,
                 editComponent: x => {
                     let idx = -1
-            
+
                     if(x.rowData.registered_users_id){
                         idx = findIndex(names,function(o){ return (o.registered_users_id && (o.registered_users_id === x.rowData.registered_users_id)); })
                     }
-            
+
                     return(
                         <Autocomplete
                         id={`combo-box-employee-`}
@@ -104,25 +111,47 @@ function AuthorizedUsers({ userToken }) {
                         getOptionLabel={(option) => option.full_name}
                         value={idx != -1 ? names[idx] : null}
                         onChange ={(e,v) => {
-                            //console.log(v)
-                        //const id_ = e.target.textContent ? Number(e.target.textContent[0]) : null
-                      
-                        x.onChange(v.registered_users_id)
+                            if(v){
+                                if(v.hasOwnProperty('registered_users_id')){
+                                    x.onChange(v.registered_users_id)
+                                    return;
+                                }
+                            }
+
+                            x.onChange(v)
                         }}
-                        
+
                         renderInput={(params) => <TextField {...params} label="Name" margin="normal"/>}
                     />
                     )
-                    }},
+                },
+                validate: (rowData) => {
+                    if(rowData.hasOwnProperty('hra_num')){
+                        if(!isNaN(rowData.registered_users_id)) {
+                            if(typeof rowData.registered_users_id === "number"){
+                                if(rowData.registered_users_id.toString().length == 0){
+                                    return ({ isValid: false, helperText: 'Invalid Full name.' })
+                                }
+
+                                return true
+                            }
+                
+                            if(typeof rowData.registered_users_id === "string"){
+                                return ({ isValid: false, helperText: 'Invalid Full name.' })
+                            }
+                        }
+                    }
+                    return ({ isValid: false, helperText: 'Selection is required.' })
+                }
+            },
                 { title: 'HRA Number', field: 'hra_num', col_id: 2.2,
                 editComponent: x => {
-                   
                     let idx = -1
-            
+
                     if(x.rowData.hra_num){
                         idx = findIndex(hras,function(o){ return (o.hra_num && (o.hra_num === x.rowData.hra_num)); })
                     }
-            
+
                     return(
                         <Autocomplete
                         id={`combo-box-HRA-`}
@@ -130,26 +159,46 @@ function AuthorizedUsers({ userToken }) {
                         options={hras}
                         getOptionLabel={(option) =>  option.hra_num.toString()}
                         value={idx != -1 ? hras[idx] : null}
-                         onChange ={e => {
-            
-                        const id_ = e.target.textContent ? Number(e.target.textContent[0]) : null
-                      
-                        x.onChange(id_)
-                        }} 
-                       
-                    
+                         onChange ={(e, v) => {
+                            if(v){
+                                if(v.hasOwnProperty('hra_num')){
+                                    x.onChange(v.hra_num)
+                                    return;
+                                }
+                            }
+                            
+                            x.onChange(v)
+                        }}
+
                         renderInput={(params) => <TextField {...params} label="HRA Number" margin="normal"/>}
                     />
                     )
-                    }}
+                },
+                validate: (rowData) => {
+                    if(rowData.hasOwnProperty('hra_num')){
+                        if(!isNaN(rowData.hra_num)) {
+                            if(typeof rowData.hra_num === "number"){
+                                if(rowData.hra_num.toString().length > 3){
+                                    return ({ isValid: false, helperText: 'HRA Num digits exceed 3.' })
+                                }
+
+                                return true
+                            }
+                
+                            if(typeof rowData.hra_num === "string"){
+                                return ({ isValid: false, helperText: 'HRA Num needs to be numeric.' })
+                            }
+                        }
+                    }
+                    return ({ isValid: false, helperText: 'HRA Num is required.' })
+                }
+            }
             ]
-
-
 
             for (const col_config of authorizedUsers_cols_config) {
                 if (col_config.hasOwnProperty('field') && col_config) {
                      columns.push(col_config)
-                    
+
                 }
             }
 
@@ -186,7 +235,7 @@ function AuthorizedUsers({ userToken }) {
                                                 reject()
                                                 return;
                                             } else {
-                                                resetAuthorizedUsers()
+                                                //resetAuthorizedUsers()
                                                 resolve();
                                             }
 
@@ -202,10 +251,10 @@ function AuthorizedUsers({ userToken }) {
                                                 reject()
                                                 return;
                                             }
-            
-                                            resetAuthorizedUsers();
+
+                                            //resetAuthorizedUsers();
                                             resolve();
-                                                
+
                                         }, 1000);
                                     }))
                                     },
@@ -228,7 +277,7 @@ function AuthorizedUsers({ userToken }) {
         });
     }
 
-  
+
 
     React.useEffect(() => {
 
@@ -237,7 +286,7 @@ function AuthorizedUsers({ userToken }) {
         setLoading(true)
         getAuthorizedUsersApi(userToken).then((response) => response.data).then((data) => {
             console.log(data)
-           
+
             // console.log(data)
             setAuthorizedUsers(data.status == 200 ? data.data.authorizedUsers : data)
             setHRAs(data.status == 200 ? data.data.hras : data)
@@ -255,8 +304,8 @@ function AuthorizedUsers({ userToken }) {
             setAuthorizedUsers([])
         });
 
-       
-       
+
+
 
     }, []);//will run once.
 
@@ -272,7 +321,7 @@ function AuthorizedUsers({ userToken }) {
                 <div style={{ textAlign: 'center' }}>
                     {loading ? LoadingCircle() : null}
                     {!loading > 0 ? materialTableSelect() : null}
-                    
+
                 </div>
             </div>
         </>
