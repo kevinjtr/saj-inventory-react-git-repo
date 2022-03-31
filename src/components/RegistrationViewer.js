@@ -43,7 +43,6 @@ function RegistrationViewer({userToken}) {
     }
 
 
-
     const handleTableDelete = async (id) => {
    
         await destroyRegistrationApi(id, userToken).then((response) => response.data).then((data) => {

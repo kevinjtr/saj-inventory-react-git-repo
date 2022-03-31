@@ -159,7 +159,6 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             hideNewAccountForm(result);
     
             return result
-    
     }
 
     const [districtDropDownItems,setDistrictDropDownItems] = useState([]);
