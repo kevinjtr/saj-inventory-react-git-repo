@@ -42,16 +42,16 @@ function Header(props) {
 						{routes_tabs(userAccess).tabs}
 					</Tabs>
 				</div>
-
+				<div>
 					<Button style={{outline:'0'}}>
 							<BrightnessLowIcon onClick={()=>setPrefersDarkMode(!prefersDarkMode)} style={{color:'#000000',height:'20px',width:'20px'}} />
 					</Button>
-				
+				</div>
 					<div onClick={()=>setShowUserDropdown(true)} style={{display:'flex',flexDirection:'column',justifyContent:'center',marginRight:'10px',cursor:'pointer'}}>
 						<div style={{display:'flex',backgroundColor:'rgba(255,255,255,0.1)',borderRadius:'5px',border:'1px solid #4a4844'}}>
-							<div style={{marginRight:'3px'}}><AccountCircle style={{color:'#bfbcb8',fontSize:'20px'}} /></div>
+							<div style={{marginRight:'3px',display:'flex',flexDirection:'column',justifyContent:'center'}}><AccountCircle style={{color:'#bfbcb8',fontSize:'20px'}} /></div>
 							<div style={{whiteSpace:'nowrap',fontSize:'0.75em',display:'flex',flexDirection:'column',justifyContent:'center',color:'white',paddingTop:'2px'}}>{userName}</div>
-							<div><ArrowDropDownIcon style={{color:'#bfbcb8',fontSize:'20px'}}/></div>
+							<div style={{display:'flex',flexDirection:'column',justifyContent:'center'}}><ArrowDropDownIcon style={{color:'#bfbcb8',fontSize:'20px'}}/></div>
 						</div>
 					</div>
 				
