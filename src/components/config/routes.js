@@ -12,7 +12,6 @@ import Eng4844 from '../Eng4844';
 import FindEng4844 from '../FindEng4844';
 import ProblemReport from '../ProblemReport';
 import ProblemReportViewer from '../ProblemReportViewer';
-import RegistrationViewer from '../RegistrationViewer';
 import NotFound from '../forms/NotFound'
 import {filter} from 'lodash'
 import api from '../../axios/Api';
@@ -36,7 +35,6 @@ const routes_config = [
     {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
     {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
     {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
-    {path:'/registrationviewer',alias:'admin',label:'Registration Viewer',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
@@ -61,7 +59,7 @@ export const routes_tabs = (user_access) => {
     })
 
     return_routes.tabs = route_with_tabs.map((route, i) => 
-        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{height:"32px", minHeight:"32px",paddingTop:'20px!important',fontSize:'0.8em','&:hover':{backgroundColor:'rgba(255,255,255,0.1)',textDecoration:'none',color:'white'}}}/>
+        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
         /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
             <Link to={route.path} className="nav-link">
                 {route.label}

@@ -159,6 +159,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             hideNewAccountForm(result);
     
             return result
+    
     }
 
     const [districtDropDownItems,setDistrictDropDownItems] = useState([]);
@@ -236,7 +237,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             const ddItems = registrationDropDownItems.district[symbol].map((c, i)=>{
                 return(
                 
-                <option value={c.symbol} name={c.symbol} >
+                <option value={c.value} name={c.symbol} >
                 {c.label}
                 </option>
             
