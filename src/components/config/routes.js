@@ -12,6 +12,7 @@ import Eng4844 from '../Eng4844';
 import FindEng4844 from '../FindEng4844';
 import ProblemReport from '../ProblemReport';
 import ProblemReportViewer from '../ProblemReportViewer';
+import RegistrationViewer from '../RegistrationViewer';
 import NotFound from '../forms/NotFound'
 import {filter} from 'lodash'
 import api from '../../axios/Api';
@@ -38,6 +39,7 @@ const routes_config = [
     //{path:'/findeng4844',label:'Find Eng4844',component:FindEng4844,tab:true},
     // {path:'/problemreport',label:'Problem Report',component:ProblemReport,tab:true,level:'user'},
     {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
+    {path:'/registrationviewer',alias:'admin',label:'Registration Viewer',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
     {path:'/changehistory',alias:'changeHistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
