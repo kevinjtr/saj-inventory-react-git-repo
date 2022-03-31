@@ -5,27 +5,30 @@ import ProblemReportPopup from '../ProblemReportPopup.js'
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { connect } from 'redux-bundler-react';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
 
-const UserDropDown = ({prefersDarkMode, darkModeBackgroundColor, setShowUserDropdown, userName}) => {
+const UserDropDown = ({prefersDarkMode, darkModeBackgroundColor, setShowUserDropdown, userName,userIsLoggedIn,doLogout}) => {
 	
 	const [openProblem,setOpenProblem] = useState(false);
 	const [snackBar,setSnackBar] = useState({open:false,message:'',severity:'warning'})
 	
 	return (
 		<ClickAwayListener onClickAway={()=>setShowUserDropdown(false)}>
-			<div style={{position:'absolute', width:'200px',right:'10px',top:'35px',border:'1px solid rgb(230,230,230)',backgroundColor:'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+			<div style={{boxShadow: '0px 4px 8px 0px rgba(0,0,0,0.2)',position:'absolute', minWidth:'150px',right:'10px',top:'35px',border:'1px solid rgb(230,230,230)',backgroundColor:'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
 				<div style={{borderBottom:'1px solid rgb(230,230,230)',padding:'10px',display:'flex',flexDirection:'column'}}>
 					<div style={{textAlign:'center'}}><AccountCircle style={{fontSize:'48px',color:'rgb(230,230,230)'}}/></div>
-					<div style={{textAlign:'center'}}>{userName}</div>
+					<div style={{textAlign:'center',whiteSpace:'nowrap'}}>{userName}</div>
 				</div>
-				<div style={{padding:'10px',paddingTop:'25px',paddingBottom:'25px',display:'flex',alignSelf:'center'}}>
-					<div style={{textAlign:'center'}}></div>
-					<div style={{paddingLeft:'5px',textAlign:'center',fontSize:'0.65rem',fontStyle:'italic',display:'flex',flexDirection:'column',justifyContent:'center'}}>You have no notifications</div>
-				</div>
-				<div>
-					<button onClick={()=>setOpenProblem(true)} style={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px'}}>
+				<div className='user-dropdown-buttons'>
+					<button onClick={()=>{setOpenProblem(true)}} style={{textAlign:'left',backgroundColor:'rgba(0,0,0,0)',border:'0px',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',paddingLeft:'10px',outline:'0px'}}>
 						<ErrorIcon style={{fontSize:'0.85rem',color:'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>
 						Report a problem
+					</button>
+				</div>
+				<div className='user-dropdown-buttons'>
+					<button onClick={()=> {if(userIsLoggedIn){setShowUserDropdown(false);doLogout()}}} style={{textAlign:'left',backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',paddingLeft:'10px',outline:'0px'}}>
+						<LogoutIcon style={{fontSize:'0.85rem',color:'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>
+						Log out
 					</button>
 				</div>
 				<ProblemReportPopup title="Report a problem" openPopup={openProblem} setOpenPopup={setOpenProblem} setSnackBar={setSnackBar}/>
@@ -38,5 +41,7 @@ const UserDropDown = ({prefersDarkMode, darkModeBackgroundColor, setShowUserDrop
 }
 
 export default connect(
+	'selectUserIsLoggedIn',
 	'selectUserName',
+	'doLogout',
 	UserDropDown); 
