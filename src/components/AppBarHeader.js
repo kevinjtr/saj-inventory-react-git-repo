@@ -15,6 +15,7 @@ function Header(props) {
 	const {user, userIsLoggedIn, userAccess, darkModeBackgroundColor, prefersDarkMode, setPrefersDarkMode,doLogout, userName} = props;
 	const [showUserDropdown,setShowUserDropdown] = useState(false)
 
+	//,backgroundImage:'url("../../src/img/appbarBackground.jfif")'
 	return (
 		<Route path="/" render={(history) => (
 			<>
