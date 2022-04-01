@@ -100,7 +100,7 @@ function ChangeHistory({history, userToken}) {
 					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
 					{ title: 'HRA Number', field: 'hra_num', editable: 'never', type:'numeric'},
 					{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric', editable: 'never'},
-					{ title: 'Employee First Name', field: 'hra_employee_id',editable: 'never' },
+					{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
 					{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
 					{ title: 'Title', field: 'hra_title',editable: 'never' },
 					{ title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },

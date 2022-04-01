@@ -18,10 +18,12 @@ const UserDropDown = ({prefersDarkMode, darkModeBackgroundColor, setShowUserDrop
 					<div style={{textAlign:'center'}}><AccountCircle style={{fontSize:'48px',color:'rgb(230,230,230)'}}/></div>
 					<div style={{textAlign:'center'}}>{userName}</div>
 				</div>
-				<div style={{padding:'10px',paddingTop:'25px',paddingBottom:'25px',display:'flex',alignSelf:'center'}}>
+				<br/>
+				<br/>
+				{/* <div style={{padding:'10px',paddingTop:'25px',paddingBottom:'25px',display:'flex',alignSelf:'center'}}>
 					<div style={{textAlign:'center'}}></div>
 					<div style={{paddingLeft:'5px',textAlign:'center',fontSize:'0.65rem',fontStyle:'italic',display:'flex',flexDirection:'column',justifyContent:'center'}}>You have no notifications</div>
-				</div>
+				</div> */}
 				<div>
 					<button onClick={()=>setOpenProblem(true)} style={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px'}}>
 						<ErrorIcon style={{fontSize:'0.85rem',color:'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>

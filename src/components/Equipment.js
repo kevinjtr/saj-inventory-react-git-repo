@@ -181,6 +181,7 @@ function Equipment({history, location, match, userToken}) {
       let errorFound = true
       setAlertUser(ALERT.RESET)
 
+      console.log(rowData)
       await updateEquipmentApi(rowData, userToken)
       .then((response) => response.data).then((data) => {
         const {tabChanges, error} = data
@@ -189,21 +190,22 @@ function Equipment({history, location, match, userToken}) {
         if(error){
           setAlertUser(ALERT.FAIL())
         }else {
-          for(const tab_number in tabChanges){
-            const equipments_copy = [...equipments[tab_number]]
+          let equipments_copy = {...equipments}
 
+          for(const tab_number in tabChanges){
             for(const eq_change of tabChanges[tab_number]){
-              console.log(tab_number)
-              const idx = findIndex(equipments_copy,function(eq){return eq.bar_tag_num == eq_change.bar_tag_num})
+              let equipments_tab_copy = [...equipments_copy[tab_number]]
+              const idx = findIndex(equipments_tab_copy,function(eq){return eq.bar_tag_num == eq_change.bar_tag_num})
 
               if(idx != -1){
-                equipments_copy[idx] = eq_change
-                console.log(equipments_copy[idx])
-                setEquipments({...equipments,[tab_number]: equipments_copy})
+                equipments_tab_copy[idx] = eq_change
+                console.log(equipments_tab_copy[idx])
+                equipments_copy = {...equipments_copy,[tab_number]: equipments_tab_copy}
               }
             }
           }
 
+          setEquipments(equipments_copy)
           setAlertUser(ALERT.SUCCESS)
         }        
 
@@ -226,15 +228,18 @@ function Equipment({history, location, match, userToken}) {
         if(error){
           setAlertUser(ALERT.FAIL())
         }else {
+          let equipments_copy = {...equipments}
+
           for(const tab_number in tabChanges){
-            let equipments_copy = [...equipments[tab_number]]
-    
             for(const eq_change of tabChanges[tab_number]){
-              equipments_copy = filter(equipments_copy,function(eq){return eq.bar_tag_num != eq_change.bar_tag_num})
-              setEquipments({...equipments,[tab_number]: equipments_copy})
+              let equipments_tab_copy = [...equipments_copy[tab_number]]
+
+              equipments_tab_copy = filter(equipments_tab_copy,function(eq){return eq.bar_tag_num != eq_change.bar_tag_num})
+              equipments_copy = {...equipments_copy,[tab_number]: equipments_tab_copy}
             }
           }
 
+          setEquipments(equipments_copy)
           setAlertUser(ALERT.SUCCESS)
         }
       
@@ -258,12 +263,16 @@ function Equipment({history, location, match, userToken}) {
     if(error){
       setAlertUser(ALERT.FAIL())
     }else {
+      let copy_equipments = {...equipments}
+
       for(const tab_number in tabChanges){
         for(const eq_change of tabChanges[tab_number]){
             console.log(eq_change,tab_number)
-            setEquipments({...equipments,[tab_number]: [eq_change,...equipments[tab_number]]})
+            copy_equipments = {...copy_equipments,[tab_number]: [eq_change,...copy_equipments[tab_number]]}
         }
       }
+
+      setEquipments(copy_equipments)
 
       setAlertUser(ALERT.SUCCESS)
     }

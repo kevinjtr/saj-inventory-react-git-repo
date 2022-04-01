@@ -124,13 +124,13 @@ const ProblemReportPopup = (props) => {
                     <div style={{fontSize:'0.6rem',color:'red',height:'25px', display:'flex',flexDirection:'column',justifyContent:'center'}}>
                     {message.error}
                     </div>
-                    <div style={{display:'flex'}}>
+                    {/* <div style={{display:'flex'}}>
                         <div style={{height:'20px',fontSize:'0.75rem',fontWeight:'bold',marginBottom:'5px',display:'flex',flexDirection:'column',justifyContent:'center'}}>Screenshot</div>
                         <div style={{height:'20px',fontSize:'0.6rem',alignSelf:'flex-end',marginBottom:'1px'}}>&nbsp;(optional)</div>
-                    </div>
+                    </div> */}
 
 
-                    {screenshot.name === '' ? (
+                    {/* {screenshot.name === '' ? (
                     <div style={{display:'flex'}}>
                         <div>
                         <Button variant="outlined" color="primary" component="label" size="small" >
@@ -154,7 +154,7 @@ const ProblemReportPopup = (props) => {
                         </Button>
                         </div>)
 
-                    }
+                    } */}
                 </form> 
             </DialogContent>
             <DialogActions>
