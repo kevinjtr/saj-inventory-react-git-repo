@@ -28,6 +28,7 @@ function Employee({history, userToken}) {
 	const [employees, setEmployees] = React.useState([]);
 	const [editable,setEditable] = React.useState(false)
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
+	const [districtOfficeLocations, setDistrictOfficeLocations] = React.useState({});
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
@@ -231,7 +232,37 @@ function Employee({history, userToken}) {
 		}
 		return(true)
 		}},
-		{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'}
+		{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
+		{ title: 'Office Location Name',field:'office_location_id',editable: 'onUpdate', render: rowData => <a value={rowData.office_location_id} >{rowData.office_location_name}</a>,
+		editComponent: x => {
+			let idx = -1
+
+			if(x.rowData.office_location_id){
+				idx = findIndex(districtOfficeLocations[x.rowData.district],function(o){ return (o.office_location_id && (o.office_location_id === x.rowData.office_location_id)); })
+			}
+
+			return(
+				<Autocomplete
+				id={`combo-box-employee-`}
+				size="small"
+				options={districtOfficeLocations[x.rowData.district]}
+				getOptionLabel={(option) => option.office_location_name}
+				value={idx != -1 ? districtOfficeLocations[x.rowData.district][idx] : null}
+				onChange ={(e,v) => {
+					if(v){
+						if(v.hasOwnProperty('office_location_id')){
+							x.onChange(v.office_location_id)
+							return;
+						}
+					}
+
+					x.onChange(v)
+				}}
+
+				renderInput={(params) => <TextField {...params} label="Name" margin="normal"/>}
+			/>
+			)
+		}}
 	]
 
 	if(editable) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
@@ -367,6 +398,10 @@ function Employee({history, userToken}) {
 		if(data.status == 200 && data.editable){
 			setEditable(data.editable)
 		}
+
+		if(Object.keys(data.district_office_locations).length > 0){
+			setDistrictOfficeLocations(data.district_office_locations)
+		}		
 
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,

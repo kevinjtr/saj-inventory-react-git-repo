@@ -141,7 +141,7 @@ function formatPhoneNumber(phoneNumberString) {
   return null;
 }
 
-function Eng4900Form({formData, formId, action, create4900, setCreate4900, type, eng4900s, setEng4900s, tab, hras, userToken}) {
+function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSelectedRow, type, eng4900s, setEng4900s, tab, hras, userToken}) {
   //Constants Declarations.
 
   //Variables Declarations.
@@ -325,12 +325,12 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
       .then((response) => response.data).then((data) => {
         if(!data.error){
           setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
-
           //setEng4900s([data.data, ...eng4900s])
           resetCreate4900Data()
         }
         
         setSubmitButton({...submitButton,send:false})
+        setSelectedRow({[tab]:data.data.form_id})
     
       }).catch(function (error) {
         setSubmitButton({...submitButton,send:false})
@@ -487,7 +487,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
           </Grid>
           {selectedForm.requested_action ? (
             <>
-              <Grid item xs={6}>
+            <Grid item xs={6}>
+            {selectedForm.requested_action != "Issue" ? (
               <Paper className={classesGrid.paper}>
                 <p>LOSING HAND RECEIPT HOLDER</p>
                 <TextField
@@ -556,6 +557,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                   value={selectedForm.hra.losing.hra_work_phone ? formatPhoneNumber(selectedForm.hra.losing.hra_work_phone) : ""}
                   style={{ width: 200 }}/>
               </Paper>
+            ) : null}
             </Grid>
             <Grid item xs={6}>
               <Paper className={classesGrid.paper}>
@@ -597,7 +599,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
                 <Autocomplete
                     style={{ display:'inline-block' }}
                     id="combo-box-gaining"
-                    options={hras.gaining}
+                    options={selectedForm.requested_action == "Issue" ? hras.losing : hras.gaining}
                     getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
                     loading={loading.hra}
                     getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}
@@ -627,7 +629,9 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
           </>
           ) : null}    
           
-          {selectedForm.requested_action == "Issue" ? materialTableNewEquipment() : materialTableSelect()}
+          {selectedForm.requested_action ? (
+            selectedForm.requested_action == "Issue" ? materialTableNewEquipment() : materialTableSelect()
+          ) : null}
           <Grid item xs={6}>
             <Paper className={classesGrid.paper}>
             {editEnabled ? 
@@ -808,7 +812,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
           fontWeight: 'bold',
         }
         }}
-        title=""
+        title= { selectedForm.equipment_group.length >= 5 ? "Note: ENG4900 has a limit of 5 equipments." : ""}
         {...(editEnabled && {editable:{
           
           //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editEnabled
@@ -830,20 +834,19 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
           },
           //onRowAddCancelled: rowData => console.log('Row adding cancelled'),
           //onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-          onRowAdd: newData =>
+          onRowAdd: selectedForm.equipment_group.length < 5 ? newData =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
               //const equipments_losing_hra = selectedForm.hra.losing.hra_num && Object.keys(equipments) > 0 ? equipments[selectedForm.hra.losing.hra_num] : []
-
               const idx = findIndex(equipments,function(e){ return e.bar_tag_num === newData.bar_tag_num})
 
-              if(idx != -1){
+              if(idx != -1 && selectedForm.equipment_group.length < 5){
                 setSelectedForm({...selectedForm,equipment_group:[...selectedForm.equipment_group, equipments[idx]]});
               }
 
               resolve();
             }, 1000)
-          }),
+          }) : undefined,
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -875,7 +878,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
 
 		const equipment_cols = [
       { title: 'Item Description', field: 'item_type',col_id:4  },
-			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData) => {
+			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', col_id:5, validate: (rowData) => {
 				if(rowData.hasOwnProperty('bar_tag_num')){
 					if(!isNaN(rowData.bar_tag_num)) {
 						if(typeof rowData.bar_tag_num === "number"){
@@ -922,7 +925,14 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
 			{title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
 			{title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
 			{title:'Catalog Num',field:'catalog_num',col_id:8 },
-			{title:'Serial Num',field:'serial_num',col_id:9 },
+			{title:'Serial Num',field:'serial_num',col_id:9, validate: (rowData) => {
+				if(rowData.hasOwnProperty('serial_num')){
+          if(rowData.serial_num.toString().length > 0){
+            return true
+          }
+        }
+				  return ({ isValid: false, helperText: 'Serial Number is required.' })
+      }},
 			{title:'Manufacturer',field:'manufacturer',col_id:10 },
 			{title:'Model',field:'model',col_id:11 },
 			{title:'Condition',field:'condition',col_id:12, editComponent: (x) => {
@@ -930,7 +940,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
 				let idx = -1
 		
 				if(x.rowData.condition){
-				idx = findIndex(condition,function(c){ return (c.id && (c.id == x.rowData.condition)); })
+				  idx = findIndex(condition,function(c){ return (c.id && (c.id == x.rowData.condition)); })
 				}
 		
 				return(
@@ -973,7 +983,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
           fontWeight: 'bold',
         }
         }}
-				title=""
+				title= { selectedForm.equipment_group.length >= 5 ? "Note: ENG4900 has a limit of 5 equipments." : ""}
         {...(editEnabled && {editable:{
 					// isEditable: rowData => rowData.name === 'a', // only name(a) rows would be editable
 					//isEditHidden: rowData => rowData.name === 'x',
@@ -1049,13 +1059,16 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
 					// },
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-          onRowAdd: newData =>
+          onRowAdd: selectedForm.equipment_group.length < 5 ? newData =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
-              setSelectedForm({...selectedForm, equipment_group:[...selectedForm.equipment_group, newData]});
+              if(selectedForm.equipment_group.length < 5){
+                setSelectedForm({...selectedForm, equipment_group:[...selectedForm.equipment_group, newData]});
+              }
+              
               resolve();
             }, 1000)
-          }),
+          }): undefined,
           onRowUpdate: (newData, oldData) =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -1125,32 +1138,24 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
 
 
   const IsSelectedHrasValid = (form) => {
-    // let return_result = false
+    let return_result = false
 
-    // switch (form.requested_action) {
-    //   case "Issue":
-    //     return_result = !form.hra.losing.hra_num && form.hra.gaining.hra_num
-    //     break;
-    //   case "Transfer":
-    //     return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
-    //     break;
-    //   case "Repair":
-    //     return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
-    //     break;
-    //   case "Excess":
-    //     return_result = form.hra.losing.hra_num && !form.hra.gaining.hra_num
-    //     break;
-    //   case "FOI":
-    //     return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
-    //     break;
-    //   default:
-    //     //do nothing.
-    //     break;
-    // }
+    switch (form.requested_action) {
+      case "Issue":
+        return_result = !form.hra.losing.hra_num && form.hra.gaining.hra_num
+        break;
+      case "Transfer":
+      case "Repair":
+      case "Excess":
+      case "FOI":
+      default:
+        return_result = form.hra.losing.hra_num && form.hra.gaining.hra_num
+        break;
+    }
 
     // return return_result
 
-    return form.hra.losing.hra_num && form.hra.gaining.hra_num
+    return return_result
   }
 
   useEffect(()=>{
@@ -1188,7 +1193,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
     {
       return(
       <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - Edit Form</h2>
+        <h2>ENG 4900 - Edit Form</h2>
       </div>
       )
     }
@@ -1197,7 +1202,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
     {
       return(
       <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - View Form</h2>
+        <h2>ENG 4900 - View Form</h2>
       </div>
       )
     }
@@ -1206,7 +1211,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, type,
     {
       return(
       <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - Create Form</h2>
+        <h2>ENG 4900 - Create Form</h2>
       </div>
       )
     }

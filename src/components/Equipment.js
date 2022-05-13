@@ -954,19 +954,19 @@ function Equipment({history, location, match, userToken}) {
                         }, 1000);
                     }))
                 },
-                onRowDelete: async (newData, oldData) => {
-                  let errorFound = await handleDelete({changes:{'0':{newData:newData, oldData:oldData}}})
-                      return (new Promise((resolve, reject) => {
-                          setTimeout(() => {  
-                            if(errorFound){
-                                reject();
-                                return;
-                            }
+                // onRowDelete: async (newData, oldData) => {
+                //   let errorFound = await handleDelete({changes:{'0':{newData:newData, oldData:oldData}}})
+                //       return (new Promise((resolve, reject) => {
+                //           setTimeout(() => {  
+                //             if(errorFound){
+                //                 reject();
+                //                 return;
+                //             }
   
-                            resolve();
-                          }, 1000);
-                      }))
-                  },
+                //             resolve();
+                //           }, 1000);
+                //       }))
+                //   },
 
             }})}
             />

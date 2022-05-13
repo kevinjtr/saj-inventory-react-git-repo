@@ -31,6 +31,7 @@ function ChangeHistory({history, userToken}) {
 	const [searchView, setSearchView] = React.useState(DEFAULT_CHANGES_VIEW);
 	const [changeHistoryData, setChangeHistoryData] = React.useState([]);
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
+	const [editable, setEditable] = React.useState(false)
 
 	//Event Handlers.
 	const handleUndo = async (rowData) => {
@@ -190,7 +191,7 @@ function ChangeHistory({history, userToken}) {
 				}
 				}}
 				title=""
-				editable={{
+				{...(editable && {editable:{
 					onRowDelete: async (oldData) => {
 						setAlertUser(ALERT.RESET)
 						let result = await handleUndo({changes:{'0':{newData:oldData, oldData:{ [DB_ID_NAME[searchView]] : oldData[DB_ID_NAME[searchView]] }}},undo:true})
@@ -222,7 +223,7 @@ function ChangeHistory({history, userToken}) {
 								}, 1000);
 							}))
 						}
-				}}
+				}})}
 				/>
 			</div>
 		)
@@ -261,6 +262,10 @@ function ChangeHistory({history, userToken}) {
 		console.log(data)
 		setLoading(false)
 		setChangeHistoryData(data.status != 400 ? data.data : data)
+
+		if(data.hasOwnProperty('editable')){
+			setEditable(data.editable)
+		}
 
 		}).catch(function (error) {
 		setLoading(false)

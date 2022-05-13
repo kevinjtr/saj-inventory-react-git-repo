@@ -811,7 +811,7 @@ export default function Eng4900(props) {
     {
       return(
       <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - Edit Form</h2>
+        <h2>ENG 4900 - Edit Form</h2>
       </div>
       )
     }
@@ -820,7 +820,7 @@ export default function Eng4900(props) {
     {
       return(
       <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - View Form</h2>
+        <h2>ENG 4900 - View Form</h2>
       </div>
       )
     }
@@ -829,7 +829,7 @@ export default function Eng4900(props) {
     {
       return(
       <div style={{textAlign: 'center'}}>
-        <h2>Eng 4900 - Create Form</h2>
+        <h2>ENG 4900 - Create Form</h2>
       </div>
       )
     }

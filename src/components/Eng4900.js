@@ -75,6 +75,7 @@ import {updateEng4900Api, destroyEng4900Api, addEng4900Api, getAllEng4900sApi, e
 import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
 import {ALERT} from './tools/tools'
+import CommentIcon from '@material-ui/icons/Comment';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -202,7 +203,8 @@ function Eng4900({history, location, match, userToken}) {
     4: RESET_HRAS,
   });
   const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
-
+  const [selectedRow, setSelectedRow] = React.useState({});
+  
   //Events Declarations.
   const handleTableDelete = async (rowData) => {
     let result_error = true
@@ -640,7 +642,11 @@ function Eng4900({history, location, match, userToken}) {
                 editTooltip : "Update Status",
                 emptyDataSourceMessage:<h6>No Forms Found.</h6>
               }}}
+
             options={{
+              rowStyle: rowData => ({
+                backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? '#CCFFCC' : '#FFF'
+              }),
               //exportButton: true,
               //exportAllData: true,
               headerStyle: {
@@ -704,19 +710,6 @@ function Eng4900({history, location, match, userToken}) {
             //     onClick: () => setCreate4900({...create4900,show:true}),
             //     hidden: hras[tab_idx].losing.length == 0
             //   },
-            //   rowData => ({
-            //     icon: form4900Icons.View,
-            //     tooltip: 'View Form',
-            //     onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
-            //     //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
-            //     disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
-            //   }),
-            //   // rowData => ({
-            //   //     icon: form4900Icons.Assignment,
-            //   //     tooltip: 'Edit Form',
-            //   //     onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
-            //   //     hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
-            //   //   }),
             //   // rowData => ({
             //   //   icon: form4900Icons.Pdf,
             //   //   tooltip: 'View PDF',
@@ -841,6 +834,9 @@ function Eng4900({history, location, match, userToken}) {
                 emptyDataSourceMessage:<h6>No Forms Found.</h6>
               }}}
             options={{
+                            rowStyle: rowData => ({
+                backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? '#CCFFCC' : '#FFF'
+              }),
               //exportButton: true,
               //exportAllData: true,
               headerStyle: {
@@ -900,18 +896,12 @@ function Eng4900({history, location, match, userToken}) {
                 hidden: hras[tab_idx].losing.length == 0
               },
               rowData => ({
-                icon: form4900Icons.View,
-                tooltip: 'View Form',
-                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
+                icon: CommentIcon,
+                tooltip: 'Edit Form',
+                onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
                 //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
-                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
+                disabled: !(rowData.status == 1) //rowData.birthYear < 2000
               }),
-              // rowData => ({
-              //     icon: form4900Icons.Assignment,
-              //     tooltip: 'Edit Form',
-              //     onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
-              //     hidden: !(rowData.document_source != 2 && rowData.status == 1) //rowData.birthYear < 2000
-              //   }),
               rowData => ({
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
@@ -1037,13 +1027,6 @@ function Eng4900({history, location, match, userToken}) {
               },
             }]}
             actions={[
-              rowData => ({
-                icon: form4900Icons.View,
-                tooltip: 'View Form',
-                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
-                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
-                disabled: !(rowData.document_source != 2) //rowData.birthYear < 2000
-              }),
               rowData => ({
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
@@ -1171,12 +1154,6 @@ function Eng4900({history, location, match, userToken}) {
             }]}
             actions={[
               rowData => ({
-                icon: form4900Icons.View,
-                tooltip: 'View Form',
-                onClick: () => setCreate4900({...create4900, show:true, action:'VIEW', formId:rowData.form_id}),
-                disabled: !(rowData.document_source != 2)
-              }),
-              rowData => ({
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
@@ -1226,7 +1203,7 @@ function Eng4900({history, location, match, userToken}) {
 
   const displayTop = () => (
   <div style={{textAlign: 'center'}}>
-    <h2>Eng 4900</h2>     
+    <h2>ENG 4900</h2>     
   </div>
   )
       
@@ -1265,6 +1242,13 @@ function Eng4900({history, location, match, userToken}) {
   }, [eng4900s]);
 
   React.useEffect(() => {
+    if(Object.keys(selectedRow) > 0){
+      setTimeout(() => setSelectedRow({}), 20000);
+    }
+    
+  }, [selectedRow]);
+
+  React.useEffect(() => {
 		console.log(hras)
 	}, [hras]);
 
@@ -1278,7 +1262,7 @@ function Eng4900({history, location, match, userToken}) {
   return (
     <>
     {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} alertUser={alertUser} setAlertUser={setAlertUser}/> : null}
-    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900} alertUser={alertUser} setAlertUser={setAlertUser}/> : null}
+    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" setSelectedRow={setSelectedRow} hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900} alertUser={alertUser} setAlertUser={setAlertUser}/> : null}
     <div>
       {displayTop()}
       {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
