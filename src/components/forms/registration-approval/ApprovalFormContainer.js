@@ -1,5 +1,5 @@
 import { Dialog } from "@material-ui/core";
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import ApprovalFormStep1 from "./ApprovalFormStep1";
 import ApprovalFormStep2 from "./ApprovalFormStep2";
 import ApprovalFormStep3 from "./ApprovalFormStep3";
@@ -7,80 +7,140 @@ import ApprovalFormStep4 from "./ApprovalFormStep4";
 import ApprovalFormStep98 from "./ApprovalFormStep98";
 import ApprovalFormStep99 from "./ApprovalFormStep99";
 import { LoadingCircle } from "../../tools/tools";
+import './ApprovalFormStyles.css'
+import { connect } from 'redux-bundler-react';
 
 const ApprovalFormContainer = (props) => {
 
-    const {openPopup,setOpenPopup,registrationRow,handleTableDelete,step,setStep,result,setResult} = props
+    const {user,openPopup,setOpenPopup,registrationRow,handleTableDelete,step,setStep,result,setResult,resetRegistrations} = props
 
-    const [formData,setFormData] = useState(() =>{
-        registrationRow.user_level = registrationRow.user_type_label === 'HRA' ? 'HRA Level 1' : 'Regular Level 1'
-        return registrationRow
+    // Employees variable to contain all employees and then to be filtered for matching employees
+    const [employees, setEmployees] = useState([{
+        id:'',
+        first_name:'',
+        last_name:'',
+        office_symbol:'',
+        title:'',
+        work_phone:'',
+        district:'',
+        division:'',
+        email:''
+    }])
+
+    // Selection state variables for Step 1 of the form
+    const [matchSelection,setMatchSelection] = useState(0)
+    const [selection,setSelection] = useState(-1)
+
+    // Set if employee table has been loaded and searched
+    const [employeesLoaded,setEmployeesLoaded] = useState(false)
+
+    // Set if matching HRA was found
+    const [matchingHRA,setMatchingHRA] = useState(false)
+
+    // New or existing employee information
+    const [employeeRow,setEmployeeRow] = useState({
+        id:null,
+        first_name:'',
+        last_name:'',
+        office_symbol:null,
+        title:'',
+        work_phone:'',
+        district:null,
+        division:null,
+        email:''
+    })
+
+    // New or existing HRA row information
+    const [hraRow,setHraRow] = useState({
+        hra_num:registrationRow.hras ? registrationRow.hras:'',
+        employee_id:null,
+        name:registrationRow.first_name + ' ' + registrationRow.last_name
+    })
+
+    // New registered user information
+    const [registeredUserRow,setRegisteredUserRow] = useState({
+        edipi:registrationRow.edipi,
+        full_name:registrationRow.first_name + ' ' + registrationRow.last_name,
+        employee_id:null,
+        user_level:registrationRow.user_type_label === 'HRA' ? '11':'7'
     })
 
     // Loading variable for this component
     const [loading,setLoading] = useState(false)
 
-    const handleChange = (event) => {
-        event.preventDefault();
-
-        const fieldName = event.target.getAttribute('name');
-        const fieldValue = event.target.value;
-
-        const newFormData = {...formData}
-
-        newFormData[fieldName] = fieldValue
-
-        setFormData(newFormData)
-    }
-
-    const handleSubmit = () => {
-
-        if(formData.user_level === 'HRA Level 1' || formData.user_level === 'HRA Level 2' ){
-            setStep(3)
-        } else {
-            setStep(4)
-        }
-
-    }
-
     return(
-        <Dialog open={openPopup} >
+        <Dialog open={openPopup} maxWidth={false} >
             <div style={{position:'relative'}}>
             {loading &&
             <div style={{position:'absolute',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',top:0,bottom:0,left:0,right:0,backgroundColor:'rgba(255,255,255,0.75)'}}>
                 <LoadingCircle />
             </div>}
-            <div style={{display:'flex',flexDirection:'column',padding:'10px'}}>
-                {step === 1 &&
+            <div style={{display:'flex',flexDirection:'column',fontSize:'0.8em'}}>
+                {step === 1 && 
                 <ApprovalFormStep1
-                    formData={formData} 
-                    handleSubmit={handleSubmit} 
-                    handleChange={handleChange} 
+                    setStep={setStep}
                     setOpenPopup={setOpenPopup}
+                    registrationRow={registrationRow}
+                    setEmployeeRow={setEmployeeRow}
+                    employeeRow={employeeRow}
+                    hraRow={hraRow}
+                    setHraRow={setHraRow}
+                    registeredUserRow={registeredUserRow}
+                    setRegisteredUserRow={setRegisteredUserRow}
+                    employeesLoaded={employeesLoaded}
+                    setEmployeesLoaded={setEmployeesLoaded}
+                    employees={employees}
+                    setEmployees={setEmployees}
+                    selection={selection}
+                    setSelection={setSelection}
+                    matchSelection={matchSelection}
+                    setMatchSelection={setMatchSelection}
                 />
                 }
                 {step === 2 &&
                 <ApprovalFormStep2 
-                    formData={formData} 
-                    handleSubmit={handleSubmit} 
-                    handleChange={handleChange} 
+                    employeeRow={employeeRow}
                     setOpenPopup={setOpenPopup}
+                    setStep={setStep}
+                    hraRow={hraRow}
+                    setHraRow={setHraRow}
+                    registeredUserRow={registeredUserRow}
+                    setRegisteredUserRow={setRegisteredUserRow}
+                    registrationRow={registrationRow}
+                    matchingHRA={matchingHRA}
+                    setMatchingHRA={setMatchingHRA}
                 />
                 }
                 {step === 3 &&
                 <ApprovalFormStep3
                     setStep={setStep}
+                    employeeRow={employeeRow}
+                    hraRow={hraRow}
+                    registeredUserRow={registeredUserRow}
+                    registrationRow={registrationRow}
+                    setOpenPopup={setOpenPopup}
+                    matchingHRA={matchingHRA}
+                    setHraRow={setHraRow}
+                    setRegisteredUserRow={setRegisteredUserRow}
+                    setEmployeeRow={setEmployeeRow}
+                    resetRegistrations={resetRegistrations}
                 />
                 }
                 {step === 4 &&
                 <ApprovalFormStep4
-                    formData={formData}
-                    registrationRow={registrationRow} 
-                    setStep={setStep} 
+                    setStep={setStep}
+                    employeeRow={employeeRow}
+                    hraRow={hraRow}
+                    registeredUserRow={registeredUserRow}
+                    registrationRow={registrationRow}
                     setOpenPopup={setOpenPopup}
+                    matchingHRA={matchingHRA}
+                    setHraRow={setHraRow}
+                    setRegisteredUserRow={setRegisteredUserRow}
+                    setEmployeeRow={setEmployeeRow}
+                    resetRegistrations={resetRegistrations}
                 />
                 }
-
 
                 {/* Steps 98-99 are the Delete steps */}
                 {step === 98 &&
@@ -106,4 +166,6 @@ const ApprovalFormContainer = (props) => {
     )
 }
 
-export default ApprovalFormContainer;
+export default connect(
+    'selectUser',
+    ApprovalFormContainer)

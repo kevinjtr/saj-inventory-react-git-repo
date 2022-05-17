@@ -1,0 +1,44 @@
+.select-employee-card:hover{
+    cursor:pointer;
+    outline: 1px solid #313131
+}
+
+.select-employee-card-hra:hover{
+    cursor:pointer;
+    background-color: rgb(245, 245, 245);
+}
+
+.disable-select{
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.assign-registration-close:hover{
+    background-color: rgb(100,100,100);
+}
+
+.assign-registration-paper{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 1em;
+    background-color: #ffffff;
+    border:1px solid rgb(225,225,225);
+    flex-grow: 1;
+    padding:0.5em;
+    padding-top: 0em;
+    padding-bottom: 0em;
+    box-shadow: 0px 2px 3px 0px rgba(0,0,0,0.2);
+}
+
+.assign-registration-paper:hover{
+    border:1px solid rgb(175,175,175);
+    cursor: pointer;
+}
+
+.employee-match-arrows:hover{
+    background-color: rgba(0,0,0,0.8)!important
+}

@@ -12,6 +12,7 @@ import Eng4844 from '../Eng4844';
 import FindEng4844 from '../FindEng4844';
 import ProblemReport from '../ProblemReport';
 import ProblemReportViewer from '../ProblemReportViewer';
+import RegistrationViewer from '../RegistrationViewer';
 import NotFound from '../forms/NotFound'
 import {filter} from 'lodash'
 import api from '../../axios/Api';
@@ -22,6 +23,7 @@ import LogoutConfirm from '../LogoutConfirm';
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
 import AuthorizedUsers from '../AuthorizedUsers'
+
 
 const routes_config = [
     {path:'/home',alias:'home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
@@ -35,6 +37,7 @@ const routes_config = [
     {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
     {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
     {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
+    {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]

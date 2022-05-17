@@ -1,171 +1,252 @@
-import { Dialog, Button } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
 import React, {useState, useEffect} from "react";
-import { LoadingCircle } from "../../tools/tools";
 import { connect } from 'redux-bundler-react';
-import { getAllEmployeesApi } from '../../../publics/actions/employee-api';
+import { getAllEmployees2Api } from '../../../publics/actions/employee-api';
+import { getRegisteredUserByEDIPIApi } from '../../../publics/actions/registered-users-api';
+import ApprovalFormStep1RegularUI from "./ApprovalFormStep1RegularUI";
+import ApprovalFormStep1ExpressUI from "./ApprovalFormStep1ExpressUI";
 
-const ApprovalFormStep1 = ({setOpenPopup,formData,userToken}) => {
+const ApprovalFormStep1 = ({user,matchSelection,setMatchSelection,selection,setSelection,employees,setEmployees,setOpenPopup,setStep,userToken,registrationRow,employeeRow,setEmployeeRow,hraRow,setHraRow,registeredUserRow,setRegisteredUserRow,employeesLoaded,setEmployeesLoaded}) => {
 
     const [loading, setLoading] = useState(false)
+    const [loadingMessage,setLoadingMessage] = useState('')
 
-    // Employees variable to contain all employees and then to be filtered for matching employees
-    const [employees, setEmployees] = useState([])
+    // Show next employee match
+    const handleNext= () =>{
+        if((matchSelection + 1) < employees.length){
+            const next = matchSelection + 1
+            setMatchSelection(next)
+        }
+    }
+    // Show prev employee match
+    const handlePrev= () =>{
+        if(matchSelection > 0){
+            const prev = matchSelection - 1
+            setMatchSelection(prev)
+        }
+    }
 
-    useEffect(()=>{
-        console.log('Employee call...')
+    const handleUseExisting = (selection,admin) =>{
+        const newEmployeeRow = {...employeeRow}
+        newEmployeeRow.id = employees[selection].id
+        newEmployeeRow.first_name = employees[selection].first_name
+        newEmployeeRow.last_name = employees[selection].last_name
+        newEmployeeRow.office_symbol = employees[selection].office_symbol
+        newEmployeeRow.office_symbol_alias = employees[selection].office_symbol_alias
+        newEmployeeRow.title = employees[selection].title
+        newEmployeeRow.work_phone = employees[selection].work_phone
+        newEmployeeRow.district = employees[selection].district
+        newEmployeeRow.district_name = employees[selection].district_name
+        newEmployeeRow.division = employees[selection].division
+        newEmployeeRow.division_name = employees[selection].division_name
+        newEmployeeRow.email = employees[selection].email
+        setEmployeeRow(newEmployeeRow)
+
+        const newHraRow = {...hraRow}
+        newHraRow.employee_id = employees[selection].id
+        newHraRow.name = employees[selection].first_name + ' ' + employees[selection].last_name
+        newHraRow.hra_num = registrationRow.hras ? registrationRow.hras:''
+        setHraRow(newHraRow)
+
+        const newRegisteredUserRow = {...registeredUserRow}
+        newRegisteredUserRow.employee_id = employees[selection].id
+        newRegisteredUserRow.full_name = employees[selection].first_name + ' ' + employees[selection].last_name
+        newRegisteredUserRow.user_level = (registrationRow.user_type_label === 'HRA' && admin === true) ? '11':'7'
+        setRegisteredUserRow(newRegisteredUserRow)
+
+        if(admin){
+            setStep(2)
+        }else {
+            setStep(3)
+        }
+    }
+
+    const handleNewEmployee = (admin) =>{
+
+        // Set employee row with registration row data
+        const newEmployeeRow = {...employeeRow}
+        newEmployeeRow.id = null
+        newEmployeeRow.first_name = registrationRow.first_name
+        newEmployeeRow.last_name = registrationRow.last_name
+        newEmployeeRow.office_symbol = registrationRow.office_symbol
+        newEmployeeRow.title = registrationRow.title
+        newEmployeeRow.work_phone = registrationRow.work_phone
+        newEmployeeRow.district = registrationRow.district
+        newEmployeeRow.division = registrationRow.division
+        newEmployeeRow.email = registrationRow.email
+        setEmployeeRow(newEmployeeRow)
+
+        // Set hra row with registration row data
+        const newHraRow = {...hraRow}
+        newHraRow.employee_id = null
+        newHraRow.name = registrationRow.first_name ? (registrationRow.first_name + ' ' + registrationRow.last_name) : registrationRow.last_name
+        newHraRow.hra_num = registrationRow.hras ? registrationRow.hras:''
+        setHraRow(newHraRow)
+
+        // Set registered user row with registration row data
+        const newRegisteredUserRow = {...registeredUserRow}
+        newRegisteredUserRow.employee_id = null
+        newRegisteredUserRow.full_name = registrationRow.first_name ? (registrationRow.first_name + ' ' + registrationRow.last_name) : registrationRow.last_name
+        newRegisteredUserRow.user_level = registrationRow.user_type_label === 'HRA' ? '11':'7'
+        setRegisteredUserRow(newRegisteredUserRow)
+        
+        // Next step
+        if(admin){
+            setStep(2)
+        }else {
+            setStep(3)
+        }
+	}
+
+
+
+    useEffect(async ()=>{
+        if(!employeesLoaded){
+        console.log('Get registered user by EDIPI...')
+        setLoadingMessage('Checking user CAC...')
         setLoading(true)
-        getAllEmployeesApi(userToken).then((response) => response.data).then((data) => {
+
+        let edipiMatch = true
+
+        await getRegisteredUserByEDIPIApi(registrationRow.edipi,userToken).then((response)=>response.data).then((data) => {
+            if(data.data.length === 0){
+                edipiMatch = false
+            } else {
+                const newRegisteredUserRow = {...registeredUserRow}
+                newRegisteredUserRow.employee_id = data.data[0].employee_id
+                newRegisteredUserRow.full_name = data.data[0].full_name
+                newRegisteredUserRow.user_level = data.data[0].user_level
+                newRegisteredUserRow.edipi = data.data[0].edipi
+                setRegisteredUserRow(newRegisteredUserRow)
+            }
+        })
+
+        if(!edipiMatch){
+        console.log('Employee call...')
+        setLoadingMessage('Searching employee table...')
+        getAllEmployees2Api(userToken).then((response) => response.data).then((data) => {
             
-            const matches = data.status == 200 ? (data.data.filter((match) =>{
-                // Prevent filtering on null values within the employee table
-                if(match.first_name && match.last_name) {
-                    return ((
-                    // Employee table first name must include user registration first name, if user registration first name is not null
-                    match.first_name.toString().toLowerCase().includes(formData.first_name ? formData.first_name.toLowerCase().trim():'')
+            // First filter on user input first and last name 
+            const matches1 = data.data.filter((match) => {
+                if(match.first_name && match.last_name){
+                    return(
+                    match.first_name.toString().toLowerCase().replace(/-/g,' ').trim().includes((registrationRow.first_name && registrationRow.first_name.length > 1) ? registrationRow.first_name.toLowerCase().replace(/-/g,' ').trim():'')
                     && 
-                    // AND employee table last name must include user registration last name, if user registration last name is not null
-                    match.last_name.toString().toLowerCase().includes(formData.last_name ? formData.last_name.toLowerCase().trim():'')
-                    ) || (
-                        // Employee table first name must include user registration first name, if user registration first name is not null
-                        match.first_name.toString().toLowerCase().includes(formData.first_name_cac && formData.first_name_cac.toLowerCase().trim())
-                        && 
-                        // AND employee table last name must include user registration last name, if user registration last name is not null
-                        match.last_name.toString().toLowerCase().includes(formData.last_name_cac && formData.last_name_cac.toLowerCase().trim())
-                        ))
+                    match.last_name.toString().toLowerCase().replace(/-/g,' ').trim().includes((registrationRow.last_name && registrationRow.last_name.length > 1) && registrationRow.last_name.toLowerCase().replace(/-/g,' ').trim())
+                    )
                 }
             })
-            ) : (data)
-               
+
+            // If no results, search only on last
+            const matches2 = matches1.length === 0 ? data.data.filter((match) => {
+                if(match.first_name && match.last_name){
+                    return(
+                    match.last_name.toString().toLowerCase().replace(/-/g,' ').trim().includes((registrationRow.last_name && registrationRow.last_name.length > 1) && registrationRow.last_name.toLowerCase().replace(/-/g,' ').trim())
+                    )
+                }
+            }):[]
+
+            // Next filter on CAC first and last name
+            const matches3 = data.data.filter((match) => {
+                if(match.first_name && match.last_name){
+                    return(
+                    match.first_name.toString().toLowerCase().replace(/-/g,' ').trim().includes((registrationRow.first_name_cac && registrationRow.first_name_cac.length > 1) ? registrationRow.first_name_cac.toLowerCase().replace(/-/g,' ').trim():'')
+                    && 
+                    match.last_name.toString().toLowerCase().replace(/-/g,' ').trim().includes((registrationRow.last_name_cac && registrationRow.last_name_cac.length > 1) && registrationRow.last_name_cac.toLowerCase().replace(/-/g,' ').trim())
+                    )
+                }
+            })
+
+            // If no results from CAC first and last name, search only on CAC last name
+            const matches4 = matches3.length === 0 ? data.data.filter((match) => {
+                if(match.first_name && match.last_name){
+                    return(
+                    match.last_name.toString().toLowerCase().replace(/-/g,' ').trim().includes((registrationRow.last_name_cac && registrationRow.last_name_cac.length > 1) && registrationRow.last_name_cac.toLowerCase().replace(/-/g,' ').trim())
+                    )
+                }
+            }):[]
+
+            const matches = [...new Set([...matches4,...matches3,...matches2,...matches1])];
+
+            if(matches.length > 0){
             setEmployees(matches)
+            }
 
-            console.log(matches)
             setLoading(false)
-
 
             }).catch(function (error) {
             setLoading(false)
-            setEmployees([])
-            });
+            setEmployees([{
+                id:'',
+                first_name:'',
+                last_name:'',
+                office_symbol:'',
+                title:'',
+                work_phone:'',
+                district:'',
+                division:'',
+                email:''
+            }])
+        });
 
-        
+        setEmployeesLoaded(true)
+
+        } else{
+            //  If EDIPI match is found, set to step 4 to alert the user and abort the assignment process
+            setStep(4)         
+        } 
+  
+        } 
         
         }, []);//will run once.
 
     return(
         <>
             {loading ? (
-                <div>
-                    <div>
-                        Loading employee table...
-                    </div>
-                    <div style={{textAlign:'center'}}>
-                        <LoadingCircle />
-                    </div>
+            <div style={{display:'flex',padding:'1em'}}>
+                <div style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                    <CircularProgress size={20} />
                 </div>
-            ):(
-                <div style={{display:'flex',flexDirection:'column'}}>
-            <div style={{display:'flex',justifyContent:'flex-end'}}><div style={{cursor:'pointer'}} onClick={()=>setOpenPopup(false)}>X</div></div>
-            <div style={{display:'flex',fontSize:'0.75em'}}>
-                <div style={{display:'flex',flexDirection:'column',fontWeight:'600',whiteSpace:'nowrap',paddingRight:'10px',padding:'3px'}}>
-                    <div>&nbsp;</div>
-                    <div>&nbsp;</div>
-                    <div>First Name</div>
-                    <div>Last Name</div>
-                    <div>EDIPI</div>
-                    <div>Office</div>
-                    <div>Title</div>
-                    <div>Work Phone</div>
-                    <div>Division</div>
-                    <div>District</div>
-                    <div>Employee ID</div>
-
-                </div>
-                <div style={{display:'flex',flexDirection:'column',whiteSpace:'nowrap',backgroundColor:'#dfffde',border:'1px solid rgb(225,225,225)',textAlign:'center',padding:'3px'}}>
-                    <div>&nbsp;</div>
-                    <div style={{fontWeight:'600'}}>User Input</div>
-                    <div style={{display:'flex',justifyContent:'center'}}>
-                        <div>{formData.first_name}&nbsp;(</div>
-                        <div style={{fontSize:'0.75em',fontWeight:'600',display:'flex',flexDirection:'column',justifyContent:'center'}}>CAC:</div>
-                        <div style={{fontSize:'0.75em',display:'flex',flexDirection:'column',justifyContent:'center'}}>{formData.first_name_cac})</div>
-                    </div>
-                    <div style={{display:'flex',justifyContent:'center'}}>
-                        <div>{formData.last_name}&nbsp;(</div>
-                        <div style={{fontSize:'0.75em',fontWeight:'600',display:'flex',flexDirection:'column',justifyContent:'center'}}>CAC:</div>
-                        <div style={{fontSize:'0.75em',display:'flex',flexDirection:'column',justifyContent:'center'}}>{formData.last_name_cac})</div>
-                    </div>
-
-                        
-                        <div>{formData.edipi}</div>
-    
-    
-                        
-                        <div>{formData.office_symbol_alias}</div>
-            
-
-                        
-                        <div>{formData.title}</div>
-          
-                        
-                        <div>{formData.work_phone}</div>
-  
-                        
-                        <div>{formData.division}</div>
-              
-                        
-                        <div>{formData.district}</div>
-                        <div>&nbsp;</div>
-                        <div><Button variant='contained' size='small' color='primary' style={{fontSize:'0.85em'}}>Use User Input</Button></div>
-                   
-                    
-
-                </div>
-                <div style={{display:'flex',flexDirection:'column',whiteSpace:'nowrap',backgroundColor:'#fff1de',border:'1px solid rgb(225,225,225)',borderLeft:'0',textAlign:'center',padding:'3px'}}>
-                    <div style={{fontWeight:'600'}}>Employee Table</div>
-                    <div>Match 1 of 1</div>
-                    <div style={{display:'flex',justifyContent:'center'}}>
-                        <div>&nbsp;(</div>
-                        <div style={{fontSize:'0.75em',fontWeight:'600',display:'flex',flexDirection:'column',justifyContent:'center'}}>CAC:</div>
-                        <div style={{fontSize:'0.75em',display:'flex',flexDirection:'column',justifyContent:'center'}}>{formData.first_name_cac})</div>
-                    </div>
-                    <div style={{display:'flex',justifyContent:'center'}}>
-                        <div>&nbsp;(</div>
-                        <div style={{fontSize:'0.75em',fontWeight:'600',display:'flex',flexDirection:'column',justifyContent:'center'}}>CAC:</div>
-                        <div style={{fontSize:'0.75em',display:'flex',flexDirection:'column',justifyContent:'center'}}>{formData.last_name_cac})</div>
-                    </div>
-
-                        
-                        <div></div>
-    
-    
-                        
-                        <div>{formData.office_symbol_alias}</div>
-            
-
-                        
-                        <div>{formData.title}</div>
-          
-                        
-                        <div>{formData.work_phone}</div>
-  
-                        
-                        <div>{formData.division}</div>
-              
-                        
-                        <div>{formData.district}</div>
-                        <div>id</div>
-                        <div><Button variant='contained' size='small' color='primary' style={{fontSize:'0.85em'}}>Use Employee Match</Button></div>
-                   
-                    
-
+                <div style={{paddingLeft:'1em',display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                    {loadingMessage}
                 </div>
             </div>
-            </div>)
+            ):(
+            <>
+            {user === 'admin' ?
+            (<ApprovalFormStep1RegularUI
+                handlePrev={handlePrev} 
+                handleNext={handleNext} 
+                handleUseExisting={handleUseExisting}
+                handleNewEmployee={handleNewEmployee}
+                matchSelection={matchSelection}
+                selection={selection}
+                setSelection={setSelection}
+                employees={employees}
+                setOpenPopup={setOpenPopup}
+                registrationRow={registrationRow}
+            />):
+            (<ApprovalFormStep1ExpressUI 
+                handlePrev={handlePrev} 
+                handleNext={handleNext} 
+                handleUseExisting={handleUseExisting}
+                handleNewEmployee={handleNewEmployee}
+                matchSelection={matchSelection}
+                selection={selection}
+                setSelection={setSelection}
+                employees={employees}
+                setOpenPopup={setOpenPopup}
+                registrationRow={registrationRow}
+            />)
+            }
+            </>)
             }
         </>
     )
 }
 
 export default connect(
+    'selectUser',
     'selectUserToken',
     ApprovalFormStep1);
 

@@ -1,92 +1,191 @@
-import { Dialog, Button } from "@material-ui/core";
+import { Dialog, Button, CircularProgress } from "@material-ui/core";
 import React, {useState} from "react";
+import CloseIcon from '@mui/icons-material/Close';
+import { getAllHrasApi } from '../../../publics/actions/hra-api';
+import { connect } from 'redux-bundler-react';
 
 const ApprovalFormStep2 = (props) => {
 
-    const {formData,handleSubmit,handleChange,setOpenPopup} = props
+    const {userToken,registrationRow,handleSubmit,setOpenPopup,setStep,hraRow,setHraRow,registeredUserRow,setRegisteredUserRow,employeeRow,setMatchingHRA,matchingHRA} = props
+
+    const [loading,setLoading] = useState(false)
+    const [hraError,setHraError] = useState(0)
+
+    const handleValidateHra = async () => {
+
+        setMatchingHRA(false)
+        setHraError(0)
+
+        if(registeredUserRow.user_level === '11' || registeredUserRow.user_level === '12'){
+            if(hraRow.hra_num === ''){
+                setHraError(1)
+            } else {
+
+                setLoading(true)
+            
+                const match = await getAllHrasApi(userToken).then((response) => response.data).then((data) => {
+                    return data.data.find((match) => {
+                        return (
+                            match.hra_num === parseInt(hraRow.hra_num)
+                        )
+                    })
+                })
+
+                if(typeof match !== 'undefined'){
+                    if(match.employee_id && (hraRow.employee_id === match.employee_id)){
+                        setMatchingHRA(true)
+                        setStep(3)
+                    } else {
+                        setHraError(2)
+                        setLoading(false)
+                    }
+                } else {
+                    setStep(3)
+                }
+            }
+
+        } else {
+            setStep(3)
+        }
+
+    }
+
+    const handleChangeHra = (event) => {
+        
+        event.preventDefault();
+
+        setMatchingHRA(false);
+
+        const newHraRow = {...hraRow}
+        newHraRow.hra_num = event.target.value.replace(/[^0-9]/g,"")
+        setHraRow(newHraRow)
+
+    }
+
+    const handleChangeUserLevel = (event) => {
+        
+        event.preventDefault();
+        
+        const newRegisteredUserRow = {...registeredUserRow}
+        newRegisteredUserRow.user_level = event.target.value
+        setRegisteredUserRow(newRegisteredUserRow)
+
+    }
 
     return(
-            <>
-                <div style={{display:'flex',justifyContent:'flex-end'}}>
-                    <div onClick={()=>setOpenPopup(false)} style={{cursor:'pointer'}}>X</div>
+        <>
+            {loading ? (
+            <div style={{display:'flex',padding:'1em'}}>
+                <div style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                    <CircularProgress size={20} />
                 </div>
-                <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
-                    <div style={{width:'100px',fontWeight:'bold'}}>
-                        Name
-                    </div>
-                    <div>
-                        {formData.first_name + " " + formData.last_name}
-                    </div>
+                <div style={{paddingLeft:'1em',display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                    Searching HRA table...
                 </div>
-                <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
-                    <div style={{width:'100px',fontWeight:'bold'}}>
-                        Division
-                    </div>
-                    <div>
-                        {formData.division}
+            </div>
+            ):(
+            <div style={{display:'flex',flexDirection:'column'}}>
+                <div style={{display:'flex',justifyContent:'space-between',backgroundColor:'#1c1c1c'}}>
+                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'0.75em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>Set User Level</div>
+                    <div className='assign-registration-close' style={{display:'flex',cursor:'pointer',padding:'0.25em'}} onClick={()=>setOpenPopup(false)}>
+                        <CloseIcon style={{color:'white',fontSize:'1em'}}/>
                     </div>
                 </div>
-                <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
-                    <div style={{width:'100px',fontWeight:'bold'}}>
-                        District
+                <div style={{padding:'1em',backgroundColor:'rgb(245,245,245)'}}>
+                <div style={{display:'flex',flexDirection:'column',padding:'1em',backgroundColor:'white',border:'1px solid rgb(225,225,225)',borderRadius:'1em',boxShadow: '0px 4px 6px 0px rgba(0,0,0,0.2)',whiteSpace:'nowrap'}}>
+                    <div style={{display:'flex',flexDirection:'column'}}>
+                    <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
+                        <div style={{marginLeft:'0.5em',width:'7em',fontWeight:'bold'}}>
+                            Name
+                        </div>
+                        <div>
+                            {registeredUserRow.full_name}
+                        </div>
                     </div>
-                    <div>
-                        {formData.district}
+                    <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
+                        <div style={{marginLeft:'0.5em',width:'7em',fontWeight:'bold'}}>
+                            Employee ID
+                        </div>
+                        <div>
+                            {registeredUserRow.employee_id ? registeredUserRow.employee_id : 'TBD'}
+                        </div>
                     </div>
-                </div>
-                <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
-                    <div style={{width:'100px',fontWeight:'bold'}}>
-                        Symbol
+                    <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
+                        <div style={{marginLeft:'0.5em',width:'7em',fontWeight:'bold'}}>
+                            EDIPI
+                        </div>
+                        <div>
+                            {registeredUserRow.edipi}
+                        </div>
                     </div>
-                    <div>
-                        {formData.office_symbol_alias}
+                    <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
+                        <div style={{marginLeft:'0.5em',width:'7em',fontWeight:'bold',display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                            User Level
+                        </div>
+                        <div>
+                            <select 
+                            onChange={handleChangeUserLevel} 
+                            value={registeredUserRow.user_level} 
+                            style={{width:'10em',height:'2em',fontSize:'1em',textAlign:'center',outline:'0',padding:'0',borderRadius:'0.5em',border:'1px solid gray',marginRight:'1em'}}
+                            >
+                                <option value='1'>Admin</option>
+                                <option value='7'>Regular Level 1</option>
+                                <option value='8'>Regular Level 2</option>
+                                <option value='9'>Regular Level 3</option>
+                                <option value='10'>Regular Level 4</option>
+                                <option value='11'>HRA Level 1</option>
+                                <option value='12'>HRA Level 2</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <form onSubmit={handleSubmit}>
-                <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
-                    <div style={{width:'100px',fontWeight:'bold',display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                        User Type
-                    </div>
-                    <div>
-                        <select onChange={handleChange} value={formData.user_level} name="user_level" style={{width:'100px',height:'26px',textAlign:'center'}}>
-                            <option value="Admin">Admin</option>
-                            <option value="Regular Level 1">Regular Level 1</option>
-                            <option value="Regular Level 2">Regular Level 2</option>
-                            <option value="Regular Level 3">Regular Level 3</option>
-                            <option value="Regular Level 4">Regular Level 4</option>
-                            <option value="HRA Level 1">HRA Level 1</option>
-                            <option value="HRA Level 2">HRA Level 2</option>
-                        </select>
-                    </div>
-                </div>
 
-                {formData.user_level.substring(0,3) == 'HRA' &&
-                <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
-                    <div style={{width:'100px',fontWeight:'bold',display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                        HRA No.
+                    {(registeredUserRow.user_level === '11' || registeredUserRow.user_level === '12') &&
+                    <div style={{display:'flex',paddingTop:'3px',paddingBottom:'3px'}}>
+                        <div style={{marginLeft:'0.5em',width:'7em',fontWeight:'bold',display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                            HRA No.
+                        </div>
+                        <div>
+                            <input 
+                            type="text" 
+                            onChange={handleChangeHra} 
+                            maxlength="3" 
+                            style={{marginRight:'1em',width:'10em',height:'2em',fontSize:'1em',textAlign:'center',outline:'0',padding:'0',borderRadius:'0.5em',border:'1px solid gray'}} 
+                            value={hraRow.hra_num} 
+                            name="hras" 
+                            disabled={(registeredUserRow.user_level === '11' || registeredUserRow.user_level === '12') ? false:true} 
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <input type="text" onChange={handleChange} maxlength="3" style={{width:'100px',textAlign:'center'}} value={formData.hras} name="hras" disabled={formData.user_type_label === "HRA" ? false:true} />
+                    }
+
+                    {(hraError > 0 && (registeredUserRow.user_level === '11' || registeredUserRow.user_level === '12')) && 
+                    <div style={{display:'flex',textAlign:'center',justifyContent:'center',color:'red',fontSize:'0.75em',flexGrow:1}}>
+                        {hraError === 1 && 
+                        <>HRA number is required</>
+                        }
+                        {hraError === 2 && 
+                        <>This HRA number is tied to a different employee. <br /> Please enter a new HRA number.</>
+                        }
                     </div>
-                </div>
-                }
+                    }
                 
-                <div style={{display:'flex',paddingTop:'5px'}}>
-                    <div style={{paddingRight:'3px',flexGrow:1}}>
-                        <Button variant='contained' color='primary' style={{width:'100%'}} type='submit'>
-                            Assign
+                    </div>
+                    </div>
+                    <div style={{display:'flex',paddingTop:'1em',justifyContent:'space-between'}}>
+                        <Button variant='contained' size='small' onClick={()=>setStep(1)} style={{marginRight:'0.5em'}}>
+                            Back
+                        </Button>
+                        <Button onClick={()=>handleValidateHra()} variant='contained' size='small' color='primary' style={{marginLeft:'0.5em'}} >
+                            Next
                         </Button>
                     </div>
-                
-                    <div style={{paddingLeft:'3px',flexGrow:1}}>
-                        <Button variant='contained' style={{width:'100%'}} onClick={()=>setOpenPopup(false)}>
-                            Cancel
-                        </Button>
-                    </div>
                 </div>
-                </form>
-            </>
+            </div>
+            )}
+        </>
     )
 }
 
-export default ApprovalFormStep2
+export default connect(
+    'selectUserToken',
+    ApprovalFormStep2);

@@ -14,7 +14,7 @@ export const addHraApi = async (rowData, token) => {
 };
 
 export const getAllHrasApi = async (token) => {
-	return api.get(HRA,{headers:{auth:token}})
+	return api.get(`${HRA}2`,{headers:{auth:token}})
 };
 
 export const getHraFormApi = async (token) => {

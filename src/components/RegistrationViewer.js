@@ -9,13 +9,17 @@ import {Autocomplete, Alert} from '@material-ui/lab';
 // import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel, FormGroup} from '@material-ui/core';
 // import {orderBy, findIndex, filter} from 'lodash'
 import {LoadingCircle, getQueryStringParams, ALERT} from './tools/tools';
-import { updateRegistrationApi, getAllRegistrationsApi,destroyRegistrationApi } from '../publics/actions/register-api';
+import { getAllRegistrationsApi,destroyRegistrationApi } from '../publics/actions/register-api';
+import { getEmployeeByEDIPIWithOffice } from '../publics/actions/employee-api';
 import { connect } from 'redux-bundler-react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ApprovalFormContainer from './forms/registration-approval/ApprovalFormContainer';
+import Button from '@mui/material/Button';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 //import Header from './Header'
 
-function RegistrationViewer({userToken}) {
+function RegistrationViewer({userToken,user}) {
+    
     //React Hooks Declarations.
     const [initialize, setInitialize] = React.useState(true);
     const [registrations, setRegistrations] = useState([]);
@@ -57,12 +61,55 @@ function RegistrationViewer({userToken}) {
         setStep(99)
     }
 
+    const actions = () => {
+        if(user === 'admin'){
+            return (
+                [
+                    {
+                        icon: ()=> <SaveIcon />,
+                        tooltip:'Save User',
+                        onClick: (event,rowData) => {
+                            console.log(rowData)
+                            setRegistrationRow(rowData)
+                            setStep(1)
+                            setOpenApproval(true)
+                        },
+                    },
+                    {
+                        icon: ()=> <DeleteIcon />,
+                        tooltip:'Delete User',
+                        onClick: (event,rowData) => {
+                            console.log(rowData)
+                            setRegistrationRow(rowData)
+                            setStep(98)
+                            setOpenDelete(true)
+                        },
+                    },
+                ]
+            )
+        } else if (user === 'hra_1' || user === 'hra_2'){
+            return (
+                [
+                    {
+                        icon: ()=> <AssignmentIndIcon />,
+                        tooltip:'Approve User',
+                        onClick: (event,rowData) => {
+                            console.log(rowData)
+                            setRegistrationRow(rowData)
+                            setStep(1)
+                            setOpenApproval(true)
+                        }}
+                ]
+            )
+        }
+    }
+
     const materialTableSelect = () => {
 	    if(registrations.length > 0){
             const cols = Object.keys(registrations[0])
             let columns = []
     
-            const registrations_cols_config = [
+            const registrations_columns_admin = [
                 { title: 'EDIPI', field: 'edipi', type:'date', col_id:2.0, editable: 'never'},
                 { title: 'First Name', field: 'first_name',col_id:2.1,editable: 'never' },
                 { title: 'Last Name', field: 'last_name',col_id:2.2,editable: 'never' },
@@ -77,9 +124,21 @@ function RegistrationViewer({userToken}) {
                 { title: 'HRA', field: 'hras',col_id:3.2,editable: 'never' },
                 { title: 'Status Comment', field: 'status_comment',col_id:3.3,editable: 'never' }
             ]
+
+            const registrations_columns_hra = [
+                { title: 'First Name', field: 'first_name',col_id:2.1,editable: 'never' },
+                { title: 'Last Name', field: 'last_name',col_id:2.2,editable: 'never' },
+                { title: 'Title', field: 'title',col_id:2.3,editable: 'never' },
+                { title: 'Office Symbol', field: 'office_symbol_alias',col_id:2.4,editable: 'never' },
+                { title: 'Work Phone', field: 'work_phone',col_id:2.5,editable: 'never' },
+                { title: 'Division', field: 'division_symbol',col_id:2.8,editable: 'never' },
+                { title: 'District', field: 'district_symbol',col_id:2.9,editable: 'never' },
+                { title: 'User Type', field: 'user_type_label',col_id:3.1,editable: 'never' },
+                { title: 'Email', field: 'email',col_id:3.0,editable: 'never' },
+            ]
     
             
-            for(const col_config of registrations_cols_config){
+            for(const col_config of user === 'admin' ? registrations_columns_admin:registrations_columns_hra){
                 if(col_config.hasOwnProperty('field') && col_config){
                     if(cols.includes(col_config.field)) columns.push(col_config)
                 }
@@ -108,28 +167,7 @@ function RegistrationViewer({userToken}) {
                     }
                     
                     }}
-                    actions={[
-                        {
-                            icon: ()=> <SaveIcon />,
-                            tooltip:'Save User',
-                            onClick: (event,rowData) => {
-                                console.log(rowData)
-                                setRegistrationRow(rowData)
-                                setStep(1)
-                                setOpenApproval(true)
-                            },
-                        },
-                        {
-                            icon: ()=> <DeleteIcon />,
-                            tooltip:'Delete User',
-                            onClick: (event,rowData) => {
-                                console.log(rowData)
-                                setRegistrationRow(rowData)
-                                setStep(98)
-                                setOpenDelete(true)
-                            },
-                        },
-                    ]}
+                    actions={actions()}
                     title=""
                     />
                 </div>
@@ -141,29 +179,100 @@ function RegistrationViewer({userToken}) {
 
     const resetRegistrations = () => {
 		setLoading(true)
+
+    if(user != 'admin'){
+    getEmployeeByEDIPIWithOffice(userToken).then((response) => response.data).then((hra) => {
+        console.log(hra.data)
         getAllRegistrationsApi(userToken).then((response) => response.data).then((data) => {
-		console.log(data)
-		setRegistrations(data.status == 200 ? data.data : data)
-		setLoading(false)
-	}).catch(function (error) {
-		setRegistrations([])
-		setLoading(false)
-	});
+
+            // Store HRA object
+            const h = hra.data[0]
+
+            // Filter registrations to match HRA division, district, office_symbol.  Include only Regular user registrations
+            const registrations = data.status === 200 ? data.data.filter((r)=>{
+                    return (
+                        r.division === h.division 
+                        && 
+                        r.district === h.district 
+                        && 
+                        r.office_symbol === h.office_symbol
+                        &&
+                        r.user_type_label === 'Regular'
+                    )
+            }):data
+            
+            setRegistrations(registrations)
+
+            setLoading(false)
+
+            }).catch(function (error) {
+                setLoading(false)
+                setRegistrations([])
+            });
+        }).catch(function (error) {
+            setLoading(false)
+            setRegistrations([])
+        })
+    } else {
+        getAllRegistrationsApi(userToken).then((response) => response.data).then((data) => {
+            setRegistrations(data.status == 200 ? data.data : data)
+            setLoading(false)
+        }).catch(function (error) {
+            setLoading(false)
+            setRegistrations([])
+        })
+    }
+
+
+
 	}
 
 React.useEffect(() => {
     
     console.log(`Registration List Call`)
     setLoading(true)
-    getAllRegistrationsApi(userToken).then((response) => response.data).then((data) => {
-    setLoading(false)
-    console.log(data)
-    setRegistrations(data.status == 200 ? data.data : data)
-    }).catch(function (error) {
-    setLoading(false)
-    setRegistrations([])
+    if(user != 'admin'){
+    getEmployeeByEDIPIWithOffice(userToken).then((response) => response.data).then((hra) => {
+        console.log(hra.data)
+        getAllRegistrationsApi(userToken).then((response) => response.data).then((data) => {
 
-    });
+            // Store HRA object
+            const h = hra.data[0]
+
+            // Filter registrations to match HRA division, district, office_symbol.  Include only Regular user registrations
+            const registrations = data.status === 200 ? data.data.filter((r)=>{
+                    return (
+                        r.division === h.division 
+                        && 
+                        r.district === h.district 
+                        && 
+                        r.office_symbol === h.office_symbol
+                        &&
+                        r.user_type_label === 'Regular'
+                    )
+            }):data
+            
+            setRegistrations(registrations)
+
+            setLoading(false)
+
+            }).catch(function (error) {
+                setLoading(false)
+                setRegistrations([])
+            });
+        }).catch(function (error) {
+            setLoading(false)
+            setRegistrations([])
+        })
+    } else {
+        getAllRegistrationsApi(userToken).then((response) => response.data).then((data) => {
+            setRegistrations(data.status == 200 ? data.data : data)
+            setLoading(false)
+        }).catch(function (error) {
+            setLoading(false)
+            setRegistrations([])
+        })
+    }
 
 }, []);//will run once.
 
@@ -178,6 +287,7 @@ React.useEffect(() => {
                 registrationRow={registrationRow} 
                 step={step}
                 setStep={setStep}
+                resetRegistrations={resetRegistrations}
             />
         }
         {openDelete && 
@@ -194,7 +304,7 @@ React.useEffect(() => {
         }
         <div>
             <div style={{textAlign: 'center'}}>
-                 <h2 >Registration Viewer</h2>
+                 <h2 >Pending User Registrations</h2>
 			</div>
              {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
              <div style={{textAlign: 'center'}}>
@@ -208,4 +318,5 @@ React.useEffect(() => {
 
 export default connect(
     'selectUserToken',
+    'selectUser',
     RegistrationViewer);
