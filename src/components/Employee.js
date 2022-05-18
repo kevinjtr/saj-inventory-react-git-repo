@@ -18,13 +18,13 @@ import Header from './Header'
 import {ALERT} from './tools/tools'
 import {updateEmployeeApi,destroyEmployeeApi,addEmployeeApi,getAllEmployeesApi} from '../publics/actions/employee-api'
 import { connect } from 'redux-bundler-react';
-import {officesSymbol} from './config/constants'
+//import {officesSymbol} from './config/constants'
 
 function Employee({history, userToken}) {
 
 	//Hooks Declarations.
 	const [loading, setLoading] = React.useState(false);
-	//const [officesSymbol, setOfficesSymbol] = React.useState([]);
+	const [officesSymbol, setOfficesSymbol] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
 	const [editable,setEditable] = React.useState(false)
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
@@ -196,36 +196,39 @@ function Employee({history, userToken}) {
 
 		}},
 		{ title: 'Title', field: 'title' },
-		{ title: 'Office Symbol ID', field: 'office_symbol',type:'numeric',
+		{ title: 'Office Symbol', field: 'office_symbol', render: rowData => <a value={rowData.office_symbol}>{rowData.office_symbol_alias}</a>,
 		editComponent: x => {
-		//const table_id = x.rowData.tableData.id
-		console.log(x);
 		let idx = -1
 
 		if(x.rowData.office_symbol){
-			idx = findIndex(officesSymbol,function(o){ return (o.id && (o.id == x.rowData.office_symbol)); })
+			idx = findIndex(officesSymbol,function(o){ return (o.office_symbol && (o.office_symbol == x.rowData.office_symbol)); })
 		}
 
 		return(
 			<Autocomplete
 			//onChange={e => x.onChange(e)}
-			id={`combo-box-employee-`}
+			id={`combo-box-employee-office-symbol`}
+			id={`combo-box-employee-office-symbol`}
 			size="small"
 			options={officesSymbol}
-			getOptionLabel={(option) => option.id + ' - ' + option.alias}
+			getOptionLabel={(option) => option.office_symbol_alias}
 			value={idx != -1 ? officesSymbol[idx] : null}
-			onChange ={e => {
+			onChange ={(e,v) => {
+				if(v){
+					if(v.hasOwnProperty('office_symbol')){
+						x.onChange(v.office_symbol)
+						return;
+					}
+				}
 
-			const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-			console.log(id_);
-			x.onChange(id_)
+				x.onChange(v)
 			}}
 			//style={{ verticalAlign: 'top' }}
 			renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
 		/>
 		)
 		}},
-		{ title: 'Office Symbol',field:'office_symbol_alias',editable: 'never'},
+		// { title: 'Office Symbol',field:'office_symbol_alias',editable: 'never'},
 		{ title: 'Work Phone', field: 'work_phone',type:'numeric',validate: rowData => {
 		if(rowData.work_phone){
 			return(rowData.work_phone.toString().length > 10 ? { isValid: false, helperText: 'phone number digits exceed 10.' } : true)
@@ -243,7 +246,8 @@ function Employee({history, userToken}) {
 
 			return(
 				<Autocomplete
-				id={`combo-box-employee-`}
+				id={`combo-box-employee-location`}
+				key={`combo-box-employee-location`}
 				size="small"
 				options={districtOfficeLocations[x.rowData.district]}
 				getOptionLabel={(option) => option.office_location_name}
@@ -296,7 +300,7 @@ function Employee({history, userToken}) {
 			title=""
 			
 			{...(editable && {editable:{
-				//isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
+				isEditable: rowData => rowData.employee_update_rights, // only name(a) rows would be editable
 				//isEditHidden: rowData => rowData.name === 'x',
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
@@ -401,6 +405,11 @@ function Employee({history, userToken}) {
 
 		if(Object.keys(data.district_office_locations).length > 0){
 			setDistrictOfficeLocations(data.district_office_locations)
+		}
+
+		if(Object.keys(data.office_symbol).length > 0){
+			console.log('office_symbol_update')
+			setOfficesSymbol(data.office_symbol)
 		}		
 
 		// this.setState({

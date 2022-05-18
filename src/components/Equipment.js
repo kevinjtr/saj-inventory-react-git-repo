@@ -524,7 +524,7 @@ function Equipment({history, location, match, userToken}) {
             <Tab label={equipmentTabs[0].label.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
             <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
             <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
-            <Tab label={equipmentTabs[3].label.toUpperCase()} icon={<SearchIcon/>} {...a11yProps(3)} />
+            <Tab label={equipmentTabs[3].label.toUpperCase()} hidden={!editable[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
           </Tabs>
         </AppBar>
         <TabPanel value={tabs} index={0}>

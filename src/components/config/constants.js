@@ -298,6 +298,11 @@ export const registrationDropDownItems = {
         "value": 50,
         "alias": "EN-DP",
         "label": "EN-DP"
+      },
+      {
+        "value": 51,
+        "alias": "CELA",
+        "label": "CELA"
       }
     ],
     "userType": [
