@@ -27,10 +27,10 @@ const UserDropDown = ({prefersDarkMode, darkModeBackgroundColor, setShowUserDrop
 				<div>
 					<button onClick={()=>setOpenProblem(true)} style={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px'}}>
 						<ErrorIcon style={{fontSize:'0.85rem',color:'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>
-						Report a problem
+						Submit Feedback
 					</button>
 				</div>
-				<ProblemReportPopup title="Report a problem" openPopup={openProblem} setOpenPopup={setOpenProblem} setSnackBar={setSnackBar}/>
+				<ProblemReportPopup title="Submit Feedback" openPopup={openProblem} setOpenPopup={setOpenProblem} setSnackBar={setSnackBar}/>
 				<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}>
 					<Alert severity={snackBar.severity}>{snackBar.message}</Alert>
 				</Snackbar>

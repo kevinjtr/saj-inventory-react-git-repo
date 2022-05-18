@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import api from '../axios/Api';
 import Login from '../components/Login'
 import Signup from '../components/Signup'
 import OutlinedFlagSharpIcon from '@mui/icons-material/OutlinedFlagSharp';
@@ -13,14 +14,16 @@ import { connect } from 'redux-bundler-react';
 import { Grid, Paper, Avatar, TextField, Button, Typography, Link } from '@material-ui/core'
 import {alertStyles} from '../components/styles/material-ui'
 import Alert from '@material-ui/lab/Alert';
+import {getAllMessagesApi} from '../publics/actions/updates-maintenance-messages-api'
 
-const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage}) => {
-
+//const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage}) =>{
+function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage})  {
     const [selectedTab, setSelectedTab] = useState(1); // 1 = show sign in buttons, 2 = show new account form
     const [registrationResult, setRegistrationResult] = useState(false)
 
     const [loading,setLoading] = useState(false)
 
+    const [messages, setMessages] = useState([])
     //const [isSubmitting,setIsSubmitting] = useState(false)
 
     //Styling
@@ -56,67 +59,100 @@ const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLogin
         //     props.setSubmitting(false)
         // })
     }
-    
+
+     const GetMaintenanceMessages = async() => {
+        await getAllMessagesApi().then((response) => response.data).then((data) => {
+            console.log(data)
+            const messages_to_update = data.data.map(m => <li>{m}</li>)
+            setMessages(messages_to_update)
+        })
+    }
+
+    //Effects
+    React.useEffect(() => {
+        GetMaintenanceMessages()
+    }, []);//will run once.
+
     return (
-        <div className='signin-page-container' style={{display:'flex',justifyContent:'center'}}>
-            {userLoginFailure ? <div className={alertClass.root}>
-                                    <Alert variant="outlined" severity="error">
-                                        {`Login Failed${userLoginMessage ? ` - ${userLoginMessage}` : ""}`}
-                                    </Alert>
-                                </div> : null}
-            {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
-            <div className="signin-box">
-                {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Please wait...</div></div>}
-                        
-                <div className='signin-box-logo'><img src="usace-inventory.png" alt="image" style={{ height: "75px"}} /></div>
+        <div>
+            <div className='signin-page-container' style={{display:'flex',justifyContent:'center'}}>
+                {userLoginFailure ? <div className={alertClass.root}>
+                                        <Alert variant="outlined" severity="error">
+                                            {`Login Failed${userLoginMessage ? ` - ${userLoginMessage}` : ""}`}
+                                        </Alert>
+                                    </div> : null}
+                {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
+                <div className="signin-box">
+                    {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Please wait...</div></div>}
+                            
+                    <div className='signin-box-logo'><img src="usace-inventory.png" alt="image" style={{ height: "75px"}} /></div>
 
 
-                {selectedTab === 1 &&
-                <div className="signin-buttons-container">
+                    {selectedTab === 1 &&
+                    <div className="signin-buttons-container">
 
-                    <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>Sign In</div>
+                        <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>Sign In</div>
 
-                    <div className="login-cac-button-container">
-                        <Button onClick={onSmartcardButtonSubmit} className="login-cac-button" type='submit' color='primary' variant="contained" disabled={userIsLoggingIn} fullWidth>
-                            <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                                <div className="cac-icon-outline" style={userIsLoggingIn ? {border:'2px solid rgba(255,255,255,0.2)'}:{}}>
-                                    <PersonIcon style={{fontSize:'14px'}}/>
-                                        <div style={{width:'18px',height:'13px',display:'flex',justifyContent:'space-between',alignSelf:'center'}}>
-                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
-                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
-                                        <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
+                        <div className="login-cac-button-container">
+                            <Button onClick={onSmartcardButtonSubmit} className="login-cac-button" type='submit' color='primary' variant="contained" disabled={userIsLoggingIn} fullWidth>
+                                <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
+                                    <div className="cac-icon-outline" style={userIsLoggingIn ? {border:'2px solid rgba(255,255,255,0.2)'}:{}}>
+                                        <PersonIcon style={{fontSize:'14px'}}/>
+                                            <div style={{width:'18px',height:'13px',display:'flex',justifyContent:'space-between',alignSelf:'center'}}>
+                                            <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
+                                            <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
+                                            <div style={{display:'flex',flexDirection:'column',justifyContent:'space-between'}}><div className='cac-icon-element-1' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div><div className='cac-icon-element-2' style={userIsLoggingIn ? {backgroundColor:'rgba(255,255,255,0.2)'}:{}}></div></div>
+                                            </div>
                                         </div>
-                                    </div>
-                            </div>
-                        <div className='login-cac-button-text-container'>
-                            {userIsLoggingIn ? (
-                                <div className='login-cac-button-text-row1'>Loading</div>
-                                    ) : (
-                                    <>
-                                <div className='login-cac-button-text-row1'>Smart Card</div>
-                                <div className='login-cac-button-text-row2'>Access</div>
-                                    </>
-                                )}
-                            </div>
-                        </Button>
-                    </div>
-                                                
-                    {/* <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
+                                </div>
+                            <div className='login-cac-button-text-container'>
+                                {userIsLoggingIn ? (
+                                    <div className='login-cac-button-text-row1'>Loading</div>
+                                        ) : (
+                                        <>
+                                    <div className='login-cac-button-text-row1'>Smart Card</div>
+                                    <div className='login-cac-button-text-row2'>Access</div>
+                                        </>
+                                    )}
+                                </div>
+                            </Button>
+                        </div>
+                                                    
+                        {/* <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
 
-                    <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div> */}
-                </div>   
-                }
+                        <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div> */}
+                    </div>   
+                    }
 
-                {selectedTab === 2 && 
-                    <Signup hideNewAccountForm={hideNewAccountForm} handleLoading={handleLoading} setSelectedTab={setSelectedTab}/>
-                }
+                    {selectedTab === 2 && 
+                        <Signup hideNewAccountForm={hideNewAccountForm} handleLoading={handleLoading} setSelectedTab={setSelectedTab}/>
+                    }
+                </div>
             </div>
-        </div>
+         <br/>
+         <br/>
+          {/* {messages.length > 0 ? ( */}
+          <div className='updates-maintenance-message-container' style={{display:'flex',justifyContent:'left'}}>
+                <p>
+                    <h1><b>Coming Soon</b></h1> 
+                    <br/>
+                    <ul >
+                        <li>New user registration page.</li>
+                        <li>Email notifications for HRA holders when documents need their signature.</li>
+                        <li>Map of the district offices displaying a count of how much property is at each office.</li>
+                        {/* {messages} */}
+                    </ul>
+                </p>     
+            </div>
+          {/* ) : null}  */}
+
+     </div>
     )
 }
 
-// Message to be returned after a user submits registration form
-const RegistrationMessage = ({registrationResult}) =>{
+
+   // Message to be returned after a user submits registration form
+   const RegistrationMessage = ({registrationResult}) =>{
 
     let message = ""
 
