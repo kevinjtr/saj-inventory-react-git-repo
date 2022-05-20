@@ -98,7 +98,7 @@ function Equipment({history, location, match, userToken}) {
   }
   const SWITCH_RESET = {
     checkedView: false,
-    showSearch: true,
+    showSearch: false,
   }
 
   //Variables Declarations.
@@ -532,7 +532,7 @@ function Equipment({history, location, match, userToken}) {
             <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
             <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
             <Tab label={equipmentTabs[3].label.toUpperCase()} icon={<SearchIcon/>} {...a11yProps(3)} />
-            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={equipments[4].length == 0} icon={<SearchIcon/>} {...a11yProps(4)} />
+            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={equipments[4] ? equipments[4].length == 0 : true} icon={<SearchIcon/>} {...a11yProps(4)} />
           </Tabs>
         </AppBar>
         <TabPanel value={tabs} index={0}>
