@@ -23,12 +23,14 @@ import LogoutConfirm from '../LogoutConfirm';
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
 import AuthorizedUsers from '../AuthorizedUsers'
+import ExcessEquipment from '../ExcessEquipment';
 
 
 const routes_config = [
     {path:'/home',alias:'home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
     {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
     {path:'/equipment',alias:'equipment',label:'Equipment',component:Equipment,tab:true,level:'user',type:'private'},
+    {path:'/excessequipment',alias:'excessequipment',label:'Excess Equipment',component:ExcessEquipment,tab:true,level:'user',type:'private'},
     {path:'/annualinventory',alias:'annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin',type:'private'},
     {path:'/annualinventory/:id',alias:'annualinventory',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin',type:'private'},
     {path:'/hra',label:'HRA',alias:'hra',component:Hra,tab:true,level:'user',type:'private'},

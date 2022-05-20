@@ -14,6 +14,9 @@ export const BASIC_SEARCH = 'std'
 export const OPTIONS_DEFAULT = 'includes'
 export const BLANKS_DEFAULT = 'displayBlanks'
 export const AUTHORIZED_USERS = 'authorizedusers'
+export const UPDATES_MAINTENANCE_MESSAGES = 'updates_maintenance_messages'
+export const EXCESS_EQUIPMENT = 'excessequipment'
+
 export const registrationDropDownItems = {
     "division": [
       {

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -41,7 +40,7 @@ import { ExportCsv } from '@material-table/exporters';
 import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from './tools/tools'
 import clsx from 'clsx'
 import {Autocomplete, Alert} from '@material-ui/lab';
-import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from './config/constants'
+import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EXCESS_EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from './config/constants'
 import {tableIcons} from './material-table/config'
 
 import {orderBy, findIndex, filter} from 'lodash'
@@ -63,7 +62,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import {updateEquipmentApi, destroyEquipmentApi, addEquipmentApi, equipmentSearchApi2} from '../publics/actions/equipment-api'
-import {getHraFormApi} from '../publics/actions/hra-api'
+import {getAllEquipmentsApi} from '../publics/actions/excess-equipment-api'
 import { connect } from 'redux-bundler-react';
 import {ALERT} from './tools/tools'
 
@@ -78,13 +77,13 @@ const dialogStyles = makeStyles(theme => ({
   }
 }))
 
-function Equipment({history, location, match, userToken}) {
+function ExcessEquipment({history, location, match, userToken}) {
   
   //Constants Declarations.
   const search = getQueryStringParams(location.search)
-  const PAGE_URL = `/${EQUIPMENT}`
+  const PAGE_URL = `/${EXCESS_EQUIPMENT}`
 
-  const equipmentTabs = {0: {id:'my_equipment', label:'My Equipment'}, 1: {id:'my_hra_equipment', label:'My HRA Equipment'}, 2: {id:'hra_equipment', label:'Authorized HRA Equipment'}, 3: {id:'equipment_search', label:'Equipment Search'}, 4: {id:'excess_equipment', label:'Excess Equipment'}}
+  const equipmentTabs = {0: {id:'my_excess_equipment', label:'My Excessed Equipment'}, 1: {id:'my_excessed_hra_equipment', label:'My Excessed HRA Equipment'}, 2: {id:'hra_excessed_equipment', label:'Authorized Excessed HRA Equipment'}, 3: {id:'excessed_equipment_search', label:'Excessed Equipment Search'}}
   const SEARCH_FIELD_RESET = {
     hraNum: {label: 'HRA Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     hraName: {label: 'HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -98,7 +97,7 @@ function Equipment({history, location, match, userToken}) {
   }
   const SWITCH_RESET = {
     checkedView: false,
-    showSearch: false,
+    showSearch: true,
   }
 
   //Variables Declarations.
@@ -126,7 +125,6 @@ function Equipment({history, location, match, userToken}) {
     1: SEARCH_FIELD_RESET,
     2: SEARCH_FIELD_RESET,
     3: SEARCH_FIELD_RESET,
-    4: SEARCH_FIELD_RESET,
   })
   const [searchView, setSearchView] = React.useState({
     0: BASIC_SEARCH,
@@ -144,21 +142,18 @@ function Equipment({history, location, match, userToken}) {
     1: false,
     2: false,
     3: false,
-    4: false,
   }});
   const [equipments, setEquipments] = React.useState({
       0: [],
       1: [],
       2: [],
-      3: [],
-      4: []
+      3: []
     });
   const [editable,setEditable] = React.useState({
     0:false,
     1:false,
     2:false,
     3:false,
-    4:false,
   })
   const [tabs, setTabs] = React.useState(0);
   const [switches, setSwitches] = React.useState({
@@ -166,25 +161,22 @@ function Equipment({history, location, match, userToken}) {
       1: SWITCH_RESET,
       2: SWITCH_RESET,
       3: SWITCH_RESET,
-      4: SWITCH_RESET,
     });
   const [hras, setHras] = React.useState([]);
   const [my_hras, setMyHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
-  //const [excess, setExcess] = React.useState([]);
 
   // state variable for showing/hiding column filters in material table
     const [showFilter,setShowFilter] = React.useState({
         0: false,
         1: false,
         2: false,
-        3: false,
-        4: false
+        3: false
       })
       
 
   //Events Declarations.
-  const handleUpdate = async (rowData) => {
+ /*  const handleUpdate = async (rowData) => {
       let errorFound = true
       setAlertUser(ALERT.RESET)
 
@@ -291,7 +283,7 @@ function Equipment({history, location, match, userToken}) {
 
   return errorFound
 
-  }
+  } */
 
 	const handleSearchFieldsChange = (event) => {
 		console.log(event.target.value)
@@ -532,7 +524,6 @@ function Equipment({history, location, match, userToken}) {
             <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
             <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
             <Tab label={equipmentTabs[3].label.toUpperCase()} icon={<SearchIcon/>} {...a11yProps(3)} />
-            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={equipments[4] ? equipments[4].length == 0 : true} icon={<SearchIcon/>} {...a11yProps(4)} />
           </Tabs>
         </AppBar>
         <TabPanel value={tabs} index={0}>
@@ -551,16 +542,12 @@ function Equipment({history, location, match, userToken}) {
           <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
           {!loading.init ? [searchForm(3), materialTableSelect(3)] : null}
         </TabPanel>
-        <TabPanel value={tabs} index={4}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[4] ? LoadingCircle() : null} </div>
-          {!loading.init ? [searchForm(4), materialTableSelect(4)] : null}
-        </TabPanel>
       </div>
     );
   }
 
   const materialTableSelect = (tab_idx) => {
-    const isHraTab = equipmentTabs[tab_idx].id == "my_hra_equipment"
+    const isHraTab = equipmentTabs[tab_idx].id == "my_excessed_hra_equipment"
     const hras_array = isHraTab ? my_hras : hras
 
     let columns = []
@@ -881,7 +868,7 @@ function Equipment({history, location, match, userToken}) {
 
     return(
         <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
-            {editable[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ? 
+            {editable[tabs] ? 
                 (<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
                     <FormGroup>
                         <FormControlLabel
@@ -936,7 +923,7 @@ function Equipment({history, location, match, userToken}) {
             }
             }}
             title=""
-            {...(editable[tabs] && {editable:{
+           /*  {...(editable[tabs] && {editable:{
                 onRowAddCancelled: rowData => console.log('Row adding cancelled'),
                 onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
                 onRowAdd: async (newData) => {
@@ -966,21 +953,21 @@ function Equipment({history, location, match, userToken}) {
                         }, 1000);
                     }))
                 },
-                // onRowDelete: async (newData, oldData) => {
-                //   let errorFound = await handleDelete({changes:{'0':{newData:newData, oldData:oldData}}})
-                //       return (new Promise((resolve, reject) => {
-                //           setTimeout(() => {  
-                //             if(errorFound){
-                //                 reject();
-                //                 return;
-                //             }
+                onRowDelete: async (newData, oldData) => {
+                  let errorFound = await handleDelete({changes:{'0':{newData:newData, oldData:oldData}}})
+                      return (new Promise((resolve, reject) => {
+                          setTimeout(() => {  
+                            if(errorFound){
+                                reject();
+                                return;
+                            }
   
-                //             resolve();
-                //           }, 1000);
-                //       }))
-                //   },
+                            resolve();
+                          }, 1000);
+                      }))
+                  },
 
-            }})}
+            }})} */
             />
     </div>
     )
@@ -1113,4 +1100,4 @@ function Equipment({history, location, match, userToken}) {
 
 export default connect(
   'selectUserToken',
-  Equipment);
+  ExcessEquipment);
