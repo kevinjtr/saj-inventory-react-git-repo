@@ -23,7 +23,7 @@ const LogoutButton = ({doLogout, userIsLoggedIn}) => {
     // }
     //else{
         return(
-            <Button color="default" type="button" className="signin-form-button" onClick={()=> {if(userIsLoggedIn) doLogout()}} style={{height:'20px', alignSelf:'center',fontSize:'9px',lineHeight:'9px',padding:'2px',whiteSpace:'nowrap', marginLeft:'5px',marginRight:'10px'}} >LOG OUT</Button>
+            <button color="default" type="button" className="signin-form-button" onClick={()=> {if(userIsLoggedIn) doLogout()}} style={{height:'20px', alignSelf:'center',fontSize:'9px',lineHeight:'9px',padding:'2px',whiteSpace:'nowrap', marginLeft:'5px',marginRight:'10px'}} >LOG OUT</button>
         )
     //}
 }

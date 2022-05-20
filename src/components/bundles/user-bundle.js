@@ -8,6 +8,7 @@ export default {
 
     const initialState = {
         user: '',
+        level_name:'',
         user_name:'',
         'x-access-token-expiration':'',
         auth:'',
@@ -61,6 +62,7 @@ export default {
         type: "LOGIN_REQUEST",
         payload: {
             user: '',
+            level_name:'',
             user_name:'',
             auth: '',
             'x-access-token-expiration': '',
@@ -83,6 +85,7 @@ export default {
           localStorage.setItem('auth', response.data.token);
           localStorage.setItem('user', response.data.user);
           localStorage.setItem('x-access-token-expiration', response.data.exp);//token duration.
+          localStorage.setItem('level-name', response.data.level_name);
           localStorage.setItem('user-name', response.data.user_name);
           localStorage.setItem('access', JSON.stringify(response.data.access));
 
@@ -90,6 +93,7 @@ export default {
             type: "LOGIN_SUCCESS",
             payload: {
                 user: response.data.user,
+                level_name: response.data.level_name,
                 user_name: response.data.user_name,
                 auth: response.data.token,
                 'x-access-token-expiration': response.data.exp,
@@ -104,12 +108,14 @@ export default {
           localStorage.setItem('user','');
           localStorage.setItem('x-access-token-expiration','');//15min token duration.
           localStorage.setItem('user-name','');
+          localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
           
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
                 user: '',
+                level_name:'',
                 user_name:'',
                 auth: '',
                 'x-access-token-expiration': '',
@@ -128,12 +134,14 @@ export default {
           localStorage.setItem('user','');
           localStorage.setItem('x-access-token-expiration','');//15min token duration.
           localStorage.setItem('user-name','');
+          localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
           
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
                 user: '',
+                level_name:'',
                 user_name:'',
                 auth: '',
                 'x-access-token-expiration': '',
@@ -151,12 +159,14 @@ export default {
           localStorage.setItem('user', '');
           localStorage.setItem('x-access-token-expiration', '');//15min token duration.
           localStorage.setItem('user-name', '');
+          localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
 
           dispatch({
             type: 'USER_LOGOUT',
             payload: {
               user: '',
+              level_name:'',
               user_name:'',
               auth: '',
               'x-access-token-expiration': '',
@@ -179,6 +189,7 @@ export default {
             user: localStorage.getItem('user'),
             auth: localStorage.getItem('auth'),
             'x-access-token-expiration': localStorage.getItem('x-access-token-expiration'),
+            level_name: localStorage.getItem('level-name'),
             user_name: localStorage.getItem('user-name'),
             access: JSON.parse(localStorage.getItem('access')),
           }
@@ -198,6 +209,9 @@ export default {
     // },
   selectUserName: state => {
     return state.user.user_name;
+  },
+  selectUserLevelName: state => {
+    return state.user.level_name;
   },
   selectUserRaw: state => {
     return state.user;

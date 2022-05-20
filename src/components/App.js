@@ -15,8 +15,8 @@ import LogoutConfirm from './LogoutConfirm'
 function App(props) {
 	const {userIsLoggedIn, userIsLoggingOut, userAccess} = props
 	console.log(props)
-	const [darkModeBackgroundColor, setDarkModeBackgroundColor] = React.useState('#999')//useMediaQuery('(prefers-color-scheme: dark)');
-	const [prefersDarkMode, setPrefersDarkMode] = React.useState(false)//useMediaQuery('(prefers-color-scheme: dark)');
+	const [darkModeBackgroundColor, setDarkModeBackgroundColor] = React.useState('#121212')//useMediaQuery('(prefers-color-scheme: dark)');
+	const [prefersDarkMode, setPrefersDarkMode] = React.useState(useMediaQuery('(prefers-color-scheme: dark)'));
 
 	const theme = React.useMemo(
 	() =>
@@ -27,6 +27,7 @@ function App(props) {
 		}),
 	[prefersDarkMode],
 	);
+	
 
 	// const {doFetchUserLevel} = props
 
@@ -58,7 +59,7 @@ function App(props) {
 			<Route render={() => <Redirect to={'/404'} />}/>
 			</Switch>
 			</div>
-			<div className="footer"><span style={{fontWeight:'bold'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.0</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
+			<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.0</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
 			</div>
 		</BrowserRouter>
 	}

@@ -1,7 +1,7 @@
 import { Dialog, Button, CircularProgress } from "@material-ui/core";
 import React, {useState} from "react";
 import CloseIcon from '@mui/icons-material/Close';
-import { getAllHrasApi } from '../../../publics/actions/hra-api';
+import { getAllHrasIdApi } from '../../../publics/actions/hra-api';
 import { connect } from 'redux-bundler-react';
 
 const ApprovalFormStep2 = (props) => {
@@ -23,7 +23,7 @@ const ApprovalFormStep2 = (props) => {
 
                 setLoading(true)
             
-                const match = await getAllHrasApi(userToken).then((response) => response.data).then((data) => {
+                const match = await getAllHrasIdApi(userToken).then((response) => response.data).then((data) => {
                     return data.data.find((match) => {
                         return (
                             match.hra_num === parseInt(hraRow.hra_num)

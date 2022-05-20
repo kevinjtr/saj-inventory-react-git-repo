@@ -158,7 +158,7 @@ const ProblemReportPopup = (props) => {
                 </form> 
             </DialogContent>
             <DialogActions>
-                <Button variant='contained' color="primary" size="small" onClick={(e)=>handleSubmit(e)}>Send Report</Button>
+                <Button variant='contained' color="primary" size="small" onClick={(e)=>handleSubmit(e)}>Send</Button>
             </DialogActions>
             
         </Dialog>

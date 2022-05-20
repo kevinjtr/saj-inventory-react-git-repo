@@ -8,14 +8,17 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import "./styles/AppBarStyles.css";
 import LogoutButton from './LogoutButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import BrightnessLowIcon from '@material-ui/icons/BrightnessLow';
+import Brightness7Icon from '@material-ui/icons/Brightness7';
+import Brightness4Icon from '@material-ui/icons/Brightness4';
 import UserDropdown from './header/UserDropdown';
 import {Button} from '@material-ui/core'
+import { useTheme } from '@material-ui/core/styles/';
 
 function Header(props) {
 	const {user, userIsLoggedIn, userAccess, darkModeBackgroundColor, prefersDarkMode, setPrefersDarkMode} = props;
 	const [showUserDropdown,setShowUserDropdown] = useState(false)
 
+	const theme = useTheme();
 	//,backgroundImage:'url("../../src/img/appbarBackground.jfif")'
 	return (
 		<Route path="/" render={(history) => (
@@ -34,10 +37,10 @@ function Header(props) {
                 </Grid>
 				{userIsLoggedIn && (
 					<Grid item sx={{display:"flex",justifyContent:"flex-end",zIndex:"2",position:"relative",gap:'10px',alignItems:'center'}} >
-						<Button onClick={()=>setPrefersDarkMode(!prefersDarkMode)} style={{outline:'0'}}>
-							<BrightnessLowIcon style={{color:'#000000',height:'20px',width:'20px'}} />
+						<Button title="Toggle Dark Mode" onClick={()=>setPrefersDarkMode(!prefersDarkMode)} style={{outline:'0'}}>
+						{theme.palette.type === 'dark' ? <Brightness7Icon  style={{color:'rgb(100,100,100)',height:'20px',width:'20px'}}/> : <Brightness4Icon title="Enable Dark Mode" style={{color:'rgb(100,100,100)',height:'20px',width:'20px'}}/>}
 						</Button>
-						<Button onClick={()=>setShowUserDropdown(true)} style={{border:'0px',outline:'0'}} >
+						<Button title="User Information" onClick={()=>setShowUserDropdown(true)} style={{border:'0px',outline:'0'}} >
 							<AccountCircle style={{color:'rgb(100,100,100)',fontSize:'20px'}} />
 							<ArrowDropDownIcon style={{color:'rgb(100,100,100)',fontSize:'20px'}}/>
 						</Button>
