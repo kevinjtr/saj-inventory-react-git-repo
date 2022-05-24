@@ -14,7 +14,7 @@ import { connect } from 'redux-bundler-react';
 import { Grid, Paper, Avatar, TextField, Button, Typography, Link } from '@material-ui/core'
 import {alertStyles} from '../components/styles/material-ui'
 import Alert from '@material-ui/lab/Alert';
-import {getAllMessagesApi} from '../publics/actions/updates-maintenance-messages-api'
+//import {getAllMessagesApi} from '../publics/actions/updates-maintenance-messages-api'
 
 //const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage}) =>{
 function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage})  {
@@ -60,17 +60,23 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
         // })
     }
 
-     const GetMaintenanceMessages = async() => {
-        await getAllMessagesApi().then((response) => response.data).then((data) => {
-            console.log(data)
-            const messages_to_update = data.data.map(m => <li>{m}</li>)
-            setMessages(messages_to_update)
-        })
-    }
+    //  const GetMaintenanceMessages = async() => {
+    //     await getAllMessagesApi().then((response) => response.data).then((data) => {
+    //         console.log(data)
+    //         const messages_to_update = data.data.map(m => <li>{m}</li>)
+    //         setMessages(messages_to_update)
+    //     })
+    // }
 
     //Effects
     React.useEffect(() => {
-        GetMaintenanceMessages()
+        fetch("./coming-soon-messages.json")
+        .then((res) => res.json())
+        .then((data) => {
+            const li_items = data.map(msg => <li>{msg}</li>)
+            setMessages(li_items)
+        });
+
     }, []);//will run once.
 
     return (
@@ -137,10 +143,7 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                     <h1><b>Coming Soon</b></h1> 
                     <br/>
                     <ul >
-                        <li>New user registration page.</li>
-                        <li>Email notifications for HRA holders when documents need their signature.</li>
-                        <li>Map of the district offices displaying a count of how much property is at each office.</li>
-                        {/* {messages} */}
+                        {messages}
                     </ul>
                 </p>     
             </div>

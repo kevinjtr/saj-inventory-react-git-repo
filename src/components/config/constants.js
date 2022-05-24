@@ -16,6 +16,7 @@ export const BLANKS_DEFAULT = 'displayBlanks'
 export const AUTHORIZED_USERS = 'authorizedusers'
 export const UPDATES_MAINTENANCE_MESSAGES = 'updates_maintenance_messages'
 export const EXCESS_EQUIPMENT = 'excessequipment'
+export const DARK_MODE_BACKGROUND_COLOR = '#121212'
 
 export const registrationDropDownItems = {
     "division": [

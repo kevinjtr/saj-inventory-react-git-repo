@@ -25,7 +25,6 @@ import PrivateRoute from '../PrivateRoute'
 import AuthorizedUsers from '../AuthorizedUsers'
 import ExcessEquipment from '../ExcessEquipment';
 
-
 const routes_config = [
     {path:'/home',alias:'home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
     {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
@@ -44,7 +43,7 @@ const routes_config = [
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
 
-export const routes_tabs = (user_access) => {
+export const routes_tabs = (user_access, theme) => {
     const return_routes = {
         routes:[],
         tabs:[]
@@ -63,8 +62,24 @@ export const routes_tabs = (user_access) => {
         return r.type == "public" && r.tab
     })
 
+    // sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
+    // '&:active':{color:'black'},
+    // '&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}
+
+    // sx={{height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
+    // '&:hover':{textDecoration:'none'}}}
+
     return_routes.tabs = route_with_tabs.map((route, i) => 
-        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} sx={{color:"black",height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px','&:active':{color:'black'},'&:hover':{backgroundColor:'rgba(0, 0, 0,0.1)',textDecoration:'none',color:'black'}}}/>
+        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} 
+        
+        // sx={{height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
+        // '&:hover':{textDecoration:'none'}}} 
+        
+        sx={{color:theme.palette.text.primary,height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
+        '&:active':{color:'black'},
+        '&:hover':{backgroundColor:theme.palette.action.hover,textDecoration:'none',color:theme.palette.text.secondary}}}
+
+        />
         /*<li style={{paddingRight: '18px', whiteSpace: "nowrap"}}>
             <Link to={route.path} className="nav-link">
                 {route.label}

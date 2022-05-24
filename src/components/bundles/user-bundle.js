@@ -1,6 +1,7 @@
 import api from '../../axios/Api';
 import jwt_decode from "jwt-decode";
 import { RepeatOneSharp } from '../../../node_modules/@material-ui/icons';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 export default {
   name: "user",
@@ -17,7 +18,8 @@ export default {
         isLoggingOut: false,
         isLoggedOut: false,
         access: {},
-        loginMessage: ""    
+        loginMessage: "",
+        darkMode:false,
     }
 
     return (state = initialState, { type, payload }) => {
@@ -27,6 +29,7 @@ export default {
             case 'LOGIN_FAILURE':
             case 'USER_LOGOUT':
             case 'SET_USER_LVL_FROM_LOCAL':
+            case 'TOGGLE_DARK_MODE':
               return Object.assign({}, state, payload);
             default:
           }
@@ -57,7 +60,8 @@ export default {
     //     return login
     // },
     doLogin: (val, cascade, silent) => ({ dispatch, store }) => {
-
+      const user_prefers_dark_mode = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      
       dispatch({
         type: "LOGIN_REQUEST",
         payload: {
@@ -89,6 +93,10 @@ export default {
           localStorage.setItem('user-name', response.data.user_name);
           localStorage.setItem('access', JSON.stringify(response.data.access));
 
+          const saved = localStorage.getItem("darkMode");
+			    const initialDarkModeValue = JSON.parse(saved) || user_prefers_dark_mode;
+          localStorage.setItem('darkMode', initialDarkModeValue);
+
           dispatch({
             type: "LOGIN_SUCCESS",
             payload: {
@@ -100,7 +108,8 @@ export default {
                 isLoggingIn: false,
                 loginFailure: false,
                 loginMessage:response.data.message,
-                access: response.data.access
+                access: response.data.access,
+                darkMode: initialDarkModeValue
             }
           }); 
          }else{
@@ -174,7 +183,8 @@ export default {
               isLoggingOut: true,
               loginFailure: false,
               isLoggedOut: true,
-              access: JSON.stringify({})
+              access: JSON.stringify({}),
+              darkMode: false
             }
           });
 
@@ -192,9 +202,17 @@ export default {
             level_name: localStorage.getItem('level-name'),
             user_name: localStorage.getItem('user-name'),
             access: JSON.parse(localStorage.getItem('access')),
+            darkMode: JSON.parse(localStorage.getItem('darkMode')),
           }
         });
       }
+    },
+    doToggleDarkMode: () => ({ dispatch, store}) => {
+      localStorage.setItem('darkMode', !store.selectUserDarkMode());
+
+        dispatch({ type: 'TOGGLE_DARK_MODE', payload:{
+          darkMode: !store.selectUserDarkMode()
+        } })
     },
     // getUserByID: (val, cascade, silent) => ({ dispatch, store }) => {
     //     console.log('userDataCALL')
@@ -248,6 +266,10 @@ export default {
   selectUserIsLoggingOut: state => {
     //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
     return state.user.isLoggingOut;
+  },
+  selectUserDarkMode: state => {
+    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
+    return state.user.darkMode;
   },
   init: store => {
     // export function isAuthenticated() {

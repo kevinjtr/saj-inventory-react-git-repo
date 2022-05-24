@@ -633,7 +633,8 @@ function Equipment({history, location, match, userToken}) {
         }
         },
         { title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
-        { title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  }
+        { title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  },
+        { title: 'Employee Office Location', field: 'employee_office_location_name',col_id:6.3,editable: 'never'  }
     ]
     
     const ext_equipment_cols_config = [		

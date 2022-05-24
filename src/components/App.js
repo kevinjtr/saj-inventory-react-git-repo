@@ -10,60 +10,56 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import AppBarHeader from './AppBarHeader';
 import "./styles/GlobalStyles.css";
 import LogoutConfirm from './LogoutConfirm'
+import { LocalHospitalTwoTone } from '@material-ui/icons';
+import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
+import { ThemeProvider as ThemeProviderV5 , createTheme as createThemeV5 } from '@mui/material/styles';
+
 //import appinfo from 'app-info.json'
 
 function App(props) {
-	const {userIsLoggedIn, userIsLoggingOut, userAccess} = props
-	console.log(props)
-	const [darkModeBackgroundColor, setDarkModeBackgroundColor] = React.useState('#121212')//useMediaQuery('(prefers-color-scheme: dark)');
-	const [prefersDarkMode, setPrefersDarkMode] = React.useState(useMediaQuery('(prefers-color-scheme: dark)'));
+	const {userIsLoggedIn, userIsLoggingOut, userAccess, userDarkMode} = props
 
-	const theme = React.useMemo(
-	() =>
-	createTheme({
+	const theme = createTheme({
+			palette: {
+				type: userDarkMode ? 'dark' : 'light',
+			},
+	})
+
+	const themeV5 =  createThemeV5({
 		palette: {
-			type: prefersDarkMode ? 'dark' : 'light',
+			mode: userDarkMode ? 'dark' : 'light',
 		},
-		}),
-	[prefersDarkMode],
-	);
-	
+	  });
 
-	// const {doFetchUserLevel} = props
+	axios.defaults.baseURL = process.env.REACT_APP_API;	  
 
-	// doFetchUserLevel()
-	// console.log(props)
-	axios.defaults.baseURL = process.env.REACT_APP_API;
 
-	// <ThemeProvider theme={theme}>
-	// 	<CssBaseline/>
-	// 	<Routes />
-  	// </ThemeProvider>
-	  
 
 	  return (
-	<ThemeProvider theme={theme}>
-	<CssBaseline/>
-	{
-		<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
-			<div className='flex-wrapper'>
-			<AppBarHeader darkModeBackgroundColor={darkModeBackgroundColor} prefersDarkMode={prefersDarkMode} setPrefersDarkMode={setPrefersDarkMode}/>
-			<div {...(prefersDarkMode && {style:{background:darkModeBackgroundColor}})}className='content'>
-			<Switch>
-			<Route
-				exact
-				path={'/'}
-				render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
-			/>
-				{routes_tabs(userAccess).routes}
-			<Route render={() => <Redirect to={'/404'} />}/>
-			</Switch>
-			</div>
-			<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.0</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
-			</div>
-		</BrowserRouter>
-	}
-	</ThemeProvider>
+		<ThemeProviderV5 theme={themeV5}>
+			<ThemeProvider theme={theme}>
+			<CssBaseline/>
+			{
+				<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
+					<div className='flex-wrapper'>
+					<AppBarHeader/>
+					<div {...(userDarkMode && {style:{background:DARK_MODE_BACKGROUND_COLOR}})}className='content'>
+					<Switch>
+					<Route
+						exact
+						path={'/'}
+						render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
+					/>
+						{routes_tabs(userAccess, themeV5).routes}
+					<Route render={() => <Redirect to={'/404'} />}/>
+					</Switch>
+					</div>
+					<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.0</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
+					</div>
+				</BrowserRouter>
+			}
+			</ThemeProvider> 
+		</ThemeProviderV5>
 	)
 
 	// return (
@@ -75,4 +71,5 @@ export default connect(
 	'selectUserAccess',
 	'selectUserIsLoggedIn',
 	'selectUserIsLoggingOut',
+	'selectUserDarkMode',
 	App);
