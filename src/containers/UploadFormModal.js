@@ -297,7 +297,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
             //const description = files.map((file) => <li key={file.path}>{file.path}  <i className="fa fa-trash text-red" style={{color:'#FF0000'}} title="Remove Attachment" onClick={() => remove(file)}></i></li>);
         
             const description = files.map((file) => <li key={file.path}>{file.path}
-              <IconButton style={{color:'#FF0000'}} size="small" title="Remove Attachment" aria-label="delete" disabled={uploadButton.send} onClick={() => remove(file)}>
+              <IconButton style={{color:'#e04436'}} size="small" title="Remove Attachment" aria-label="delete" disabled={uploadButton.send} onClick={() => remove(file)}>
                 <DeleteIcon />
             </IconButton>
               </li>);

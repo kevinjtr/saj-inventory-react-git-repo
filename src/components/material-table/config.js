@@ -32,7 +32,7 @@ export const tableIcons = {
     Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
     Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} style={{color:'#FF0000'}}/>),
+    Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} style={{color:'#e04436'}}/>),
     DetailPanel: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
     Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref}/>),
     Export: React.forwardRef((props, ref) => <SaveAlt {...props} ref={ref} style= { {color:"#1E90FF"} }/>),
@@ -62,7 +62,7 @@ export const form4900Icons = {
   Add: React.forwardRef((props, ref) => <AddBox {...props} ref={ref} style= { {color:"#32CD32"} }/>),
     Check: React.forwardRef((props, ref) => <Check {...props} ref={ref} />),
     Clear: React.forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} style={{color:'#FF0000'}}/>),
+    Delete: React.forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} style={{color:'#e04436'}}/>),
     DetailPanel: React.forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
     Edit: React.forwardRef((props, ref) => <Edit {...props} ref={ref} />),
 //     Edit: React.forwardRef((props, ref) =>   <div style={{position: 'relative'}}>

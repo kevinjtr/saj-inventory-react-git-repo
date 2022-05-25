@@ -76,6 +76,7 @@ import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
 import {ALERT} from './tools/tools'
 import CommentIcon from '@material-ui/icons/Comment';
+import { useTheme } from '@material-ui/core/styles';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -147,6 +148,7 @@ function Eng4900({history, location, match, userToken}) {
   const classDialog = dialogStyles();
   const tabClasses = tabStyles();
   const StepClasses = stepStyles();
+  const theme = useTheme()
 
   //Hooks Declarations.
   const [uploadPdf, setUploadPdf] = React.useState({
@@ -642,10 +644,9 @@ function Eng4900({history, location, match, userToken}) {
                 editTooltip : "Update Status",
                 emptyDataSourceMessage:<h6>No Forms Found.</h6>
               }}}
-
             options={{
               rowStyle: rowData => ({
-                backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? '#CCFFCC' : '#FFF'
+                backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.type == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
               }),
               //exportButton: true,
               //exportAllData: true,
@@ -834,8 +835,8 @@ function Eng4900({history, location, match, userToken}) {
                 emptyDataSourceMessage:<h6>No Forms Found.</h6>
               }}}
             options={{
-                            rowStyle: rowData => ({
-                backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? '#CCFFCC' : '#FFF'
+              rowStyle: rowData => ({
+                backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.type == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
               }),
               //exportButton: true,
               //exportAllData: true,

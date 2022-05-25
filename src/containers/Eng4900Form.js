@@ -57,6 +57,7 @@ import debounce from 'lodash/debounce'
 import {addEng4900Api, getEng4900ByIdApi} from '../publics/actions/eng4900-api'
 import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
+import { useTheme } from '@material-ui/core/styles';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -151,7 +152,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
   const classesGrid = gridStyles();
   const classDialog = dialogStyles();
   const plusButtonClasses = plusButtonStyles();
-
+  const theme = useTheme();
+  
   //Hooks Declarations.
   const [loading, setLoading] = React.useState({
     init:false,
@@ -801,7 +803,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
         icons={tableIcons}
         columns={columns}
         data={selectedForm.equipment_group}
-        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color:'#ff0000'}}>Equipments are required</h6> } }}
+        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color:'#e04436'}}>Equipments are required</h6> } }}
         options={{
           //exportButton: true,
           //exportAllData: true,
@@ -972,7 +974,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 				icons={tableIcons}
 				columns={equipment_cols}
 				data={selectedForm.equipment_group}
-        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color:'#ff0000'}}>Equipments are required</h6> } }}
+        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color:'#e04436'}}>Equipments are required</h6> } }}
         options={{
           //exportButton: true,
           //exportAllData: true,

@@ -1,33 +1,62 @@
 import React, { useState, useEffect } from 'react'
-import api from '../axios/Api';
-import Login from '../components/Login'
 import Signup from '../components/Signup'
-import OutlinedFlagSharpIcon from '@mui/icons-material/OutlinedFlagSharp';
 import "../components/styles/SignInStyles.css";
-import ReportProblem from '../components/ReportProblem';
 import PersonIcon from '@mui/icons-material/Person';
 import { CircularProgress } from '@material-ui/core';
-import CheckIcon from '@mui/icons-material/Check';
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
 import { connect } from 'redux-bundler-react';
 import { Grid, Paper, Avatar, TextField, Button, Typography, Link } from '@material-ui/core'
 import {alertStyles} from '../components/styles/material-ui'
 import Alert from '@material-ui/lab/Alert';
 //import {getAllMessagesApi} from '../publics/actions/updates-maintenance-messages-api'
+import { makeStyles } from '@material-ui/core/styles';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import CodeIcon from '@material-ui/icons/Code';
+
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import WarningIcon from '@material-ui/icons/Warning';
+import NiceSlideShow from "./NiceSlideShow";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+  },
+  list: {
+    width: '100%',
+    maxWidth: 360,
+    //backgroundColor: theme.palette.background.paper,
+  },
+  appbar: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
 
 //const SignInOut = ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage}) =>{
 function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLoginFailure, userLoginMessage})  {
     const [selectedTab, setSelectedTab] = useState(1); // 1 = show sign in buttons, 2 = show new account form
     const [registrationResult, setRegistrationResult] = useState(false)
-
     const [loading,setLoading] = useState(false)
-
     const [messages, setMessages] = useState([])
+    const [maintenance, setMaintenance] = useState("")
     //const [isSubmitting,setIsSubmitting] = useState(false)
 
     //Styling
     const alertClass = alertStyles();
+    const classes = useStyles();
 
     const handleLoading = () => {
         setLoading(true);
@@ -70,17 +99,44 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
 
     //Effects
     React.useEffect(() => {
-        fetch("./coming-soon-messages.json")
+        fetch("./messages.json")
         .then((res) => res.json())
         .then((data) => {
-            const li_items = data.map(msg => <li>{msg}</li>)
+            const li_items = data.comingsoon.map(msg => 
+                <ListItem>
+            <ListItemAvatar>
+                <Avatar>
+                    <CodeIcon />
+                </Avatar>
+            </ListItemAvatar>
+            <ListItemText primary={msg} />
+        </ListItem>
+        )
             setMessages(li_items)
+
+            if(data.maintenance){
+                setMaintenance(data.maintenance)
+            }
         });
+
+        
 
     }, []);//will run once.
 
     return (
         <div>
+                <div className={classes.appbar}>
+                {maintenance ? (
+                    <AppBar color="default" position="static">
+                    <Toolbar>
+                    <WarningIcon edge="start" className={classes.menuButton} color="inherit" aria-label="menu"/>
+                      <Typography variant="h6" className={classes.title}>
+                      {maintenance}
+                      </Typography>
+                    </Toolbar>
+                  </AppBar>
+                ) : null}
+    </div>
             <div className='signin-page-container' style={{display:'flex',justifyContent:'center'}}>
                 {userLoginFailure ? <div className={alertClass.root}>
                                         <Alert variant="outlined" severity="error">
@@ -88,12 +144,11 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                                         </Alert>
                                     </div> : null}
                 {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
+                <NiceSlideShow style={{position:'absolute',width:'25%'}}/>
                 <div className="signin-box">
                     {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Please wait...</div></div>}
-                            
+   
                     <div className='signin-box-logo'><img src="usace-inventory.png" alt="image" style={{ height: "75px"}} /></div>
-
-
                     {selectedTab === 1 &&
                     <div className="signin-buttons-container">
 
@@ -124,9 +179,8 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                             </Button>
                         </div>
                                                     
-                        {/* <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
-
-                        <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div> */}
+                        <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
+                        <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div>
                     </div>   
                     }
 
@@ -137,18 +191,14 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
             </div>
          <br/>
          <br/>
-          {/* {messages.length > 0 ? ( */}
+          {messages.length > 0 ? (
           <div className='updates-maintenance-message-container' style={{display:'flex',justifyContent:'left'}}>
-                <p>
-                    <h1><b>Coming Soon</b></h1> 
-                    <br/>
-                    <ul >
-                        {messages}
-                    </ul>
-                </p>     
+            <List className={classes.list} 
+            subheader={<ListSubheader style={{fontSize:'28px'}} component="div" id="nested-list-subheader">Coming Soon</ListSubheader>}>
+            {messages}
+            </List>
             </div>
-          {/* ) : null}  */}
-
+          ) : null}
      </div>
     )
 }
