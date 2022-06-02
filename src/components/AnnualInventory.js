@@ -180,6 +180,7 @@ function AnnualInventory({history, userToken}) {
 			}}
 			//style={{ verticalAlign: 'top' }}
 			renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
+			renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}</a>}
 		/>
 		)
 		},

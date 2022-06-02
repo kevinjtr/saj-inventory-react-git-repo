@@ -122,6 +122,7 @@ function AuthorizedUsers({ userToken }) {
                         }}
 
                         renderInput={(params) => <TextField {...params} label="Name" margin="normal"/>}
+                        renderOption={(option) => <a style={{fontSize:'16px'}}>{option.full_name}</a>}
                     />
                     )
                 },
@@ -157,7 +158,7 @@ function AuthorizedUsers({ userToken }) {
                         id={`combo-box-HRA-`}
                         size="small"
                         options={hras}
-                        getOptionLabel={(option) =>  option.hra_num.toString()}
+                        getOptionLabel={(option) =>  option.hra_num ? option.hra_num.toString(): ""}
                         value={idx != -1 ? hras[idx] : null}
                          onChange ={(e, v) => {
                             if(v){
@@ -171,6 +172,7 @@ function AuthorizedUsers({ userToken }) {
                         }}
 
                         renderInput={(params) => <TextField {...params} label="HRA Number" margin="normal"/>}
+                        renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num ? option.hra_num.toString(): ""}</a>}
                     />
                     )
                 },

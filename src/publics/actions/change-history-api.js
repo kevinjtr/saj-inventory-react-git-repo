@@ -22,8 +22,8 @@ export const updateChangeHistoryByViewApi = {
 // 	return api.get(CHANGE_HISTORY,{headers:{auth:token}})
 // };
 
-export const getChangeHistoryByViewApi = async (view, token) => {
-	return api.get(`${CHANGE_HISTORY}/${view}`,{headers:{auth:token}})
+export const getChangeHistoryByViewApi = async (obj, token) => {
+	return api.post(`${CHANGE_HISTORY}`,{tab:obj.tab,init:obj.init},{headers:{auth:token}})
 };
 
 // export const annualInventorySearchApi = async (searchParams, token) => {

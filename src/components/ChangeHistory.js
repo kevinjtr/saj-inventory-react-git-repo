@@ -16,6 +16,13 @@ import {ALERT} from './tools/tools';
 import Header from './Header'
 import {updateChangeHistoryByViewApi, getChangeHistoryByViewApi} from '../publics/actions/change-history-api'
 import { connect } from 'redux-bundler-react';
+import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from './styles/material-ui';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import ComputerIcon from '@material-ui/icons/Computer';
+import PersonIcon from '@material-ui/icons/Person';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
 const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
@@ -26,55 +33,47 @@ const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
 // }
 
 function ChangeHistory({history, userToken}) {
+	//constant declarations
+	const changeHistoryTabs = {0: {id:'equipment', label:'Equipment History'}, 1: {id:'employee', label:'Employee History'}, 2: {id:'hra', label:'HRA History'}}
+
 	//Hooks Declarations
-	const [loading, setLoading] = React.useState(false);
-	const [searchView, setSearchView] = React.useState(DEFAULT_CHANGES_VIEW);
-	const [changeHistoryData, setChangeHistoryData] = React.useState([]);
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
-	const [editable, setEditable] = React.useState(false)
+	const [loading, setLoading] = React.useState({init:true,refresh:{
+		0: false,
+		1: false,
+		2: false,
+	  }});
+	const [changeHistory, setChangeHistory] = React.useState({
+		0: [],
+		1: [],
+		2: [],
+	  });
+	const [editable,setEditable] = React.useState({
+	  0:false,
+	  1:false,
+	  2:false,
+	})
+	const [tabs, setTabs] = React.useState(0);
+
+	//Styles Declarations
+	const tabClasses = tabStyles();
 
 	//Event Handlers.
 	const handleUndo = async (rowData) => {
-
-	//console.log('equipmentbyHraCall')
-	//setLoading(true)
 	let result = {error:true}
 
-	await updateChangeHistoryByViewApi[searchView](rowData, userToken)
-		// await api.post(`${searchView}/update`,{params:rowData})
+	await updateChangeHistoryByViewApi[changeHistoryTabs[tabs].id](rowData, userToken)
 		.then((response) => response.data).then((data) => {
 			result = data
-			//setLoading(false)
-			//setEquipments(data.status != 400 ? data.data : data)
-			// this.setState({
-			// 	equipments: data.status != 400 ? data.values: data,
-			// 	setequipment: data
-			// });
-			//console.log(this.state.equipment.values);
-			// console.log(this.props, this.state);
 		}).catch(function (error) {
-			//setLoading(false)
-			//setEquipments([])
 		});
 
 		return(result)
-		
-
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
 	}
 
-    const handleSearchView = (e) => {
-		setAlertUser(ALERT.RESET)
-        setSearchView(e.target.value)
-	}
-	
-	const handleChangeHistoryDataChange= (e) => {
-        setChangeHistoryData(e.target.value)
-	}
+	const handleTabChange = (event, newValue) => {
+		setTabs(newValue);
+	};
 	
 	const AlertUser = (x) => {
 
@@ -89,41 +88,41 @@ function ChangeHistory({history, userToken}) {
 	}
 
 	//Functions.
-	const materialTableSelect = () => {
+	const TabsChangeHistory = () => {
+		return (
+		  <div className={tabClasses.root}>
+			<AppBar position="static" color="default">
+			  <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
+				<Tab label={changeHistoryTabs[0].label.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
+				<Tab label={changeHistoryTabs[1].label.toUpperCase()} icon={<PersonIcon/>} {...a11yProps(1)} />
+				<Tab label={changeHistoryTabs[2].label.toUpperCase()} icon={<SupervisorAccountIcon/>} {...a11yProps(2)}/>  
+			  </Tabs>
+			</AppBar>
+			<TabPanel value={tabs} index={0}>
+			  <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
+			  {!loading.init ? materialTableSelect(0) : null}
+			</TabPanel>
+			<TabPanel value={tabs} index={1}>
+			  <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
+			  {!loading.init ? materialTableSelect(1) : null}
+			</TabPanel>
+			<TabPanel value={tabs} index={2}>
+			  <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
+			  {!loading.init ? materialTableSelect(2) : null}
+			</TabPanel>
+		  </div>
+		);
+	  }
 
-		if(changeHistoryData[searchView].length > 0){
-			const cols = Object.keys(changeHistoryData[searchView][0])
+	const materialTableSelect = (tab_idx) => {
+
+		if(changeHistory[tab_idx].length > 0){
+			const cols = Object.keys(changeHistory[tab_idx][0])
 			let columns = []
 			//considering move to a config file.
 			let cols_config = 
 			{
-				hra: [
-					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
-					{ title: 'HRA Number', field: 'hra_num', editable: 'never', type:'numeric'},
-					{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric', editable: 'never'},
-					{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
-					{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
-					{ title: 'Title', field: 'hra_title',editable: 'never' },
-					{ title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },
-					{ title: 'Work Phone', field: 'hra_work_phone',editable: 'never' },
-					{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'},
-					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
-					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
-				],
-				employee: [
-					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
-					{ title: 'ID', field: 'id', editable: 'never'},
-					{ title: 'First Name', field: 'first_name', editable: 'never' },
-					{ title: 'Last name', field: 'last_name', editable: 'never' },
-					{ title: 'Title', field: 'title', editable: 'never' },
-					{ title: 'Office Symbol ID', field: 'office_symbol',type:'numeric', editable: 'never'},
-					{ title: 'Office Symbol Alias',field:'office_symbol_alias',editable: 'never'},
-					{ title: 'Work Phone', field: 'work_phone',type:'numeric', editable: 'never'},
-					{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
-					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
-					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
-				],
-				equipment: 	[
+				0: 	[//equipment
 					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
 					{ title: 'HRA Number', field: 'hra_num', type:'numeric',editable: 'never'},
 					{ title: 'HRA First', field: 'hra_first_name',editable: 'never' },
@@ -144,7 +143,33 @@ function ChangeHistory({history, userToken}) {
 					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
 					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
 				],
-				eng4900: [
+				1: [//employee
+					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
+					{ title: 'ID', field: 'id', editable: 'never'},
+					{ title: 'First Name', field: 'first_name', editable: 'never' },
+					{ title: 'Last name', field: 'last_name', editable: 'never' },
+					{ title: 'Title', field: 'title', editable: 'never' },
+					{ title: 'Office Symbol ID', field: 'office_symbol',type:'numeric', editable: 'never'},
+					{ title: 'Office Symbol Alias',field:'office_symbol_alias',editable: 'never'},
+					{ title: 'Work Phone', field: 'work_phone',type:'numeric', editable: 'never'},
+					{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
+					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
+					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
+				],
+				2: [//hra
+					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},
+					{ title: 'HRA Number', field: 'hra_num', editable: 'never', type:'numeric'},
+					{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric', editable: 'never'},
+					{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
+					{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
+					{ title: 'Title', field: 'hra_title',editable: 'never' },
+					{ title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },
+					{ title: 'Work Phone', field: 'hra_work_phone',editable: 'never' },
+					{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'},
+					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
+					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
+				],
+				3: [//eng4900
 					//{ title: 'Item No.', field: 'hra_num', type:'numeric', editable:'never'},
 					{ title: 'Requested Action', field: 'requested_action',editable: 'never'},
 					{ title: 'Losing HRA Num', field: 'losing_hra_num',editable: 'never' },
@@ -162,7 +187,7 @@ function ChangeHistory({history, userToken}) {
 				  ]
 		}
 		
-		for(const col_config of cols_config[searchView]){
+		for(const col_config of cols_config[tab_idx]){
 			if(cols.includes(col_config.field)) columns.push(col_config)
 		}
 
@@ -182,7 +207,7 @@ function ChangeHistory({history, userToken}) {
 					}
 				}}
 				columns={columns}
-				data={changeHistoryData[searchView]}
+				data={changeHistory[tab_idx]}
 				options={{
 					headerStyle: {
 					backgroundColor: "#969696",
@@ -191,35 +216,22 @@ function ChangeHistory({history, userToken}) {
 				}
 				}}
 				title=""
-				{...(editable && {editable:{
+				{...(editable[tab_idx] && {editable:{
 					onRowDelete: async (oldData) => {
 						setAlertUser(ALERT.RESET)
-						let result = await handleUndo({changes:{'0':{newData:oldData, oldData:{ [DB_ID_NAME[searchView]] : oldData[DB_ID_NAME[searchView]] }}},undo:true})
+						let result = await handleUndo({changes:{'0':{newData:oldData, oldData:{ [DB_ID_NAME[tab_idx]] : oldData[DB_ID_NAME[tab_idx]] }}},undo:true})
 							return (new Promise((resolve, reject) => {
 								setTimeout(() => {
-								
-								console.log(result)
 
-								if(!result.error){
-									setAlertUser(ALERT.SUCCESS)
-									resolve()
-								}else{
+									if(!result.error){
+										setAlertUser(ALERT.SUCCESS)
+										resolve()
+										return;
+									}
+
 									setAlertUser(ALERT.FAIL())
 									reject()
-								}
-								// if(result.error){
-								// 	//onst col_name = Object.keys(result.data[0])[0]
-								// 	//dataIsOnDatabase[col_name] = true
-								// 	reject();
-								// }else{
-								// 	resetTable()
-								// 	//resetEmployees();
-								// 	//const dataUpdate = [...equipments];
-								// 	//const index = oldData.tableData.id;
-								// 	//dataUpdate[index] = newData;
-								// 	//setEquipments([...dataUpdate]);
-								 	resolve();
-								// }
+
 								}, 1000);
 							}))
 						}
@@ -232,94 +244,44 @@ function ChangeHistory({history, userToken}) {
 		return(<p>No Changes Found.</p>)
 	}
 
-	const resetTable = () => {
-		setLoading(true)
-		getChangeHistoryByViewApi(searchView, userToken)
-		//api.get(`change-history/${searchView}`)
-		.then((response) => response.data).then((data) => {
-		console.log(data)
-		setLoading(false)
-		setChangeHistoryData(data.status != 400 ? data.data : data)
-
-		}).catch(function (error) {
-		setLoading(false)
-		setChangeHistoryData({error:true})
-		});
-	}
-
-	const reloadPage = () => {
-		window.location.reload()
-	}
-
+	//render variables
+	const displayTop = (
+		<div style={{textAlign: 'center'}}>
+		  <h2>Change History</h2>     
+		</div>
+	)
     
 	//Effects.
 	React.useEffect(() => {
 	console.log('change-history call')
-	setLoading(true)
-	getChangeHistoryByViewApi(searchView, userToken)
-		//api.get(`change-history/${searchView}`)
+	setLoading({...loading,init:true})
+
+	getChangeHistoryByViewApi({tab:null,init:true}, userToken)
 		.then((response) => response.data).then((data) => {
 		console.log(data)
-		setLoading(false)
-		setChangeHistoryData(data.status != 400 ? data.data : data)
 
-		if(data.hasOwnProperty('editable')){
+		if(Object.keys(data.editable).length > 0){
 			setEditable(data.editable)
 		}
+	
+		if(data.status == 200){
+		setChangeHistory(data.data)
+		}
 
-		}).catch(function (error) {
-		setLoading(false)
-		setChangeHistoryData({error:true})
-		});
+		setLoading({...loading,init:false})
 
-	// console.log('employeeCall')
-	// api.get(`employee`,{}).then((response) => response.data).then((data) => {
-	// 	console.log(data.data)
-	// 	// setLoading(false)
-	// 	setEmployees(data.status != 400 ? data.data : data)
-	// 	// this.setState({
-	// 	// 	equipments: data.status != 400 ? data.values: data,
-	// 	// 	setequipment: data
-	// 	// });
-	// 	//console.log(this.state.equipment.values);
-	// 	// console.log(this.props, this.state);
-	// 	}).catch(function (error) {
-	// 	//setLoading(false)
-	// 	setEmployees([])
-	// 	});
-
-
-	}, [searchView]);
-
-	// React.useEffect(() => {
-	// 	if(history.action == "PUSH"){
-	// 		reloadPage()
-	// 	}
-	// }, [history.action]);
+	}).catch(function (error) {
+		setLoading({...loading,init:false})
+	});
+	}, []);
 
 	//Render return.
 	return (
-	<>
-	<div>
-		<div style={{textAlign: 'center'}}>
-			<h2 >Change History</h2>
-            <FormControl component="fieldset">
-			<RadioGroup row aria-label="position" name="position" value={searchView} onChange={handleSearchView}>
-			<FormControlLabel value="equipment" control={<Radio color="primary" />} label="Equipment Changes" />
-			<FormControlLabel value="hra" control={<Radio color="primary" />} label="HRA Changes" />
-            <FormControlLabel value="employee" control={<Radio color="primary" />} label="Employee Changes" />
-            {/* <FormControlLabel value="eng4900" control={<Radio color="primary" />} label="Eng4900 Changes" /> */}
-            {/* <FormControlLabel value="4844" control={<Radio color="primary" />} label="Eng4844 Changes" /> */}
-			</RadioGroup>
-		</FormControl>
-		</div>
-		<div style={{textAlign: 'center'}}>
-			{loading ? LoadingCircle() : null}
-			{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
-			{changeHistoryData[searchView] ? materialTableSelect() : null}
-		</div>
-	</div>
-	</>
+	    <div>
+      	{displayTop}
+      	{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
+      	{!loading.init ? TabsChangeHistory() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
+    	</div>
 	);
 }
 

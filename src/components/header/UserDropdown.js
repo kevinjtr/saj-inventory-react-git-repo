@@ -14,7 +14,7 @@ const UserDropDown = ({setShowUserDropdown, userName, userLevelName, userDarkMod
 	
 	return (
 		<ClickAwayListener onClickAway={()=>setShowUserDropdown(false)}>
-			<div style={{position:'absolute', width:'200px',right:'10px',top:'35px',border:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'}`,backgroundColor:userDarkMode ? '#404040' : 'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+			<div style={{position:'absolute', borderRadius:'4px', width:'200px',right:'10px',top:'35px',border:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'}`,backgroundColor:userDarkMode ? '#404040' : 'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
 				<div style={{borderBottom:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'},padding:'10px',display:'flex',flexDirection:'column`}}>
 					<div style={{textAlign:'center'}}><AccountCircle style={{fontSize:'48px',color:`rgb(230,230,230)`}}/></div>
 					<div style={{textAlign:'center'}}>{userName}</div>

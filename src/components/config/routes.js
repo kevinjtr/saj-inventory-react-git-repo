@@ -38,7 +38,7 @@ const routes_config = [
     {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
     {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
     {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
-    {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
+    //{path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
