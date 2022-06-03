@@ -43,7 +43,7 @@ const routes_config = [
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
 
-export const routes_tabs = (user_access, theme) => {
+export const routes_tabs = (user_access, theme, props=null) => {
     const return_routes = {
         routes:[],
         tabs:[]
@@ -70,7 +70,7 @@ export const routes_tabs = (user_access, theme) => {
     // '&:hover':{textDecoration:'none'}}}
 
     return_routes.tabs = route_with_tabs.map((route, i) => 
-        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} 
+        <Tab {...props} id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} 
         
         // sx={{height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
         // '&:hover':{textDecoration:'none'}}} 
