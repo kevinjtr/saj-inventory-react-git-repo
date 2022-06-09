@@ -320,6 +320,57 @@ export const registrationDropDownItems = {
         "alias": "employee",
         "label": "Regular Employee"
       }
+    ],
+    "officeLocation":[
+        {"id":1,"name":"BCWPA Resident Office","section":"Construction","address":"3000 SW 148th Avenue Suite 251","city":"Miramar","state":"FL","zipcode":33027,"division":6,"district":25}
+        ,{"id":2,"name":"EAA Embankment Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":3,"name":"EAA Pump Station Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":4,"name":"C-43 Project Office","section":"Construction","address":"3383 Congen Rd","city":"LaBelle","state":"FL","zipcode":33935,"division":6,"district":25}
+        ,{"id":5,"name":"EAA Structures Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":6,"name":"HHD Central Resident Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":7,"name":"HHD North Resident Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":8,"name":"HHD South Resident Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":9,"name":"Miami Coastal Resident Office","section":"Construction","address":"3000 SW 148th Avenue Suite 251","city":"Miramar","state":"FL","zipcode":33027,"division":6,"district":25}
+        ,{"id":10,"name":"Miami Restoration Resident Office","section":"Construction","address":"3000 SW 148th Avenue Suite 251","city":"Miramar","state":"FL","zipcode":33027,"division":6,"district":25}
+        ,{"id":11,"name":"La Plata Project Office (S)","section":"Construction","address":"383 FD Roosevelt Avenue Suite 202","city":"San Juan","state":"PR","zipcode":918,"division":6,"district":25}
+        ,{"id":12,"name":"North PR Resident Office","section":"Construction","address":"383 FD Roosevelt Avenue Suite 202","city":"San Juan","state":"PR","zipcode":918,"division":6,"district":25}
+        ,{"id":13,"name":"North PR Resident Office (S)","section":"Construction","address":"383 FD Roosevelt Avenue Suite 202","city":"San Juan","state":"PR","zipcode":918,"division":6,"district":25}
+        ,{"id":14,"name":"Rio Puerto Nuevo Resident Office (S)","section":"Construction","address":"383 FD Roosevelt Avenue Suite 202","city":"San Juan","state":"PR","zipcode":918,"division":6,"district":25}
+        ,{"id":15,"name":"Sebring Project Office","section":"Construction","address":"939 Mall Ring Road ","city":"Sebring","state":"FL","zipcode":33870,"division":6,"district":25}
+        ,{"id":16,"name":"C-24 STA Project Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":17,"name":"Support for Others Resident Office","section":"Construction","address":"383 FD Roosevelt Ave Suite 202","city":"San Juan","state":"PR","zipcode":91800,"division":6,"district":25}
+        ,{"id":18,"name":"Jacksonville District Office","section":"HQ","address":"701 San Marco Boulevard","city":"Jacksonville","state":"FL","zipcode":32207,"division":6,"district":25}
+        ,{"id":19,"name":"Tampa Resident Office","section":"Construction","address":"10117 Princess Palm Ave Suite 120","city":"Tampa","state":"FL","zipcode":33619,"division":6,"district":25}
+        ,{"id":20,"name":"North Florida Area Office","section":"Construction","address":"6735 Southpoint Drive South Suite 140","city":"Jacksonville","state":"FL","zipcode":32216,"division":6,"district":25}
+        ,{"id":21,"name":"Jacksonville Resident Office","section":"Construction","address":"6736 Southpoint Drive South Suite 140","city":"Jacksonville","state":"FL","zipcode":32216,"division":6,"district":25}
+        ,{"id":22,"name":"Miami Area Office","section":"Construction","address":"3000 SW 148th Avenue Suite 251 ","city":"Miramar","state":"FL","zipcode":33027,"division":6,"district":25}
+        ,{"id":23,"name":"West Palm Beach Area Office","section":"Construction","address":"4400 PGA Boulevard Suite 203 ","city":"Palm Beach Gardens","state":"FL","zipcode":33410,"division":6,"district":25}
+        ,{"id":24,"name":"IRL-S  Resident Office","section":"Construction","address":"4401 PGA Boulevard Suite 203","city":"Palm Beach Gardens","state":"FL","zipcode":33410,"division":6,"district":25}
+        ,{"id":25,"name":"Herbert Hoover Dike Area Office","section":"Construction","address":"13849 Wellington Trace ","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":26,"name":"Antilles Area Office","section":"Construction","address":"383 Franklin Delano Roosevelt Avenue Suite 202 ","city":"San Juan","state":"PR","zipcode":918,"division":6,"district":25}
+        ,{"id":27,"name":"West Palm Beach Coastal Resident Office","section":"Construction","address":"4400 PGA Boulevard Suite 203","city":"Palm Beach Gardens","state":"FL","zipcode":33410,"division":6,"district":25}
+        ,{"id":28,"name":"EAA Area Office","section":"Construction","address":"13849 Wellington Trace ","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
+        ,{"id":29,"name":"IIS\/Melbourne Resident Office","section":"Construction","address":"1020 Eau Gallie Boulevard Suite A","city":"Melbourne","state":"FL","zipcode":32935,"division":6,"district":25}
+        ,{"id":30,"name":"Pensacola Permits Section","section":"Regulatory","address":"41 North Jefferson Street Suite 301 ","city":"Pensacola","state":"FL","zipcode":32502,"division":6,"district":25}
+        ,{"id":31,"name":"Panama City Permits Section","section":"Regulatory","address":"415 Richard Jackson Boulevard Suite 411","city":"Panama City Beach","state":"FL","zipcode":32407,"division":6,"district":25}
+        ,{"id":32,"name":"Gainesville Regulatory Office","section":"Regulatory","address":"2833 NW 41st Street Unit 130","city":"Gainsville","state":"FL","zipcode":32606,"division":6,"district":25}
+        ,{"id":33,"name":"Tampa Permits Section","section":"Regulatory","address":"10117 Princess Palm Avenue Suite 120","city":"Tampa","state":"FL","zipcode":33610,"division":6,"district":25}
+        ,{"id":34,"name":"Fort Myers Permits Section","section":"Regulatory","address":"1520 Royal Palm Square Boulevard Suite 310","city":"Fort Myers","state":"FL","zipcode":33919,"division":6,"district":25}
+        ,{"id":35,"name":"Antilles Permits Section","section":"Regulatory","address":"383 Franklin Delano Roosevelt Avenue Suite 202 ","city":"San Juan","state":"PR","zipcode":918,"division":6,"district":25}
+        ,{"id":36,"name":"Miami Permits Section","section":"Regulatory","address":"9900 SW 107th Avenue Suite 203","city":"Miami","state":"FL","zipcode":33176,"division":6,"district":25}
+        ,{"id":37,"name":"Palm Beach Gardens Permits Section","section":"Regulatory","address":"4400 PGA Boulevard Suite 500 ","city":"Palm Beach Gardens","state":"FL","zipcode":33410,"division":6,"district":25}
+        ,{"id":38,"name":"Cocoa Permits Section","section":"Regulatory","address":"400 High Point Drive Suite 600","city":"Cocoa","state":"FL","zipcode":32926,"division":6,"district":25}
+        ,{"id":39,"name":"Jacksonville Hyrdographic Survey Field Office and Warehouse","section":"Operations","address":"3077 Talleyrand Avenue","city":"Jacksonville","state":"FL","zipcode":32206,"division":6,"district":25}
+        ,{"id":40,"name":"St. Petersburg Hydrographic Survey Field Office","section":"Operations","address":"1303 Beach Drive SE ","city":"St. Petersburg","state":"FL","zipcode":33701,"division":6,"district":25}
+        ,{"id":41,"name":"St. Lucie Lock","section":"Operations","address":"2200 SW Canal Street","city":"Stuart","state":"FL","zipcode":34997,"division":6,"district":25}
+        ,{"id":42,"name":"Canaveral Lock","section":"Operations","address":"1000 Mullet Drive","city":"Canaveral","state":"FL","zipcode":32920,"division":6,"district":25}
+        ,{"id":43,"name":"W.P. Franklin Lock","section":"Operations","address":"1661 South Franklin Lock Road","city":"Alva","state":"FL","zipcode":33920,"division":6,"district":25}
+        ,{"id":44,"name":"APCU Palatka","section":"Operations","address":"602 N Palm Avenue","city":"Palatka","state":"FL","zipcode":32177,"division":6,"district":25}
+        ,{"id":45,"name":"Julian Keen (Moore Haven) Lock & Dam","section":"Operations","address":"204 Lock Road","city":"Moore Haven","state":"FL","zipcode":33471,"division":6,"district":25}
+        ,{"id":46,"name":"Ortona Lock & Dam","section":"Operations","address":"1217 Lock Lane Road","city":"Moore Haven","state":"FL","zipcode":33471,"division":6,"district":25}
+        ,{"id":47,"name":"Port Mayaca Lock & Dam","section":"Operations","address":"18100 SW Conners Highway","city":"Canal Point","state":"FL","zipcode":33438,"division":6,"district":25}
+        ,{"id":48,"name":"South Florida Operations Office","section":"Operations","address":"525 Ridgelawn Road","city":"Clewiston","state":"FL","zipcode":33440,"division":6,"district":25}
+        ,{"id":49,"name":"Palatka Area Office","section":"Operations","address":"602 Palm Avenue ","city":"Palatka","state":"FL","zipcode":32177,"division":6,"district":25}
     ]
 }
 export const condition = [{"id":1,"alias":"A","name":"Serviceable"},{"id":2,"alias":"F","name":"Repairable"},{"id":3,"alias":"S","name":"Unserviceable"}]

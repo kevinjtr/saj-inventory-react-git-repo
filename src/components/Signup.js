@@ -20,7 +20,8 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         {fieldName:'district',fieldLabel:'District',fieldValue:'',fieldType:'select',required:true,fieldError:''},
         {fieldName:'officeSymbol',fieldLabel:'Office Symbol',fieldValue:'',fieldType:'select',required:true,fieldError:''},
         {fieldName:'userType',fieldLabel:'User Type',fieldValue:'',fieldType:'select',required:true,fieldError:''},
-        {fieldName:'hras',fieldLabel:'HRA',fieldValue:[],fieldType:'chip',required:false,fieldError:''}
+        {fieldName:'hras',fieldLabel:'HRA',fieldValue:[],fieldType:'chip',required:true,fieldError:''},
+        {fieldName:'office_location_id',fieldLabel:'Office Location',fieldValue:'',fieldType:'select',required:true,fieldError:''}
     ]);
 
     // Create shortcuts for the registration form data array
@@ -34,10 +35,12 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     const officeSymbol = formData.find(({ fieldName }) => fieldName === 'officeSymbol' );
     const userType = formData.find(({ fieldName }) => fieldName === 'userType' );
     const hras = formData.find(({ fieldName }) => fieldName === 'hras' );
+    const office_location_id = formData.find(({ fieldName }) => fieldName === 'office_location_id' );
 
     // Create state variables for chip input
     const [showChip,setShowChip] = useState(false)
     const [myChips,setMyChips] = useState([])
+    const [showOfficeLocation,setShowOfficeLocation] = useState(false)
 
     const [submitted,setSubmitted] = useState(false)
 
@@ -53,14 +56,30 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         const index = newFormData.findIndex((field)=>field.fieldName === fieldName)        
         newFormData[index].fieldValue = fieldValue;
 
+        // Reset district select box
         if(fieldName === 'division'){
             newFormData.find(({ fieldName }) => fieldName === 'district' ).fieldValue = '';
         }
+        //Show chip input if user type is HRA
         else if(fieldName ==='userType' && fieldValue === '2'){
             setShowChip(true)
         }
+        //Hide chip input if user type is not HRA
         else if(fieldName ==='userType' && fieldValue !== '2'){
             setShowChip(false)
+        }
+        
+        // Show office location only for SAD/SAJ.  This is a temporary solution and requires full implementation for additional divisions/districts
+        if (division.fieldValue === '6' && district.fieldValue === 'SAJ'){
+            setShowOfficeLocation(true)
+        } else {
+            // Hide and reset office location input
+            setShowOfficeLocation(false)
+            const newFormData = [...formData]
+            const index = newFormData.findIndex((field)=>field.fieldName === 'office_location_id')        
+            newFormData[index].fieldValue = '';
+            newFormData[index].fieldError = '';
+
         }
 
         validateFormData(newFormData);
@@ -97,8 +116,27 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
             if(field.fieldType === 'phone'){
                 field.fieldError = validatePhone(field.fieldValue.trim()) ? '' : 'Enter a valid phone number.';
-            }   
+            }
+
+            if(field.fieldName === 'hras'){
+                
+                field.fieldError = field.fieldValue.length === 0 ? 'An HRA number is required':''
+            }
+
+            // If show office location is disabled, ignore error on office location
+            if(!showOfficeLocation && field.fieldName === 'office_location_id'){
+                field.fieldError = ''
+            }
+
+            // If show chip is disabled, ignore error on hras
+            if(!showChip && field.fieldName === 'hras'){
+                field.fieldError = ''
+            }
+
         })
+
+                    
+        
     
         setFormData(formData)
 
@@ -130,6 +168,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                 office_symbol: officeSymbol.fieldValue,
                 user_type: parseInt(userType.fieldValue),
                 hras: hras.fieldValue,
+                office_location_id: office_location_id.fieldValue
             }
 
 
@@ -140,10 +179,11 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
         // api posting method
     const handleAdd = async (formValues) => {
+
             handleLoading()
             //alert(JSON.stringify(formValues, null, 2));
             let result = {}
-            //console.log('equipmentbyHraCall')
+
             await registerUserApi(formValues)
             //await api.post(`register/add`,{params: {newData: formValues}})
             .then((response) => response.data).then((data) => {
@@ -163,6 +203,12 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     }
 
     const [districtDropDownItems,setDistrictDropDownItems] = useState([]);
+
+    const officeLocatonDropDownItems = registrationDropDownItems.officeLocation.map((c,i)=>{
+        return(
+            <option value={c.id} name={c.name} >{c.name}</option>
+        )
+    })
 
 	const divisionDropDownItems = registrationDropDownItems.division.map((c, i)=>{
 		return( 
@@ -359,6 +405,34 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                     <div className="input-error">{district.fieldError !== '' && submitted === true ? district.fieldError:null}</div>
                     </div>
                     </div> 
+            
+                    {/*
+                    Display office location for SAD/SAJ only. 
+                    This is a temporary implementation, will need to be configured for additional divisions/districts/offices in the future
+                    */}
+                    {showOfficeLocation &&
+                    <div 
+                       
+                        className="signin-form-row"
+                    >
+                        
+                        <div className="signin-form-item-full">
+                        <label for="office_location_id">Office Location</label>
+                            <select
+                            id="office_location_id"
+                            name="office_location_id"
+                            value={office_location_id.fieldValue}
+                            onChange={handleChange}
+                            style={office_location_id.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                            >
+                                <option selected disabled hidden style={{display:'none'}}></option>
+                                {officeLocatonDropDownItems}
+                            </select>
+                            <div className="input-error">{office_location_id.fieldError !== '' && submitted === true ? office_location_id.fieldError:null}</div>
+                        </div>
+                    </div>
+                    }
+
                     <div className="signin-form-row">
                     <div className="signin-form-item">
                     <label for="office_symbol">Office Symbol</label>

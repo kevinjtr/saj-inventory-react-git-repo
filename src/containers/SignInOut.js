@@ -205,8 +205,8 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                             </Button>
                         </div>
                                                     
-                        {/* <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
-                        <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div> */}
+                        <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
+                        <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div>
                     </div>   
                     }
 

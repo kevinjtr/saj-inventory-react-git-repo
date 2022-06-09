@@ -119,6 +119,7 @@ function RegistrationViewer({userToken,user}) {
                 { title: 'Deleted', field: 'deleted',col_id:2.6,editable: 'never' },
                 { title: 'Division', field: 'division_symbol',col_id:2.8,editable: 'never' },
                 { title: 'District', field: 'district_symbol',col_id:2.9,editable: 'never' },
+                { title: 'Office Location', field: 'office_location_name',col_id:2.9,editable: 'never' },
                 { title: 'Email', field: 'email',col_id:3.0,editable: 'never' },
                 { title: 'User Type', field: 'user_type_label',col_id:3.1,editable: 'never' },
                 { title: 'HRA', field: 'hras',col_id:3.2,editable: 'never' },
@@ -133,7 +134,7 @@ function RegistrationViewer({userToken,user}) {
                 { title: 'Work Phone', field: 'work_phone',col_id:2.5,editable: 'never' },
                 { title: 'Division', field: 'division_symbol',col_id:2.8,editable: 'never' },
                 { title: 'District', field: 'district_symbol',col_id:2.9,editable: 'never' },
-                { title: 'User Type', field: 'user_type_label',col_id:3.1,editable: 'never' },
+                { title: 'Office Location', field: 'office_location_name',col_id:2.9,editable: 'never' },
                 { title: 'Email', field: 'email',col_id:3.0,editable: 'never' },
             ]
     
