@@ -371,7 +371,47 @@ export const registrationDropDownItems = {
         ,{"id":47,"name":"Port Mayaca Lock & Dam","section":"Operations","address":"18100 SW Conners Highway","city":"Canal Point","state":"FL","zipcode":33438,"division":6,"district":25}
         ,{"id":48,"name":"South Florida Operations Office","section":"Operations","address":"525 Ridgelawn Road","city":"Clewiston","state":"FL","zipcode":33440,"division":6,"district":25}
         ,{"id":49,"name":"Palatka Area Office","section":"Operations","address":"602 Palm Avenue ","city":"Palatka","state":"FL","zipcode":32177,"division":6,"district":25}
-    ]
+    ],
+    "districts":[
+      {"id":1,"name":"Buffalo District","symbol":"LRB"}
+      ,{"id":2,"name":"Chicago District","symbol":"LRC"}
+      ,{"id":3,"name":"Detroit District","symbol":"LRE"}
+      ,{"id":4,"name":"Huntington District","symbol":"LRH"}
+      ,{"id":5,"name":"Louisville District","symbol":"LRL"}
+      ,{"id":6,"name":"Nashville District","symbol":"LRN"}
+      ,{"id":7,"name":"Pittsburgh District","symbol":"LRP"}
+      ,{"id":8,"name":"Baltimore District","symbol":"NAB"}
+      ,{"id":9,"name":"New England District","symbol":"NAE"}
+      ,{"id":10,"name":"New York District","symbol":"NAN"}
+      ,{"id":11,"name":"Norfolk District","symbol":"NAO"}
+      ,{"id":12,"name":"Philadelphia District","symbol":"NAP"}
+      ,{"id":13,"name":"Kansas City District","symbol":"NWK"}
+      ,{"id":14,"name":"Omaha District","symbol":"NWO"}
+      ,{"id":15,"name":"Portland District","symbol":"NWP"}
+      ,{"id":16,"name":"Seattle District","symbol":"NWS"}
+      ,{"id":17,"name":"Walla Walla District","symbol":"NWW"}
+      ,{"id":18,"name":"Memphis District","symbol":"MVM"}
+      ,{"id":19,"name":"New Orleans District","symbol":"MVN"}
+      ,{"id":20,"name":"Rock Island District","symbol":"MVR"}
+      ,{"id":21,"name":"St. Louis District","symbol":"MVS"}
+      ,{"id":22,"name":"St. Paul District","symbol":"MVP"}
+      ,{"id":23,"name":"Vicksburg District","symbol":"MVK"}
+      ,{"id":24,"name":"Charleston District","symbol":"SAC"}
+      ,{"id":25,"name":"Jacksonville District","symbol":"SAJ"}
+      ,{"id":26,"name":"Mobile District","symbol":"SAM"}
+      ,{"id":27,"name":"Savannah District","symbol":"SAS"}
+      ,{"id":28,"name":"Wilmington District","symbol":"SAW"}
+      ,{"id":29,"name":"Alaska District","symbol":"POA"}
+      ,{"id":30,"name":"Honolulu District","symbol":"POH"}
+      ,{"id":31,"name":"Albuquerque District","symbol":"SPA"}
+      ,{"id":32,"name":"Los Angeles District","symbol":"SPL"}
+      ,{"id":33,"name":"Sacramento District","symbol":"SPK"}
+      ,{"id":34,"name":"San Francisco District","symbol":"SPN"}
+      ,{"id":35,"name":"Fort Worth District","symbol":"SWF"}
+      ,{"id":36,"name":"Galvenston District","symbol":"SWG"}
+      ,{"id":37,"name":"Little Rock District","symbol":"SWL"}
+      ,{"id":38,"name":"Tulsa District","symbol":"SWT"}
+      ]
 }
 export const condition = [{"id":1,"alias":"A","name":"Serviceable"},{"id":2,"alias":"F","name":"Repairable"},{"id":3,"alias":"S","name":"Unserviceable"}]
 export const officesSymbol = [{"id":14,"alias":"CD-C","name":"CD-C"},{"id":15,"alias":"CD-G","name":"CD-G"},{"id":16,"alias":"CD-GC","name":"CD-GC"},{"id":17,"alias":"CD-GS","name":"CD-GS"},

@@ -21,7 +21,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         {fieldName:'officeSymbol',fieldLabel:'Office Symbol',fieldValue:'',fieldType:'select',required:true,fieldError:''},
         {fieldName:'userType',fieldLabel:'User Type',fieldValue:'',fieldType:'select',required:true,fieldError:''},
         {fieldName:'hras',fieldLabel:'HRA',fieldValue:[],fieldType:'chip',required:true,fieldError:''},
-        {fieldName:'office_location_id',fieldLabel:'Office Location',fieldValue:'',fieldType:'select',required:true,fieldError:''}
+        {fieldName:'office_location_id',fieldLabel:'Office Location',fieldValue:'',fieldType:'select',required:false,fieldError:''}
     ]);
 
     // Create shortcuts for the registration form data array
@@ -40,7 +40,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     // Create state variables for chip input
     const [showChip,setShowChip] = useState(false)
     const [myChips,setMyChips] = useState([])
-    const [showOfficeLocation,setShowOfficeLocation] = useState(false)
+    const [officeLocationError,setOfficeLocationError] = useState('')
 
     const [submitted,setSubmitted] = useState(false)
 
@@ -56,9 +56,12 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         const index = newFormData.findIndex((field)=>field.fieldName === fieldName)        
         newFormData[index].fieldValue = fieldValue;
 
-        // Reset district select box
+        // Reset district and office_location boxes
         if(fieldName === 'division'){
             newFormData.find(({ fieldName }) => fieldName === 'district' ).fieldValue = '';
+            newFormData.find(({fieldName}) => fieldName === 'office_location_id').fieldValue=''
+            setOfficeLocationDDItems([])
+            setOfficeLocationError('')
         }
         //Show chip input if user type is HRA
         else if(fieldName ==='userType' && fieldValue === '2'){
@@ -67,21 +70,15 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         //Hide chip input if user type is not HRA
         else if(fieldName ==='userType' && fieldValue !== '2'){
             setShowChip(false)
+        } 
+        // Reset office locations
+        else if (fieldName === 'district'){
+            newFormData.find(({fieldName}) => fieldName === 'office_location_id').fieldValue=''
+            setOfficeLocationError('')
+        } else if (fieldName === 'office_location_id'){
+            setOfficeLocationError('')
         }
         
-        // Show office location only for SAD/SAJ.  This is a temporary solution and requires full implementation for additional divisions/districts
-        if (division.fieldValue === '6' && district.fieldValue === 'SAJ'){
-            setShowOfficeLocation(true)
-        } else {
-            // Hide and reset office location input
-            setShowOfficeLocation(false)
-            const newFormData = [...formData]
-            const index = newFormData.findIndex((field)=>field.fieldName === 'office_location_id')        
-            newFormData[index].fieldValue = '';
-            newFormData[index].fieldError = '';
-
-        }
-
         validateFormData(newFormData);
 
     }
@@ -119,15 +116,9 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             }
 
             if(field.fieldName === 'hras'){
-                
                 field.fieldError = field.fieldValue.length === 0 ? 'An HRA number is required':''
             }
-
-            // If show office location is disabled, ignore error on office location
-            if(!showOfficeLocation && field.fieldName === 'office_location_id'){
-                field.fieldError = ''
-            }
-
+        
             // If show chip is disabled, ignore error on hras
             if(!showChip && field.fieldName === 'hras'){
                 field.fieldError = ''
@@ -135,9 +126,6 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
         })
 
-                    
-        
-    
         setFormData(formData)
 
         let valid = true;
@@ -148,6 +136,11 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             }
         })
 
+        if(officeLocationDDItems.length !== 0 && !parseInt(office_location_id.fieldValue)){
+            valid =false
+            setOfficeLocationError('Office location is required')
+        }
+
         return valid
     }
 
@@ -156,7 +149,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
         setSubmitted(true);
 
-        if(validateFormData(formData)){
+        if(validateFormData(formData) && officeLocationError === ''){
             const newAccount = {
                 first_name: firstName.fieldValue,
                 last_name: lastName.fieldValue,
@@ -169,7 +162,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                 user_type: parseInt(userType.fieldValue),
                 hras: hras.fieldValue,
                 office_location_id: office_location_id.fieldValue
-            }
+        }
 
 
         handleAdd(newAccount);
@@ -203,12 +196,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     }
 
     const [districtDropDownItems,setDistrictDropDownItems] = useState([]);
-
-    const officeLocatonDropDownItems = registrationDropDownItems.officeLocation.map((c,i)=>{
-        return(
-            <option value={c.id} name={c.name} >{c.name}</option>
-        )
-    })
+    const [officeLocationDDItems,setOfficeLocationDDItems] = useState([]);
 
 	const divisionDropDownItems = registrationDropDownItems.division.map((c, i)=>{
 		return( 
@@ -270,6 +258,12 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         }
     } 
 
+    useEffect(()=>{
+        if(officeLocationDDItems.length === 0){
+            setOfficeLocationError('')
+        }
+    },[officeLocationDDItems])
+
 
 
     const filteredDistricts = (e) => {
@@ -296,6 +290,51 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         }
 
         setDistrictDropDownItems([])
+        
+    }
+
+    const filteredOfficeLocations = (e) => {
+
+        // District value is a string symbol
+        const district_value = e.target.value
+
+        const division_id = parseInt(division.fieldValue)
+
+        
+        //console.log(division_id)
+
+        // Get index using district symbol
+        const idx = findIndex(registrationDropDownItems.districts,function(d){return d.symbol === district_value})
+
+        //console.log(idx)
+
+        if(idx !== -1){
+
+            // Get district id using index
+            const {id:district_id} =registrationDropDownItems.districts[idx]
+            //console.log(district_id)
+            const ddItems = registrationDropDownItems.officeLocation.filter((o)=>{ 
+                return (o.division === division_id && o.district === district_id)}).map((c, i)=>{
+                    //console.log(c)
+                    return(
+                        <option value={c.id} name={c.name} >
+                            {c.name}
+                        </option>
+                    )
+              
+            })
+
+            //console.log(ddItems)
+
+            setOfficeLocationDDItems([...ddItems])
+
+            //console.log(office_location_id.fieldValue)
+            
+            return
+            
+        }
+
+        setOfficeLocationDDItems([])
         
     }
 
@@ -399,18 +438,14 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         name="district"
                         value={district.fieldValue}
                         disabled={division.fieldValue === ''}
-                        onChange={handleChange} 
+                        onChange={(e)=>{handleChange(e);filteredOfficeLocations(e)}} 
                         style={district.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
                         ><option selected disabled hidden style={{display:'none'}}></option>{districtDropDownItems}</select>
                     <div className="input-error">{district.fieldError !== '' && submitted === true ? district.fieldError:null}</div>
                     </div>
                     </div> 
             
-                    {/*
-                    Display office location for SAD/SAJ only. 
-                    This is a temporary implementation, will need to be configured for additional divisions/districts/offices in the future
-                    */}
-                    {showOfficeLocation &&
+                    
                     <div 
                        
                         className="signin-form-row"
@@ -423,15 +458,16 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                             name="office_location_id"
                             value={office_location_id.fieldValue}
                             onChange={handleChange}
-                            style={office_location_id.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                            disabled={officeLocationDDItems.length === 0}
+                            style={officeLocationError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
                             >
                                 <option selected disabled hidden style={{display:'none'}}></option>
-                                {officeLocatonDropDownItems}
+                                {officeLocationDDItems}
                             </select>
-                            <div className="input-error">{office_location_id.fieldError !== '' && submitted === true ? office_location_id.fieldError:null}</div>
+                            <div className="input-error">{officeLocationError !== '' && submitted === true ? officeLocationError:null}</div>
                         </div>
                     </div>
-                    }
+                    
 
                     <div className="signin-form-row">
                     <div className="signin-form-item">
