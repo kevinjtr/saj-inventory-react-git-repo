@@ -14,7 +14,7 @@ const UserDropDown = ({setShowUserDropdown, userName, userLevelName, userDarkMod
 	
 	return (
 		<ClickAwayListener onClickAway={()=>setShowUserDropdown(false)}>
-			<div style={{position:'absolute', width:'200px',right:'10px',top:'35px',border:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'}`,backgroundColor:userDarkMode ? '#404040' : 'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+			<div style={{position:'absolute', fontSize:'15px', borderRadius:'4px', width:'200px',right:'10px',top:'35px',border:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'}`,backgroundColor:userDarkMode ? '#404040' : 'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
 				<div style={{borderBottom:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'},padding:'10px',display:'flex',flexDirection:'column`}}>
 					<div style={{textAlign:'center'}}><AccountCircle style={{fontSize:'48px',color:`rgb(230,230,230)`}}/></div>
 					<div style={{textAlign:'center'}}>{userName}</div>
@@ -29,7 +29,7 @@ const UserDropDown = ({setShowUserDropdown, userName, userLevelName, userDarkMod
 				<div>
 					<button onClick={()=>setOpenProblem(true)} style={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px'}}>
 						<ErrorIcon style={{fontSize:'0.85rem',color: userDarkMode ? '#fff' : 'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>
-						<a style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)'}}>Submit Feedback</a>
+						<a style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)', fontSize:'14px'}}>Submit Feedback</a>
 					</button>
 				</div>
 				<ProblemReportPopup title="Submit Feedback" openPopup={openProblem} setOpenPopup={setOpenProblem} setSnackBar={setSnackBar}/>

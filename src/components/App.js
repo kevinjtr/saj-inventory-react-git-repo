@@ -54,7 +54,7 @@ function App(props) {
 					<Route render={() => <Redirect to={'/404'} />}/>
 					</Switch>
 					</div>
-					<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.0</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
+					<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.1</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
 					</div>
 				</BrowserRouter>
 			}

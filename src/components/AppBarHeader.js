@@ -78,7 +78,7 @@ function Header({user, userIsLoggedIn, userAccess, userDarkMode, doToggleDarkMod
 						//textColor="inherit"
 						style={{height:"25px", minHeight:"25px"}}
 					>
-						{routes_tabs(userAccess, theme).tabs}
+						{routes_tabs(userAccess, theme, {style: {fontSize: '14px', fontWeight: 'bold'}}).tabs}
 					</Tabs>
 					<LogoutButton/>
 				</Box>}

@@ -163,6 +163,13 @@ function Equipment({history, location, match, userToken}) {
     3:false,
     4:false,
   })
+  const [rights, setRights] = React.useState({
+    0:{view: false, edit:false},
+    1:{view: false, edit:false},
+    2:{view: false, edit:false},
+    3:{view: false, edit:false},
+    4:{view: false, edit:false},
+  })
   const [tabs, setTabs] = React.useState(0);
   const [switches, setSwitches] = React.useState({
       0: SWITCH_RESET,
@@ -387,6 +394,10 @@ function Equipment({history, location, match, userToken}) {
         setEditable(data.editable)
       }
 
+      if(Object.keys(data.rights).length > 0){
+        setRights(data.rights)
+      }
+
       if(data.status == 200){
         setEquipments(data.data)
         setHras(data.hras)
@@ -535,10 +546,10 @@ function Equipment({history, location, match, userToken}) {
         <AppBar position="static" color="default">
           <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
             <Tab label={equipmentTabs[0].label.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
-            <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
-            <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
-            <Tab label={equipmentTabs[3].label.toUpperCase()} hidden={!editable[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
-            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={equipments[4] ? equipments[4].length == 0 : true} icon={<ComputerIcon/>} {...a11yProps(4)} />
+            <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={!rights.view[3] || equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
+            <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={!rights.view[3] || equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
+            <Tab label={equipmentTabs[3].label.toUpperCase()} hidden={!rights.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
+            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={!rights.view[3] || equipments[4].length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
           </Tabs>
         </AppBar>
         <TabPanel value={tabs} index={0}>
@@ -601,9 +612,21 @@ function Equipment({history, location, match, userToken}) {
             }}
             //style={{ verticalAlign: 'top' }}
             renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
+            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}</a>}
         />
         )
-        }
+        },validate: (rowData) => {
+          if(rowData.hasOwnProperty('hra_num')){
+              if(!isNaN(rowData.hra_num)) {
+                if(rowData.hra_num){
+                  const idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == rowData.hra_num)); })
+                  return idx != -1
+                }
+              }
+          }
+
+          return ({ isValid: false, helperText: 'Hra Num  is required.' })
+      }
         },
         { title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
         { title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
@@ -676,6 +699,7 @@ function Equipment({history, location, match, userToken}) {
             }}
             //style={{ verticalAlign: 'top' }}
             renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
+            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</a>}
             />
             )
         }},
@@ -710,6 +734,7 @@ function Equipment({history, location, match, userToken}) {
             }}
             //style={{ verticalAlign: 'top' }}
             renderInput={(params) => <TextField {...params} label="Condition" margin="normal"/>}
+            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + option.name}</a>}
             />
             )
             }
@@ -907,6 +932,7 @@ function Equipment({history, location, match, userToken}) {
          {<UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={rowData} setSnackBar={setSnackBar}/>} 
         {<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}></Snackbar>}
             {editable[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ? 
+            {rights.edit[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ? 
                 (<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
                     <FormGroup>
                         <FormControlLabel
@@ -961,7 +987,7 @@ function Equipment({history, location, match, userToken}) {
             }
             }}
             title=""
-            {...(editable[tabs] && {editable:{
+            {...(rights.edit[tabs] && {editable:{
                 onRowAddCancelled: rowData => console.log('Row adding cancelled'),
                 onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
                 onRowAdd: async (newData) => {
@@ -1006,7 +1032,7 @@ function Equipment({history, location, match, userToken}) {
                 //   },
 
             }})}
-            />
+           >
     </div>
     )
   }

@@ -20,13 +20,22 @@ import {updateEmployeeApi,destroyEmployeeApi,addEmployeeApi,getAllEmployeesApi} 
 import { connect } from 'redux-bundler-react';
 //import {officesSymbol} from './config/constants'
 
+const autoCompleteStyles = makeStyles((theme) => ({
+    options: {
+      '& .MuiAutocomplete-option': {
+        fontSize:'8px'
+      },
+    },
+  }));
+  
+
 function Employee({history, userToken}) {
 
 	//Hooks Declarations.
 	const [loading, setLoading] = React.useState(false);
 	const [officesSymbol, setOfficesSymbol] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
-	const [editable,setEditable] = React.useState(false)
+	const [rights, setRights] = React.useState({edit: false, add: false})
 	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 	const [districtOfficeLocations, setDistrictOfficeLocations] = React.useState({});
 
@@ -149,6 +158,7 @@ function Employee({history, userToken}) {
 	}
 
 	//Styles Declarations
+	const autoCompleteClasses = autoCompleteStyles()
 
 	//Functions Declarations.
 	const resetEmployees = () => {
@@ -204,12 +214,14 @@ function Employee({history, userToken}) {
 			idx = findIndex(officesSymbol,function(o){ return (o.office_symbol && (o.office_symbol == x.rowData.office_symbol)); })
 		}
 
+		
 		return(
 			<Autocomplete
 			//onChange={e => x.onChange(e)}
 			id={`combo-box-employee-office-symbol`}
 			id={`combo-box-employee-office-symbol`}
 			size="small"
+			styles={{}}
 			options={officesSymbol}
 			getOptionLabel={(option) => option.office_symbol_alias}
 			value={idx != -1 ? officesSymbol[idx] : null}
@@ -225,10 +237,10 @@ function Employee({history, userToken}) {
 			}}
 			//style={{ verticalAlign: 'top' }}
 			renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
+			renderOption={(v) => <a style={{fontSize:'16px'}}>{v.office_symbol_alias}</a>}
 		/>
 		)
 		}},
-		// { title: 'Office Symbol',field:'office_symbol_alias',editable: 'never'},
 		{ title: 'Work Phone', field: 'work_phone',type:'numeric',validate: rowData => {
 		if(rowData.work_phone){
 			return(rowData.work_phone.toString().length > 10 ? { isValid: false, helperText: 'phone number digits exceed 10.' } : true)
@@ -248,7 +260,7 @@ function Employee({history, userToken}) {
 				<Autocomplete
 				id={`combo-box-employee-location`}
 				key={`combo-box-employee-location`}
-				size="small"
+				size="medium"
 				options={districtOfficeLocations[x.rowData.district]}
 				getOptionLabel={(option) => option.office_location_name}
 				value={idx != -1 ? districtOfficeLocations[x.rowData.district][idx] : null}
@@ -264,12 +276,13 @@ function Employee({history, userToken}) {
 				}}
 
 				renderInput={(params) => <TextField {...params} label="Name" margin="normal"/>}
+				renderOption={(v) => <a style={{fontSize:'16px'}}>{v.office_location_name}</a>}
 			/>
 			)
 		}}
 	]
 
-	if(editable) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
+	if(rights.edit) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
 	for(const col_config of employee_cols_config){
 		if(col_config.hasOwnProperty('field') && col_config){
@@ -299,7 +312,7 @@ function Employee({history, userToken}) {
 			}}
 			title=""
 			
-			{...(editable && {editable:{
+			{...(rights.edit && {editable:{
 				isEditable: rowData => rowData.employee_update_rights, // only name(a) rows would be editable
 				//isEditHidden: rowData => rowData.name === 'x',
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
@@ -321,7 +334,7 @@ function Employee({history, userToken}) {
 					},
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-					onRowAdd: async (newData) =>{
+					onRowAdd: rights.add ? async (newData) => {
 					const errorResult = await handleTableAdd({changes:{'0':{newData:newData, oldData:null}}})
 						return(new Promise((resolve, reject) => {
 							setTimeout(() => {
@@ -335,7 +348,7 @@ function Employee({history, userToken}) {
 								
 							}, 1000);
 						}))
-					},
+					} : undefined,
 					onRowUpdate: async (newData, oldData) =>{
 						const errorResult = await handleTableUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
 						return(new Promise((resolve, reject) => {
@@ -399,8 +412,8 @@ function Employee({history, userToken}) {
 		setLoading(false)
 		setEmployees(data.status == 200 ? data.data : data)
 
-		if(data.status == 200 && data.editable){
-			setEditable(data.editable)
+		if(data.status == 200 && Object.keys(data.rights).length > 0){
+			setRights(data.rights)
 		}
 
 		if(Object.keys(data.district_office_locations).length > 0){

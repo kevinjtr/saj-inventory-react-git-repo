@@ -59,6 +59,21 @@ import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
 import { useTheme } from '@material-ui/core/styles';
 
+const errorStyles = makeStyles(theme => ({
+  root: {},
+  warningStyles: {
+    "& .MuiFormLabel-root.Mui-error": {
+      color: "orange !important"
+    },
+    "& .MuiInput-underline.Mui-error:after": {
+      borderBottomColor: "orange !important"
+    },
+    "& .MuiFormHelperText-root.Mui-error": {
+      color: "orange !important"
+    }
+  }
+}))
+
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
     padding: theme.spacing(2),
@@ -153,7 +168,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
   const classDialog = dialogStyles();
   const plusButtonClasses = plusButtonStyles();
   const theme = useTheme();
-  
+  const errorClasses = errorStyles();
+
   //Hooks Declarations.
   const [loading, setLoading] = React.useState({
     init:false,
@@ -422,7 +438,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                     label="New Equipment"/> 
                 )} */}
                 {editEnabled ? (
-                  <FormControl error={!selectedForm.requested_action} component="fieldset">
+                  <FormControl className={theme.palette.type === "dark"? errorClasses.warningStyles : null} error={!selectedForm.requested_action} component="fieldset">
                   <FormLabel component="legend">Requested Action:</FormLabel>
                   <RadioGroup row aria-label="position" name="position" value={selectedForm.requested_action} onChange={handleRequestedActionChange}>
                     <FormControlLabel id="radio-issue" key="radio-issue" value="Issue" control={<Radio color="primary" />} label="Issue" />
@@ -540,7 +556,9 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                     value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
                     style={{ width: 300 }}
                     onChange={handleLosingHraChange}
-                    renderInput={(params) => <TextField {...(!selectedForm.hra.losing.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Losing HRA" />}/>
+                    renderInput={(params) => <TextField className={theme.palette.type === "dark" ? errorClasses.warningStyles : null} {...(!selectedForm.hra.losing.hra_num && {error:true, helperText:"Selection Required."})} {...params} label="Losing HRA" />}
+                    renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}</a>}
+                    />
                   :
                   <TextField
                     id="standard-helperText-l-hra-num"
@@ -608,7 +626,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                     value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
                     style={{ width: 300 }}
                     onChange={handleGainingHraChange}
-                    renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && {error:true,helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
+                    renderInput={(params) => <TextField className={theme.palette.type === "dark" ? errorClasses.warningStyles : null} {...(!selectedForm.hra.gaining.hra_num && {error:true, helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
+                    renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : "") + option.hra_last_name}</a>}
                   />
                 :
                 <TextField
@@ -782,6 +801,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
           }}
           //style={{ verticalAlign: 'top' }}
           renderInput={(params) => <TextField {...params} label="Equipments" margin="normal"/>}
+          renderOption={(option) => <a style={{fontSize:'16px'}}>{option.bar_tag_num + ' - ' + option.item_type}</a>}
         />
         )
         }
@@ -803,7 +823,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
         icons={tableIcons}
         columns={columns}
         data={selectedForm.equipment_group}
-        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color:'#e04436'}}>Equipments are required</h6> } }}
+        
+        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color: theme.palette.type === 'dark' ? 'orange':'#e04436'}}>Equipments are required</h6> } }}
         options={{
           //exportButton: true,
           //exportAllData: true,
@@ -962,6 +983,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 				}}
 				//style={{ verticalAlign: 'top' }}
 				renderInput={(params) => <TextField {...params} label="Condition" margin="normal"/>}
+        renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + option.name}</a>}
 				/>
 				)
 				}
@@ -974,7 +996,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 				icons={tableIcons}
 				columns={equipment_cols}
 				data={selectedForm.equipment_group}
-        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color:'#e04436'}}>Equipments are required</h6> } }}
+        localization={{ body:{ emptyDataSourceMessage:<h6 style={{color: theme.palette.type === 'dark' ? 'orange':'#e04436'}}>Equipments are required</h6> } }}
         options={{
           //exportButton: true,
           //exportAllData: true,

@@ -38,12 +38,12 @@ const routes_config = [
     {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
     {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
     {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
-    {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
+    //{path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
 
-export const routes_tabs = (user_access, theme) => {
+export const routes_tabs = (user_access, theme, props=null) => {
     const return_routes = {
         routes:[],
         tabs:[]
@@ -70,7 +70,7 @@ export const routes_tabs = (user_access, theme) => {
     // '&:hover':{textDecoration:'none'}}}
 
     return_routes.tabs = route_with_tabs.map((route, i) => 
-        <Tab id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} 
+        <Tab {...props} id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} 
         
         // sx={{height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
         // '&:hover':{textDecoration:'none'}}} 

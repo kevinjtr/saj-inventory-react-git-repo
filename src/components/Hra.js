@@ -204,6 +204,7 @@ function Hra({history, userToken}) {
 			}}
 			//style={{ verticalAlign: 'top' }}
 			renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
+			renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</a>}
 		/>
 		)
 		}},

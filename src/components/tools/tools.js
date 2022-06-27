@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import moment from 'moment'
+import { v4 as uuidv4 } from 'uuid';
 
 export const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -32,7 +33,7 @@ export const contains = (target, pattern) => {
 
 export const LoadingCircle = () => {
     return(
-        <CircularProgress />
+        <CircularProgress key={uuidv4()}/>
     )
 }
 

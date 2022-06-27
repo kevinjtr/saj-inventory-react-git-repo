@@ -22,6 +22,13 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import WarningIcon from '@material-ui/icons/Warning';
 import NiceSlideShow from "./NiceSlideShow";
+import { amber } from '@material-ui/core/colors';
+
+const alertNavBarStyles = makeStyles((theme) => ({
+    fabGreen: {
+      
+      },
+  }));
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,10 +39,22 @@ const useStyles = makeStyles((theme) => ({
   list: {
     width: '100%',
     maxWidth: 360,
+    background: 'rgb(245, 245, 245)',
+    borderRadius: '25px'
+    //backgroundColor: theme.palette.background.paper,
+  },
+  listHeader: {
+    width: '100%',
+    maxWidth: 360,
+    background: 'rgb(245, 245, 245)',
+    borderRadius: '25px 25px 0px 0px'
     //backgroundColor: theme.palette.background.paper,
   },
   appbar: {
     flexGrow: 1,
+    //color: theme.palette.common.white,
+      backgroundColor: '#e57373',
+      borderRadius: '5px'
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -125,9 +144,17 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
 
     return (
         <div>
-                <div className={classes.appbar}>
+                <img style={{height:'40%',width:'40%',position:'absolute',right:10,bottom:'10%'}}src={"inv-2.svg"} />
+                {messages.length > 0 ? (
+          <div className='updates-maintenance-message-container' style={{display:'flex',left:'5',bottom:'15%',position:'absolute'}}>
+            <List className={classes.list} 
+            subheader={<ListSubheader className={classes.listHeader} style={{fontSize:'28px'}} component="div" id="nested-list-subheader">Coming Soon</ListSubheader>}>
+            {messages}
+            </List>
+            </div>
+          ) : null}
                 {maintenance ? (
-                    <AppBar color="default" position="static">
+                    <AppBar className={classes.appbar} position="static">
                     <Toolbar>
                     <WarningIcon edge="start" className={classes.menuButton} color="inherit" aria-label="menu"/>
                       <Typography variant="h6" className={classes.title}>
@@ -136,7 +163,6 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                     </Toolbar>
                   </AppBar>
                 ) : null}
-    </div>
             <div className='signin-page-container' style={{display:'flex',justifyContent:'center'}}>
                 {userLoginFailure ? <div className={alertClass.root}>
                                         <Alert variant="outlined" severity="error">
@@ -144,7 +170,7 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                                         </Alert>
                                     </div> : null}
                 {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
-                <NiceSlideShow style={{position:'absolute',width:'25%'}}/>
+                {/* <NiceSlideShow style={{position:'absolute',width:'25%'}}/> */}
                 <div className="signin-box">
                     {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Please wait...</div></div>}
    
@@ -191,14 +217,6 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
             </div>
          <br/>
          <br/>
-          {messages.length > 0 ? (
-          <div className='updates-maintenance-message-container' style={{display:'flex',justifyContent:'left'}}>
-            <List className={classes.list} 
-            subheader={<ListSubheader style={{fontSize:'28px'}} component="div" id="nested-list-subheader">Coming Soon</ListSubheader>}>
-            {messages}
-            </List>
-            </div>
-          ) : null}
      </div>
     )
 }

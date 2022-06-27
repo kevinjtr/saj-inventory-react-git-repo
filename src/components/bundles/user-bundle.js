@@ -38,7 +38,6 @@ export default {
     }
     },
     // doFetchUserLevel: (val, cascade, silent) => ({ dispatch, store }) => {
-    // console.log('userDataCALL')
     // api.get('user').then((response) => response.data).then((data) => {
     //     dispatch({
     //         type: "GET_USER_LVL",
@@ -80,10 +79,6 @@ export default {
       api
         .get(`login`)
         .then((response) => {
-          //const decoded_token = jwt_decode(response.data.token)
-          //console.log(decoded_token)
-         // const {iat} = decoded_token
-         console.log(response.data)
 
          if(response.data.token){
           localStorage.setItem('auth', response.data.token);
@@ -191,8 +186,6 @@ export default {
     },
     doSetUserFromLocalStorage: (val, cascade, silent) => ({ dispatch, store }) => {
       if(store.selectUserIsLoggedIn()){
-
-        console.log(localStorage.getItem('access'))
         dispatch({
           type: 'SET_USER_LVL_FROM_LOCAL',
           payload: {
@@ -215,7 +208,6 @@ export default {
         } })
     },
     // getUserByID: (val, cascade, silent) => ({ dispatch, store }) => {
-    //     console.log('userDataCALL')
     //     this.userData = api.get(`user/${val}`).then((response) => response.data).then((data) => {
     //         dispatch({
     //             type: "GET_USER_BY_ID",
@@ -250,25 +242,18 @@ export default {
     return state.user.access;
   },
   selectUserIsLoggedIn: state => {
-    //console.log(state)
-    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
     return localStorage.getItem('auth') != "" && localStorage.getItem('user') != "" && localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000);
-    //return !state.user.isLoggingIn && state.user.auth && state.user.user && (state.user['x-access-token-expiration'] > Math.floor(Date.now() / 1000));
   },
   selectUserIsLoggedOut: state => {
-    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
     return state.user.isLoggedOut;
   },
   selectUserIsLoggingIn: state => {
-    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
     return state.user.isLoggingIn;
   },
   selectUserIsLoggingOut: state => {
-    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
-    return state.user.isLoggingOut;
+     return state.user.isLoggingOut;
   },
   selectUserDarkMode: state => {
-    //console.log(localStorage.getItem('x-access-token-expiration'),localStorage.getItem('auth') , localStorage.getItem('user') , localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000))
     return state.user.darkMode;
   },
   init: store => {
@@ -283,11 +268,9 @@ export default {
       //   return
       // }
 
-      //console.log(store.selectUserIsLoggedIn())
       store.doSetUserFromLocalStorage()
 
     //} else {
-      //console.log(localStorage.getItem('user'))
       //store.doSetUserFromLocalStorage()
     //}    
   }

@@ -95,16 +95,17 @@ function Eng4900({history, location, match, userToken}) {
   const search = getQueryStringParams(location.search)
   const FORM_STATUS = {
     1:"Form Edit",
-    2:"Individual/Vendor signature required",
-    3:"Completed Individual/Vendor signature",
-    4:"Losing HRA signature required",
-    5:"Completed losing HRA signature",
-    6:"Gaining HRA signature required",
-    7:"Completed gaining HRA signature",
-    8:"Sent to Logistics",
-    9:"Sent to PBO",
-    10:"Completed",
-    11:"Form Rejected"
+		2:"Individual/Vendor signature required",
+		3:"Completed Individual/Vendor signature",
+		4:"Losing HRA signature required",
+		5:"Completed losing HRA signature",
+		6:"Gaining HRA signature required",
+		7:"Completed gaining HRA signature",
+		8:"Logistics signature required",
+		9:"Completed Logistics signature",
+		10:"PBO signature required",
+		11:"Completed PBO signature",
+		12:"Form Rejected",
 }
   const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_and_ipg_forms', label:'Completed & IP Gaining HRA Forms'}}
   const SEARCH_FIELD_RESET = {
@@ -667,15 +668,12 @@ function Eng4900({history, location, match, userToken}) {
                   {rowData.all_status_steps.map((option, i) => {
                     const labelProps = {};
 
-                    if(rowData.status == 11) {
-                      if(i == 10){
+                    if(rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)
-                      }
-                      
-                    }else if(i != 10){
+                        </Step>)                      
+                    }else if(rowData.status != 12){
                       return (<Step key={option.label}>
                         <StepLabel {...labelProps}>{option.label}</StepLabel>
                       </Step>)
@@ -857,15 +855,12 @@ function Eng4900({history, location, match, userToken}) {
                   {rowData.all_status_steps.map((option, i) => {
                     const labelProps = {};
 
-                    if(rowData.status == 11) {
-                      if(i == 10){
+                    if(rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)
-                      }
-                      
-                    }else if(i != 10){
+                        </Step>)                      
+                    }else if(rowData.status != 12){
                       return (<Step key={option.label}>
                         <StepLabel {...labelProps}>{option.label}</StepLabel>
                       </Step>)
@@ -896,13 +891,13 @@ function Eng4900({history, location, match, userToken}) {
                 onClick: () => setCreate4900({...create4900, show:true, action:'CREATE', formId:null}),
                 hidden: hras[tab_idx].losing.length == 0
               },
-              rowData => ({
-                icon: CommentIcon,
-                tooltip: 'Edit Form',
-                onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
-                //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
-                disabled: !(rowData.status == 1) //rowData.birthYear < 2000
-              }),
+              // rowData => ({
+              //   icon: CommentIcon,
+              //   tooltip: 'Edit Form',
+              //   onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
+              //   //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+              //   disabled: !(rowData.status == 1) //rowData.birthYear < 2000
+              // }),
               rowData => ({
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
@@ -1004,15 +999,12 @@ function Eng4900({history, location, match, userToken}) {
                   {rowData.all_status_steps.map((option, i) => {
                     const labelProps = {};
 
-                    if(rowData.status == 11) {
-                      if(i == 10){
+                    if(rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)
-                      }
-                      
-                    }else if(i != 10){
+                        </Step>)                      
+                    }else if(rowData.status != 12){
                       return (<Step key={option.label}>
                         <StepLabel {...labelProps}>{option.label}</StepLabel>
                       </Step>)
@@ -1130,15 +1122,12 @@ function Eng4900({history, location, match, userToken}) {
                   {rowData.all_status_steps.map((option, i) => {
                     const labelProps = {};
 
-                    if(rowData.status == 11) {
-                      if(i == 10){
+                    if(rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)
-                      }
-                      
-                    }else if(i != 10){
+                        </Step>)                      
+                    }else if(rowData.status != 12){
                       return (<Step key={option.label}>
                         <StepLabel {...labelProps}>{option.label}</StepLabel>
                       </Step>)

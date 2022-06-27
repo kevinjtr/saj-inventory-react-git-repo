@@ -255,8 +255,8 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
     }
 
     const handleModalStatusChange = (e) => {
-        console.log(e.target.value == 11)
-        if(e.target.value == 11){
+        console.log(e.target.value == 12)
+        if(e.target.value == 12){
             setSubmitButton({...uploadButton,active:true})
             setModal({...modal,newStatus:e.target.value})
         }else{
@@ -280,7 +280,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
         return;
     }
 
-    const isFormRejected = () => modal.newStatus == 11
+    const isFormRejected = () => modal.newStatus == 12
 
     const UploadModal = () => {
 
