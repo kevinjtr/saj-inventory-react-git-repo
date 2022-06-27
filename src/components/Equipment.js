@@ -66,6 +66,9 @@ import {updateEquipmentApi, destroyEquipmentApi, addEquipmentApi, equipmentSearc
 import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
 import {ALERT} from './tools/tools'
+import { Link } from '@material-ui/core';
+import UpdateStatusPopup from './UpdateStatusPopup';
+import { Snackbar } from '@mui/material';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -102,7 +105,7 @@ function Equipment({history, location, match, userToken}) {
   }
 
   //Variables Declarations.
-
+//let sendData = [];
 
   //Styles Declarations.
   const classesTextField = texFieldStyles();
@@ -171,6 +174,9 @@ function Equipment({history, location, match, userToken}) {
   const [hras, setHras] = React.useState([]);
   const [my_hras, setMyHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
+  const [openPopup,setOpenPopup] =  React.useState(false);
+  const [rowData, setRowData] = React.useState([]);
+  let [snackBar,setSnackBar] = React.useState({open:false,message:'',severity:'warning'});
   //const [excess, setExcess] = React.useState([]);
 
   // state variable for showing/hiding column filters in material table
@@ -634,9 +640,14 @@ function Equipment({history, location, match, userToken}) {
         },
         { title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
         { title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  },
-        { title: 'Employee Office Location', field: 'employee_office_location_name',col_id:6.3,editable: 'never'  }
-    ]
-    
+        { title: 'Employee Office Location', field: 'employee_office_location_name',col_id:6.3,editable: 'never'  },
+        {title: 'Status', field:'status',col_id:6.4,editable: 'no' },
+        {title: 'Status Date', field:'status_date',col_id:6.4,editable: 'no' },
+        tab_idx === 0 ? {title: 'Update Status', field:'update_status',col_id:6.5 ,editable: 'yes', render: rowData => <Link underline="always" component="button" onClick={()=>{setRowData(rowData); setOpenPopup(true); setSnackBar={setSnackBar}; }}>Update</Link>}: {}
+    ] 
+   // tab_idx === 0 || tab_idx === 1 ? {title: 'Status', field:'status',col_id:6.4,editable: 'no' } : {},
+    //tab_idx === 1 ? {title: 'Status Date', field:'status_date',col_id:6.4,editable: 'no' } : {},
+
     const ext_equipment_cols_config = [		
         // {title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never',col_id:2.3 },
         { title: 'Employee Holder ID', field: 'employee_id', type:'numeric',col_id:6.0,
@@ -768,16 +779,16 @@ function Equipment({history, location, match, userToken}) {
 
             /* Remove extraneous columns using filter */
             let printColumns = columns.filter(col => 
-                col.field !== "updated_by_full_name" && col.field !== "employee_id" && col.field !== "hra_last_name" && col.field !== "employee_last_name" && col.field !== "model"
+                col.field !== "updated_by_full_name" && col.field !== "employee_id" && col.field !== "hra_last_name" && col.field !== "employee_last_name" && col.field !== "model" && col.field !== "status_date"
                 )
         
             /* Rename column titles using map function */
             printColumns.map(col => 
                     {
                         if(col.field =="acquisition_date")
-                            col.title = "Date"
+                            col.title = "Acq. Date"
                         if(col.field =="acquisition_price")
-                            col.title = "Price"
+                            col.title = "Acq. Price"
                         if(col.field == "item_type")
                             col.title = "Description"
                         if(col.field =="employee_id")
@@ -796,25 +807,32 @@ function Equipment({history, location, match, userToken}) {
                         if(col.field =="bar_tag_num")
                             col.title = "Bar Tag"
                         if(col.field =="catalog_num")
-                            col.title = "Catalog"
+                            col.title = "Catalog Num."
                         if(col.field =="serial_num")
-                            col.title = "Serial"
+                            col.title = "Serial Num."
+                        if(col.field =="status")
+                            col.title = "Status"
+                       
                     }
                 );
 
         
             // Convert array of arrays to array of objects
             var printEquipments = equipment_array.map(function(x) {
+              //console.log("array fields" + x);
                 var hraLetter = x[2] ? x[2].charAt(0) + ". " : ""
 
                 var firstName = x[7] ? x[7] + " " : ""
                 var lastName = x[8] ? x[8] : ""
-                var employeeFullName = firstName + lastName
+                var employeeFullName = firstName.charAt(0) + ". " + lastName
 
-                var mfgr = x[12] ? x[12] + " " : ""
-                var model = x[13] ? x[13] : ""
+                var mfgr = x[15] ? x[15] + " " : ""
+                var model = x[16] ? x[16] : ""
                 var mfgrModel = mfgr + model	
 
+                var status = x[10]
+                var status_date = x[11]
+                var status_and_date = status + " as of " + status_date
                 return { 
                     acquisition_date: x[0],
                     hra_num: x[1],
@@ -823,12 +841,14 @@ function Equipment({history, location, match, userToken}) {
                     bar_tag_num: x[5],
                     employee_id: x[6],
                     employeeFullName: employeeFullName,
-                    acquisition_price:x[9],
-                    catalog_num: x[10],
-                    serial_num: x[11],
+                    acquisition_price:x[12],
+                    catalog_num: x[13],
+                    serial_num: x[14],
                     mfgrModel: mfgrModel,
-                    condition: x[14],
-                    updated_by_full_name: x[15]
+                    condition: x[17],
+                    status: status_and_date
+                    //updated_by_full_name: x[18]
+                    
                 }; 
             });
 
@@ -848,14 +868,16 @@ function Equipment({history, location, match, userToken}) {
                     0: {cellWidth: 14},
                     1: {cellWidth: 11},
                     2: {cellWidth: 24},
-                    3: {cellWidth: 52},
+                    3: {cellWidth: 32},
                     4: {cellWidth: 13},
-                    5: {cellWidth: 30},
-                    6: {cellWidth: 15},
+                    5: {cellWidth: 20},
+                    6: {cellWidth: 25},
                     7: {cellWidth: 25},
-                    8: {cellWidth: 35},
-                    9: {cellWidth: 35},
-                    10: {cellWidth: 15}
+                    8: {cellWidth: 18},
+                    9: {cellWidth: 18},
+                    10: {cellWidth:18}
+                   // 11: {cellWidth: 14}
+                   
                 }
             }
             )
@@ -882,6 +904,8 @@ function Equipment({history, location, match, userToken}) {
 
     return(
         <div style={{ maxWidth: '100%',paddingTop:'25px' }}>
+         {<UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={rowData} setSnackBar={setSnackBar}/>} 
+        {<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}></Snackbar>}
             {editable[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ? 
                 (<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
                     <FormGroup>
