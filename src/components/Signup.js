@@ -470,13 +470,9 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                     <div className="input-error" style={textFieldstyles.error}>{district.fieldError !== '' && submitted === true ? district.fieldError:null}</div>
                     </div>
                     </div> 
-            
                     
-                    <div 
-                       
-                        className="signin-form-row"
-                    >
-                        
+                    {officeLocationDDItems.length > 0 ? (
+                        <div className="signin-form-row">
                         <div className="signin-form-item-full">
                         <label for="office_location_id" style={textFieldstyles.label}>Office Location</label>
                             <select
@@ -493,7 +489,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                             <div className="input-error">{officeLocationError !== '' && submitted === true ? officeLocationError:null}</div>
                         </div>
                     </div>
-                    
+                    ) : null}                    
 
                     <div className="signin-form-row">
                     <div className="signin-form-item">
