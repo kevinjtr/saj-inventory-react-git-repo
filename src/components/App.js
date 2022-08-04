@@ -18,7 +18,6 @@ import { ThemeProvider as ThemeProviderV5 , createTheme as createThemeV5 } from 
 
 function App(props) {
 	const {userIsLoggedIn, userIsLoggingOut, userAccess, userDarkMode} = props
-
 	const theme = createTheme({
 			palette: {
 				type: userDarkMode ? 'dark' : 'light',
@@ -31,9 +30,7 @@ function App(props) {
 		},
 	  });
 
-	axios.defaults.baseURL = process.env.REACT_APP_API;	  
-
-
+	axios.defaults.baseURL = process.env.REACT_APP_API;
 
 	  return (
 		<ThemeProviderV5 theme={themeV5}>
@@ -54,7 +51,7 @@ function App(props) {
 					<Route render={() => <Redirect to={'/404'} />}/>
 					</Switch>
 					</div>
-					<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version 0.9.1</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
+					<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version {process.env.REACT_APP_VERSION}</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
 					</div>
 				</BrowserRouter>
 			}

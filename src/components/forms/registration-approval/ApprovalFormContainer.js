@@ -9,6 +9,7 @@ import ApprovalFormStep99 from "./ApprovalFormStep99";
 import { LoadingCircle } from "../../tools/tools";
 import './ApprovalFormStyles.css'
 import { connect } from 'redux-bundler-react';
+import { useTheme } from '@material-ui/core/styles';
 
 const ApprovalFormContainer = (props) => {
 
@@ -68,11 +69,29 @@ const ApprovalFormContainer = (props) => {
     // Loading variable for this component
     const [loading,setLoading] = useState(false)
 
+    //Styles
+    const theme = useTheme();
+
+    const approvalStyles = {
+		root:{
+			backgroundColor: theme.palette.type == "dark" ? theme.palette.background.default : 'rgba(255,255,255,0.75)',
+			position:'absolute',
+            display:'flex',
+            flexDirection:'column',
+            justifyContent:'center',
+            alignItems:'center',
+            top:0,
+            bottom:0,
+            left:0,
+            right:0,
+		},
+	}
+
     return(
         <Dialog open={openPopup} maxWidth={false} >
             <div style={{position:'relative'}}>
             {loading &&
-            <div style={{position:'absolute',display:'flex',flexDirection:'column',justifyContent:'center',alignItems:'center',top:0,bottom:0,left:0,right:0,backgroundColor:'rgba(255,255,255,0.75)'}}>
+            <div style={approvalStyles.root}>
                 <LoadingCircle />
             </div>}
             <div style={{display:'flex',flexDirection:'column',fontSize:'0.8em'}}>

@@ -6,6 +6,23 @@ import findIndex from 'lodash/findIndex'
 import {registerUserApi} from '../publics/actions/register-api'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Button } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { blue } from '@material-ui/core/colors';
+import AdornedButton from '../containers/AdornedButton'
+
+const buttonStyles = makeStyles((theme) => ({
+    fabLightBlue: {
+      color: theme.palette.common.white,
+      backgroundColor: blue[400],
+      '&:hover': {
+        backgroundColor: blue[500],
+      },
+      //height:'50px',
+      //width:'20%',
+      //marginTop: '50px',
+      //marginBottom:'50px'
+    },
+  }));
 
 const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
@@ -38,8 +55,19 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     // Create state variables for chip input
     const [showChip,setShowChip] = useState(false)
     const [myChips,setMyChips] = useState([])
-
     const [submitted,setSubmitted] = useState(false)
+    const [submitButton, setSubmitButton] = React.useState({
+        active:false,
+        send:false,
+      });
+
+    const textFieldstyles = {
+        label: {fontSize:'16px'},
+        textField: {fontSize:'15px'},
+        error: {fontSize: '14px'}
+    }
+
+    const buttonClasses = buttonStyles();
 
     // Handle registration form changes, call validate form data
     const handleChange = (event) => {
@@ -117,7 +145,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         event.preventDefault();
 
         setSubmitted(true);
-
+        
         if(validateFormData(formData)){
             const newAccount = {
                 first_name: firstName.fieldValue,
@@ -144,16 +172,20 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             //alert(JSON.stringify(formValues, null, 2));
             let result = {}
             //console.log('equipmentbyHraCall')
+
+            setSubmitButton((prev) => ({...prev, send:true}))
+
             await registerUserApi(formValues)
             //await api.post(`register/add`,{params: {newData: formValues}})
             .then((response) => response.data).then((data) => {
                 
                 result = data
+                setSubmitButton((prev) => ({...prev, send:false}))
                 //console.log(data)
                 //console.log([data])
                 //console.log([data][0])
             }).catch(function (error) {
-                
+                setSubmitButton((prev) => ({...prev, send:false}))
             });
 
             hideNewAccountForm(result);
@@ -263,126 +295,119 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             <form onKeyDown={onKeyDown} onSubmit={handleSubmit}>
                 <div className="signin-form-row">
                     <div className="signin-form-item">
-                    <label for="firstName">First Name</label>
+                    <label for="firstName" style={textFieldstyles.label}>First Name</label>
                     <input 
                         type="text" 
                         id="firstName" 
                         name="firstName"
-
                         value={firstName.fieldValue}
-                        style={firstName.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(firstName.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
                     ></input>
-                    <div className="input-error">{firstName.fieldError !== '' && submitted === true ? firstName.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{firstName.fieldError !== '' && submitted === true ? firstName.fieldError:null}</div>
                     </div>
                     <div className="signin-form-item">
-                    <label for="lastName">Last Name</label>
+                    <label for="lastName" style={textFieldstyles.label}>Last Name</label>
                     <input 
                         type="text" 
                         id="lastName"
                         name="lastName"
-
                         value={lastName.fieldValue}
-                        style={lastName.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(lastName.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
                     ></input>
-                    <div className="input-error">{lastName.fieldError !== '' && submitted === true ? lastName.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{lastName.fieldError !== '' && submitted === true ? lastName.fieldError:null}</div>
                     </div>
                 </div>
                 <div className="signin-form-row">
                     <div className="signin-form-item-full">
-                    <label for="email">Email</label>
+                    <label for="email" style={textFieldstyles.label}>Email</label>
                     <input 
                         type="text" 
                         id="email"
                         name="email"
-
                         value={email.fieldValue}
-                        style={email.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(email.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
                     ></input>
-                    <div className="input-error">{email.fieldError !== '' && submitted === true ? email.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error} >{email.fieldError !== '' && submitted === true ? email.fieldError:null}</div>
                     </div>
                 </div>
                 <div className="signin-form-row">
                     <div className="signin-form-item">
-                    <label for="title">Job Title</label>
+                    <label for="title" style={textFieldstyles.label}>Job Title</label>
                     <input 
                         type="text" 
                         id="title"
                         name="title"
-
                         value={title.fieldValue}
-                        style={title.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(title.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
                     ></input>
-                    <div className="input-error">{title.fieldError !== '' && submitted === true ? title.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{title.fieldError !== '' && submitted === true ? title.fieldError:null}</div>
                     </div>
                     <div className="signin-form-item">
-                    <label for="work_phone">Work Phone</label>
+                    <label for="work_phone" style={textFieldstyles.label}>Work Phone</label>
                     <input 
                         type="text" 
                         id="workPhone"
                         name="workPhone"
                         maxlength="12"
                         value={workPhone.fieldValue}
-                        style={workPhone.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(workPhone.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
                     ></input>
-                    <div className="input-error">{workPhone.fieldError !== '' && submitted === true ? workPhone.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{workPhone.fieldError !== '' && submitted === true ? workPhone.fieldError:null}</div>
                     </div>
                 </div>
 
                 <div className="signin-form-row">
                     <div className="signin-form-item">
-                    <label for="division">Division</label>
+                    <label for="division" style={textFieldstyles.label}>Division</label>
                     <select  
                         id="division"
                         name="division"
-
                         value={division.fieldValue}
-                        style={division.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(division.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={(e)=>{handleChange(e);filteredDistricts(e)}}
                         ><option selected disabled hidden style={{display:'none'}}></option>{divisionDropDownItems}</select>
-                    <div className="input-error">{division.fieldError !== '' && submitted === true ? division.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{division.fieldError !== '' && submitted === true ? division.fieldError:null}</div>
                     </div>
                     <div className="signin-form-item">
-                    <label for="district">District</label>
+                    <label for="district" style={textFieldstyles.label}>District</label>
                     <select 
                         id="district"
                         name="district"
                         value={district.fieldValue}
                         disabled={division.fieldValue === ''}
                         onChange={handleChange} 
-                        style={district.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(district.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         ><option selected disabled hidden style={{display:'none'}}></option>{districtDropDownItems}</select>
-                    <div className="input-error">{district.fieldError !== '' && submitted === true ? district.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{district.fieldError !== '' && submitted === true ? district.fieldError:null}</div>
                     </div>
                     </div> 
                     <div className="signin-form-row">
                     <div className="signin-form-item">
-                    <label for="office_symbol">Office Symbol</label>
+                    <label for="office_symbol" style={textFieldstyles.label}>Office Symbol</label>
                     <select 
                         id="officeSymbol"
                         name="officeSymbol"
-
                         value={officeSymbol.fieldValue}
                         onChange={handleChange} 
-                        style={officeSymbol.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(officeSymbol.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         ><option selected disabled hidden style={{display:'none'}}></option>{officeSymbolDropDownItems}</select>
-                    <div className="input-error">{officeSymbol.fieldError !== '' && submitted === true ? officeSymbol.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{officeSymbol.fieldError !== '' && submitted === true ? officeSymbol.fieldError:null}</div>
                     </div>
                     <div className="signin-form-item">
-                    <label for="user_type">User Type</label>
+                    <label for="user_type" style={textFieldstyles.label}>User Type</label>
                     <select 
                         id="userType"
                         name="userType"
-
                         value={userType.fieldValue}
                         onChange={handleChange}
-                        style={userType.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.textField, ...(userType.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                     ><option selected disabled hidden style={{display:'none'}}></option>{userTypeDropDownItems}</select>
-                    <div className="input-error">{userType.fieldError !== '' && submitted === true ? userType.fieldError:null}</div>
+                    <div className="input-error" style={textFieldstyles.error}>{userType.fieldError !== '' && submitted === true ? userType.fieldError:null}</div>
                     </div>
                     </div>
 
@@ -413,9 +438,13 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                     }    
 
                     <div className='signin-form-button-row'>
-                    <button className="signin-form-button" style={{width:"100%",height:"30px"}} type="submit">
-                    Create Account
-                    </button>
+                    <Button style={{fontSize:'16px',width:"160px",height:"40px"}} type="submit" className={buttonClasses.fabLightBlue} {...(submitButton.send && {disabled:true})}> 
+                    Submit
+                    </Button>
+
+                    {/* <Button disabled={} className={buttonClasses.fabLightBlue} >
+                    Submit
+                    </Button> */}
                     </div>
                     
                 </form>
