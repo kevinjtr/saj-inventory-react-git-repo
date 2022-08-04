@@ -77,6 +77,7 @@ const ApprovalFormStep3 = (props) => {
         rowData.changes['0'].newData.district = employeeRow.district
         rowData.changes['0'].newData.division = employeeRow.division
         rowData.changes['0'].newData.office_symbol = employeeRow.office_symbol
+        rowData.changes['0'].newData.office_location_id = employeeRow.office_location_id
         rowData.changes['0'].oldData = null
 
         let employee = {error:null,employee_id:null}

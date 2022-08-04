@@ -1,18 +1,6 @@
 import { Dialog, Button, CircularProgress } from "@material-ui/core";
-import React, {useState,useEffect} from "react";
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-import PendingOutlinedIcon from '@mui/icons-material/PendingOutlined';
-import CloseIcon from '@mui/icons-material/Close';
-import { addEmployee2Api } from '../../../publics/actions/employee-api';
-import { addHraApi } from '../../../publics/actions/hra-api';
-import { addRegisteredUserApi } from "../../../publics/actions/registered-users-api";
-import { destroyRegistrationApi } from '../../../publics/actions/register-api';
+import React, {useEffect} from "react";
 import { connect } from 'redux-bundler-react';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
-import { LoadingCircle } from "../../tools/tools";
-
 
 const ApprovalFormStep3ExpressUI = (props) => {
 

@@ -220,35 +220,9 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                                 </div>
                             </Button>
                         </div>
-                        {/* .login-register-button {
-  text-align: center;
-  padding: 10px;
-  align-self: center;
-  color: rgb(226, 226, 226);
-  height: 35px;
-  width: 200px;
-  border-radius: 5px;
-  line-height: normal;
-  text-transform: uppercase;
-  font-size: 11px;
-  cursor: pointer;
-  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.25);
-  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5),
-    0px -1px 0px rgba(0, 0, 0, 0.7);
-  background-image: linear-gradient(rgb(18, 63, 129), rgb(0, 31, 77));
-}
-
-.login-register-button:hover {
-  background-image: linear-gradient(rgb(18, 63, 129), rgb(18, 63, 129));
-}
-
-.login-register-button:active {
-  background-image: linear-gradient(rgb(0, 31, 77), rgb(0, 31, 77));
-} */}
-
-
+                                                    
                         <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
-                        <Button className={buttonClasses.fabBlue} onClick={handleNewAccountClick}>Create New Account</Button>
+                        <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div>
                     </div>   
                     }
 

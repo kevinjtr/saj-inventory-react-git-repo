@@ -25,7 +25,8 @@ const ApprovalFormContainer = (props) => {
         work_phone:'',
         district:'',
         division:'',
-        email:''
+        email:'',
+        office_location_id:''
     }])
 
     // Selection state variables for Step 1 of the form
@@ -48,7 +49,8 @@ const ApprovalFormContainer = (props) => {
         work_phone:'',
         district:null,
         division:null,
-        email:''
+        email:'',
+        office_location_id:null
     })
 
     // New or existing HRA row information

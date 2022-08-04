@@ -37,7 +37,8 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         {fieldName:'district',fieldLabel:'District',fieldValue:'',fieldType:'select',required:true,fieldError:''},
         {fieldName:'officeSymbol',fieldLabel:'Office Symbol',fieldValue:'',fieldType:'select',required:true,fieldError:''},
         {fieldName:'userType',fieldLabel:'User Type',fieldValue:'',fieldType:'select',required:true,fieldError:''},
-        {fieldName:'hras',fieldLabel:'HRA',fieldValue:[],fieldType:'chip',required:false,fieldError:''}
+        {fieldName:'hras',fieldLabel:'HRA',fieldValue:[],fieldType:'chip',required:true,fieldError:''},
+        {fieldName:'office_location_id',fieldLabel:'Office Location',fieldValue:'',fieldType:'select',required:false,fieldError:''}
     ]);
 
     // Create shortcuts for the registration form data array
@@ -51,10 +52,13 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     const officeSymbol = formData.find(({ fieldName }) => fieldName === 'officeSymbol' );
     const userType = formData.find(({ fieldName }) => fieldName === 'userType' );
     const hras = formData.find(({ fieldName }) => fieldName === 'hras' );
+    const office_location_id = formData.find(({ fieldName }) => fieldName === 'office_location_id' );
 
     // Create state variables for chip input
     const [showChip,setShowChip] = useState(false)
     const [myChips,setMyChips] = useState([])
+    const [officeLocationError,setOfficeLocationError] = useState('')
+
     const [submitted,setSubmitted] = useState(false)
     const [submitButton, setSubmitButton] = React.useState({
         active:false,
@@ -81,16 +85,29 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         const index = newFormData.findIndex((field)=>field.fieldName === fieldName)        
         newFormData[index].fieldValue = fieldValue;
 
+        // Reset district and office_location boxes
         if(fieldName === 'division'){
             newFormData.find(({ fieldName }) => fieldName === 'district' ).fieldValue = '';
+            newFormData.find(({fieldName}) => fieldName === 'office_location_id').fieldValue=''
+            setOfficeLocationDDItems([])
+            setOfficeLocationError('')
         }
+        //Show chip input if user type is HRA
         else if(fieldName ==='userType' && fieldValue === '2'){
             setShowChip(true)
         }
+        //Hide chip input if user type is not HRA
         else if(fieldName ==='userType' && fieldValue !== '2'){
             setShowChip(false)
+        } 
+        // Reset office locations
+        else if (fieldName === 'district'){
+            newFormData.find(({fieldName}) => fieldName === 'office_location_id').fieldValue=''
+            setOfficeLocationError('')
+        } else if (fieldName === 'office_location_id'){
+            setOfficeLocationError('')
         }
-
+        
         validateFormData(newFormData);
 
     }
@@ -125,9 +142,19 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
             if(field.fieldType === 'phone'){
                 field.fieldError = validatePhone(field.fieldValue.trim()) ? '' : 'Enter a valid phone number.';
-            }   
+            }
+
+            if(field.fieldName === 'hras'){
+                field.fieldError = field.fieldValue.length === 0 ? 'An HRA number is required':''
+            }
+        
+            // If show chip is disabled, ignore error on hras
+            if(!showChip && field.fieldName === 'hras'){
+                field.fieldError = ''
+            }
+
         })
-    
+
         setFormData(formData)
 
         let valid = true;
@@ -138,6 +165,11 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
             }
         })
 
+        if(officeLocationDDItems.length !== 0 && !parseInt(office_location_id.fieldValue)){
+            valid =false
+            setOfficeLocationError('Office location is required')
+        }
+
         return valid
     }
 
@@ -145,8 +177,8 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         event.preventDefault();
 
         setSubmitted(true);
-        
-        if(validateFormData(formData)){
+
+        if(validateFormData(formData) && officeLocationError === ''){
             const newAccount = {
                 first_name: firstName.fieldValue,
                 last_name: lastName.fieldValue,
@@ -158,7 +190,8 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                 office_symbol: officeSymbol.fieldValue,
                 user_type: parseInt(userType.fieldValue),
                 hras: hras.fieldValue,
-            }
+                office_location_id: office_location_id.fieldValue
+        }
 
 
         handleAdd(newAccount);
@@ -168,12 +201,10 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
         // api posting method
     const handleAdd = async (formValues) => {
+
             handleLoading()
             //alert(JSON.stringify(formValues, null, 2));
             let result = {}
-            //console.log('equipmentbyHraCall')
-
-            setSubmitButton((prev) => ({...prev, send:true}))
 
             await registerUserApi(formValues)
             //await api.post(`register/add`,{params: {newData: formValues}})
@@ -195,6 +226,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     }
 
     const [districtDropDownItems,setDistrictDropDownItems] = useState([]);
+    const [officeLocationDDItems,setOfficeLocationDDItems] = useState([]);
 
 	const divisionDropDownItems = registrationDropDownItems.division.map((c, i)=>{
 		return( 
@@ -256,6 +288,12 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         }
     } 
 
+    useEffect(()=>{
+        if(officeLocationDDItems.length === 0){
+            setOfficeLocationError('')
+        }
+    },[officeLocationDDItems])
+
 
 
     const filteredDistricts = (e) => {
@@ -282,6 +320,51 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         }
 
         setDistrictDropDownItems([])
+        
+    }
+
+    const filteredOfficeLocations = (e) => {
+
+        // District value is a string symbol
+        const district_value = e.target.value
+
+        const division_id = parseInt(division.fieldValue)
+
+        
+        //console.log(division_id)
+
+        // Get index using district symbol
+        const idx = findIndex(registrationDropDownItems.districts,function(d){return d.symbol === district_value})
+
+        //console.log(idx)
+
+        if(idx !== -1){
+
+            // Get district id using index
+            const {id:district_id} =registrationDropDownItems.districts[idx]
+            //console.log(district_id)
+            const ddItems = registrationDropDownItems.officeLocation.filter((o)=>{ 
+                return (o.division === division_id && o.district === district_id)}).map((c, i)=>{
+                    //console.log(c)
+                    return(
+                        <option value={c.id} name={c.name} >
+                            {c.name}
+                        </option>
+                    )
+              
+            })
+
+            //console.log(ddItems)
+
+            setOfficeLocationDDItems([...ddItems])
+
+            //console.log(office_location_id.fieldValue)
+            
+            return
+            
+        }
+
+        setOfficeLocationDDItems([])
         
     }
 
@@ -380,12 +463,37 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         name="district"
                         value={district.fieldValue}
                         disabled={division.fieldValue === ''}
-                        onChange={handleChange} 
-                        style={{...textFieldstyles.textField, ...(district.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
+                        onChange={(e)=>{handleChange(e);filteredOfficeLocations(e)}} 
+                        style={district.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
                         ><option selected disabled hidden style={{display:'none'}}></option>{districtDropDownItems}</select>
                     <div className="input-error" style={textFieldstyles.error}>{district.fieldError !== '' && submitted === true ? district.fieldError:null}</div>
                     </div>
                     </div> 
+            
+                    
+                    <div 
+                       
+                        className="signin-form-row"
+                    >
+                        
+                        <div className="signin-form-item-full">
+                        <label for="office_location_id">Office Location</label>
+                            <select
+                            id="office_location_id"
+                            name="office_location_id"
+                            value={office_location_id.fieldValue}
+                            onChange={handleChange}
+                            disabled={officeLocationDDItems.length === 0}
+                            style={officeLocationError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                            >
+                                <option selected disabled hidden style={{display:'none'}}></option>
+                                {officeLocationDDItems}
+                            </select>
+                            <div className="input-error">{officeLocationError !== '' && submitted === true ? officeLocationError:null}</div>
+                        </div>
+                    </div>
+                    
+
                     <div className="signin-form-row">
                     <div className="signin-form-item">
                     <label for="office_symbol" style={textFieldstyles.label}>Office Symbol</label>

@@ -40,6 +40,8 @@ const ApprovalFormStep1 = ({user,matchSelection,setMatchSelection,selection,setS
         newEmployeeRow.division = employees[selection].division
         newEmployeeRow.division_name = employees[selection].division_name
         newEmployeeRow.email = employees[selection].email
+        newEmployeeRow.office_location_id = employees[selection].office_location_id
+        newEmployeeRow.office_location_name = employees[selection].office_location_name
         setEmployeeRow(newEmployeeRow)
 
         const newHraRow = {...hraRow}
@@ -74,6 +76,7 @@ const ApprovalFormStep1 = ({user,matchSelection,setMatchSelection,selection,setS
         newEmployeeRow.district = registrationRow.district
         newEmployeeRow.division = registrationRow.division
         newEmployeeRow.email = registrationRow.email
+        newEmployeeRow.office_location_id = registrationRow.office_location_id
         setEmployeeRow(newEmployeeRow)
 
         // Set hra row with registration row data
@@ -185,7 +188,8 @@ const ApprovalFormStep1 = ({user,matchSelection,setMatchSelection,selection,setS
                 work_phone:'',
                 district:'',
                 division:'',
-                email:''
+                email:'',
+                office_location_id:''
             }])
         });
 
