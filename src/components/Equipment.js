@@ -178,6 +178,7 @@ function Equipment({history, location, match, userToken}) {
   const [hras, setHras] = React.useState([]);
   const [my_hras, setMyHras] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
+  const [serverDown, setServerDown] = React.useState(false);
   //const [excess, setExcess] = React.useState([]);
 
   // state variable for showing/hiding column filters in material table
@@ -402,9 +403,9 @@ function Equipment({history, location, match, userToken}) {
       setLoading({...loading,init:false})
 
     }).catch(function (error) {
+      setServerDown(true)
       setLoading({...loading,init:false})
       setEquipments({...equipments, [tabs]: []})
-  
     });
 
     //getHrasAndEquipments()
@@ -1131,7 +1132,7 @@ function Equipment({history, location, match, userToken}) {
     <div>
       {displayTop}
       {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
-      {!loading.init ? TabsEquipment() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
+      {!loading.init ? !serverDown ? TabsEquipment() : null : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
     </div>
     </>
   );

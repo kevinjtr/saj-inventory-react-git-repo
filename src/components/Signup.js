@@ -68,7 +68,8 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     const textFieldstyles = {
         label: {fontSize:'16px'},
         textField: {fontSize:'15px'},
-        error: {fontSize: '14px'}
+        error: {fontSize: '14px'},
+        select: {fontSize:'15px',height:'30px'},
     }
 
     const buttonClasses = buttonStyles();
@@ -451,7 +452,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         id="division"
                         name="division"
                         value={division.fieldValue}
-                        style={{...textFieldstyles.textField, ...(division.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
+                        style={{...textFieldstyles.select, ...(division.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={(e)=>{handleChange(e);filteredDistricts(e)}}
                         ><option selected disabled hidden style={{display:'none'}}></option>{divisionDropDownItems}</select>
                     <div className="input-error" style={textFieldstyles.error}>{division.fieldError !== '' && submitted === true ? division.fieldError:null}</div>
@@ -464,7 +465,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         value={district.fieldValue}
                         disabled={division.fieldValue === ''}
                         onChange={(e)=>{handleChange(e);filteredOfficeLocations(e)}} 
-                        style={district.fieldError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                        style={{...textFieldstyles.select, ...(district.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         ><option selected disabled hidden style={{display:'none'}}></option>{districtDropDownItems}</select>
                     <div className="input-error" style={textFieldstyles.error}>{district.fieldError !== '' && submitted === true ? district.fieldError:null}</div>
                     </div>
@@ -477,14 +478,14 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                     >
                         
                         <div className="signin-form-item-full">
-                        <label for="office_location_id">Office Location</label>
+                        <label for="office_location_id" style={textFieldstyles.label}>Office Location</label>
                             <select
                             id="office_location_id"
                             name="office_location_id"
                             value={office_location_id.fieldValue}
                             onChange={handleChange}
                             disabled={officeLocationDDItems.length === 0}
-                            style={officeLocationError !== '' && submitted === true ? {border:"1px solid rgba(255,0,0,0.75)"} : null}
+                            style={{...textFieldstyles.select, ...(officeLocationError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                             >
                                 <option selected disabled hidden style={{display:'none'}}></option>
                                 {officeLocationDDItems}
@@ -502,7 +503,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         name="officeSymbol"
                         value={officeSymbol.fieldValue}
                         onChange={handleChange} 
-                        style={{...textFieldstyles.textField, ...(officeSymbol.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
+                        style={{...textFieldstyles.select, ...(officeSymbol.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         ><option selected disabled hidden style={{display:'none'}}></option>{officeSymbolDropDownItems}</select>
                     <div className="input-error" style={textFieldstyles.error}>{officeSymbol.fieldError !== '' && submitted === true ? officeSymbol.fieldError:null}</div>
                     </div>
@@ -513,7 +514,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         name="userType"
                         value={userType.fieldValue}
                         onChange={handleChange}
-                        style={{...textFieldstyles.textField, ...(userType.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
+                        style={{...textFieldstyles.select, ...(userType.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                     ><option selected disabled hidden style={{display:'none'}}></option>{userTypeDropDownItems}</select>
                     <div className="input-error" style={textFieldstyles.error}>{userType.fieldError !== '' && submitted === true ? userType.fieldError:null}</div>
                     </div>

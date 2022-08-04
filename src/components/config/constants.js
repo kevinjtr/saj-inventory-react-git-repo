@@ -322,7 +322,8 @@ export const registrationDropDownItems = {
       }
     ],
     "officeLocation":[
-        {"id":1,"name":"BCWPA Resident Office","section":"Construction","address":"3000 SW 148th Avenue Suite 251","city":"Miramar","state":"FL","zipcode":33027,"division":6,"district":25}
+        {"id":18,"name":"Prudential Building - Jacksonville District Office","section":"HQ","address":"701 San Marco Boulevard","city":"Jacksonville","state":"FL","zipcode":32207,"division":6,"district":25}
+        ,{"id":1,"name":"BCWPA Resident Office","section":"Construction","address":"3000 SW 148th Avenue Suite 251","city":"Miramar","state":"FL","zipcode":33027,"division":6,"district":25}
         ,{"id":2,"name":"EAA Embankment Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
         ,{"id":3,"name":"EAA Pump Station Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
         ,{"id":4,"name":"C-43 Project Office","section":"Construction","address":"3383 Congen Rd","city":"LaBelle","state":"FL","zipcode":33935,"division":6,"district":25}
@@ -339,7 +340,6 @@ export const registrationDropDownItems = {
         ,{"id":15,"name":"Sebring Project Office","section":"Construction","address":"939 Mall Ring Road ","city":"Sebring","state":"FL","zipcode":33870,"division":6,"district":25}
         ,{"id":16,"name":"C-24 STA Project Office","section":"Construction","address":"13849 Wellington Trace","city":"Wellington","state":"FL","zipcode":33414,"division":6,"district":25}
         ,{"id":17,"name":"Support for Others Resident Office","section":"Construction","address":"383 FD Roosevelt Ave Suite 202","city":"San Juan","state":"PR","zipcode":91800,"division":6,"district":25}
-        ,{"id":18,"name":"Jacksonville District Office","section":"HQ","address":"701 San Marco Boulevard","city":"Jacksonville","state":"FL","zipcode":32207,"division":6,"district":25}
         ,{"id":19,"name":"Tampa Resident Office","section":"Construction","address":"10117 Princess Palm Ave Suite 120","city":"Tampa","state":"FL","zipcode":33619,"division":6,"district":25}
         ,{"id":20,"name":"North Florida Area Office","section":"Construction","address":"6735 Southpoint Drive South Suite 140","city":"Jacksonville","state":"FL","zipcode":32216,"division":6,"district":25}
         ,{"id":21,"name":"Jacksonville Resident Office","section":"Construction","address":"6736 Southpoint Drive South Suite 140","city":"Jacksonville","state":"FL","zipcode":32216,"division":6,"district":25}
