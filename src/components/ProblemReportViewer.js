@@ -147,7 +147,7 @@ function ProblemReportViewer({userToken}) {
             )
         }
 
-        return(<p>No Data Found.</p>)
+        return(<p>No Problems Reported Found.</p>)
     }   
 
     const resetProblems = () => {

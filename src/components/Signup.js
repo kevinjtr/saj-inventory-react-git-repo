@@ -10,6 +10,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { blue } from '@material-ui/core/colors';
 import AdornedButton from '../containers/AdornedButton'
 
+const chipStyles = makeStyles(theme => ({
+    root: {
+      "& .MuiFormHelperText-root": {
+        fontSize: "16px"
+      }
+    }
+  }))
+
 const buttonStyles = makeStyles((theme) => ({
     fabLightBlue: {
       color: theme.palette.common.white,
@@ -73,6 +81,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     }
 
     const buttonClasses = buttonStyles();
+    const chipClasses = chipStyles();
 
     // Handle registration form changes, call validate form data
     const handleChange = (event) => {
@@ -213,10 +222,12 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                 
                 result = data
                 setSubmitButton((prev) => ({...prev, send:false}))
+
                 //console.log(data)
                 //console.log([data])
                 //console.log([data][0])
             }).catch(function (error) {
+                result = {error: true, message: "Error: Server is currently down."}
                 setSubmitButton((prev) => ({...prev, send:false}))
             });
 
@@ -372,7 +383,6 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
     return (
         <div className="signin-form-container">
             <div style={{fontSize:'12px',cursor:'pointer'}} onClick={()=>setSelectedTab(1)}>
-                
                 <Button color="primary" size="small"><ArrowBackIosIcon style={{fontSize:'11px'}}/>Sign In</Button>
             </div>
             <div style={{fontWeight:'bold',marginBottom:'10px',marginTop:'5px'}}>Create New Account</div>        
@@ -384,6 +394,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         type="text" 
                         id="firstName" 
                         name="firstName"
+                        {...(!firstName.fieldValue && {title: "Enter your First Name."})}
                         value={firstName.fieldValue}
                         style={{...textFieldstyles.textField, ...(firstName.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
@@ -396,6 +407,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         type="text" 
                         id="lastName"
                         name="lastName"
+                        {...(!lastName.fieldValue && {title: "Enter your Last Name."})}
                         value={lastName.fieldValue}
                         style={{...textFieldstyles.textField, ...(lastName.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
@@ -410,6 +422,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         type="text" 
                         id="email"
                         name="email"
+                        {...(!email.fieldValue && {title: "Enter your Email address."})}
                         value={email.fieldValue}
                         style={{...textFieldstyles.textField, ...(email.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
@@ -424,6 +437,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         type="text" 
                         id="title"
                         name="title"
+                        {...(!title.fieldValue && {title: "Enter your Job Title."})}
                         value={title.fieldValue}
                         style={{...textFieldstyles.textField, ...(title.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={handleChange} 
@@ -436,6 +450,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         type="text" 
                         id="workPhone"
                         name="workPhone"
+                        {...(!workPhone.fieldValue && {title: "Enter your work phone number."})}
                         maxlength="12"
                         value={workPhone.fieldValue}
                         style={{...textFieldstyles.textField, ...(workPhone.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
@@ -451,6 +466,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                     <select  
                         id="division"
                         name="division"
+                        {...(!division.fieldValue && {title: "Select Division."})}
                         value={division.fieldValue}
                         style={{...textFieldstyles.select, ...(division.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         onChange={(e)=>{handleChange(e);filteredDistricts(e)}}
@@ -464,6 +480,8 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                         name="district"
                         value={district.fieldValue}
                         disabled={division.fieldValue === ''}
+                        {...(!division.fieldValue && {title: " A Division selection is required for District."})}
+                        {...( division.fieldValue && !district.fieldValue && {title: "Select District."})}
                         onChange={(e)=>{handleChange(e);filteredOfficeLocations(e)}} 
                         style={{...textFieldstyles.select, ...(district.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
                         ><option selected disabled hidden style={{display:'none'}}></option>{districtDropDownItems}</select>
@@ -478,6 +496,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                             <select
                             id="office_location_id"
                             name="office_location_id"
+                            {...(!office_location_id.fieldValue && {title: "Select Office Location."})}
                             value={office_location_id.fieldValue}
                             onChange={handleChange}
                             disabled={officeLocationDDItems.length === 0}
@@ -497,6 +516,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                     <select 
                         id="officeSymbol"
                         name="officeSymbol"
+                        {...(!officeSymbol.fieldValue && {title: "Select Office Symbol."})}
                         value={officeSymbol.fieldValue}
                         onChange={handleChange} 
                         style={{...textFieldstyles.select, ...(officeSymbol.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
@@ -508,9 +528,10 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                     <select 
                         id="userType"
                         name="userType"
+                        {...(!userType.fieldValue && {title: "Select User Type."})}
                         value={userType.fieldValue}
                         onChange={handleChange}
-                        style={{...textFieldstyles.select, ...(userType.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})} }
+                        style={{...textFieldstyles.select, ...(userType.fieldError !== '' && submitted === true && {border: "1px solid rgba(255,0,0,0.75)"})}}
                     ><option selected disabled hidden style={{display:'none'}}></option>{userTypeDropDownItems}</select>
                     <div className="input-error" style={textFieldstyles.error}>{userType.fieldError !== '' && submitted === true ? userType.fieldError:null}</div>
                     </div>
@@ -518,14 +539,13 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
                     {showChip && 
                     <>
-                    
                         <div className='signin-form-row'>
-                            
                             <div className='signin-form-item-full'>
-                                <label>HRA Numbers</label>
+                                <label style={textFieldstyles.label}>HRA Numbers</label>
                                 <ChipInput
+                                // className={chipClasses.root}
                                     fullWidth
-                                    placeholder='Type HRA number and press enter to add'
+                                    placeholder="Type HRA number and press enter to add"
                                     className='new-account-chip'
                                     value={myChips}
                                     onAdd={(chip) => handleChipAdd(chip)}
@@ -535,8 +555,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
                                     onInput={(e) => handleChipInput(e)}   
                                     disableUnderline={true}                
                                 />
-                                <div className="input-error">{hras.fieldError !== '' && submitted === true ? hras.fieldError:null}</div>
-
+                                <div className="input-error" style={textFieldstyles.error}>{hras.fieldError !== '' && submitted === true ? hras.fieldError:null}</div>
                             </div>   
                         </div>
                         </>

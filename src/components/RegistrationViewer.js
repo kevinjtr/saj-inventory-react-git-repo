@@ -175,7 +175,7 @@ function RegistrationViewer({userToken,user}) {
             )
         }
 
-        return(<p>No Data Found.</p>)
+        return(<p>No Pending Registrations Found.</p>)
     }   
 
     const resetRegistrations = () => {
