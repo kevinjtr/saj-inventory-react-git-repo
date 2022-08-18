@@ -4,91 +4,118 @@ import { connect } from 'redux-bundler-react';
 import CloseIcon from '@mui/icons-material/Close';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { useTheme, makeStyles } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+
+const useStyles = makeStyles((theme) => ({
+	root: {
+        display:'flex',
+        flexDirection:'column',
+        padding:'0.25em',
+        "&:hover": {
+            cursor:'pointer',
+            color: theme.palette.background.default,
+            backgroundColor: theme.palette.action.active
+        },
+	},
+  }));
 
 const ApprovalFormStep1ExpressUI = ({handleUseExisting,handleNewEmployee,selection,setSelection,employees,setOpenPopup,registrationRow,employeeRow,setEmployeeRow,hraRow,setHraRow,registeredUserRow,setRegisteredUserRow,employeesLoaded,setEmployeesLoaded}) => {
 
+    //Styles
+    const theme = useTheme();
+    const selEmpClasses = useStyles();
+
+    const backgroundStyles = {
+		c1: theme.palette.type == "dark" ? theme.palette.background.default : '#1c1c1c',
+        white: theme.palette.type == "dark" ? theme.palette.background.default : 'white',
+	}
+
+    // const selectStyles = {
+	// 	"&:hover": {
+    //         cursor:'pointer',
+    //         color: theme.palette.text.disabled,
+    //         backgroundColor:theme.palette.action.active
+    //     },
+	// }
+
     return(
             <div style={{display:'flex',flexDirection:'column'}}>
-                <div style={{display:'flex',justifyContent:'space-between',backgroundColor:'#1c1c1c'}}>
-                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'0.75em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>
+                <div style={{display:'flex',justifyContent:'space-between',backgroundColor: backgroundStyles.c1}}>
+                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'1.5em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>
                         Select Employee
                     </div>
                     <div className='assign-registration-close' style={{display:'flex',cursor:'pointer',padding:'0.25em'}} onClick={()=>setOpenPopup(false)}>
-                        <CloseIcon style={{color:'white',fontSize:'1em'}}/>
+                        <CloseIcon style={{color:'white',fontSize:'2.5em'}}/>
                     </div>
                 </div>
                 <div style={{display:'flex',padding:'1em',justifyContent:'center'}}>
                     <div style={{display:'flex',flexDirection:'column'}}>
                         {employees[0].id !== '' ? <>
-                        <div style={{textAlign:'center',textTransform:'uppercase',fontSize:'1.1em',fontWeight:'600',color:'#225dd4'}}>
+                        <div style={{textAlign:'center',textTransform:'uppercase',fontSize:'1.5em',fontWeight:'600',color: theme.palette.type == "dark" ? theme.palette.text.primary : '#225dd4'}}>
                             Select Best Match
                         </div>
-                        <div style={{display:'flex',flexDirection:'column',backgroundColor:'white'}}>
+                        <div style={{display:'flex',flexDirection:'column',backgroundColor:backgroundStyles.white}}>
                             <div style={{display:'flex',flexDirection:'column',maxHeight:'16em',overflowY:'auto',minWidth:'20em'}}>
                             
                                 {employees.map((employee,index)=>{
                                    return (
-                                    <div 
-                                    className='select-employee-card-hra disable-select' 
+                                    <Box 
+                                    className={selEmpClasses.root}
+                                    // className='select-employee-card-hra disable-select' 
                                     onClick={()=>{setSelection(index+1)}} 
-                                    style={{display:'flex',flexDirection:'column',border:selection === (index + 1) ? '1px solid #ff4d00':'1px solid rgba(255,255,255,0)',padding:'0.25em'}}>
+                                    style={{border: selection === (index + 1) ? '1px solid #ff4d00':'1px solid rgba(255,255,255,0)'}}>
                                         
                                         <div style={{display:'flex'}}>
                                             <div>
                                                 <AccountCircleIcon style={{fontSize:'2.75em',color:'rgb(150,150,150)',marginRight:'0.1em'}}/>
                                             </div>
                                             <div>
-                                            <div style={{display:'flex',textTransform:'uppercase',fontWeight:'600',fontSize:'1.1em',color:'text.primary'}}>
+                                            <div style={{display:'flex',textTransform:'uppercase',fontWeight:'600',fontSize:'1.1em',color:"inherit"}}>
                                                 {employee.first_name} {employee.last_name}
                                             </div>
                                             <div style={{display:'flex',fontSize:'0.9em',fontWeight:'600',color:'rgb(175,175,175)'}}>
-                                              
-
                                                 {employee.division_symbol}
                                                 {employee.division_symbol && employee.district_symbol && '-'}
                                                 {employee.district_symbol}
                                                 {(employee.district_symbol || employee.division_symbol) && employee.office_symbol_alias && '-'}
                                                 {employee.office_symbol_alias}
-
-
-
                                             </div>
                                             </div>
                                         </div>
                                       
                                         
-                                    </div>
+                                    </Box>
                                    )
                                 })}
                                 
                             </div>
                         </div>
-                        
-                        <div style={{display:'flex',justifyContent:'center',fontSize:'1em',fontWeight:'600',margin:'0.25em',color:'rgb(100,100,100)'}}>
+                        <div style={{display:'flex',justifyContent:'center',fontSize:'1.25em',fontWeight:'600',margin:'0.25em',color: theme.palette.type == "dark" ? theme.palette.text.primary : 'rgb(100,100,100)'}}>
                             -OR-
                         </div>
                         </> :(
-                            <div style={{display:'flex',justifyContent:'center',color:'rgb(75,0,0)',padding:'0.5em',paddingBottom:'1em'}}>
+                            <div style={{display:'flex',justifyContent:'center',color: theme.palette.type == "dark" ? theme.palette.text.primary : 'rgb(75,0,0)',padding:'0.5em',paddingBottom:'1em'}}>
                             No existing employees found
                             </div>
                         )
                         }
                         <div style={{display:'flex',flexDirection:'column'}}>
-                            <div style={{textAlign:'center',textTransform:'uppercase',fontSize:'1.1em',fontWeight:'600',color:'#225dd4',marginBottom:'0.1em'}}>    
+                            <div style={{textAlign:'center',textTransform:'uppercase',fontSize:'1.5em',fontWeight:'600',color: theme.palette.type == "dark" ? theme.palette.text.primary : '#225dd4', marginBottom:'0.1em'}}>    
                                 Create New Employee
                             </div>
-                            <div style={{display:'flex',flexDirection:'column',backgroundColor:'white',minWidth:'20em'}}>
-                                    <div 
-                                    className='select-employee-card-hra disable-select' 
+                            <div style={{display:'flex',flexDirection:'column',backgroundColor:backgroundStyles.white,minWidth:'20em'}}>
+                                    <Box 
+                                    className={selEmpClasses.root}
+                                    // className='select-employee-card-hra disable-select' 
                                     onClick={()=>{setSelection(0)}} 
-                                    style={{display:'flex',flexDirection:'column',border:selection === 0 ? '1px solid #ff4d00':'1px solid rgba(255,255,255,0)',padding:'0.25em'}}>
-                                        
+                                    style={{border:selection === 0 ? '1px solid #ff4d00':'1px solid rgba(255,255,255,0)'}}>
                                         <div style={{display:'flex'}}>
                                             <div>
                                                 <AddCircleOutlineIcon style={{fontSize:'2.75em',color:'rgb(150,150,150)',marginRight:'0.1em'}}/>
                                             </div>
                                             <div>
-                                            <div style={{display:'flex',textTransform:'uppercase',fontWeight:'600',fontSize:'1.1em',color:'text.primary'}}>
+                                            <div style={{display:'flex',textTransform:'uppercase',fontWeight:'600',fontSize:'1.1em'}}>
                                                 {registrationRow.first_name} {registrationRow.last_name}
                                             </div>
                                             <div style={{display:'flex',fontSize:'0.9em',fontWeight:'600',color:'rgb(175,175,175)'}}>
@@ -100,11 +127,7 @@ const ApprovalFormStep1ExpressUI = ({handleUseExisting,handleNewEmployee,selecti
                                             </div>
                                             </div>
                                         </div>
-                                      
-                                        
-                                    </div>
-                                
-                                
+                                    </Box>
                             </div>
                         </div>
                     </div>

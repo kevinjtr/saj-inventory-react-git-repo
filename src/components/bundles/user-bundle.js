@@ -87,6 +87,7 @@ export default {
           localStorage.setItem('level-name', response.data.level_name);
           localStorage.setItem('user-name', response.data.user_name);
           localStorage.setItem('access', JSON.stringify(response.data.access));
+          localStorage.setItem('notifications', response.data.notifications);
 
           const saved = localStorage.getItem("darkMode");
 			    const initialDarkModeValue = JSON.parse(saved) || user_prefers_dark_mode;
@@ -114,7 +115,8 @@ export default {
           localStorage.setItem('user-name','');
           localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
-          
+          localStorage.setItem('notifications', '');
+
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
@@ -140,7 +142,8 @@ export default {
           localStorage.setItem('user-name','');
           localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
-          
+          localStorage.setItem('notifications', '');
+
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
@@ -165,6 +168,7 @@ export default {
           localStorage.setItem('user-name', '');
           localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
+          localStorage.setItem('notifications', '');
 
           dispatch({
             type: 'USER_LOGOUT',

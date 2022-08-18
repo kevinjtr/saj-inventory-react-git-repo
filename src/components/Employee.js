@@ -237,7 +237,7 @@ function Employee({history, userToken}) {
 			}}
 			//style={{ verticalAlign: 'top' }}
 			renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
-			renderOption={(v) => <a style={{fontSize:'16px'}}>{v.office_symbol_alias}</a>}
+			renderOption={(option) => <a style={{fontSize:'16px'}}>{option.office_symbol_alias}</a>}
 		/>
 		)
 		}},

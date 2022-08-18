@@ -1,6 +1,7 @@
 import { Button } from "@material-ui/core";
 import React from "react";
 import { connect } from 'redux-bundler-react';
+import { useTheme } from '@material-ui/core/styles';
 
 const ApprovalFormStep4 = (props) => {
 
@@ -9,6 +10,19 @@ const ApprovalFormStep4 = (props) => {
 
     const {setOpenPopup,registeredUserRow,user} = props
 
+    //Styles
+    const theme = useTheme();
+
+    const bColor = {
+		c1: theme.palette.type == "dark" ? theme.palette.background.default : '#1c1c1c',
+        c9: theme.palette.type == "dark" ? theme.palette.background.default : '#c9deff',
+        white: theme.palette.type == "dark" ? theme.palette.background.default : 'white',
+        rgb235: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(235,235,235)',
+        rgb240: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(240,240,240)',
+        rgb245: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(245,245,245)',
+        rgb255: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(255,255,255)',
+        rgba09:theme.palette.type == "dark" ? theme.palette.background.default : 'rgba(0,0,0,0.9)',
+	}
     
     return(
         <div style={{display:'flex',flexDirection:'column',textAlign:'center',padding:'1em'}}>
@@ -21,12 +35,12 @@ const ApprovalFormStep4 = (props) => {
             {user === 'admin' && 
             <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',marginTop:'1em'}}>
                 <div>
-                    <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'0.8em',backgroundColor:'#c9deff'}}>
+                    <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'0.8em',backgroundColor:bColor.c9}}>
                         Existing Registered User
                     </div>
                     <div>
-                        <table style={{tableLayout:'fixed',backgroundColor:'white',fontSize:'0.9em',textAlign:'left',borderCollapse:'collapse',borderTop:'0',whiteSpace:'nowrap'}}>
-                            <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                        <table style={{tableLayout:'fixed',backgroundColor:bColor.white,fontSize:'0.9em',textAlign:'left',borderCollapse:'collapse',borderTop:'0',whiteSpace:'nowrap'}}>
+                            <tr style={{backgroundColor:bColor.rgb240}}>
                                 <th style={{width:'7em'}}>
                                     Full Name
                                 </th>
@@ -42,7 +56,7 @@ const ApprovalFormStep4 = (props) => {
                                     {registeredUserRow.edipi}            
                                 </td>
                             </tr>
-                            <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                            <tr style={{backgroundColor:bColor.rgb240}}>
                                 <th style={{width:'7em'}}>
                                     Employee Id
                                 </th>

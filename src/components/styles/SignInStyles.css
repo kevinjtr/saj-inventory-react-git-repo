@@ -258,8 +258,8 @@
 .signin-form-button-row {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
-  margin-top: 10px;
+  justify-content:center;
+  margin-top: 15px;
 }
 
 .signin-form-button {

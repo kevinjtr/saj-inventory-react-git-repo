@@ -23,6 +23,24 @@ import MenuIcon from '@material-ui/icons/Menu';
 import WarningIcon from '@material-ui/icons/Warning';
 import NiceSlideShow from "./NiceSlideShow";
 import { amber } from '@material-ui/core/colors';
+import { blue } from '@material-ui/core/colors';
+import ErrorIcon from '@material-ui/icons/Error';
+import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+
+const buttonStyles = makeStyles((theme) => ({
+    fabBlue: {
+      color: theme.palette.common.white,
+      backgroundColor: blue[900],
+      '&:hover': {
+        backgroundColor: blue[800],
+      },
+      //height:'50px',
+      //width:'20%',
+      //marginTop: '50px',
+      //marginBottom:'50px'
+    },
+  }));
 
 const alertNavBarStyles = makeStyles((theme) => ({
     fabGreen: {
@@ -76,6 +94,7 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
     //Styling
     const alertClass = alertStyles();
     const classes = useStyles();
+    const buttonClasses = buttonStyles();
 
     const handleLoading = () => {
         setLoading(true);
@@ -83,9 +102,18 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
 
     // Return to signin buttons and set registration result
     const hideNewAccountForm = (result) => {
+
         setRegistrationResult([result])
-        setSelectedTab(1)
         setLoading(false)
+
+        if(!result.error){
+            setSelectedTab(1)
+        }
+
+        //console.log(result)
+        // setRegistrationResult([result])
+        
+        // setLoading(false)
     }
 
     const handleNewAccountClick = () => {
@@ -146,7 +174,7 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
         <div>
                 <img style={{height:'40%',width:'40%',position:'absolute',right:10,bottom:'10%'}}src={"inv-2.svg"} />
                 {messages.length > 0 ? (
-          <div className='updates-maintenance-message-container' style={{display:'flex',left:'5',bottom:'15%',position:'absolute'}}>
+          <div className='updates-maintenance-message-container' style={{display:'flex',bottom:'15%',position:'absolute'}}>
             <List className={classes.list} 
             subheader={<ListSubheader className={classes.listHeader} style={{fontSize:'28px'}} component="div" id="nested-list-subheader">Coming Soon</ListSubheader>}>
             {messages}
@@ -204,9 +232,35 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                                 </div>
                             </Button>
                         </div>
-                                                    
+                        {/* .login-register-button {
+  text-align: center;
+  padding: 10px;
+  align-self: center;
+  color: rgb(226, 226, 226);
+  height: 35px;
+  width: 200px;
+  border-radius: 5px;
+  line-height: normal;
+  text-transform: uppercase;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.25);
+  text-shadow: 0px 1px 0px rgba(255, 255, 255, 0.5),
+    0px -1px 0px rgba(0, 0, 0, 0.7);
+  background-image: linear-gradient(rgb(18, 63, 129), rgb(0, 31, 77));
+}
+
+.login-register-button:hover {
+  background-image: linear-gradient(rgb(18, 63, 129), rgb(18, 63, 129));
+}
+
+.login-register-button:active {
+  background-image: linear-gradient(rgb(0, 31, 77), rgb(0, 31, 77));
+} */}
+
+
                         <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
-                        <div className="login-register-button" onClick={handleNewAccountClick}>Create New Account</div>
+                        <Button className={buttonClasses.fabBlue} onClick={handleNewAccountClick}>Create New Account</Button>
                     </div>   
                     }
 
@@ -244,8 +298,9 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
     }
      
     return(
-            <div className="new-account-message">
-                <div style={{fontSize:'0.65rem',fontWeight:'bold'}}>{message}</div>
+            <div className="new-account-message" style={{display:'flex',alignItems: "center"}}>
+                {!registrationResult[0].error ? <CheckCircleOutlineIcon style={{color: "#00e676"}}/> : <ErrorOutlineIcon style={{color: "#ff1744"}}/>}
+                <div style={{paddingLeft:'5px',fontSize:'0.75rem',fontWeight:'bold'}}>{message}</div>
             </div>
     )
     

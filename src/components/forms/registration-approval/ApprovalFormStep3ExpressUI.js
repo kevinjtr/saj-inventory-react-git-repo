@@ -44,7 +44,7 @@ const ApprovalFormStep3ExpressUI = (props) => {
             </div>):(
             <>
             <div style={{display:'flex',flexDirection:'column',padding:'1em'}}>
-                <div style={{paddingLeft:'1em',display:'flex',flexDirection:'column',justifyContent:'center',paddingBottom:'1em'}}>
+                <div style={{paddingLeft:'1em',display:'flex',flexDirection:'column', fontSize:'16px',justifyContent:'center',paddingBottom:'1em'}}>
                 Employee has been granted regular user access.
                 </div>
                 <div style={{display:'flex',justifyContent:'center'}}>

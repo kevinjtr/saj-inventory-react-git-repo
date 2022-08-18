@@ -1,7 +1,7 @@
 import { Button } from "@material-ui/core";
 import React from "react";
 import CloseIcon from '@mui/icons-material/Close';
-
+import { useTheme } from '@material-ui/core/styles';
 
 const ApprovalFormStep98 = (props) => {
 
@@ -9,9 +9,23 @@ const ApprovalFormStep98 = (props) => {
 
     const {registrationRow, handleTableDelete, setOpenPopup,setLoading, loading} = props
 
+    //Styles
+    const theme = useTheme();
+
+    const bColor = {
+		c1: theme.palette.type == "dark" ? theme.palette.background.default : '#1c1c1c',
+        c9: theme.palette.type == "dark" ? theme.palette.background.default : '#c9deff',
+        white: theme.palette.type == "dark" ? theme.palette.background.default : 'white',
+        rgb235: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(235,235,235)',
+        rgb240: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(240,240,240)',
+        rgb245: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(245,245,245)',
+        rgb255: theme.palette.type == "dark" ? theme.palette.background.default : 'rgb(255,255,255)',
+        rgba09:theme.palette.type == "dark" ? theme.palette.background.default : 'rgba(0,0,0,0.9)',
+	}
+
     return(
         <div style={{display:'flex',flexDirection:'column',overflowX:'auto'}}>
-        <div style={{display:'flex',justifyContent:'space-between',backgroundColor:'#1c1c1c'}}>
+        <div style={{display:'flex',justifyContent:'space-between',backgroundColor:bColor.c1}}>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'0.75em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>
                         Confirm Delete
                     </div>
@@ -19,14 +33,14 @@ const ApprovalFormStep98 = (props) => {
                         <CloseIcon style={{color:'white',fontSize:'1em'}}/>
                     </div>
         </div>
-        <div style={{display:'flex',flexDirection:'column',padding:'1em',backgroundColor:'rgb(245,245,245)'}}>
-            <div style={{width:'18em',display:'flex',flexDirection:'column',border:'1px solid rgb(225,225,225)',backgroundColor:'rgb(255,255,255)',padding:'1em',borderRadius:'1em',boxShadow: '0px 4px 6px 0px rgba(0,0,0,0.2)'}}>
+        <div style={{display:'flex',flexDirection:'column',padding:'1em',backgroundColor:bColor.rgb245}}>
+            <div style={{width:'18em',display:'flex',flexDirection:'column',border:'1px solid rgb(225,225,225)',backgroundColor:bColor.rgb255,padding:'1em',borderRadius:'1em',boxShadow: '0px 4px 6px 0px rgba(0,0,0,0.2)'}}>
                 <div style={{textAlign:'center',textTransform:'uppercase',fontSize:'1.25em',fontWeight:'600',color:'#225dd4'}}>    
                     Delete Registration
                 </div>
                 <div style={{fontSize:'1em',color:'gray',textAlign:'center',marginBottom:'1em'}}>record will be marked as deleted</div>
-                    <table style={{tableLayout:'fixed',width:'100%',backgroundColor:'white',fontSize:'0.75em',textAlign:'left',borderCollapse:'collapse',borderTop:'0',whiteSpace:'nowrap'}}>
-                        <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                    <table style={{tableLayout:'fixed',width:'100%',backgroundColor:bColor.white,fontSize:'0.75em',textAlign:'left',borderCollapse:'collapse',borderTop:'0',whiteSpace:'nowrap'}}>
+                        <tr style={{backgroundColor:bColor.rgb240}}>
                             <th style={{width:'7em'}}>First Name</th>
                             <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>
                                 <div style={{display:'flex'}}>
@@ -56,7 +70,7 @@ const ApprovalFormStep98 = (props) => {
                                     <th style={{width:'7em'}}>EDIPI</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.edipi}</td>
                                 </tr>
-                                <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                                <tr style={{backgroundColor:bColor.rgb240}}>
                                     <th style={{width:'7em'}}>Office</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.office_symbol_alias}</td>
                                 </tr>
@@ -64,7 +78,7 @@ const ApprovalFormStep98 = (props) => {
                                     <th style={{width:'7em'}}>Title</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.title}</td>
                                 </tr>
-                                <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                                <tr style={{backgroundColor:bColor.rgb240}}>
                                     <th style={{width:'7em'}}>Work Phone</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.work_phone}</td>
                                 </tr>
@@ -72,7 +86,7 @@ const ApprovalFormStep98 = (props) => {
                                     <th style={{width:'7em'}}>Email</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.email}</td>
                                 </tr>
-                                <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                                <tr style={{backgroundColor:bColor.rgb240}}>
                                     <th style={{width:'7em'}}>Division</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.division_name}</td>
                                 </tr>
@@ -80,7 +94,7 @@ const ApprovalFormStep98 = (props) => {
                                     <th style={{width:'7em'}}>District</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.district_name}</td>
                                 </tr>
-                                <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                                <tr style={{backgroundColor:bColor.rgb240}}>
                                     <th style={{width:'7em'}}>User Type</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.user_type_label}</td>
                                 </tr>
@@ -88,7 +102,7 @@ const ApprovalFormStep98 = (props) => {
                                     <th style={{width:'7em'}}>Hras</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.hras}</td>
                                 </tr>
-                                <tr style={{backgroundColor:'rgb(240,240,240)'}}>
+                                <tr style={{backgroundColor:bColor.rgb240}}>
                                     <th style={{width:'7em'}}>Status</th>
                                     <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>{registrationRow.status_comment}</td>
                                 </tr>
