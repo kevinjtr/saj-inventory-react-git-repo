@@ -23,22 +23,35 @@ import LogoutConfirm from '../LogoutConfirm';
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
 import AuthorizedUsers from '../AuthorizedUsers'
-import ExcessEquipment from '../ExcessEquipment';
+import Account from '../Account';
 
-const routes_config = [
-    {path:'/home',alias:'home',label:'Home',component:Home,tab:true,level:'user',type:'private'},
+import HomeIcon from '@mui/icons-material/Home'
+import DevicesIcon from '@mui/icons-material/Devices';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import BadgeIcon from '@mui/icons-material/Badge';
+import DescriptionIcon from '@mui/icons-material/Description';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import GroupsIcon from '@mui/icons-material/Groups';
+import HistoryIcon from '@mui/icons-material/History';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+
+import { NavItem } from '../navbar/nav-item';
+
+export const routes_config = [
+    {path:'/home',alias:'home',label:'Dashboard',component:Home,icon:<HomeIcon/>,tab:true,level:'user',type:'private'},
     {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
-    {path:'/equipment',alias:'equipment',label:'Equipment',component:Equipment,tab:true,level:'user',type:'private'},
-    {path:'/excessequipment',alias:'excessequipment',label:'Excess Equipment',component:ExcessEquipment,tab:true,level:'user',type:'private'},
-    {path:'/annualinventory',alias:'annualinventory',label:'Annual Inventory',component:AnnualInventory,tab:true,level:'admin',type:'private'},
+    {path:'/account',alias:'Account',label:'Account',component:Account,tab:false,level:'user',type:'private'},
+    {path:'/equipment',alias:'equipment',label:'Equipment',component:Equipment,icon:<DevicesIcon/>,tab:true,level:'user',type:'private'},
+    {path:'/annualinventory',alias:'annualinventory',label:'Annual Inventory',component:AnnualInventory,icon:<InventoryIcon/>,tab:true,level:'admin',type:'private'},
     {path:'/annualinventory/:id',alias:'annualinventory',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin',type:'private'},
-    {path:'/hra',label:'HRA',alias:'hra',component:Hra,tab:true,level:'user',type:'private'},
-    {path:'/employee',alias:'employee',label:'Employee',component:Employee,tab:true,level:'user',type:'private'},
-    {path:'/eng4900',alias:'eng4900',label:'Eng 4900',component:Eng4900,tab:true,level:'admin',type:'private'},
-    {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,tab:true,level:'admin',type:'private'},
-    {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, tab: true, level: 'admin', type: 'private' },
-    {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,tab:true,level:'admin',type:'private'},
-    {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations',component:RegistrationViewer,tab:true,level:'admin',type:'private'},
+    {path:'/hra',label:'HRA',alias:'hra',component:Hra,icon:<SupervisorAccountIcon/>,tab:true,level:'user',type:'private'},
+    {path:'/employee',alias:'employee',label:'Employee',component:Employee,icon:<BadgeIcon/>,tab:true,level:'user',type:'private'},
+    {path:'/eng4900',alias:'eng4900',label:'Eng 4900',component:Eng4900,icon:<DescriptionIcon/>,tab:true,level:'admin',type:'private'},
+    {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,icon:<QuestionAnswerIcon/>,tab:true,level:'admin',type:'private'},
+    {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, icon:<GroupsIcon/>, tab:true, level: 'admin', type: 'private' },
+    {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,icon:<HistoryIcon/>,tab:true,level:'admin',type:'private'},
+    {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations', alt_label:'Pending Regis- trations', component:RegistrationViewer,icon:<HowToRegIcon/>,tab:true,level:'admin',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
@@ -97,6 +110,66 @@ export const routes_tabs = (user_access, theme, props=null) => {
         
     //     return r.type == "public"
     //  })
+
+     return_routes.routes = routes_config.map((route, i) => {
+
+        if(route.type == 'private'){
+            return (
+                <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+            )
+        }
+    
+        if(route.path == '/login'){
+            return (
+                <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+            )
+        }
+    
+        return (
+            <Route exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
+        )
+    })
+
+    return return_routes
+}
+
+export const routes_tabs_new = (user_access, theme, props=null) => {
+    const return_routes = {
+        routes:[],
+        tabs:[]
+    }
+
+    //Tabs are created
+    const route_with_tabs = filter(routes_config, function(r){
+        if(r.hasOwnProperty('alias')){
+            if(Object.keys(user_access).indexOf(r.alias) > -1){
+                return r.tab && user_access[r.alias].view 
+            }else{
+                return false
+            }
+        }
+
+        return r.type == "public" && r.tab
+    })
+
+    return_routes.tabs = route_with_tabs.map((route, i) => 
+        <NavItem
+        key={route.label}
+        icon={route.icon}
+        href={route.path}
+        title={route.label}
+        />
+
+        // <Tab {...props} id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} 
+
+        // // sx={{height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
+        // // '&:hover':{textDecoration:'none'}}} 
+
+        // sx={{color:theme.palette.text.primary,height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
+        // '&:active':{color:'black'},
+        // '&:hover':{backgroundColor:theme.palette.action.hover,textDecoration:'none',color:theme.palette.text.secondary}}}
+        // />
+    )
 
      return_routes.routes = routes_config.map((route, i) => {
 
