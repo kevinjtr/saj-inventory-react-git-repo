@@ -14,7 +14,7 @@ const NavItemButtonRoot = styled(Button)(({ theme }) => ({
 export const NavItem = (props) => {
   const { href, icon, title, onClose, ...others } = props;
   const location = useLocation();
-  const active = href ? (location.pathname === href) : false;
+  const active = href ? (location.pathname === href || (href === "/dashboard" && location.pathname === "/")) : false;
 
   return (
     <ListItem
@@ -27,8 +27,9 @@ export const NavItem = (props) => {
       }}
       {...others}
     >
-      <Link to={href} onClick={onClose}>
+      <Link to={href} style={{textDecoration:'none'}} onClick={onClose}>
         <NavItemButtonRoot
+          title={title}
           component="a"
           startIcon={icon}
           disableRipple

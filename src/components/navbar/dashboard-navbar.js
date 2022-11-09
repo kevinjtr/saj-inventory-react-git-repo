@@ -2,17 +2,18 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { AppBar, Avatar, Badge, Box, Button, IconButton, Toolbar, Tooltip } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import {Menu as MenuIcon, Person as UsersIcon, Notifications as NotificationsIcon} from '@mui/icons-material';
 //import SearchIcon from '@mui/icons-material/Search';
 //import { Bell as BellIcon } from '../icons/bell';
 //import { UserCircle as UserCircleIcon } from '../icons/user-circle';
 //import { Users as UsersIcon } from '../icons/users';
-import UsersIcon from '@mui/icons-material/Person';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import Brightness7Icon from '@material-ui/icons/Brightness7';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
+// import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+// import Brightness7Icon from '@material-ui/icons/Brightness7';
+// import Brightness4Icon from '@material-ui/icons/Brightness4';
 import { useTheme } from '@mui/material/styles'
 import UserDropdown from '../header/UserDropdown';
+import {Link} from "react-router-dom"
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 //import { connect } from 'redux-bundler-react';
 
 // const DashboardNavbarRoot = styled(AppBar)(({ theme }) => ({
@@ -20,6 +21,16 @@ import UserDropdown from '../header/UserDropdown';
 //   backgroundColor: theme.palette.background.paper,
 //   //boxShadow: theme.shadows[3]
 // }));
+
+function notificationsLabel(count) {
+  if (count === 0) {
+    return 'no notifications';
+  }
+  if (count > 99) {
+    return 'more than 99 notifications';
+  }
+  return `${count} notifications`;
+}
 
 export const DashboardNavbar = (props) => {
   const { onSidebarOpen, mdUp, toggleForceMdUp, lgUp, doToggleDarkMode, ...other } = props;
@@ -46,7 +57,7 @@ export const DashboardNavbar = (props) => {
           sx={{
             minHeight: 56,
             left: 0,
-            px: 2
+            px: 2,
           }}
         >
           <IconButton
@@ -63,22 +74,26 @@ export const DashboardNavbar = (props) => {
           >
             <MenuIcon fontSize="small" />
           </IconButton>
-          <Button
-          sx={{
-            display: {
-              xs: 'inline-flex',
-              left: 15,
-              //lg: 'none'
-              '&:focus': {
-                outline: 'none',
-              },
-              '&:hover': {
-                background: 'none',
-              },
-            }
-          }}>
-              <img src="usace-inventory.png" alt="image" style={{height: "40px"}} />
+          <Link to={"/"} style={{textDecoration:'none'}}>
+            <Box sx={{display:"flex",alignItems:"center"}}>
+            <Button sx={{
+                display: {
+                  
+                  //xs: 'inline-flex',
+                  left: 15,
+                  //lg: 'none'
+                  '&:focus': {
+                    outline: 'none',
+                  },
+                  '&:hover': {
+                    background: 'none',
+                  },
+                }
+              }}>
+              <img src="usace-inventory.png" alt="image" style={{height: "36px"}} />
             </Button>
+            </Box>
+          </Link>
           {/* <Tooltip title="Search">
             <IconButton sx={{ ml: 1 }}>
               <SearchIcon fontSize="small" />
@@ -94,14 +109,26 @@ export const DashboardNavbar = (props) => {
 
             </IconButton>
           </Tooltip> */}
-
-          <Tooltip title="User">
-            <IconButton sx={{ ml: 1, mr: 1,
+            {/* <Tooltip title="Notifications">
+            <IconButton  aria-label={notificationsLabel(100)}
+            //onClick={()=>setShowUserDropdown(prevState => !prevState)} 
+            sx={{ height:40, width:40, mr: 1.5,
             '&:focus': {
                   outline: 'none',
                 } }}>
-              <UsersIcon fontSize="small" onClick={()=>setShowUserDropdown(prevState => !prevState)}/>
+            <Badge badgeContent={100} color="secondary">
+              <NotificationsIcon fontSize="small" sx={{height:24, width:24}}/>
+            </Badge>
             </IconButton>
+          </Tooltip> */}
+          <Tooltip title="User">
+            <Button onClick={()=>setShowUserDropdown(prevState => !prevState)} sx={{ height:40, width:40, mr: 1,
+            '&:focus': {
+                  outline: 'none',
+                } }}>
+              <UsersIcon color="action" fontSize="small" sx={{height:24, width:24}}/>
+              <ArrowDropDownIcon color="action"/>
+            </Button>
           </Tooltip>
 
 
@@ -130,7 +157,7 @@ export const DashboardNavbar = (props) => {
           </Avatar> */}
         </Toolbar>
       </AppBar>
-      {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown}/>}
+      {showUserDropdown && <UserDropdown showUserDropdown={showUserDropdown} showUserDropdown={showUserDropdown} setShowUserDropdown={setShowUserDropdown}/>}
     </>
   );
 };

@@ -22,8 +22,9 @@ export const NavItem = (props) => {
       }}
       {...others}
     >
-      <Link to={href}>
+      <Link to={href} style={{textDecoration:'none'}}>
         <Button
+          title={title}
           component="a"
           //startIcon={icon}
           disableRipple

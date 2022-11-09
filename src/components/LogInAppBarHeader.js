@@ -10,9 +10,9 @@ import LogoutButton from './LogoutButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import Brightness7Icon from '@material-ui/icons/Brightness7';
 import Brightness4Icon from '@material-ui/icons/Brightness4';
-import UserDropdown from './header/UserDropdown';
+//import UserDropdown from './header/UserDropdown';
 import {Button} from '@material-ui/core'
-import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
+//import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
 import { useTheme } from '@mui/material/styles'
 
 function Header({user, userIsLoggedIn, userAccess, userDarkMode, doToggleDarkMode}) {
@@ -83,7 +83,7 @@ function Header({user, userIsLoggedIn, userAccess, userDarkMode, doToggleDarkMod
 					<LogoutButton/>
 				</Box>}
 			</AppBar>
-			{showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown}/>}
+			{/* {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown}/>} */}
 			</>
 			)} 
 			/>

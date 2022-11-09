@@ -653,7 +653,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
           {selectedForm.requested_action ? (
             selectedForm.requested_action == "Issue" ? materialTableNewEquipment() : materialTableSelect()
           ) : null}
-          <Grid item xs={6}>
+          <Grid item xs={8}>
             <Paper className={classesGrid.paper}>
             {editEnabled ? 
             <TextField
@@ -673,7 +673,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
             }
             </Paper>
           </Grid>
-          <Grid item xs={6}>
+          {/* <Grid item xs={6}>
             <Paper className={classesGrid.paper}>
               <TextField
                 id="standard-helperText-ror-prop-sign-date"
@@ -694,8 +694,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 variant="filled"
                 style={{ width: 120 }}/>
           </Paper>
-          </Grid>
-          <Grid item xs={6}>
+          </Grid> */}
+          {/* <Grid item xs={6}>
             <Paper className={classesGrid.paper}>
               <TextField
                 id="standard-helperText-l-hra-sign"
@@ -716,8 +716,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 variant="filled"
                 style={{ width: 120 }}/>
             </Paper>
-          </Grid>
-          <Grid item xs={6}>
+          </Grid> */}
+          {/* <Grid item xs={6}>
             <Paper className={classesGrid.paper}>
               <TextField
                 id="standard-helperText-g-hra-sign"
@@ -738,7 +738,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 variant="filled"
                 style={{ width: 120 }}/>
             </Paper>
-          </Grid>
+          </Grid> */}
             </Grid>
           </div>
         </form>

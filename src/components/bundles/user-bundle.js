@@ -20,6 +20,7 @@ export default {
         access: {},
         loginMessage: "",
         darkMode:false,
+        district_office:''
     }
 
     return (state = initialState, { type, payload }) => {
@@ -72,7 +73,8 @@ export default {
             isLoggingIn: true,
             loginFailure: false,
             isLoggedOut: false,
-            access: {}
+            access: {},
+            district_office:''
         }
       });  
 
@@ -87,6 +89,7 @@ export default {
           localStorage.setItem('level-name', response.data.level_name);
           localStorage.setItem('user-name', response.data.user_name);
           localStorage.setItem('access', JSON.stringify(response.data.access));
+          localStorage.setItem('district-office', response.data.district_office);
           localStorage.setItem('notifications', response.data.notifications);
 
           const saved = localStorage.getItem("darkMode");
@@ -105,7 +108,8 @@ export default {
                 loginFailure: false,
                 loginMessage:response.data.message,
                 access: response.data.access,
-                darkMode: initialDarkModeValue
+                darkMode: initialDarkModeValue,
+                district_office: response.data.district_office
             }
           }); 
          }else{
@@ -115,6 +119,7 @@ export default {
           localStorage.setItem('user-name','');
           localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
+          localStorage.setItem('district-office', '');
           localStorage.setItem('notifications', '');
 
           dispatch({
@@ -128,7 +133,8 @@ export default {
                 isLoggingIn: false,
                 loginFailure: true,
                 loginMessage:response.data.message,
-                access: {}
+                access: {},
+                district_office: ''
             }
           }); 
          }
@@ -142,6 +148,7 @@ export default {
           localStorage.setItem('user-name','');
           localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
+          localStorage.setItem('district-office', '');
           localStorage.setItem('notifications', '');
 
           dispatch({
@@ -155,7 +162,8 @@ export default {
                 isLoggingIn: false,
                 loginFailure: true,
                 loginMessage:'a server error occured.',
-                access: {}
+                access: {},
+                district_office: ''
             }
           }); 
         });
@@ -168,6 +176,7 @@ export default {
           localStorage.setItem('user-name', '');
           localStorage.setItem('level-name','');
           localStorage.setItem('access', JSON.stringify({}));
+          localStorage.setItem('district-office', '');
           localStorage.setItem('notifications', '');
 
           dispatch({
@@ -183,7 +192,8 @@ export default {
               loginFailure: false,
               isLoggedOut: true,
               access: JSON.stringify({}),
-              darkMode: false
+              darkMode: false,
+              district_office: ''
             }
           });
 
@@ -200,6 +210,7 @@ export default {
             user_name: localStorage.getItem('user-name'),
             access: JSON.parse(localStorage.getItem('access')),
             darkMode: JSON.parse(localStorage.getItem('darkMode')),
+            district_office: localStorage.getItem('district-office'),
           }
         });
       }
@@ -226,6 +237,9 @@ export default {
   },
   selectUserLevelName: state => {
     return state.user.level_name;
+  },
+  selectUserDistrictOffice: state => {
+    return state.user.district_office;
   },
   selectUserRaw: state => {
     return state.user;

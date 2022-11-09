@@ -1,4 +1,21 @@
 .leaflet-container{
-    width:75vw;
-    height:75vh;
+    width:100vw;
+    height:100vh;
 }
+
+
+/* :root {
+    --leaflet-tile-filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+.leaflet-tile {
+    filter: var(--leaflet-tile-filter, none);
+}
+
+.leaflet-popup {
+    filter: var(--leaflet-tile-filter, none);
+}
+
+.leaflet-container {
+    background: #303030;
+} */

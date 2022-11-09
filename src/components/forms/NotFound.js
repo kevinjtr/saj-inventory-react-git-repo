@@ -12,7 +12,7 @@ class NotFound extends Component {
           <div className="col text-center">
             <h3>Sorry that page is not here</h3>
             <Link to="/">
-            Go Home
+            Go to Dashboard
             </Link>
           </div>
         </div>

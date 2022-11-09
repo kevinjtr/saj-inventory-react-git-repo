@@ -1,29 +1,38 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField } from '@material-ui/core'
+//MUI-V5-COMPLETE.
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField,IconButton } from '@mui/material'
+import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react'
-import CloseIcon from '@mui/icons-material/Close';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
+import {Close as CloseIcon, Send as SendIcon} from '@mui/icons-material';
+import { blue, grey, green } from '@mui/material/colors';
 import {addProblemReportApi} from '../publics/actions/problem-report'
-import AdornedButton from '../containers/AdornedButton'
-import { blue,grey } from '@material-ui/core/colors';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx'
 
-const plusButtonStyles = makeStyles((theme) => ({
+const buttonClasses = {
     fab: {
-      margin: theme.spacing(2),
+      margin: 2,
     },
     absolute: {
       position: 'absolute',
       //top: theme.spacing(2),
-      right: theme.spacing(3),
+      right: 3,
       //right: '0',
       //marginTop:'10px'
     },
+    fabBlue: {
+        //color: "common.white",
+        // backgroundColor: blue[500],
+        // '&:hover': {
+        //   backgroundColor: blue[600],
+        // },
+        //height:'50px',
+        width:'20%',
+        //marginTop: '50px',
+        //marginBottom:'50px'
+      },
     fabGreen: {
-      color: theme.palette.common.white,
-      backgroundColor: blue[700],
+      color: "common.white",
+      backgroundColor: green[500],
       '&:hover': {
-        backgroundColor: blue[700],
+        backgroundColor: green[600],
       },
       //height:'50px',
       width:'20%',
@@ -31,7 +40,7 @@ const plusButtonStyles = makeStyles((theme) => ({
       //marginBottom:'50px'
     },
     fabGrey: {
-      color: theme.palette.common.white,
+      color: "common.white",
       backgroundColor: grey[500],
       '&:hover': {
         backgroundColor: grey[600],
@@ -41,7 +50,7 @@ const plusButtonStyles = makeStyles((theme) => ({
       //marginTop: '50px',
       //marginBottom:'50px'
     },
-  }));
+}
 
 const ProblemReportPopup = ({title,openPopup,setOpenPopup,setSnackBar}) => {
 
@@ -51,8 +60,6 @@ const ProblemReportPopup = ({title,openPopup,setOpenPopup,setSnackBar}) => {
         active:false,
         send:false,
       });
-
-    const plusButtonClasses = plusButtonStyles();
 
     const handleChange = (event) => {
         event.preventDefault();
@@ -76,12 +83,12 @@ const ProblemReportPopup = ({title,openPopup,setOpenPopup,setSnackBar}) => {
         newMessage.message = value;
 
         if(value.trim() === ''){
-            newMessage.error = `A message is required`
+            newMessage.error = true
             setMessage(newMessage)
             return false
         }
         else{
-            newMessage.error = ''
+            newMessage.error = false
             setMessage(newMessage)
             return true
         }
@@ -167,15 +174,29 @@ const ProblemReportPopup = ({title,openPopup,setOpenPopup,setSnackBar}) => {
             <DialogTitle>
                 <div style={{display:'flex'}}>
                     <Typography variant="h6" component="div" style={{flexGrow:1,alignSelf:'center',textTransform:'uppercase',fontSize:'1rem'}}>{title}</Typography>
-                    <CloseIcon onClick={()=>setOpenPopup(false)} style={{alignSelf:'center',color:'red',cursor:'pointer'}}/>
+                    <IconButton
+          onClick={()=>setOpenPopup(false)}
+            sx={{
+                alignSelf:'center',
+              display: {
+                //xs: 'inline-flex',
+                //lg: 'none'
+                '&:focus': {
+                  outline: 'none',
+                }
+              }
+            }}
+          >
+            <CloseIcon/>
+          </IconButton>
                 </div>
             </DialogTitle>
             <DialogContent dividers>
             <form style={{width:'100%'}} name="problemForm" onChange={(e)=>handleChange(e)}>
                     
-                    <TextField multiline label="Description" value={message.message} rows={6} maxRows={6} variant="outlined" fullWidth required size="small" name="message" ></TextField>
+                    <TextField error={message.error} {...((message.error) && {helperText:"A message is required."})} multiline label="Description" value={message.message} rows={6} maxRows={6} variant="outlined" fullWidth required size="small" name="message" ></TextField>
                     <div style={{fontSize:'0.6rem',color:'red',height:'25px', display:'flex',flexDirection:'column',justifyContent:'center'}}>
-                    {message.error}
+                    {/* {message.error} */}
                     </div>
                     {/* <div style={{display:'flex'}}>
                         <div style={{height:'20px',fontSize:'0.75rem',fontWeight:'bold',marginBottom:'5px',display:'flex',flexDirection:'column',justifyContent:'center'}}>Screenshot</div>
@@ -213,9 +234,9 @@ const ProblemReportPopup = ({title,openPopup,setOpenPopup,setSnackBar}) => {
             <DialogActions>
                 {/* <Button variant='contained' color="primary" size="small" onClick={(e)=>handleSubmit(e)}>Send</Button> */}
 
-                <AdornedButton size="small" onClick={handleSubmit} className={ submitButton.active ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...((!submitButton.active || submitButton.send) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
+                <LoadingButton variant="contained" endIcon={<SendIcon />} loadingPosition="end" size="small" onClick={handleSubmit} sx={ submitButton.active ? buttonClasses.fabBlue : buttonClasses.fabGrey} {...((!submitButton.active || submitButton.send) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
                 Send
-                </AdornedButton>
+                </LoadingButton>
             </DialogActions>
             
         </Dialog>

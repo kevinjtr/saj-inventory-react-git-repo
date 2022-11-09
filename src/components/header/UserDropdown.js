@@ -1,32 +1,53 @@
+//MUI-V5-COMPLETE.
 import React, { useState } from 'react'
-import ErrorIcon from '@mui/icons-material/Error';
-import NotificationsIcon from '@material-ui/icons/Notifications';
-import { Snackbar, Alert } from '@mui/material';
-import ProblemReportPopup from '../ProblemReportPopup.js'
+import { Snackbar, Alert,ClickAwayListener,Box, Button,Tooltip, Modal } from '@mui/material';
+import {Notifications as NotificationsIcon, AccountCircle as AccountCircleIcon,
+	Brightness7 as Brightness7Icon, Brightness4 as Brightness4Icon,
+Error as ErrorIcon, Logout as LogoutIcon} from '@mui/icons-material';
+import ProblemReportPopup from '../ProblemReportPopup'
 import NotificationsPopup from '../NotificationsPopup'
-import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { connect } from 'redux-bundler-react';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import {DARK_MODE_BACKGROUND_COLOR} from "../config/constants"
-import LogoutIcon from '@mui/icons-material/Logout';
-import { AppBar, Avatar, Badge, Box, Button, Toolbar, Tooltip } from '@mui/material';
-import { useTheme } from '@mui/material/styles'
-import Brightness7Icon from '@material-ui/icons/Brightness7';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
+import {Link} from "react-router-dom";
 
-const UserDropDown = ({userIsLoggedIn, setShowUserDropdown, userName, userLevelName, userDarkMode, doLogout, doToggleDarkMode}) => {
+const UserDropDown = ({userIsLoggedIn, showUserDropdown, setShowUserDropdown, userName, userLevelName, userDarkMode, userDistrictOffice, doLogout, doToggleDarkMode}) => {
 	const [openProblem,setOpenProblem] = useState(false);
 	const [openNotifications,setOpenNotifications] = useState(false);
 	const [snackBar,setSnackBar] = useState({open:false,message:'',severity:'warning'})
-	const theme = useTheme();
 
 	return (
+		<Modal hideBackdrop 
+		disableScrollLock={true}
+		open={showUserDropdown}>
 		<ClickAwayListener onClickAway={()=>setShowUserDropdown(false)}>
-			<div style={{position:'absolute', fontSize:'15px', borderRadius:'4px', width:'200px',right:'25px',top:'52px',border:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'}`,backgroundColor:userDarkMode ? '#404040' : 'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
+			<div style={{alignItems:"center",position:'absolute', fontSize:'15px', borderRadius:'4px', width:'350px',right:'25px',top:'52px',border:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'}`,backgroundColor:userDarkMode ? '#404040' : 'rgb(255,255,255)',zIndex:'1200',display:'flex',flexDirection:'column',justifyContent:'space-between'}}>
 				<div style={{borderBottom:`1px solid ${userDarkMode ? '#404040' : 'rgb(230,230,230)'}`,padding:'10px',display:'flex',flexDirection:'column'}}>
-					<div style={{textAlign:'center'}}><AccountCircle style={{fontSize:'48px',color:`rgb(230,230,230)`}}/></div>
-					<div style={{textAlign:'center'}}>{userName}</div>
-					<div style={{textAlign:'center'}}>{userLevelName}</div>
+					<div style={{textAlign:'center', marginBottom: 2}}><AccountCircleIcon style={{fontSize:'72px',color:`rgb(230,230,230)`}}/></div>
+					<div style={{textAlign:'center', marginBottom: 2}}>{userName}</div>
+					<div style={{textAlign:'center', marginBottom: 2}}>{userLevelName}</div>
+					{userDistrictOffice ? <div style={{textAlign:'center', marginBottom: 2}}>{userDistrictOffice}</div> : null}
+					<Tooltip title="Manage your Account">
+						<Link to="/account" style={{textDecoration:'none'}}>
+						<Button sx={{ my: 1,
+						 paddingLeft:"5px",
+						 color:"text.primary",
+						 height: "28px",
+						 width: "235px",
+						 fontSize:"12px",
+						 outlineColor: "#555",
+						 border:"1px solid",
+						 borderTopRightRadius: "18px",
+						 borderBottomRightRadius: "18px",
+						 borderTopLeftRadius: "18px",
+						 borderBottomLeftRadius: "18px",
+						 //borderLeft: "1px",
+						 padding: "0px 12px 0 12px",
+						'&:focus': {
+							outline: 'none',
+							}}} onClick={()=>setShowUserDropdown(false)}>
+							Manage my Account
+						</Button>
+						</Link>
+					</Tooltip>
 				</div>
 				<Box sx={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px',paddingTop:'10px',paddingBottom:'10px'}}>
 					<Button title={userDarkMode ? "Enable Light Mode" : "Enable Dark Mode"} sx={{ mr: 1, width:'100%',
@@ -59,7 +80,7 @@ const UserDropDown = ({userIsLoggedIn, setShowUserDropdown, userName, userLevelN
 				</Box>
 				<Box sx={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px',paddingTop:'10px',paddingBottom:'10px',textAlign:'center'}}>
 					<Tooltip title="Sign Out">
-						<Button sx={{ mr: 1, width:'100%',
+						<Button sx={{ mr: 1, width:'115px',
 						'&:focus': {
 							outline: 'none',
 							}}} onClick={()=> {if(userIsLoggedIn) doLogout()}} >
@@ -77,6 +98,7 @@ const UserDropDown = ({userIsLoggedIn, setShowUserDropdown, userName, userLevelN
 				</Snackbar>
 			</div>
 		</ClickAwayListener>
+		</Modal>
 	);
 }
 
@@ -87,4 +109,5 @@ export default connect(
 	'selectUserDarkMode',
 	'doLogout',
 	'doToggleDarkMode',
+	'selectUserDistrictOffice',
 	UserDropDown); 

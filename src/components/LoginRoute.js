@@ -10,7 +10,7 @@ const {userIsLoggedIn} = rest
     <Route
       {...rest}
       render={props => {
-        return userIsLoggedIn ?  <Redirect to="/home"/> : <Component {...props} />
+        return userIsLoggedIn ?  <Redirect to="/dashboard"/> : <Component {...props} />
       }}
     ></Route>
   )

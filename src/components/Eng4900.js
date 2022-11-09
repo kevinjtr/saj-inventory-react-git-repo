@@ -53,7 +53,7 @@ import {Autocomplete, Alert} from '@material-ui/lab';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
-import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles } from './styles/material-ui';
+import { plusButtonStyles, texFieldStyles, gridStyles, TabPanel, a11yProps, tabStyles, stepStyles } from './styles/material-ui';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -136,17 +136,17 @@ function Eng4900({history, location, match, userToken}) {
 
   //Styles Declarations.
   const classesTextField = texFieldStyles();
-  const classesItemMenu = itemMenuStyles();
-  const classesPhoneTextField = phoneTextFieldStyles();
+  //const classesItemMenu = itemMenuStyles();
+  //const classesPhoneTextField = phoneTextFieldStyles();
   const classesGrid = gridStyles();
-  const avatarClasses = AvatarStyles();
+  //const avatarClasses = AvatarStyles();
   const plusButtonClasses = plusButtonStyles();
-  const PlusButtonTheme = createTheme({
-    palette: {
-      primary: green,
-    },
-  });
-  const classDialog = dialogStyles();
+  // const PlusButtonTheme = createTheme({
+  //   palette: {
+  //     primary: green,
+  //   },
+  // });
+  //const classDialog = dialogStyles();
   const tabClasses = tabStyles();
   const StepClasses = stepStyles();
   const theme = useTheme()

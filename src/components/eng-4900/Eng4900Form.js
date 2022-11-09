@@ -445,7 +445,7 @@ export default function Eng4900(props) {
               style={{ width: 120 }}/>
         </Paper>
         </Grid>
-        <Grid item xs={6}>
+        {/* <Grid item xs={6}>
           <Paper className={classesGrid.paper}>
             <TextField
               id="standard-helperText-l-hra-sign"
@@ -466,7 +466,7 @@ export default function Eng4900(props) {
               variant="filled"
               style={{ width: 120 }}/>
           </Paper>
-        </Grid>
+        </Grid> */}
         <Grid item xs={6}>
           <Paper className={classesGrid.paper}>
             <TextField

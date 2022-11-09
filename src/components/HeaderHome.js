@@ -8,7 +8,7 @@ function Header() {
 
       <ul className="navbar-nav">
         <li className="nav-item">
-          <Link to="/home" className="nav-link">
+          <Link to="/dashboard" className="nav-link">
             Products
           </Link>
         </li>

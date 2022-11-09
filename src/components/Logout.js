@@ -28,7 +28,7 @@ function Logout({logout,userIsLoggedIn}) {
 
 		// localStorage.setItem('auth', this.state.token);
 		// // console.log(token);
-		// this.props.history.push('/home');
+		// this.props.history.push('/dashboard');
 	};
 
 		return (

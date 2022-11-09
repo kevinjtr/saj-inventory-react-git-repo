@@ -23,7 +23,7 @@ export const DashboardLayout = (props) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [forceMdUp, setForceMdUp] = useState(() => {
     // getting stored value
-    const saved = localStorage.getItem("force-mdUp");
+    const saved = localStorage.getItem("force-mdup");
     const initialValue = JSON.parse(saved);
     return initialValue || false;
   });
@@ -43,7 +43,7 @@ export const DashboardLayout = (props) => {
 
   React.useEffect(() => {
     console.log(`forcemdUp : ${forceMdUp}`)
-    localStorage.setItem("force-mdUp", forceMdUp)
+    localStorage.setItem("force-mdup", forceMdUp)
 }, [forceMdUp]);
 
   return (
@@ -60,7 +60,7 @@ export const DashboardLayout = (props) => {
           {children}
         </Box>
       </DashboardLayoutRoot>
-      <DashboardNavbar lgUp={lgUp} mdUp={mdUp} forceMdUp={forceMdUp} toggleForceMdUp={() => setForceMdUp(!forceMdUp)} onSidebarOpen={() => setSidebarOpen(true)} />
+      <DashboardNavbar lgUp={lgUp} mdUp={mdUp} forceMdUp={forceMdUp} toggleForceMdUp={() => setForceMdUp(prev => !prev)} onSidebarOpen={() => setSidebarOpen(true)} />
       <DashboardSidebar
         lgUp={lgUp} mdUp={mdUp} smUp={smUp}
         forceMdUp={forceMdUp}

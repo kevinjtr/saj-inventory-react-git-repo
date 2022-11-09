@@ -1,24 +1,15 @@
 import React, { Component, useState, useEffect } from 'react';
-//import './Home.css';
-import '../img/style.css';
-import Header from './Header'
 import { connect } from 'redux-bundler-react';
-import useUndoableState from "./tools/undoableState";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import CodeIcon from '@material-ui/icons/Code';
-import {Avatar} from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles';
+import HraDashboard from "./dashboard/HraDashboard"
+import UserDashboard from "./dashboard/UserDashboard"
 
-// openlayers
-import GeoJSON from 'ol/format/GeoJSON'
-import Feature from 'ol/Feature';
-
-// components
-// import MapWrapper from './MapWrapper'
+const Dashboard = () => {
+	return(<HraDashboard/>)
+}
+  
+  //Dashboard.getLayout = (page) => ({page});
+  
+  //export default Dashboard;
 
 const homeCssStyles = {
 	root: {
@@ -79,7 +70,7 @@ function Home({userName})  {
 
 export default connect(
 	'selectUserName',
-	Home);  
+	Dashboard);  
 
 // function Home() {
 

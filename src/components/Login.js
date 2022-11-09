@@ -27,7 +27,7 @@ const Login = ({ handleChange, doLogin, userIsLoggedIn, history }) => {
     //     setTimeout(() => {
     //         //props.resetForm()
     //         if(userIsLoggedIn)
-    //         history.push('/home')
+    //         history.push('/dashboard')
     //         props.setSubmitting(false)
     //     }, 1000)
     // }
@@ -39,7 +39,7 @@ const Login = ({ handleChange, doLogin, userIsLoggedIn, history }) => {
             setTimeout(() => {
                 //props.resetForm()
                 if(userIsLoggedIn)
-                    history.push('/home')
+                    history.push('/dashboard')
     
                 props.setSubmitting(false)
             }, 2000)

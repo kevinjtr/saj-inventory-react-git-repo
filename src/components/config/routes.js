@@ -1,8 +1,8 @@
 import React from 'react';
 import Eng4900 from '../Eng4900';
 import Eng4900FormContainer from '../../containers/Eng4900Form';
-import Home from '../Home';
-import Equipment from '../Equipment';
+import Dashboard from '../Dashboard';
+import Equipment from '../Equipment3';
 import Hra from '../Hra';
 import Employee from '../Employee';
 import AnnualInventory from '../AnnualInventory';
@@ -39,7 +39,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { NavItem } from '../navbar/nav-item';
 
 export const routes_config = [
-    {path:'/home',alias:'home',label:'Dashboard',component:Home,icon:<HomeIcon/>,tab:true,level:'user',type:'private'},
+    {path:'/dashboard',alias:'dashboard',label:'Dashboard',component:Dashboard,icon:<HomeIcon/>,tab:true,level:'user',type:'private'},
     {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
     {path:'/account',alias:'Account',label:'Account',component:Account,tab:false,level:'user',type:'private'},
     {path:'/equipment',alias:'equipment',label:'Equipment',component:Equipment,icon:<DevicesIcon/>,tab:true,level:'user',type:'private'},

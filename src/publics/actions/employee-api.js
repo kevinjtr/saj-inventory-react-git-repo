@@ -29,3 +29,6 @@ export const getEmployeeByEDIPIWithOffice = async (token) => {
 	return await api.get(`${EMPLOYEE}2/getByEDIPIWithOffice`,{headers:{auth:token}})
 };
 
+export const getEmployeeByEDIPI= async (token) => {
+	return await api.get(`${EMPLOYEE}-edipi`,{headers:{auth:token}})
+};

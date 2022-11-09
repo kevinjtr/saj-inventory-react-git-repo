@@ -695,7 +695,7 @@ th {
 .glyphicon-fullscreen:before {
   content: "\e140";
 }
-.glyphicon-dashboard:before {
+.glyphicon-home:before {
   content: "\e141";
 }
 .glyphicon-paperclip:before {

@@ -1,31 +1,26 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField } from '@material-ui/core'
+//MUI-V5-COMPLETE.
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField,IconButton } from '@mui/material'
+import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react'
-import CloseIcon from '@mui/icons-material/Close';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
+import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {notificationsUpdateRegisteredUserApi} from '../publics/actions/registered-users-api'
-import Switch from '@material-ui/core/Switch';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import {getHraFormApi} from '../publics/actions/hra-api'
+import {Switch, FormGroup, FormControlLabel} from '@mui/material';
+import { green, grey } from '@mui/material/colors';
 import { connect } from 'redux-bundler-react';
-import AdornedButton from '../containers/AdornedButton'
-import { green,grey } from '@material-ui/core/colors';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx'
 
-const plusButtonStyles = makeStyles((theme) => ({
+const buttonClasses = {
     fab: {
-      margin: theme.spacing(2),
+      margin: 2,
     },
     absolute: {
       position: 'absolute',
       //top: theme.spacing(2),
-      right: theme.spacing(3),
+      right: 3,
       //right: '0',
       //marginTop:'10px'
     },
     fabGreen: {
-      color: theme.palette.common.white,
+      color: "common.white",
       backgroundColor: green[500],
       '&:hover': {
         backgroundColor: green[600],
@@ -36,7 +31,7 @@ const plusButtonStyles = makeStyles((theme) => ({
       //marginBottom:'50px'
     },
     fabGrey: {
-      color: theme.palette.common.white,
+      color: "common.white",
       backgroundColor: grey[500],
       '&:hover': {
         backgroundColor: grey[600],
@@ -46,7 +41,7 @@ const plusButtonStyles = makeStyles((theme) => ({
       //marginTop: '50px',
       //marginBottom:'50px'
     },
-  }));
+  }
 
 const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken}) => {
 
@@ -61,10 +56,10 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
         send:false,
       });
 
-    const plusButtonClasses = plusButtonStyles();
+    //const plusButtonClasses = plusButtonStyles();
 
     const toggleSwitch = (event) => {
-        setNotificationsActive(!notificationsActive)
+        setNotificationsActive(prev => !prev)
     };
 
     const handleChange = (event) => {
@@ -107,7 +102,21 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
             <DialogTitle>
                 <div style={{display:'flex'}}>
                     <Typography variant="h6" component="div" style={{flexGrow:1,alignSelf:'center',textTransform:'uppercase',fontSize:'1rem'}}>{title}</Typography>
-                    <CloseIcon onClick={()=>setOpenPopup(false)} style={{alignSelf:'center',color:'red',cursor:'pointer'}}/>
+                    <IconButton
+          onClick={()=>setOpenPopup(false)}
+            sx={{
+                alignSelf:'center',
+              display: {
+                //xs: 'inline-flex',
+                //lg: 'none'
+                '&:focus': {
+                  outline: 'none',
+                }
+              }
+            }}
+          >
+            <CloseIcon/>
+          </IconButton>
                 </div>
             </DialogTitle>
             <DialogContent dividers>
@@ -119,9 +128,9 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
                 </FormGroup>
             </DialogContent>
             <DialogActions>
-                <AdornedButton onClick={handleSubmit} className={ submitButton.active ? clsx(plusButtonClasses.fabGreen) : clsx(plusButtonClasses.fabGrey)} {...((!submitButton.active || submitButton.send) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
+                <LoadingButton startIcon={<SaveIcon />} loadingPosition="start" onClick={handleSubmit} sx={ submitButton.active ? buttonClasses.fabGreen : buttonClasses.fabGrey} {...((!submitButton.active || submitButton.send) && {disabled:true})} {...((submitButton.send) && {loading:true})}> 
                 Save
-                </AdornedButton>
+                </LoadingButton>
             </DialogActions>  
         </Dialog>
     )

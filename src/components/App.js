@@ -8,13 +8,15 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { createTheme } from '@material-ui/core/styles/';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBarHeader from './AppBarHeader';
+import LogInAppBarHeader from './LogInAppBarHeader';
 import "./styles/GlobalStyles.css";
 import LogoutConfirm from './LogoutConfirm'
 import { LocalHospitalTwoTone } from '@material-ui/icons';
 import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
 import { ThemeProvider as ThemeProviderV5 , createTheme as createThemeV5 } from '@mui/material/styles';
 import { DashboardLayout } from './navbar/dashboard-layout';
+import { AlertContextProvider } from "./context/AlertProvider";
+
 //import appinfo from 'app-info.json'
 
 function App(props) {
@@ -37,32 +39,37 @@ function App(props) {
 
 		if(isLoggedIn){
 			return(
-					<DashboardLayout>
+				
+				<DashboardLayout>
+					<AlertContextProvider>
 						<div {...(userDarkMode && {style:{background:DARK_MODE_BACKGROUND_COLOR}})}className='content'>
-						<Switch>
-						<Route
-							exact
-							path={'/'}
-							render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
-						/>
-							{routes_tabs(userAccess, themeV5).routes}
-						<Route render={() => <Redirect to={'/404'} />}/>
-						</Switch>
+							<Switch>
+								<Route
+									exact
+									path={'/'}
+									render={() => userIsLoggedIn ? <Redirect to={'/dashboard'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
+								/>
+									{routes_tabs(userAccess, themeV5).routes}
+								<Route render={() => <Redirect to={'/404'} />}/>
+							</Switch>
 						</div>
-					</DashboardLayout>
+					</AlertContextProvider>
+				</DashboardLayout>
+				
+					
 			)
 					
 		}
 
 		return(
 			<>
-				<AppBarHeader/>
+				<LogInAppBarHeader/>
 				<div {...(userDarkMode && {style:{background:DARK_MODE_BACKGROUND_COLOR}})}className='content'>
 				<Switch>
 				<Route
 					exact
 					path={'/'}
-					render={() => userIsLoggedIn ? <Redirect to={'/Home'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
+					render={() => userIsLoggedIn ? <Redirect to={'/dashboard'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
 				/>
 					{routes_tabs(userAccess, themeV5).routes}
 				<Route render={() => <Redirect to={'/404'} />}/>
