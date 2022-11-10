@@ -9,6 +9,7 @@ import {List as ListIcon, LocationOn as LocationOnIcon, Search as SearchIcon, Co
 import {textFieldClasses, gridClasses, TabPanel, a11yProps, tabClasses} from './styles/mui';
 import {find} from "lodash"
 import { v4 as uuid } from 'uuid';
+import generateExcel from "zipcelx";
 //import SearchIcon from '@material-ui/icons/Search';
 //import ComputerIcon from '@material-ui/icons/Computer';
 
@@ -722,6 +723,55 @@ function Equipment({history, location, match, userToken}) {
         /* Output .pdf file */
         doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')
     }
+    }
+
+    function getExcel() {
+      const config = {
+        filename: "general-ledger-Q1",
+        sheet: {
+          data: []
+        }
+      };
+  
+      const dataSet = config.sheet.data;
+  
+      // review with one level nested config
+      // HEADERS
+      headerGroups.forEach(headerGroup => {
+        const headerRow = [];
+        if (headerGroup.headers) {
+          headerGroup.headers.forEach(column => {
+            headerRow.push(...getHeader(column));
+          });
+        }
+  
+        dataSet.push(headerRow);
+      });
+  
+      // FILTERED ROWS
+      if (rows.length > 0) {
+        rows.forEach(row => {
+          const dataRow = [];
+  
+          Object.values(row.values).forEach(value =>
+            dataRow.push({
+              value,
+              type: typeof value === "number" ? "number" : "string"
+            })
+          );
+  
+          dataSet.push(dataRow);
+        });
+      } else {
+        dataSet.push([
+          {
+            value: "No data",
+            type: "string"
+          }
+        ]);
+      }
+  
+      return generateExcel(config);
     }
 
     return(

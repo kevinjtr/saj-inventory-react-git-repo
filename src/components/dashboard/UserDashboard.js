@@ -13,11 +13,8 @@ import { MyEquipments } from './my-equipments';
 //import { indigo } from '@mui/material/colors';
 //import UsersIcon from '@mui/icons-material/Person';
 
-const UserDashboard = () => (
+const UserDashboard = ({user}) => (
 	<>
-	<Box sx={{textAlign:'center',fontSize:"32px"}}>
-		Dashboard
-	</Box>
 	  <Box
 		//component="main"
 		sx={{
@@ -46,7 +43,7 @@ const UserDashboard = () => (
 			  sm={6}
 			  xs={12}
 			>
-			<MyEquipments sx={{ height: '100%' }} />
+			<MyEquipments val={user.my_equipments} sx={{ height: '100%' }} />
 			</Grid>
 			<Grid
 			  item
@@ -55,7 +52,7 @@ const UserDashboard = () => (
 			  sm={6}
 			  xs={12}
 			>
-			  <MyEquipmentCertification />
+			  <MyEquipmentCertification val={user.my_equipments_cert_porcentage}/>
 			</Grid>
 			<Grid
 			  item
@@ -64,45 +61,19 @@ const UserDashboard = () => (
 			  sm={6}
 			  xs={12}
 			>
-				<LastLogin sx={{ height: '100%' }}/>
-			  
+			<LastLogin val={user.last_login_string} sx={{ height: '100%' }}/>
 			</Grid>
+			{user.system_annoucements.length > 0 ? (
 			<Grid
-			  item
-			  lg={6}
-			  md={12}
-			  xl={6}
-			  xs={12}
+				item
+				lg={6}
+				md={12}
+				xl={6}
+				xs={12}
 			>
-			<SystemAnnouncements sx={{ height: '100%' }} />
+			<SystemAnnouncements val={user.system_annoucements} sx={{ height: '100%' }} />
 			</Grid>
-			{/* <Grid
-			  item
-			  lg={4}
-			  md={6}
-			  xl={3}
-			  xs={12}
-			>
-			  <TrafficByDevice sx={{ height: '100%' }} />
-			</Grid> */}
-			{/* <Grid
-			  item
-			  lg={8}
-			  md={12}
-			  xl={9}
-			  xs={12}
-			>
-			  <AnnualInventoryBarChart />
-			</Grid> */}
-			{/* <Grid
-			  item
-			  lg={8}
-			  md={12}
-			  xl={9}
-			  xs={12}
-			>
-			  <LatestOrders />
-			</Grid> */}
+			) : null}
 		  </Grid>
 		</Container>
 	  </Box>

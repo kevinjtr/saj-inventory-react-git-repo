@@ -50,7 +50,7 @@ const products = [
 ];
 
 export const LastLogin = (props) => (
-  <Card {...props}>
+  <Card {...{sx: props.sx}}>
     <CardHeader
       subtitle={`${products.length} in total`}
       title="Last Login"
@@ -97,7 +97,7 @@ export const LastLogin = (props) => (
       }}
     >
         {<AccessTimeIcon color="info" sx={{mr:3}}/>}
-      Monday January 8, 2022
+      {props.val}
       {/* <Button
         color="primary"
         endIcon={<ArrowRightIcon fontSize="small" />}

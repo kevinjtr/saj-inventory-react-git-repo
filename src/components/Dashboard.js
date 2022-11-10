@@ -1,79 +1,41 @@
-import React, { Component, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'redux-bundler-react';
 import HraDashboard from "./dashboard/HraDashboard"
 import UserDashboard from "./dashboard/UserDashboard"
+import {dashboardApi} from '../publics/actions/dashboard-api'
+import {LoadingCircle} from './tools/tools';
+import { Box } from '@mui/material';
 
-const Dashboard = () => {
-	return(<HraDashboard/>)
-}
-  
-  //Dashboard.getLayout = (page) => ({page});
-  
-  //export default Dashboard;
+const Dashboard = ({userToken}) => {
+	const [loading, setLoading] = useState(true)
+	const [user, setUser] = useState({hras: []})
 
-const homeCssStyles = {
-	root: {
-		textAlign: 'center',
-		height: '100%',
-		width: '100%',
-	  },
-	  homeLabel:{
-		width: '50%',
-		overflow: 'auto',
-		margin: 'auto',
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		right: 0,
-		zIndex: 2,
-		background: 'white',
-		pointerEvents: 'none'
-	  },
-	  mapContainer: {
-		height: '100vh',
-		width: '100%'
-	  },
-	  clickedCoordLabel: {
-		position: 'absolute',
-		right: 0,
-		bottom: 0,
-		background: 'white',
-		borderRadius: '5px'
-	  },
-	  clickedCoordLabel: {
-		margin: '10px'
-	  }
-}
-
-function Home({userName})  {
+	useEffect(() => {
+		
+		dashboardApi(userToken)
+		  .then((response) => response.data).then((data) => {
+			  console.log(data.data)
+			setUser(data.data)
+			setLoading(false)
 	  
-	  return (
-		<div style={homeCssStyles.root}>
-		  <h2>Welcome {userName}</h2>
-		  <div style={homeCssStyles.homeLabel}>
-			<p>React Functional Components with OpenLayers Example</p>
-			<p>Click the map to reveal location coordinate via React State</p>
-		  </div>
-		  
-		  {/* <MapWrapper/> */}
-	
-		</div>
-	  )
+		  }).catch(function (error) {
+			console.log(error)
+			setLoading(false)
+		  });
+	},[])
 
-		// return (
-		// 	<div className="container" style={{ justifyContent: 'center', textAlign: 'center' }}>
-				
-		// 		<MapWrapper/>
-		// 	</div>
-		// );
+	return (
+		<>     
+		<Box sx={{textAlign:'center',fontSize:"32px"}}>
+			Dashboard
+		</Box>        
+		{loading ? <Box sx={{textAlign:"center",width:"100%", py:1}}> <LoadingCircle/> </Box> : null}
+		{!loading ? <UserDashboard user={user}/> : null}
+		{!loading && user.hras.length > 0 ? <HraDashboard user={user}/> : null}
+		</>
+	)
 }
 
 export default connect(
-	'selectUserName',
-	Dashboard);  
-
-// function Home() {
-
-// }
-
-// export default Home
+	'selectUserToken',
+	Dashboard);

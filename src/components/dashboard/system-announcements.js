@@ -50,7 +50,7 @@ const products = [
 ];
 
 export const SystemAnnouncements  = (props) => (
-  <Card {...props}>
+  <Card {...{sx: props.sx}}>
     <CardHeader
       subtitle={`${products.length} in total`}
       title="System Announcements"
@@ -86,47 +86,32 @@ export const SystemAnnouncements  = (props) => (
       ))}
     </List>
     <Divider /> */}
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        p: 1.5,
-        px: 4,
-        color: "text.secondary"
-      }}
-    >
-        {<WarningIcon color="warning" sx={{mr:3}}/>}
-      19-NOV-2022 06:11 Scheduled Maintenance...
-      {/* <Button
-        color="primary"
-        endIcon={<ArrowRightIcon fontSize="small" />}
-        size="small"
-        variant="text"
+
+    {props.val.length > 0 ? (
+      props.val.map(v => <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'flex-start',
+          p: 1.5,
+          px: 4,
+          alignItems: 'center',
+          color: "text.secondary"
+        }}
       >
-        View all
-      </Button> */}
-    </Box>
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'flex-start',
-        p: 1.5,
-        px: 4,
-        alignItems: 'center',
-        color: "text.secondary"
-      }}
-    >
         {<WarningIcon color="warning" sx={{mr:3}}/>}
-      01-NOV-2022 03:11 CEFMS II Legacy Reports to Sunset - Phase Two Set for 15 Nov...
-      {/* <Button
-        color="primary"
-        endIcon={<ArrowRightIcon fontSize="small" />}
-        size="small"
-        variant="text"
-      >
-        View all
-      </Button> */}
-    </Box>
+      {v.message}
+    </Box>)
+    ) : <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'flex-start',
+      p: 1.5,
+      px: 4,
+      alignItems: 'center',
+      color: "text.secondary"
+    }}
+  >
+    no annoucements.
+</Box>}
   </Card>
 );

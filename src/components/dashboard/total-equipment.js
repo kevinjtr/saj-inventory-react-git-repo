@@ -2,7 +2,7 @@ import { Avatar, Card, CardContent, Grid, Typography } from '@mui/material';
 import DevicesIcon from '@mui/icons-material/Devices';
 
 export const TotalEquipment = (props) => (
-  <Card {...props}>
+  <Card {...{sx: props.sx}}>
     <CardContent>
       <Grid
         container
@@ -21,7 +21,7 @@ export const TotalEquipment = (props) => (
             color="textPrimary"
             variant="h4"
           >
-            23
+            {props.val}
           </Typography>
         </Grid>
         <Grid item>

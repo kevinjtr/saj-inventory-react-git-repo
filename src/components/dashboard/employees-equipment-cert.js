@@ -3,8 +3,7 @@ import InsertChartIcon from '@mui/icons-material/InsertChartOutlined';
 
 export const EmployeesEquipmentCert = (props) => (
   <Card
-    sx={{ height: '100%' }}
-    {...props}
+    sx={{ height: '100%', ...props.sx }}
   >
     <CardContent>
       <Grid
@@ -24,7 +23,7 @@ export const EmployeesEquipmentCert = (props) => (
             color="textPrimary"
             variant="h4"
           >
-            10.5%
+            {props.val}%
           </Typography>
         </Grid>
         <Grid item>
@@ -41,7 +40,7 @@ export const EmployeesEquipmentCert = (props) => (
       </Grid>
       <Box sx={{ pt: 3 }}>
         <LinearProgress
-          value={10.5}
+          value={props.val}
           variant="determinate"
         />
       </Box>

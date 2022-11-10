@@ -1,6 +1,7 @@
 import { Avatar, Box, Card, CardContent, Grid, Typography } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { styled } from '@mui/material/styles';
 
 export const MyUserInfo = (props) => (
   <Card {...props}>
@@ -20,7 +21,7 @@ export const MyUserInfo = (props) => (
           </Typography>
           <Typography
             color="textPrimary"
-            variant="h4"
+            variant="h5"
           >
             Kevin Alemany
           </Typography>
@@ -37,29 +38,6 @@ export const MyUserInfo = (props) => (
           </Avatar>
         </Grid>
       </Grid>
-      <Box
-        sx={{
-          alignItems: 'center',
-          display: 'flex',
-          pt: 2
-        }}
-      >
-        {/* <ArrowUpwardIcon color="success" />
-        <Typography
-          variant="body2"
-          sx={{
-            mr: 1
-          }}
-        >
-          0%
-        </Typography> */}
-        {/* <Typography
-          color="textSecondary"
-          variant="caption"
-        >
-          
-        </Typography> */}
-      </Box>
     </CardContent>
   </Card>
 );

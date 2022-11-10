@@ -3,7 +3,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import PeopleIcon from '@mui/icons-material/PeopleOutlined';
 
 export const TotalEmployees = (props) => (
-  <Card {...props}>
+  <Card {...{sx: props.sx}}>
     <CardContent>
       <Grid
         container
@@ -22,7 +22,7 @@ export const TotalEmployees = (props) => (
             color="textPrimary"
             variant="h4"
           >
-            2
+            {props.val}
           </Typography>
         </Grid>
         <Grid item>
