@@ -725,54 +725,54 @@ function Equipment({history, location, match, userToken}) {
     }
     }
 
-    function getExcel() {
-      const config = {
-        filename: "general-ledger-Q1",
-        sheet: {
-          data: []
-        }
-      };
+    // function getExcel() {
+    //   const config = {
+    //     filename: "general-ledger-Q1",
+    //     sheet: {
+    //       data: []
+    //     }
+    //   };
   
-      const dataSet = config.sheet.data;
+    //   const dataSet = config.sheet.data;
   
-      // review with one level nested config
-      // HEADERS
-      headerGroups.forEach(headerGroup => {
-        const headerRow = [];
-        if (headerGroup.headers) {
-          headerGroup.headers.forEach(column => {
-            headerRow.push(...getHeader(column));
-          });
-        }
+    //   // review with one level nested config
+    //   // HEADERS
+    //   headerGroups.forEach(headerGroup => {
+    //     const headerRow = [];
+    //     if (headerGroup.headers) {
+    //       headerGroup.headers.forEach(column => {
+    //         headerRow.push(...getHeader(column));
+    //       });
+    //     }
   
-        dataSet.push(headerRow);
-      });
+    //     dataSet.push(headerRow);
+    //   });
   
-      // FILTERED ROWS
-      if (rows.length > 0) {
-        rows.forEach(row => {
-          const dataRow = [];
+    //   // FILTERED ROWS
+    //   if (rows.length > 0) {
+    //     rows.forEach(row => {
+    //       const dataRow = [];
   
-          Object.values(row.values).forEach(value =>
-            dataRow.push({
-              value,
-              type: typeof value === "number" ? "number" : "string"
-            })
-          );
+    //       Object.values(row.values).forEach(value =>
+    //         dataRow.push({
+    //           value,
+    //           type: typeof value === "number" ? "number" : "string"
+    //         })
+    //       );
   
-          dataSet.push(dataRow);
-        });
-      } else {
-        dataSet.push([
-          {
-            value: "No data",
-            type: "string"
-          }
-        ]);
-      }
+    //       dataSet.push(dataRow);
+    //     });
+    //   } else {
+    //     dataSet.push([
+    //       {
+    //         value: "No data",
+    //         type: "string"
+    //       }
+    //     ]);
+    //   }
   
-      return generateExcel(config);
-    }
+    //   return generateExcel(config);
+    // }
 
     return(
         <div style={{ paddingTop:'25px' }}>
