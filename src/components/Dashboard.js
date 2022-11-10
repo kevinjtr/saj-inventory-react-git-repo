@@ -6,7 +6,7 @@ import {dashboardApi} from '../publics/actions/dashboard-api'
 import {LoadingCircle} from './tools/tools';
 import { Box } from '@mui/material';
 
-const Dashboard = ({userToken}) => {
+const Dashboard = ({userToken, userName}) => {
 	const [loading, setLoading] = useState(true)
 	const [user, setUser] = useState({hras: []})
 
@@ -30,7 +30,7 @@ const Dashboard = ({userToken}) => {
 			Dashboard
 		</Box>        
 		{loading ? <Box sx={{textAlign:"center",width:"100%", py:1}}> <LoadingCircle/> </Box> : null}
-		{!loading ? <UserDashboard user={user}/> : null}
+		{!loading ? <UserDashboard user={{...user, name: userName}}/> : null}
 		{!loading && user.hras.length > 0 ? <HraDashboard user={user}/> : null}
 		</>
 	)
@@ -38,4 +38,5 @@ const Dashboard = ({userToken}) => {
 
 export default connect(
 	'selectUserToken',
+	'selectUserName',
 	Dashboard);

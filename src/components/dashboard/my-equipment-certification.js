@@ -30,8 +30,8 @@ export const MyEquipmentCertification = (props) => (
           <Avatar
             sx={{
               backgroundColor: 'warning.main',
-              height: 56,
-              width: 56
+              height: 48,
+              width: 48
             }}
           >
             <InsertChartIcon />

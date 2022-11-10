@@ -34,7 +34,7 @@ const UserDashboard = ({user}) => (
 			  xl={3}
 			  xs={12}
 			>
-			  <MyUserInfo sx={{ height: '100%' }}/>
+			  <MyUserInfo val={user.name} sx={{ height: '100%' }}/>
 			</Grid>
 			<Grid
 			  item

@@ -4,7 +4,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import { styled } from '@mui/material/styles';
 
 export const MyUserInfo = (props) => (
-  <Card {...props}>
+  <Card {...{sx: props.sx}}>
     <CardContent>
       <Grid
         container
@@ -23,15 +23,15 @@ export const MyUserInfo = (props) => (
             color="textPrimary"
             variant="h5"
           >
-            Kevin Alemany
+            {props.val}
           </Typography>
         </Grid>
         <Grid item>
           <Avatar
             sx={{
               backgroundColor: 'success.main',
-              height: 56,
-              width: 56
+              height: 48,
+              width: 48
             }}
           >
             <AccountBoxIcon />

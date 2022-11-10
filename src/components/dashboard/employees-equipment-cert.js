@@ -17,7 +17,7 @@ export const EmployeesEquipmentCert = (props) => (
             gutterBottom
             variant="overline"
           >
-            EMPLOYEES EQUIPMENT CERTIFICATION
+            EMPLOYEES<br/>EQUIPMENT CERTIFICATION
           </Typography>
           <Typography
             color="textPrimary"
@@ -30,8 +30,8 @@ export const EmployeesEquipmentCert = (props) => (
           <Avatar
             sx={{
               backgroundColor: 'warning.main',
-              height: 56,
-              width: 56
+              height: 48,
+              width: 48
             }}
           >
             <InsertChartIcon />
