@@ -127,10 +127,11 @@ function MapWrapper(props) {
           const hras = equipmentList[loc_name]
           const latitude = hras[Object.keys(hras)[0]][0].employee_office_location_latitude
           const longitude = hras[Object.keys(hras)[0]][0].employee_office_location_longitude
+          const num_of_eqs = filter(props.equipments,function(e){return e.employee_office_location_name == loc_name}).length
 
             return (
             <Marker position={[latitude, longitude]}>
-              <StyledLeafletTooltip>{loc_name} - {props.equipments.length} Equipment{props.equipments.length > 1 ? "s": ""}</StyledLeafletTooltip>
+              <StyledLeafletTooltip>{loc_name} - {num_of_eqs} Equipment{num_of_eqs > 1 ? "s": ""}</StyledLeafletTooltip>
                 <StyledPopup maxHeight={"250"}>
                   <Typography variant="h6">
                   {`${loc_name}`}
