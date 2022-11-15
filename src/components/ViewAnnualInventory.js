@@ -1,20 +1,9 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
 import 'date-fns';
-import PropTypes from 'prop-types';
-import MaskedInput from 'react-text-mask';
-import NumberFormat from 'react-number-format';
-import Input from '@material-ui/core/Input';
 import {LoadingCircle} from './tools/tools';
 import {tableIcons} from './material-table/config'
 import MaterialTable from 'material-table'
-import FormControl from '@material-ui/core/FormControl';
-import api from '../axios/Api';
-import {Autocomplete, Alert} from '@material-ui/lab';
-import findIndex from 'lodash/findIndex'
-import Header from './Header'
+import {Alert} from '@material-ui/lab';
 import {ALERT} from './tools/tools'
 import {getAnnualInventoryByIdApi} from '../publics/actions/annual-inventory-api'
 import { connect } from 'redux-bundler-react';

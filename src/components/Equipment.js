@@ -1,94 +1,79 @@
 
-import React, {useEffect, createRef, useRef, useLayoutEffect} from 'react';
-import TextField from '@material-ui/core/TextField';
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import { green } from '@material-ui/core/colors';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import React, {useState, useEffect, useRef} from 'react';
+import MapWrapper from "./MapWrapper"
+
+import { Snackbar, Box, AppBar, Tabs, Tab, Switch, Typography, TextField,
+   MenuItem, FormControl, Select,FormGroup,FormControlLabel,Button,IconButton,
+  Tooltip,Radio,RadioGroup,Grid, Link, Alert, Autocomplete as AutocompleteV5, InputAdornment, DatePicker} from '@mui/material';
+import {List as ListIcon, LocationOn as LocationOnIcon, Search as SearchIcon, Computer as ComputerIcon,
+  FilterList as FilterListIcon, Clear as ClearIcon, Event as EventIcon} from '@mui/icons-material';
+import {textFieldClasses, gridClasses, TabPanel, a11yProps, tabClasses} from './styles/mui';
+import {find} from "lodash"
+import { v4 as uuid } from 'uuid';
+import generateExcel from "zipcelx";
+//import SearchIcon from '@material-ui/icons/Search';
+//import ComputerIcon from '@material-ui/icons/Computer';
+
+//import { Link } from '@material-ui/core';
+//import { makeStyles } from '@material-ui/core/styles';
+
+// import AppBar from '@material-ui/core/AppBar';
+// import Tabs from '@material-ui/core/Tabs';
+// import Tab from '@material-ui/core/Tab';
+
+// import Switch from '@material-ui/core/Switch';
+// import Typography from '@material-ui/core/Typography';
+// import TextField from '@material-ui/core/TextField';
+// import MenuItem from '@material-ui/core/MenuItem';
+// import FormControl from '@material-ui/core/FormControl';
+// import Select from '@material-ui/core/Select';
+// import FormGroup from '@material-ui/core/FormGroup';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { Autocomplete} from '@material-ui/lab';
+// import Button from '@material-ui/core/Button';
+// import IconButton from '@material-ui/core/IconButton';
+// import Tooltip from '@material-ui/core/Tooltip';
+
+// import Radio from '@material-ui/core/Radio';
+// import RadioGroup from '@material-ui/core/RadioGroup';
+// import Grid from '@material-ui/core/Grid';
+
+
+import MaterialTable, {MTableToolbar,MTableBody} from '@material-table/core'
+import { ExportCsv } from '@material-table/exporters';
+import {tableIcons} from './mui/config'
+//import {texFieldStyles, gridStyles, TabPanel, a11yProps, tabStyles} from './styles/material-ui';
 
 import 'date-fns';
-import Grid from '@material-ui/core/Grid';
-
-import PropTypes from 'prop-types';
-import MaskedInput from 'react-text-mask';
-import NumberFormat from 'react-number-format';
-import Input from '@material-ui/core/Input';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Paper from '@material-ui/core/Paper';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import AddIcon from '@material-ui/icons/Add';
-import Fab from '@material-ui/core/Fab';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import SearchIcon from '@material-ui/icons/Search';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormLabel from '@material-ui/core/FormLabel';
-import MaterialTable, {MTableToolbar,MTableBody} from '@material-table/core'
 import jsPDF from 'jspdf'
-
 import 'jspdf-autotable'
-import { ExportCsv } from '@material-table/exporters';
-
 import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from './tools/tools'
 import { useDimensions } from "./tools/useDimensions";
-import clsx from 'clsx'
-import {Autocomplete, Alert} from '@material-ui/lab';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from './config/constants'
-import {tableIcons} from './material-table/config'
+
 
 import {orderBy, findIndex, filter, debounce} from 'lodash'
 //Styles Import
-import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from './styles/material-ui';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
-import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Badge from '@material-ui/core/Badge';
-import ComputerIcon from '@material-ui/icons/Computer';
-import Switch from '@material-ui/core/Switch';
-import Typography from '@material-ui/core/Typography';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+
 import {updateEquipmentApi, destroyEquipmentApi, addEquipmentApi, equipmentSearchApi2} from '../publics/actions/equipment-api'
-import {getHraFormApi} from '../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
 import {ALERT} from './tools/tools'
-import { Link } from '@material-ui/core';
+
 import UpdateStatusPopup from './UpdateStatusPopup';
-import { Snackbar, Box } from '@mui/material';
-import MapWrapper from "./MapWrapper"
+import { viVN } from '@mui/material/locale';
 
-import { Box as BoxV5, Button as ButtonV5} from '@mui/material';
-import ListIcon from '@mui/icons-material/List';
-import ListOutlinedIcon from '@mui/icons-material/ListOutlined';
 
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 
-const dialogStyles = makeStyles(theme => ({
-  dialogWrapper: {
-    padding: theme.spacing(2),
-    position:'absolute',
-    top: theme.spacing(5)
-  },
-  dialogTitle: {
-    paddingRight:'0px'
-  }
-}))
+// const dialogStyles = makeStyles(theme => ({
+//   dialogWrapper: {
+//     padding: theme.spacing(2),
+//     position:'absolute',
+//     top: theme.spacing(5)
+//   },
+//   dialogTitle: {
+//     paddingRight:'0px'
+//   }
+// }))
 
 function Equipment({history, location, match, userToken}) {
   
@@ -96,7 +81,14 @@ function Equipment({history, location, match, userToken}) {
   const search = getQueryStringParams(location.search)
   const PAGE_URL = `/${EQUIPMENT}`
   const [{ height, width }, ref] = useDimensions();
-  const [filteredEquipments, setFilteredEquipments] = React.useState({
+  const ref0 = useRef();
+  const ref1 = useRef();
+  const ref2 = useRef();
+  const ref3 = useRef();
+  const ref4 = useRef();
+  const refs = useRef({ ref0, ref1, ref2, ref3, ref4 });
+
+  const [filteredEquipments, setFilteredEquipments] = useState({
     0: [],
     1: [],
     2: [],
@@ -125,93 +117,93 @@ function Equipment({history, location, match, userToken}) {
 //let sendData = [];
 
   //Styles Declarations.
-  const classesTextField = texFieldStyles();
-  const classesItemMenu = itemMenuStyles();
-  const classesPhoneTextField = phoneTextFieldStyles();
-  const classesGrid = gridStyles();
-  const avatarClasses = AvatarStyles();
-  const plusButtonClasses = plusButtonStyles();
-  const PlusButtonTheme = createTheme({
-    palette: {
-      primary: green,
-    },
-  });
-  const classDialog = dialogStyles();
-  const tabClasses = tabStyles();
-  const StepClasses = stepStyles();
+  //const textFieldClasses = texFieldStyles();
+  //const classesItemMenu = itemMenuStyles();
+  //const classesPhoneTextField = phoneTextFieldStyles();
+  //const gridClasses = gridStyles();
+  // const avatarClasses = AvatarStyles();
+  // const plusButtonClasses = plusButtonStyles();
+  // const PlusButtonTheme = createTheme({
+  //   palette: {
+  //     primary: green,
+  //   },
+  // });
+  //const classDialog = dialogStyles();
+  //const tabClasses = tabStyles();
+  //const StepClasses = stepStyles();
 
   //Hooks Declarations.
-  const [searchFields, setSearchFields] = React.useState({
+  const [searchFields, setSearchFields] = useState({
     0: SEARCH_FIELD_RESET,
     1: SEARCH_FIELD_RESET,
     2: SEARCH_FIELD_RESET,
     3: SEARCH_FIELD_RESET,
     4: SEARCH_FIELD_RESET,
   })
-  const [searchView, setSearchView] = React.useState({
+  const [searchView, setSearchView] = useState({
     0: BASIC_SEARCH,
     1: BASIC_SEARCH,
     3: BASIC_SEARCH,
     4: BASIC_SEARCH,
   });
-	const [windowSize, setWindowSize] = React.useState({
+	const [windowSize, setWindowSize] = useState({
 	width: undefined,
 	height: undefined,
 	});
-  const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
-  const [loading, setLoading] = React.useState({init:true,refresh:{
+  const [alertUser, setAlertUser] = useState(ALERT.RESET);
+  const [loading, setLoading] = useState({init:true,refresh:{
     0: false,
     1: false,
     2: false,
     3: false,
     4: false,
   }});
-  const [equipments, setEquipments] = React.useState({
+  const [equipments, setEquipments] = useState({
       0: [],
       1: [],
       2: [],
       3: [],
       4: []
     });
-  const [editable,setEditable] = React.useState({
+  const [editable,setEditable] = useState({
     0:false,
     1:false,
     2:false,
     3:false,
     4:false,
   })
-  const [rights, setRights] = React.useState({
+  const [rights, setRights] = useState({
     0:{view: false, edit:false},
     1:{view: false, edit:false},
     2:{view: false, edit:false},
     3:{view: false, edit:false},
     4:{view: false, edit:false},
   })
-  const [tabs, setTabs] = React.useState(0);
-  const [switches, setSwitches] = React.useState({
+  const [tabs, setTabs] = useState(0);
+  const [switches, setSwitches] = useState({
       0: SWITCH_RESET,
       1: SWITCH_RESET,
       2: SWITCH_RESET,
       3: SWITCH_RESET,
       4: SWITCH_RESET,
     });
-  const [hras, setHras] = React.useState([]);
-  const [my_hras, setMyHras] = React.useState([]);
-	const [employees, setEmployees] = React.useState([]);
-  const [openPopup,setOpenPopup] =  React.useState(false);
-  const [rowData, setRowData] = React.useState([]);
-  let [snackBar,setSnackBar] = React.useState({open:false,message:'',severity:'warning'});
-  const [serverDown, setServerDown] = React.useState(false);
-  const [viewSwitch, setViewSwitch] = React.useState(() => {
+  const [hras, setHras] = useState([]);
+  const [my_hras, setMyHras] = useState([]);
+	const [employees, setEmployees] = useState([]);
+  const [openPopup,setOpenPopup] =  useState(false);
+  const [selRowData, setSelRowData] = useState({});
+  let [snackBar,setSnackBar] = useState({open:false,message:'',severity:'warning'});
+  const [serverDown, setServerDown] = useState(false);
+  const [viewSwitch, setViewSwitch] = useState(() => {
     // getting stored value
     const saved = localStorage.getItem("view-switch");
     const initialValue = JSON.parse(saved);
     return initialValue || false;
 });
-  const [mapFilters, setMapFilters] = React.useState([]);
+  const [mapFilters, setMapFilters] = useState([]);
 
   // state variable for showing/hiding column filters in material table
-    const [showFilter,setShowFilter] = React.useState({
+    const [showFilter,setShowFilter] = useState({
         0: false,
         1: false,
         2: false,
@@ -422,6 +414,7 @@ function Equipment({history, location, match, userToken}) {
       }
 
       if(data.status == 200){
+        //setFilteredEquipments(data.data[tabs])
         setEquipments(data.data)
         setHras(data.hras)
         setMyHras(data.my_hras)
@@ -548,8 +541,8 @@ function Equipment({history, location, match, userToken}) {
         }		
         {switches[tab].showSearch ?
         <div style={{textAlign: 'center'}}>
-        <form className={classesTextField.root} noValidate autoComplete="off">
-          <div className={classesGrid.options}>
+        <form className={textFieldClasses.root} noValidate autoComplete="off">
+          <div className={gridClasses.options}>
           <Grid container spacing={2}>
             {searchTextFieldsGridItems(tab)}
             {searchButtonGridItem(tab)}
@@ -562,229 +555,14 @@ function Equipment({history, location, match, userToken}) {
     )
   }
 
-  const TabsEquipment = () => {
-    return (
-      <div className={tabClasses.root}>
-        <AppBar position="static" color="default">
-          <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
-            <Tab label={equipmentTabs[0].label.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
-            <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={!rights.view[3] || equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
-            <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={!rights.view[3] || equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
-            <Tab label={equipmentTabs[3].label.toUpperCase()} hidden={!rights.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
-            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={!rights.view[3] || equipments[4].length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
-          </Tabs>
-        </AppBar>
-        <TabPanel value={tabs} index={0}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
-          {!loading.init ? MaterialTableSelect(0) : null}
-        </TabPanel>
-        <TabPanel value={tabs} index={1}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
-          {!loading.init ? MaterialTableSelect(1) : null}
-        </TabPanel>
-        <TabPanel value={tabs} index={2}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
-          {!loading.init ? MaterialTableSelect(2) : null}
-        </TabPanel>
-        <TabPanel value={tabs} index={3}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
-          {!loading.init ? [searchForm(3), MaterialTableSelect(3)] : null}
-        </TabPanel>
-        <TabPanel value={tabs} index={4}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[4] ? LoadingCircle() : null} </div>
-          {!loading.init ? [searchForm(4), MaterialTableSelect(4)] : null}
-        </TabPanel>
-      </div>
-    );
-  }
+  const MaterialTableSelect = React.forwardRef((props,ref) => {
+    const {columns, equipmentArray} = props
+    const tab_idx = tabs
+    const [f, setF] = useState([...equipmentArray])
 
-  const MaterialTableSelect = (tab_idx) => {
-    const isHraTab = equipmentTabs[tab_idx].id == "my_hra_equipment"
-    const hras_array = isHraTab ? my_hras : hras
-    //const tableRef = useRef()
-
-    let columns = []
-    const dataIsOnDatabase = {
-    bar_tag_num:false
-    }
-
-    const equipment_cols_config = [
-        { title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0, width:100,
-        editComponent: (x) => {
-        //console.log(x);
-        let idx = -1
-    
-        if(x.rowData.hra_num){
-            idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
-        }
-    
-        return(
-            <Autocomplete
-            //onChange={e => x.onChange(e)}
-            id={`combo-box-employee`}
-            //size="small"
-            //style={{width:'80%'}}
-            options={hras_array}
-            getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
-            value={idx != -1 ? hras_array[idx] : null}
-            //defaultValue={idx != -1 ? employees[idx] : null}
-            onChange ={e => {
-            const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-            console.log(hraNum_);
-            x.onChange(hraNum_)
-            }}
-            //style={{ verticalAlign: 'top' }}
-            renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
-            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}</a>}
-        />
-        )
-        },validate: (rowData) => {
-          if(rowData.hasOwnProperty('hra_num')){
-              if(!isNaN(rowData.hra_num)) {
-                if(rowData.hra_num){
-                  const idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == rowData.hra_num)); })
-                  return idx != -1
-                }
-              }
-          }
-
-          return ({ isValid: false, helperText: 'Hra Num  is required.' })
-      }
-        },
-        { title: 'HRA First', field: 'hra_first_name',col_id:2.1,editable: 'never' },
-        { title: 'HRA Last', field: 'hra_last_name',col_id:2.2,editable: 'never' },
-        { title: 'Item Description', field: 'item_type',col_id:4  },
-        { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric',col_id:5, validate: (rowData) => {
-            if(rowData.hasOwnProperty('bar_tag_num')){
-                if(!isNaN(rowData.bar_tag_num)) {
-                    if(typeof rowData.bar_tag_num === "number"){
-                        if(rowData.bar_tag_num.toString().length > 5){
-                            return ({ isValid: false, helperText: 'Bar Tag digits exceed 5.' })
-                        }else{
-                            const idx = findIndex(equipments[tab_idx],e => e.bar_tag_num == rowData.bar_tag_num)
-                            const propTableData = rowData.hasOwnProperty('tableData')//exists: editing, not exists: adding.
-
-                            if(propTableData && idx != -1){
-                                if(rowData.id != equipments[tab_idx][idx].id){
-                                    return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
-                                }
-                            }else if (idx != -1 && !propTableData && !rowData.hasOwnProperty('id')){
-                                return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
-                            }								
-                        }
-                        return true
-                    }
-        
-                    if(typeof rowData.bar_tag_num === "string"){
-                        return ({ isValid: false, helperText: 'Bar Tag needs to be numeric.' })
-                    }
-                }
-            }
-            return ({ isValid: false, helperText: 'Bar Tag is required.' })
-
-        }
-        },
-        { title: 'Employee First', field: 'employee_first_name',col_id:6.1 ,editable: 'never' },
-        { title: 'Employee Last', field: 'employee_last_name',col_id:6.2,editable: 'never'  },
-        { title: 'Employee Office Location', field: 'employee_office_location_name',col_id:6.3,editable: 'never'  },
-        {title: 'Status', field:'status',col_id:6.4,editable: 'no' },
-        {title: 'Status Date', field:'status_date',col_id:6.4,editable: 'no' },
-        tab_idx === 0 ? {title: 'Update Status', field:'update_status',col_id:6.5 ,editable: 'yes', render: rowData => <Link underline="always" component="button" onClick={()=>{setRowData(rowData); setOpenPopup(true); setSnackBar={setSnackBar}; }}>Update</Link>}: {}
-    ] 
-   // tab_idx === 0 || tab_idx === 1 ? {title: 'Status', field:'status',col_id:6.4,editable: 'no' } : {},
-    //tab_idx === 1 ? {title: 'Status Date', field:'status_date',col_id:6.4,editable: 'no' } : {},
-
-    const ext_equipment_cols_config = [		
-        // {title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never',col_id:2.3 },
-        { title: 'Employee Holder ID', field: 'employee_id', type:'numeric',col_id:6.0,
-        editComponent: (x) => {
-            //console.log(x);
-            let idx = -1
-    
-            if(x.rowData.employee_id){
-            idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.employee_id)); })
-            }
-    
-            return(
-            <Autocomplete
-            //onChange={e => x.onChange(e)}
-            id="combo-box-employee"
-            //size="small"
-            options={employees}
-            getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
-            value={idx != -1 ? employees[idx] : null}
-            //defaultValue={idx != -1 ? employees[idx] : null}
-            onChange ={e => {
-    
-                const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-                console.log(id_);
-                x.onChange(id_)
-            }}
-            //style={{ verticalAlign: 'top' }}
-            renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
-            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</a>}
-            />
-            )
-        }},
-        {title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
-        {title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
-        {title:'Catalog Num',field:'catalog_num',col_id:8 },
-        {title:'Serial Num',field:'serial_num',col_id:9 },
-        {title:'Manufacturer',field:'manufacturer',col_id:10 },
-        {title:'Model',field:'model',col_id:11 },
-        {title:'Condition',field:'condition',col_id:12, editComponent: (x) => {
-            //console.log(x);
-            let idx = -1
-    
-            if(x.rowData.condition){
-            idx = findIndex(condition,function(c){ return (c.id && (c.id == x.rowData.condition)); })
-            }
-    
-            return(
-            <Autocomplete
-            //onChange={e => x.onChange(e)}
-            id="combo-box-employee"
-            //size="small"
-            options={condition}
-            getOptionLabel={(option) => option.id + ' - ' + option.name}
-            value={idx != -1 ? condition[idx] : null}
-            //defaultValue={idx != -1 ? employees[idx] : null}
-            onChange ={e => {
-    
-                const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-                console.log(id_);
-                x.onChange(id_)
-            }}
-            //style={{ verticalAlign: 'top' }}
-            renderInput={(params) => <TextField {...params} label="Condition" margin="normal"/>}
-            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + option.name}</a>}
-            />
-            )
-            }
-        }
-    ]
-    
-
-    if(editable) ext_equipment_cols_config.push({title:'Updated By',col_id:13,field:'updated_by_full_name',editable:'never' })
-
-    for(const col_config of equipment_cols_config){
-        if(col_config.hasOwnProperty('field') && col_config){
-            columns.push(col_config)
-        }
-    }
-
-    if(switches[tab_idx].checkedView){
-        let extended_columns = []
-        
-        for(const col_config of ext_equipment_cols_config){
-            if(col_config.hasOwnProperty('field') && col_config){
-                extended_columns.push(col_config)
-            }
-        }
-
-        columns = [...columns,...extended_columns]
-        columns = orderBy(columns,'col_id','asc')
-    }
+    // useEffect(() => {
+    //     setFilteredEquipments({...filteredEquipments,[tabs]:f})
+    // },[f])
 
     // Generate dates for report exports
     const generateReportDate= (dateType) => {
@@ -948,10 +726,58 @@ function Equipment({history, location, match, userToken}) {
     }
     }
 
+    // function getExcel() {
+    //   const config = {
+    //     filename: "general-ledger-Q1",
+    //     sheet: {
+    //       data: []
+    //     }
+    //   };
+  
+    //   const dataSet = config.sheet.data;
+  
+    //   // review with one level nested config
+    //   // HEADERS
+    //   headerGroups.forEach(headerGroup => {
+    //     const headerRow = [];
+    //     if (headerGroup.headers) {
+    //       headerGroup.headers.forEach(column => {
+    //         headerRow.push(...getHeader(column));
+    //       });
+    //     }
+  
+    //     dataSet.push(headerRow);
+    //   });
+  
+    //   // FILTERED ROWS
+    //   if (rows.length > 0) {
+    //     rows.forEach(row => {
+    //       const dataRow = [];
+  
+    //       Object.values(row.values).forEach(value =>
+    //         dataRow.push({
+    //           value,
+    //           type: typeof value === "number" ? "number" : "string"
+    //         })
+    //       );
+  
+    //       dataSet.push(dataRow);
+    //     });
+    //   } else {
+    //     dataSet.push([
+    //       {
+    //         value: "No data",
+    //         type: "string"
+    //       }
+    //     ]);
+    //   }
+  
+    //   return generateExcel(config);
+    // }
+
     return(
-        <div style={{ paddingTop:'25px' }}>
-          {/* {!viewSwitch ? <MapWrapper equipments={filteredEquipments}/> : null} */}
-         {<UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={rowData} setSnackBar={setSnackBar}/>} 
+        <Box sx={{ paddingTop:'25px' }}>
+          {!viewSwitch ? <MapWrapper equipments={[...f]}/> : null}
         {<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}></Snackbar>}
             {/* {editable[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ?  */}
             {rights.edit[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ? 
@@ -964,17 +790,16 @@ function Equipment({history, location, match, userToken}) {
                     </FormGroup>
                 </Grid>) : null}
             <MaterialTable
-            // tableRef={tableRef}
-            // onOrderChange={() => {
-            //   //setFilteredEquipments(tableRefs[tab_idx].current.state.data)
-            // }}
-            onFilterChange={() => {
-              //setFilteredEquipments({...filteredEquipments,[tabs]:tableRef.current.state.data})
+            tableRef={ref}
+            onOrderChange={() => {
+                setF(ref.current.state.data)
             }}
-
+            onFilterChange={() => {
+                setF(ref.current.state.data)
+            }}
             icons={tableIcons}
             columns={columns}
-            data={equipments[tab_idx]}
+            data={equipmentArray}
             localization={{
                 toolbar: {
                 searchPlaceholder: "Filter Search"
@@ -1015,6 +840,7 @@ function Equipment({history, location, match, userToken}) {
                 backgroundColor: "#969696",
                 color: "#FFF",
                 fontWeight: 'bold',
+                tableLayout: 'fixed'
             }
             }}
             title=""
@@ -1064,9 +890,325 @@ function Equipment({history, location, match, userToken}) {
 
             }})}
            />
-    </div>
+    </Box>
     )
-  }
+  })
+
+  const CustomDatePicker = (props) => {
+    const [date, setDate] = useState("");
+    const handleClearClick = () => {
+      props.onFilterChanged(props.columnDef.tableData.id, null);
+      setDate("");
+    };
+
+    return (
+      <TextField
+        variant="standard"
+        format="dd/MM/yyyy"
+        value={date}
+        ampm
+        autoOk
+        allowKeyboardControl
+        style={{ width: 150 }}
+        onChange={(event) => {
+          setDate(event.target.value);
+          props.onFilterChanged(props.columnDef.tableData.id, event.target.value ? new Date(event.target.value) : null);
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FilterListIcon />
+            </InputAdornment>
+          ),
+          endAdornment: <IconButton fontSize="small" sx={{visibility: date? "visible": "hidden"}} onClick={handleClearClick}><ClearIcon fontSize="small"/></IconButton>
+        }}
+      />
+    );
+  };
+
+  const CustomFilterTextField = (props) => {
+    const [text, setText] = useState("");
+    
+    const handleClearClick = () => {
+      props.onFilterChanged(props.columnDef.tableData.id, null);
+      setText("");
+    };
+
+    return (
+      <TextField
+        variant="standard"
+        value={text}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FilterListIcon />
+            </InputAdornment>
+          ),
+          endAdornment: <IconButton fontSize="small" sx={{visibility: text? "visible": "hidden"}} onClick={handleClearClick}><ClearIcon fontSize="small"/></IconButton>
+        }}
+        style={{ width: 125 }}
+        onChange={(event) => {
+          console.log(event.target.value)
+          setText(event.target.value);
+          props.onFilterChanged(props.columnDef.tableData.id, event.target.value);
+        }}
+
+      />
+
+    );
+  };
+
+  const TabsEquipment = React.forwardRef((props, ref) => {
+    const { ref0, ref1, ref2, ref3, ref4 } = ref.current;
+    const tab_idx = tabs
+    const equipmentArray = equipments[tab_idx]
+    const isHraTab = equipmentTabs[tab_idx].id == "my_hra_equipment"
+    const hras_array = isHraTab ? my_hras : hras
+    let columns = []
+
+    const equipment_cols_config = [
+        { title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0, filterComponent: (props) => <CustomFilterTextField {...props} />,
+        editComponent: props => (
+        <AutocompleteV5
+              value={props.value ? find(hras_array,function(h){ return h.hra_num == props.value}) : null}
+              onChange={(e, nv) => { 
+                if(nv){
+                  if(nv.hasOwnProperty('hra_num')){
+                      props.onChange(nv.hra_num) 
+                    return;
+                  }
+                }
+                props.onChange(nv)
+              }}
+              key={`combo-box-${uuid()}`}
+              options={hras_array}
+              getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
+              style={{ width: 250 }}
+              renderInput={(params) => <TextField {...params} label="HRA" variant="outlined" />}
+          />),
+          validate: (rowData) => {
+              if(rowData.hasOwnProperty('hra_num')){
+                  if(!isNaN(rowData.hra_num)) {
+                    if(rowData.hra_num){
+                      const idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == rowData.hra_num)); })
+                      return idx != -1
+                    }
+                  }
+              }
+    
+              return true
+          }
+        // editComponent: (x) => {
+        // //console.log(x);
+        // let idx = -1
+    
+        // if(x.rowData.hra_num){
+        //     idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
+        // }
+    
+        // return(
+        //     <Autocomplete
+        //     //onChange={e => x.onChange(e)}
+        //     id={`combo-box-employee`}
+        //     //size="small"
+        //     //style={{width:'80%'}}
+        //     options={hras_array}
+        //     getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
+        //     value={idx != -1 ? hras_array[idx] : null}
+        //     //defaultValue={idx != -1 ? employees[idx] : null}
+        //     onChange ={e => {
+        //     const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+        //     console.log(hraNum_);
+        //     x.onChange(hraNum_)
+        //     }}
+        //     //style={{ verticalAlign: 'top' }}
+        //     renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
+        //     renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}</a>}
+        // />
+        // )
+        // },
+      //   validate: (rowData) => {
+      //     if(rowData.hasOwnProperty('hra_num')){
+      //         if(!isNaN(rowData.hra_num)) {
+      //           if(rowData.hra_num){
+      //             const idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == rowData.hra_num)); })
+      //             return idx != -1
+      //           }
+      //         }
+      //     }
+
+      //     return ({ isValid: false, helperText: 'Hra Num  is required.' })
+      // }
+        },
+        { title: 'HRA First', field: 'hra_first_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:2.1,editable: 'never' },
+        { title: 'HRA Last', field: 'hra_last_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:2.2,editable: 'never' },
+        { title: 'Item Description', field: 'item_type', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:4  },
+        { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:5, validate: (rowData) => {
+            if(rowData.hasOwnProperty('bar_tag_num')){
+                if(!isNaN(rowData.bar_tag_num)) {
+                    if(typeof rowData.bar_tag_num === "number"){
+                        if(rowData.bar_tag_num.toString().length > 5){
+                            return ({ isValid: false, helperText: 'Bar Tag digits exceed 5.' })
+                        }else{
+                            const idx = findIndex(equipmentArray,e => e.bar_tag_num == rowData.bar_tag_num)
+                            const propTableData = rowData.hasOwnProperty('tableData')//exists: editing, not exists: adding.
+
+                            if(propTableData && idx != -1){
+                                if(rowData.id != equipmentArray[idx].id){
+                                    return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
+                                }
+                            }else if (idx != -1 && !propTableData && !rowData.hasOwnProperty('id')){
+                                return ({ isValid: false, helperText: 'Duplicated Bar Tag.' })
+                            }								
+                        }
+                        return true
+                    }
+        
+                    if(typeof rowData.bar_tag_num === "string"){
+                        return ({ isValid: false, helperText: 'Bar Tag needs to be numeric.' })
+                    }
+                }
+            }
+            return ({ isValid: false, helperText: 'Bar Tag is required.' })
+
+        }
+        },
+        { title: 'Employee First', field: 'employee_first_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.1 ,editable: 'never' },
+        { title: 'Employee Last', field: 'employee_last_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.2,editable: 'never'  },
+        { title: 'Employee Office Location', field: 'employee_office_location_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.3,editable: 'never'  },
+        {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' },
+        {title: 'Status Date', field:'status_date', type:'date', filterComponent: (props) => <CustomDatePicker {...props} />, col_id:6.4,editable: 'no' },
+        tab_idx === 0 ? {title: 'Update Status', field:'update_status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.5,editable: 'yes', render: (rowData) => <Link underline="always" component="button" onClick={()=>{console.log(rowData); setSelRowData(rowData); setOpenPopup(true); }}>Update</Link>}: {}
+    ] 
+   // tab_idx === 0 || tab_idx === 1 ? {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
+    //tab_idx === 1 ? {title: 'Status Date', field:'status_date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
+
+    const ext_equipment_cols_config = [		
+        // {title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:2.3 },
+        { title: 'Employee Holder ID', field: 'employee_id', type:'numeric', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.0, width:"200px",
+        editComponent: (x) => {
+            //console.log(x);
+            let idx = -1
+    
+            if(x.rowData.employee_id){
+            idx = findIndex(employees,function(e){ return (e.id && (e.id == x.rowData.employee_id)); })
+            }
+    
+            return(
+            <Autocomplete
+            //onChange={e => x.onChange(e)}
+            id="combo-box-employee"
+            //size="small"
+            options={employees}
+            getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
+            value={idx != -1 ? employees[idx] : null}
+            //defaultValue={idx != -1 ? employees[idx] : null}
+            onChange ={e => {
+    
+                const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+                console.log(id_);
+                x.onChange(id_)
+            }}
+            //style={{ verticalAlign: 'top' }}
+            renderInput={(params) => <TextField {...params} label="Employee" margin="normal"/>}
+            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</a>}
+            />
+            )
+        }},
+        {title:'Acquisition Date',field:'acquisition_date',  type: 'date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:1},
+        {title:'Acquisition Price',field:'acquisition_price',type: 'numeric', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:7},
+        {title:'Catalog Num',field:'catalog_num', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:8},
+        {title:'Serial Num',field:'serial_num', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:9},
+        {title:'Manufacturer',field:'manufacturer', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:10},
+        {title:'Model',field:'model', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:11},
+        {title:'Condition',field:'condition', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:12,  editComponent: (x) => {
+            //console.log(x);
+            let idx = -1
+    
+            if(x.rowData.condition){
+            idx = findIndex(condition,function(c){ return (c.id && (c.id == x.rowData.condition)); })
+            }
+    
+            return(
+            <Autocomplete
+            //onChange={e => x.onChange(e)}
+            id="combo-box-employee"
+            //size="small"
+            options={condition}
+            getOptionLabel={(option) => option.id + ' - ' + option.name}
+            value={idx != -1 ? condition[idx] : null}
+            //defaultValue={idx != -1 ? employees[idx] : null}
+            onChange ={e => {
+    
+                const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
+                console.log(id_);
+                x.onChange(id_)
+            }}
+            //style={{ verticalAlign: 'top' }}
+            renderInput={(params) => <TextField {...params} label="Condition" margin="normal"/>}
+            renderOption={(option) => <a style={{fontSize:'16px'}}>{option.id + ' - ' + option.name}</a>}
+            />
+            )
+            }
+        }
+    ]
+    
+
+    if(editable) ext_equipment_cols_config.push({title:'Updated By', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:13,field:'updated_by_full_name',editable:'never' })
+
+    for(const col_config of equipment_cols_config){
+        if(col_config.hasOwnProperty('field') && col_config){
+            columns.push(col_config)
+        }
+    }
+
+    if(switches[tab_idx].checkedView){
+        let extended_columns = []
+        
+        for(const col_config of ext_equipment_cols_config){
+            if(col_config.hasOwnProperty('field') && col_config){
+                extended_columns.push(col_config)
+            }
+        }
+
+        columns = [...columns,...extended_columns]
+        columns = orderBy(columns,'col_id','asc')
+    }
+
+    return (
+      <div className={tabClasses.root}>
+        <AppBar position="static" color="default">
+          <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
+            <Tab label={equipmentTabs[0].label.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
+            <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={!rights.view[3] || equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
+            <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={!rights.view[3] || equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
+            <Tab label={equipmentTabs[3].label.toUpperCase()} hidden={!rights.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
+            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={!rights.view[3] || equipments[4].length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
+          </Tabs>
+        </AppBar>
+        <TabPanel value={tabs} index={0}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
+          {!loading.init ? <MaterialTableSelect ref={ref0} columns={[...columns]} equipmentArray={[...equipmentArray]}/> : null}
+        </TabPanel>
+        <TabPanel value={tabs} index={1}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
+          {!loading.init ? <MaterialTableSelect ref={ref1} columns={[...columns]} equipmentArray={[...equipmentArray]}/> : null}
+        </TabPanel>
+        <TabPanel value={tabs} index={2}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
+          {!loading.init ? <MaterialTableSelect ref={ref2} columns={[...columns]} equipmentArray={[...equipmentArray]}/> : null}
+        </TabPanel>
+        <TabPanel value={tabs} index={3}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
+          {!loading.init ? [searchForm(3), <MaterialTableSelect ref={ref3} columns={[...columns]} equipmentArray={[...equipmentArray]}/>] : null}
+        </TabPanel>
+        <TabPanel value={tabs} index={4}>
+          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[4] ? LoadingCircle() : null} </div>
+          {!loading.init ? [searchForm(4), <MaterialTableSelect ref={ref4} columns={[...columns]} equipmentArray={[...equipmentArray]}/>] : null}
+        </TabPanel>
+      </div>
+    );
+  })
 
   const AlertUser = (x) => {
 
@@ -1133,8 +1275,8 @@ function Equipment({history, location, match, userToken}) {
   const displayTop = (
       <div style={{display:"flex", justifyContent:"center"}}>
         <h2>Equipment</h2>
-        <BoxV5 sx={{position:'absolute',top:"75px",right:"20px",spacing:1}}>
-          <ButtonV5
+        <Box sx={{position:'absolute',top:"75px",right:"20px",spacing:1}}>
+          <Button
           onClick={() => setViewSwitch(prev => !prev)}
           startIcon={<ListIcon/>} 
           disabled={viewSwitch}
@@ -1167,8 +1309,8 @@ function Equipment({history, location, match, userToken}) {
             padding: "0px 12px 0 12px",
           }}>
             Table
-          </ButtonV5>
-          <ButtonV5
+          </Button>
+          <Button
           onClick={() => setViewSwitch(prev => !prev)}
           disabled={!viewSwitch}
           startIcon={<LocationOnIcon/>} 
@@ -1198,8 +1340,8 @@ function Equipment({history, location, match, userToken}) {
             padding: "0px 12px 0 12px"
           }}>
               Map
-          </ButtonV5>
-        </BoxV5>
+          </Button>
+        </Box>
       </div>
   )
 
@@ -1211,7 +1353,7 @@ function Equipment({history, location, match, userToken}) {
   }
 
   //will run once.
-  React.useEffect(() => {
+  useEffect(() => {
 
     // function handleResize() {
     //   // Set window width/height to state
@@ -1233,27 +1375,28 @@ function Equipment({history, location, match, userToken}) {
     //return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // React.useEffect(() => {
+  // useEffect(() => {
   // }, [equipments]);
 
-  // React.useEffect(() => {
+  // useEffect(() => {
 	// 	if(history.action == "PUSH"){
 	// 		reloadPage()
 	// 	}
 	// }, [history.action]);
   
-  React.useEffect(() => {
+  useEffect(() => {
 		console.log(hras)
 	}, [hras]);
 
-  React.useEffect(() => {
+  useEffect(() => {
 		if(tabs == 3 && equipments[tabs].length == 0){
       handleSearch()
     }
 
+    //setFilteredEquipments(equipments[tabs])
 	}, [tabs]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     localStorage.setItem('view-switch', viewSwitch);
 }, [viewSwitch]);
 
@@ -1263,9 +1406,10 @@ function Equipment({history, location, match, userToken}) {
     <div>
       {displayTop}
       <Box sx={{display:'flex',flex:'auto'}}>
-      <Box ref={ref} sx={{width: viewSwitch ? "100%" : "45%"}}>
+      {openPopup ? <UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData} setSnackBar={setSnackBar} equipments={equipments} setEquipments={setEquipments} setAlertUser={setAlertUser}/> : null} 
+      <Box ref={ref} sx={{width: "100%"}}>
         {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
-        {!loading.init ? !serverDown ? TabsEquipment() : null : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
+        {!loading.init ? !serverDown ? <TabsEquipment ref={refs} />: null : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
       </Box>
       </Box>
     </div>

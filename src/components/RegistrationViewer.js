@@ -16,7 +16,6 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ApprovalFormContainer from './forms/registration-approval/ApprovalFormContainer';
 import Button from '@mui/material/Button';
 import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-//import Header from './Header'
 
 function RegistrationViewer({userToken,user}) {
     

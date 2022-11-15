@@ -1,6 +1,5 @@
 //import Box from '@material-ui/core/Box';
 // import API from "../axios/Api";
-// import Header from "./Header";Box
 //import { connect } from 'react-redux';
 //import { addProduct } from '../publics/actions/eng4900s';
 //-start-//
@@ -53,7 +52,7 @@ import {Autocomplete, Alert} from '@material-ui/lab';
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT} from './config/constants'
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
-import { plusButtonStyles, texFieldStyles, gridStyles, TabPanel, a11yProps, tabStyles, stepStyles } from './styles/material-ui';
+import { plusButtonStyles, texFieldStyles, gridStyles, tabStyles, stepStyles } from './styles/material-ui';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
@@ -61,11 +60,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
 import UploadFormModal from '../containers/UploadFormModal'
 import Eng4900Form from '../containers/Eng4900Form'
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+// import Tabs from '@material-ui/core/Tabs';
+// import Tab from '@material-ui/core/Tab';
 import Badge from '@material-ui/core/Badge';
-import DescriptionIcon from '@material-ui/icons/Description';
+//import DescriptionIcon from '@material-ui/icons/Description';
 import Switch from '@material-ui/core/Switch';
 import Typography from '@material-ui/core/Typography';
 import Stepper from '@material-ui/core/Stepper';
@@ -77,6 +75,10 @@ import { connect } from 'redux-bundler-react';
 import {ALERT} from './tools/tools'
 import CommentIcon from '@material-ui/icons/Comment';
 import { useTheme } from '@material-ui/core/styles';
+
+import { AppBar, Tabs, Tab} from '@mui/material';
+import {Description as DescriptionIcon} from '@mui/icons-material';
+import {TabPanel, a11yProps, tabClasses} from './styles/mui';
 
 const dialogStyles = makeStyles(theme => ({
   dialogWrapper: {
@@ -147,7 +149,7 @@ function Eng4900({history, location, match, userToken}) {
   //   },
   // });
   //const classDialog = dialogStyles();
-  const tabClasses = tabStyles();
+  //const tabClasses = tabStyles();
   const StepClasses = stepStyles();
   const theme = useTheme()
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Switch ,Route, Redirect} from "react-router-dom";
-import {routes_tabs} from './config/routes'
+import {routes} from './config/routes'
 
 import axios from 'axios';
 import { connect } from 'redux-bundler-react';
@@ -14,7 +14,7 @@ import LogoutConfirm from './LogoutConfirm'
 import { LocalHospitalTwoTone } from '@material-ui/icons';
 import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
 import { ThemeProvider as ThemeProviderV5 , createTheme as createThemeV5 } from '@mui/material/styles';
-import { DashboardLayout } from './navbar/dashboard-layout';
+import  DashboardLayout  from './navbar/dashboard-layout';
 import { AlertContextProvider } from "./context/AlertProvider";
 
 //import appinfo from 'app-info.json'
@@ -49,7 +49,7 @@ function App(props) {
 									path={'/'}
 									render={() => userIsLoggedIn ? <Redirect to={'/dashboard'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
 								/>
-									{routes_tabs(userAccess, themeV5).routes}
+									{routes}
 								<Route render={() => <Redirect to={'/404'} />}/>
 							</Switch>
 						</div>
@@ -71,11 +71,11 @@ function App(props) {
 					path={'/'}
 					render={() => userIsLoggedIn ? <Redirect to={'/dashboard'}/> : (userIsLoggingOut ? <Redirect to={'/logout'} /> :  <Redirect to={'/login'} />)  }
 				/>
-					{routes_tabs(userAccess, themeV5).routes}
+					{routes}
 				<Route render={() => <Redirect to={'/404'} />}/>
 				</Switch>
 				</div>
-				<div className="footer"><span style={{fontWeight:'bold',color:'rgb(50,50,50)'}}>Inventory App Beta</span> &#8226; <span style={{color:'rgb(50,50,50)'}}>Version {process.env.REACT_APP_VERSION}</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
+				<div className="footer"><span style={{color:'rgb(50,50,50)'}}>Version {process.env.REACT_APP_VERSION}</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
 			</>
 		)
 	}

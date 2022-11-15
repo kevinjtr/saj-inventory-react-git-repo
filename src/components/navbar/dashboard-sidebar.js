@@ -3,28 +3,30 @@ import React, {useEffect, useState } from 'react';
 //import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
 import { Box, Button, Divider, Drawer, Typography, useMediaQuery } from '@mui/material';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { NavItem } from './nav-item';
 import { NavItem as NavItemSmall } from './nav-item-small';
-import HomeIcon from '@mui/icons-material/Home'
-import DevicesIcon from '@mui/icons-material/Devices';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import BadgeIcon from '@mui/icons-material/Badge';
-import DescriptionIcon from '@mui/icons-material/Description';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import GroupsIcon from '@mui/icons-material/Groups';
-import HistoryIcon from '@mui/icons-material/History';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
 import styled from '@emotion/styled';
 import {routes_config} from '../config/routes'
+import {filter} from 'lodash'
 
 const DashboardDrawerRoot = styled(Drawer)(({ theme }) => ({
-  boxShadow: theme.shadows[3],
+  
 }));
 
 export const DashboardSidebar = (props) => {
-  const { open, onClose, lgUp, mdUp, smUp, forceMdUp, width } = props;
+  const { open, onClose, lgUp, mdUp, smUp, forceMdUp, width, userAccess } = props;
+
+  const route_tabs = filter(routes_config, function(r){
+    if(r.hasOwnProperty('alias')){
+        if(Object.keys(userAccess).indexOf(r.alias) > -1){
+            return r.tab && userAccess[r.alias].view 
+        }else{
+            return false
+        }
+    }
+
+    return r.type == "public" && r.tab
+})
 
   const content = (
     <>
@@ -36,7 +38,7 @@ export const DashboardSidebar = (props) => {
         }}
       >
         {(mdUp && !lgUp) || forceMdUp && !smUp ? (<Box> 
-          {routes_config.map((item) => {
+          {route_tabs.map((item) => {
             if(item.tab){
               return(
                 <NavItemSmall
@@ -53,7 +55,7 @@ export const DashboardSidebar = (props) => {
           })}
         </Box>) :
         (<Box>
-          {routes_config.map((item) => {
+          {route_tabs.map((item) => {
             if(item.tab){
               return(
                 <NavItem
@@ -73,13 +75,13 @@ export const DashboardSidebar = (props) => {
           sx={{
             borderColor: '#2D3748',
             //my: 10,
-            py:3
+            paddingTop:1
           }}
         />
               <Box
           sx={{
             px: 2,
-            py: 2,
+            paddingTop: 1.5,
             width: width,
             //mt:0,
           }}
@@ -96,15 +98,15 @@ export const DashboardSidebar = (props) => {
             color="text.secondary"
             variant="subtitle2"
             fontSize=".7rem"
-            sx={{paddingTop:"10px", textAlign:"center"}}
+            sx={{paddingTop: .75, textAlign:"center"}}
           >
-            {(lgUp && !forceMdUp) || smUp ? "Version 0.9.2" : "v0.9.2"}
+            {(lgUp && !forceMdUp) || smUp ? "Version " : "v"}{process.env.REACT_APP_VERSION}
           </Typography>
           <Typography
             color="text.secondary"
             variant="subtitle2"
             fontSize=".7rem"
-            sx={{paddingTop:"10px", textAlign:"center"}}
+            sx={{paddingTop: .75, textAlign:"center",marginBottom:"75px"}}
           >
             {(lgUp && !forceMdUp) || smUp ? "Controlled Unclassified Information" : "C.U.I."}
           </Typography>
@@ -140,12 +142,13 @@ export const DashboardSidebar = (props) => {
       anchor="left"
       onClose={onClose}
       open={open}
+      elevation={3}
       PaperProps={{
         sx: {
-          backgroundColor: 'background.paper',
+          //backgroundColor: 'background.paper',
           //color: '#FFFFFF',
           
-          //top:'56px'
+          top:'56px'
         }
       }}
       sx={{ zIndex: (theme) => theme.zIndex.appBar + 100 }}

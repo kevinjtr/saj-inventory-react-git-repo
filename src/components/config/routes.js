@@ -1,22 +1,15 @@
-import React from 'react';
 import Eng4900 from '../Eng4900';
-import Eng4900FormContainer from '../../containers/Eng4900Form';
 import Dashboard from '../Dashboard';
-import Equipment from '../Equipment3';
+import Equipment from '../Equipment';
 import Hra from '../Hra';
 import Employee from '../Employee';
 import AnnualInventory from '../AnnualInventory';
 import ViewAnnualInventory from '../ViewAnnualInventory';
 import ChangeHistory from '../ChangeHistory';
-import Eng4844 from '../Eng4844';
-import FindEng4844 from '../FindEng4844';
-import ProblemReport from '../ProblemReport';
 import ProblemReportViewer from '../ProblemReportViewer';
 import RegistrationViewer from '../RegistrationViewer';
 import NotFound from '../forms/NotFound'
 import {filter} from 'lodash'
-import api from '../../axios/Api';
-import Register from '../Register';
 import SignInOut from '../../containers/SignInOut'
 import {Tab} from '@mui/material'
 import LogoutConfirm from '../LogoutConfirm';
@@ -24,7 +17,6 @@ import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
 import AuthorizedUsers from '../AuthorizedUsers'
 import Account from '../Account';
-
 import HomeIcon from '@mui/icons-material/Home'
 import DevicesIcon from '@mui/icons-material/Devices';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -35,8 +27,9 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import GroupsIcon from '@mui/icons-material/Groups';
 import HistoryIcon from '@mui/icons-material/History';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
-
 import { NavItem } from '../navbar/nav-item';
+import { NavItem as NavItemSmall } from '../navbar/nav-item-small';
+
 
 export const routes_config = [
     {path:'/dashboard',alias:'dashboard',label:'Dashboard',component:Dashboard,icon:<HomeIcon/>,tab:true,level:'user',type:'private'},
@@ -55,6 +48,25 @@ export const routes_config = [
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
+
+export const routes = routes_config.map((route, i) => {
+
+    if(route.type == 'private'){
+        return (
+            <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+        )
+    }
+
+    if(route.path == '/login'){
+        return (
+            <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+        )
+    }
+
+    return (
+        <Route exact id={`app-route-${i}`} key={`app-route-${i}`} path={route.path} component={route.component}/>
+    )
+})
 
 export const routes_tabs = (user_access, theme, props=null) => {
     const return_routes = {
@@ -133,10 +145,11 @@ export const routes_tabs = (user_access, theme, props=null) => {
     return return_routes
 }
 
-export const routes_tabs_new = (user_access, theme, props=null) => {
+export const routes_tabs_new = (user_access, props) => {
     const return_routes = {
         routes:[],
-        tabs:[]
+        tabs:[],
+        small_tabs:[]
     }
 
     //Tabs are created
@@ -152,23 +165,24 @@ export const routes_tabs_new = (user_access, theme, props=null) => {
         return r.type == "public" && r.tab
     })
 
-    return_routes.tabs = route_with_tabs.map((route, i) => 
+    return_routes.tabs = route_with_tabs.map((item, i) => 
         <NavItem
-        key={route.label}
-        icon={route.icon}
-        href={route.path}
-        title={route.label}
+        key={item.label}
+        icon={item.icon}
+        href={item.path}
+        title={item.alt_label ? item.alt_label : item.label}
+        {...props}
         />
+    )
 
-        // <Tab {...props} id={`app-tab-${i}`} key={`app-tab-${i}`} label={route.label} value={route.path} component={Link} to={route.path} 
-
-        // // sx={{height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
-        // // '&:hover':{textDecoration:'none'}}} 
-
-        // sx={{color:theme.palette.text.primary,height:"25px", minHeight:"25px",fontSize:"10px",minWidth:'50px',
-        // '&:active':{color:'black'},
-        // '&:hover':{backgroundColor:theme.palette.action.hover,textDecoration:'none',color:theme.palette.text.secondary}}}
-        // />
+    return_routes.small_tabs = route_with_tabs.map((item, i) => 
+        <NavItemSmall
+        key={item.label}
+        icon={item.icon}
+        href={item.path}
+        title={item.alt_label ? item.alt_label : item.label}
+        {...props}
+        />
     )
 
      return_routes.routes = routes_config.map((route, i) => {

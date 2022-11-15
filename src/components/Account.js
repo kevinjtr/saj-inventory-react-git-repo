@@ -18,7 +18,7 @@ import {
     Select,
     MenuItem
 } from '@mui/material';
-import {getEmployeeByEDIPI, updateEmployeeApi} from "../publics/actions/employee-api"
+import {getAccount, updateAccountApi} from "../publics/actions/account-api"
 import { connect } from 'redux-bundler-react';
 import { SettingsInputAntennaTwoTone } from '@material-ui/icons';
 import {registrationDropDownItems} from "./config/constants"
@@ -31,7 +31,7 @@ import { green, grey } from '@mui/material/colors';
 import {diff} from "lodash"
 import { Formik, useFormik, Field, Form, ErrorMessage } from 'formik'
 import * as yup from 'yup'
-
+  
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -277,7 +277,7 @@ const AccountProfile = ({user, setUser}) => (
 );
 
 const AccountProfileDetails = ({userToken, user, setUser, triggerNotification, submitButton, setSubmitButton}) => {
-  const [values, setValues] = useState({...user});
+  //const [values, setValues] = useState({...user});
 
 	const validationSchema = yup.object({
 		first_name: yup
@@ -311,8 +311,9 @@ const AccountProfileDetails = ({userToken, user, setUser, triggerNotification, s
 			...user
 		},
 		validationSchema: validationSchema,
-		onSubmit: (values) => {
-      triggerNotification()
+		onSubmit: (values, submitProps) => {
+      handleSubmit(values, submitProps)
+      //triggerNotification("success")
       //console.log("here")
 		    //alert(JSON.stringify(values, null, 2));
 		    //handleAdd(values);
@@ -326,16 +327,20 @@ const AccountProfileDetails = ({userToken, user, setUser, triggerNotification, s
   //   });
   // };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values, submitProps) => {
     setSubmitButton({...submitButton, send: true})
 
-    await updateEmployeeApi({changes:{'0':{newData:[values], oldData:[user]}}}, userToken).then((response) => response.data).then((data) => {
+    await updateAccountApi({changes:{'0':{newData:values, oldData:user}}}, userToken).then((response) => response.data).then((data) => {
         const {error} = data
 
         if(!error){
+            setUser({...values})
+            submitProps.resetForm({ values });  
             setSubmitButton({...submitButton, send: false, active: false})
+            triggerNotification("success")
         }else{
             setSubmitButton({...submitButton, send: false, active: false})
+            triggerNotification("error")
         }
         
     }).catch(function (error) {
@@ -525,11 +530,13 @@ const Account = ({userToken}) => {
   const selectedType =
     alertTypes[Math.floor(Math.random() * alertTypes.length)];
 
-  const triggerNotification = () => {
+  const triggerNotification = (type,title=null) => {
+    const notification_title = title != null ? title : (type == "success" ? "Sucessfully updated data." : "Error: Could not update data.")
     actions.addAlert({
-      text: "Notification text",
-      title: ` Clicked on ${selectedType}`,
-      type: selectedType,
+      //text: "Notification text",
+      title: notification_title,
+      show_date:true,
+      type: type,
       id: Date.now()
     });
   };
@@ -538,7 +545,7 @@ const Account = ({userToken}) => {
     actions.clearAlert();
     setLoading(true)
 
-    getEmployeeByEDIPI(userToken).then((response) => response.data).then((data) => data.data).then((employee) => {
+    getAccount(userToken).then((response) => response.data).then((data) => data.data).then((employee) => {
       if(Object.keys(employee).length > 0){
         console.log(employee)
         setUser(employee)

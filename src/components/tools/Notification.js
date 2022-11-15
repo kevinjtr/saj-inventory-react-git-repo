@@ -3,14 +3,20 @@ import { AlertTitle, Alert as MuiAlert } from "@mui/material";
 import { styled } from '@mui/material/styles';
 //import { makeStyles } from "@material-ui/core";
 import React, { useContext, useEffect } from "react";
+import moment from "moment"
 
 const NotifyLayoutRoot = styled('div')(({ theme }) => ({
     //position: "absolute",
-    position: "fixed",
+    position: "absolute",
     top: 65,
+    right:10,
     //bottom: theme.spacing(2),
     zIndex: 2000,
-    width: "calc(100% - 120px)",
+    minWidth:"400px",
+    //textAlign:"center",
+    //left: "calc(50% + 250px)",
+    //transform: "translateX(-50%)",
+    width: "calc(100% - 250px)",
   }));
 
 export default function Notification(props) {
@@ -52,7 +58,7 @@ function SnackbarProvider({ duration = 5000, alert, handleClose }) {
       severity={alert.type}
       variant={"filled"}
     >
-    {alert.title}
+    {alert.title}{alert.show_date ? ` - ${moment(alert.id).format("MMM DD yy hh:mm:ss")}` : ""}
     </MuiAlert>
   );
 }

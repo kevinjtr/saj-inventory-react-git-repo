@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 // import API from "../axios/Api";
-// import Header from "./Header";
 import { connect } from 'react-redux';
 import { addProduct } from '../publics/actions/products';
 import api from '../axios/Api';

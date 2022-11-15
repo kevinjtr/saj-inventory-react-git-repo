@@ -11,7 +11,6 @@ import {tableIcons} from './material-table/config'
 import api from '../axios/Api';
 import {Autocomplete, Alert} from '@material-ui/lab';
 import findIndex from 'lodash/findIndex'
-import Header from './Header'
 import {ALERT} from './tools/tools'
 import {updateHraApi,destroyHraApi,addHraApi,getAllHrasApi, hraSearchApi} from '../publics/actions/hra-api'
 import {getAllEmployeesApi} from '../publics/actions/employee-api'

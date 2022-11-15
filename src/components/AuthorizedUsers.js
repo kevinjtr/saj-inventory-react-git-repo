@@ -11,7 +11,6 @@ import { orderBy, findIndex, filter } from 'lodash'
 import { LoadingCircle, getQueryStringParams, ALERT } from './tools/tools';
 import { addAuthorizedUsersApi, getAuthorizedUsersApi, deleteAuthorizedUsersApi, getNamesApi, getHRAsApi } from '../publics/actions/authorized-users'
 import { connect } from 'redux-bundler-react';
-//import Header from './Header'
 
 function AuthorizedUsers({ userToken }) {
     //React Hooks Declarations.
@@ -95,7 +94,7 @@ function AuthorizedUsers({ userToken }) {
             let columns = []
 
             const authorizedUsers_cols_config = [
-                { title: 'Full Name', field: 'registered_users_id', col_id: 2.0, render: rowData => <a value={rowData.registered_users_id} >{rowData.full_name}</a>,
+                { title: 'User Name', field: 'registered_users_id', col_id: 2.0, render: rowData => <a value={rowData.registered_users_id} >{rowData.full_name}</a>,
                 editComponent: x => {
                     let idx = -1
 
@@ -121,7 +120,7 @@ function AuthorizedUsers({ userToken }) {
                             x.onChange(v)
                         }}
 
-                        renderInput={(params) => <TextField {...params} label="Name" margin="normal"/>}
+                        renderInput={(params) => <TextField {...params} label="User Name" margin="normal"/>}
                         renderOption={(option) => <a style={{fontSize:'16px'}}>{option.full_name}</a>}
                     />
                     )
@@ -145,7 +144,7 @@ function AuthorizedUsers({ userToken }) {
                     return ({ isValid: false, helperText: 'Selection is required.' })
                 }
             },
-                { title: 'HRA Number', field: 'hra_num', col_id: 2.2,
+                { title: 'HRA Account', field: 'hra_num', col_id: 2.2,
                 editComponent: x => {
                     let idx = -1
 
@@ -171,7 +170,7 @@ function AuthorizedUsers({ userToken }) {
                             x.onChange(v)
                         }}
 
-                        renderInput={(params) => <TextField {...params} label="HRA Number" margin="normal"/>}
+                        renderInput={(params) => <TextField {...params} label="HRA Account" margin="normal"/>}
                         renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num ? option.hra_num.toString(): ""}</a>}
                     />
                     )

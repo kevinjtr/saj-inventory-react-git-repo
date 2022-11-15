@@ -1,28 +1,14 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import 'date-fns';
-import PropTypes from 'prop-types';
-import MaskedInput from 'react-text-mask';
-import NumberFormat from 'react-number-format';
 import {LoadingCircle} from './tools/tools';
 import MaterialTable from 'material-table'
 import {changeHistoryIcons} from './material-table/config'
-import api from '../axios/Api';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import findIndex from 'lodash/findIndex'
-import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel} from '@material-ui/core';
-import {Alert} from '@material-ui/lab';
 import {ALERT} from './tools/tools';
-import Header from './Header'
 import {updateChangeHistoryByViewApi, getChangeHistoryByViewApi} from '../publics/actions/change-history-api'
 import { connect } from 'redux-bundler-react';
-import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from './styles/material-ui';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import ComputerIcon from '@material-ui/icons/Computer';
-import PersonIcon from '@material-ui/icons/Person';
-import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
+import {Computer as ComputerIcon, Person as PersonIcon, SupervisorAccount as SupervisorAccountIcon } from '@mui/icons-material';
+import { Tabs, Tab, Alert, AppBar} from '@mui/material';
+import {TabPanel, a11yProps, tabClasses} from './styles/mui';
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
 const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
@@ -56,7 +42,7 @@ function ChangeHistory({history, userToken}) {
 	const [tabs, setTabs] = React.useState(0);
 
 	//Styles Declarations
-	const tabClasses = tabStyles();
+	//const tabClasses = tabStyles();
 
 	//Event Handlers.
 	const handleUndo = async (rowData) => {

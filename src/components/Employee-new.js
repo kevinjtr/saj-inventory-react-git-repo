@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import qs from 'querystring';
 import EquipmentList from './equipments/ListEquipment';
-// import API from "../axios/Api";
-// import Header from "./Header";Box
 import { connect } from 'react-redux';
 import { addProduct } from '../publics/actions/eng4900s';
 

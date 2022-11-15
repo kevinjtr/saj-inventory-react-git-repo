@@ -11,7 +11,6 @@ import {Autocomplete, Alert} from '@material-ui/lab';
 import {LoadingCircle, getQueryStringParams, ALERT} from './tools/tools';
 import {updateProblemReportApi, getAllProblemReportsApi} from '../publics/actions/problem-report'
 import { connect } from 'redux-bundler-react';
-//import Header from './Header'
 
 function ProblemReportViewer({userToken}) {
     //React Hooks Declarations.

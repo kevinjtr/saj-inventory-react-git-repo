@@ -172,7 +172,7 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
 
     return (
         <div>
-                <img style={{height:'40%',width:'40%',position:'absolute',right:10,bottom:'10%'}}src={"inv-2.svg"} />
+                {/* <img style={{height:'40%',width:'40%',position:'absolute',right:10,bottom:'10%'}}src={"inv-2.svg"} />
                 {messages.length > 0 ? (
           <div className='updates-maintenance-message-container' style={{display:'flex',bottom:'15%',position:'absolute'}}>
             <List className={classes.list} 
@@ -180,7 +180,7 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
             {messages}
             </List>
             </div>
-          ) : null}
+          ) : null} */}
                 {maintenance ? (
                     <AppBar className={classes.appbar} position="static">
                     <Toolbar>

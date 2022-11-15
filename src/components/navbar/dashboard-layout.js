@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import {DashboardNavbar} from './dashboard-navbar';
 import { DashboardSidebar } from './dashboard-sidebar';
 //import { useTheme } from '@mui/material/styles'
+import { connect } from 'redux-bundler-react';
 
 const DashboardLayoutRoot = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -18,8 +19,8 @@ const DashboardLayoutRoot = styled('div')(({ theme }) => ({
     // }
   }));
 
-export const DashboardLayout = (props) => {
-  const { children } = props;
+const DashboardLayout = (props) => {
+  const { children, userAccess } = props;
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [forceMdUp, setForceMdUp] = useState(() => {
     // getting stored value
@@ -67,7 +68,12 @@ export const DashboardLayout = (props) => {
         onClose={() => setSidebarOpen(false)}
         width={width}
         open={isSidebarOpen}
+        userAccess={userAccess}
       />
     </>
   );
 };
+
+export default connect(
+	'selectUserAccess',
+	DashboardLayout);

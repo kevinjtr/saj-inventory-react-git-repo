@@ -14,7 +14,6 @@ import FormControl from '@material-ui/core/FormControl';
 import api from '../axios/Api';
 import {Autocomplete, Alert} from '@material-ui/lab';
 import findIndex from 'lodash/findIndex'
-import Header from './Header'
 import {ALERT} from './tools/tools'
 import {updateEmployeeApi,destroyEmployeeApi,addEmployeeApi,getAllEmployeesApi} from '../publics/actions/employee-api'
 import { connect } from 'redux-bundler-react';

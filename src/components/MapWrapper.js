@@ -1,13 +1,14 @@
 // react
 import "./styles/MapWrapper.css"
 // leaflet
-import { MapContainer, TileLayer, useMap, Marker, Popup } from 'react-leaflet'
+import { MapContainer, TileLayer, useMap, Marker, Popup, Tooltip as LeafletTooltip } from 'react-leaflet'
 import {groupBy, filter, forEach} from "lodash"
-import {Tooltip, Typography} from '@mui/material';
+import {Box, Tooltip, Typography} from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 const StyledPopup = styled(Popup)(({ theme }) => theme.palette.mode == "dark" ? ({
-  filter: "brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7)"
+  filter: "brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7)",
+  width: "350px"
 }) : null);
 
 const StyledMapContainer = styled(MapContainer)(({ theme }) => theme.palette.mode == "dark" ? ({
@@ -15,6 +16,10 @@ const StyledMapContainer = styled(MapContainer)(({ theme }) => theme.palette.mod
 }) : null);
 
 const StyledTileLayer = styled(TileLayer)(({ theme }) => theme.palette.mode == "dark" ? ({
+  filter: "brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7)"
+}) : null);
+
+const StyledLeafletTooltip = styled(LeafletTooltip)(({ theme }) => theme.palette.mode == "dark" ? ({
   filter: "brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7)"
 }) : null);
 
@@ -109,8 +114,8 @@ function MapWrapper(props) {
   
 
   return(
-    <div id="map">
-    <StyledMapContainer style={{width:'90vw', height:'40vh', background: "#303030"}} center={position} zoom={5} scrollWheelZoom={true}>
+    <Box id="map" sx={{paddingBottom:2}}>
+    <StyledMapContainer attributionControl={false} style={{width:'100%', paddingBottom: "5px", minHeight: "300px",height:'35vh', background: "#303030"}} center={position} zoom={4} scrollWheelZoom={true}>
       <StyledTileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -125,24 +130,33 @@ function MapWrapper(props) {
 
             return (
             <Marker position={[latitude, longitude]}>
-                <StyledPopup maxHeight={300}>
-                <h4>{`${loc_name}`}</h4>
+              <StyledLeafletTooltip>{loc_name} - {props.equipments.length} Equipment{props.equipments.length > 1 ? "s": ""}</StyledLeafletTooltip>
+                <StyledPopup maxHeight={"250"}>
+                  <Typography variant="h6">
+                  {`${loc_name}`}
+                  </Typography>
                   {Object.keys(hras).map(hra_num => {
                     const eqs = hras[hra_num]
                     return (
                       <>
-                      <h5>{`${hra_num} - ${eqs[0].hra_full_name}`}</h5>
+                      <Typography variant="h6">
+                      {`${hra_num} - ${eqs[0].hra_full_name} [${eqs.length}]`}
+                      </Typography>
                       {
                         eqs.map(eq => {
                           return (
                             <>
                             <Tooltip placement="left" title={
                               <>
-                                <Typography color="inherit">{`Employee ID: ${eq.employee_id ? eq.employee_id : "Unassiged"}`}</Typography>
-                                <Typography color="inherit">{`Employee Name: ${eq.employee_full_name != " " ? eq.employee_full_name : ""}`}</Typography>
-                                <Typography color="inherit">{`Bartag No.: ${eq.bar_tag_num}`}</Typography>
-                                <Typography color="inherit">{`Item Desc: ${eq.item_type}`}</Typography>
-                                <Typography color="inherit">{`Item Serial No.: ${eq.serial_num}`}</Typography>
+                                <Typography  variant="h7" color="inherit">{`Employee ID: ${eq.employee_id ? eq.employee_id : "Unassiged"}`}</Typography>
+                                <br/>
+                                <Typography  variant="h7" color="inherit">{`Employee Name: ${eq.employee_full_name != " " ? eq.employee_full_name : ""}`}</Typography>
+                                <br/>
+                                <Typography  variant="h7" color="inherit">{`Bartag No.: ${eq.bar_tag_num}`}</Typography>
+                                <br/>
+                                <Typography  variant="h7" color="inherit">{`Item Desc: ${eq.item_type}`}</Typography>
+                                <br/>
+                                <Typography  variant="h7" color="inherit">{`Item Serial No.: ${eq.serial_num}`}</Typography>
                               </>
                             }>
                               <Typography sx={{px:4}}>{`${eq.bar_tag_num} - ${eq.item_type.substring(0,eq.item_type.length > 10 ? 10 : eq.item_type.length)}`}</Typography>
@@ -193,7 +207,7 @@ function MapWrapper(props) {
         </Popup>
       </Marker> */}
     </StyledMapContainer>
-    </div>
+    </Box>
     
   )
 

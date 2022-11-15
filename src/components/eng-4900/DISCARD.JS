@@ -1,6 +1,5 @@
 //import Box from '@material-ui/core/Box';
 // import API from "../axios/Api";
-// import Header from "./Header";Box
 //import { connect } from 'react-redux';
 //import { addProduct } from '../../publics/actions/eng4900s';
 //-start-//
@@ -54,7 +53,7 @@ import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, AVD_SEARCH, BASIC_SE
 import {orderBy, findIndex, filter as _filter} from 'lodash'
 //Styles Import
 import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles, TabPanel, a11yProps, tabStyles, stepStyles, steps } from '../styles/material-ui';
-import Header from '../Header'
+
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';

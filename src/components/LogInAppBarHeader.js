@@ -1,4 +1,3 @@
-import {routes_tabs} from './config/routes'
 import React, { useState } from 'react'
 import { connect } from 'redux-bundler-react';
 import { AppBar, Grid, Box, Tabs } from '@mui/material';
@@ -52,38 +51,11 @@ function Header({user, userIsLoggedIn, userAccess, userDarkMode, doToggleDarkMod
 						<div style={{fontSize:"0.6rem", letterSpacing:"0.13rem", color:theme.palette.text.secondary, paddingLeft:"5px", fontWeight:"bold",textShadow:"0 0 2px #878787"}}>Jacksonville District</div>
 					</div>
 					<div style={{display:"flex", flexDirection:"column", justifyContent:"center",height:"30px",marginTop:"auto",marginBottom:"auto",marginLeft:"5px", alignContent:'center'}}>
-						<p style={{textTransform:"uppercase", letterSpacing:"0.15rem", fontSize:"1.8rem", color:theme.palette.text.secondary, fontWeight:"bold",textShadow:"0 0 1px #000",backgroundClip:'text'}}>Inventory Beta</p>
+						<p style={{textTransform:"uppercase", letterSpacing:"0.15rem", fontSize:"1.5rem", color:theme.palette.text.secondary, fontWeight:"bold",textShadow:"0 0 1px #000",backgroundClip:'text'}}>Inventory Application</p>
 					</div>
                 </Grid>
-				{userIsLoggedIn && (
-					<Grid item sx={{display:"flex",justifyContent:"flex-end",zIndex:"2",position:"relative",gap:'10px',alignItems:'center'}} >
-						<Button title={`${mode_options[theme.palette.mode]} Mode`} onClick={()=>doToggleDarkMode()} style={{outline:'0'}}>
-						{userDarkMode ? <Brightness7Icon  style={{color:'rgb(100,100,100)',height:'20px',width:'20px'}}/> : <Brightness4Icon title="Enable Dark Mode" style={{color:'rgb(100,100,100)',height:'20px',width:'20px'}}/>}
-						</Button>
-						<Button title="User Information" onClick={()=>setShowUserDropdown(true)} style={{border:'0px',outline:'0'}} >
-							<AccountCircle style={{color:'rgb(100,100,100)',fontSize:'20px'}} />
-							<ArrowDropDownIcon style={{color:'rgb(100,100,100)',fontSize:'20px'}}/>
-						</Button>
-					</Grid>
-				)}
 				</Grid>
-				{userIsLoggedIn && 
-				<Box style={appbarStyles.tabs}>
-					<Tabs 
-						variant="scrollable"
-						scrollButtons="auto"
-						allowScrollButtonsMobile
-						value={history.location.pathname}
-						TabIndicatorProps={{sx:{backgroundColor:"rgba(230,0,0,0.75)", height:"0.10rem"}}}
-						//textColor="inherit"
-						style={{height:"25px", minHeight:"25px"}}
-					>
-						{routes_tabs(userAccess, theme, {style: {fontSize: '14px', fontWeight: 'bold'}}).tabs}
-					</Tabs>
-					<LogoutButton/>
-				</Box>}
 			</AppBar>
-			{/* {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown}/>} */}
 			</>
 			)} 
 			/>

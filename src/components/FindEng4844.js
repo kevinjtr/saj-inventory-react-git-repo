@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Box from '@material-ui/core/Box';
 // import API from "../axios/Api";
-// import Header from "./Header";Box
 import { connect } from 'react-redux';
 import { addProduct } from '../publics/actions/eng4900s';
 import api from '../axios/Api';

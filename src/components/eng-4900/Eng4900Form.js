@@ -45,7 +45,6 @@ import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, ENG4900, EQUIPMENT, AVD_SEARC
 import {orderBy, findIndex, filter} from 'lodash'
 //Styles Import
 import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles } from '../styles/material-ui';
-import Header from '../Header'
 
 const RESET_FORM = {
   form_id: "",
@@ -888,7 +887,6 @@ export default function Eng4900(props) {
   //Render return.
   return (
     <>
-    <Header/>
     <div>
       {displayTop()}
       <div style={{textAlign: 'center'}}> {loading ? LoadingCircle() : null} </div>

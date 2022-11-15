@@ -52,7 +52,7 @@ const UserDashboard = ({user}) => (
 			  sm={6}
 			  xs={12}
 			>
-			  <MyEquipmentCertification val={user.my_equipments_cert_porcentage}/>
+			  <MyEquipmentCertification my_equipments_cert_porcentage={user.my_equipments_cert_porcentage} fiscal_year={user.fiscal_year} />
 			</Grid>
 			<Grid
 			  item

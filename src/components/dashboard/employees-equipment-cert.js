@@ -16,14 +16,15 @@ export const EmployeesEquipmentCert = (props) => (
             color="textSecondary"
             gutterBottom
             variant="overline"
+            sx={{fontSize: ".65vw"}}
           >
-            EMPLOYEES<br/>EQUIPMENT CERTIFICATION
+            {props.fiscal_year} EMPLOYEES<br/>EQUIPMENT CERTIFICATION
           </Typography>
           <Typography
             color="textPrimary"
             variant="h4"
           >
-            {props.val}%
+            {props.total_equipments_cert_porcentage}%
           </Typography>
         </Grid>
         <Grid item>

@@ -43,7 +43,7 @@ const HraDashboard = ({user}) => {
 	  <Box
 		sx={{
 		  flexGrow: 1,
-		  py: 2
+		  paddingTop: 2
 		}}
 	  >
 		<Container maxWidth={false}>
@@ -76,7 +76,7 @@ const HraDashboard = ({user}) => {
 			  sm={6}
 			  xs={12}
 			>
-			<EmployeesEquipmentCert val={hra.total_equipments_cert_porcentage} />
+			<EmployeesEquipmentCert total_equipments_cert_porcentage={hra.total_equipments_cert_porcentage} fiscal_year={user.fiscal_year} />
 			</Grid>
 			<Grid
 			  item
