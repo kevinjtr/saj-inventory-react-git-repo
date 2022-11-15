@@ -43,6 +43,10 @@ const DashboardLayout = (props) => {
   const width = (forceMdUp && !smUp) || (mdUp && !lgUp) ? "72px" : lgUp ? "220px" : "0px"
 
   React.useEffect(() => {
+    window.dispatchEvent(new CustomEvent('resize'))
+}, [width]);
+
+  React.useEffect(() => {
     console.log(`forcemdUp : ${forceMdUp}`)
     localStorage.setItem("force-mdup", forceMdUp)
 }, [forceMdUp]);
