@@ -10,7 +10,8 @@ import {List as ListIcon, LocationOn as LocationOnIcon, Search as SearchIcon, Co
 import {textFieldClasses, gridClasses, TabPanel, a11yProps, tabClasses} from './styles/mui';
 import {find} from "lodash"
 import { v4 as uuid } from 'uuid';
-import generateExcel from "zipcelx";
+import * as XLSX from 'xlsx'
+import moment from "moment"
 //import SearchIcon from '@material-ui/icons/Search';
 //import ComputerIcon from '@material-ui/icons/Computer';
 
@@ -588,6 +589,25 @@ function Equipment({history, location, match, userToken}) {
         }
     }
 
+    const downloadExcel = (arrayOfObjects, name="exported_doc", ignore=[]) => {
+      const newData = arrayOfObjects.map(row=>{
+        delete row.tableData
+        ignore.map(x => {
+          delete row[x]
+        })
+        return row
+      })
+      const workSheet=XLSX.utils.json_to_sheet(newData)
+      const workBook=XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(workBook,workSheet,"Sheet 1")
+      //Buffer
+      let buf = XLSX.write(workBook,{bookType:"xlsx",type:"buffer"})
+      //Binary string
+      XLSX.write(workBook,{bookType:"xlsx",type:"binary"})
+      const report_date = generateReportDate('filename')
+      //Download
+      XLSX.writeFile(workBook,`${name} ${report_date}.xlsx`)
+    }
 
     // Custom Pdf Export for Extended View
     const downloadPdf=(columns, equipment_array, viewType)=>{
@@ -638,43 +658,41 @@ function Equipment({history, location, match, userToken}) {
                             col.title = "Serial Num."
                         if(col.field =="status")
                             col.title = "Status"
-                       
+                        if(col.field =="employee_office_location_name")
+                            col.title = "Emp Office Loc"
                     }
                 );
 
-        
-            // Convert array of arrays to array of objects
             var printEquipments = equipment_array.map(function(x) {
-              //console.log("array fields" + x);
-                var hraLetter = x[2] ? x[2].charAt(0) + ". " : ""
+                let hraLetter = x["hra_first_name"] ? x["hra_first_name"].charAt(0) + ". " : ""
 
-                var firstName = x[7] ? x[7] + " " : ""
-                var lastName = x[8] ? x[8] : ""
-                var employeeFullName = firstName.charAt(0) + ". " + lastName
+                let firstName = x.employee_first_name ? x.employee_first_name + " " : ""
+                let lastName = x.employee_last_name ? x.employee_last_name : ""
+                let employeeFullName = firstName.charAt(0) + ". " + lastName
 
-                var mfgr = x[15] ? x[15] + " " : ""
-                var model = x[16] ? x[16] : ""
-                var mfgrModel = mfgr + model	
+                let mfgr = x.manufacturer ? x.manufacturer + " " : ""
+                let model = x.model ? x.model : ""
+                let mfgrModel = mfgr + model
 
-                var status = x[10]
-                var status_date = x[11]
-                var status_and_date = status + " as of " + status_date
+                const idx = findIndex(condition,function(c){ return c.id == x.condition})
+                let status_date = x.status_date ? ` [${moment(status_date).format("MM/DD/YY hh:mmm:ss")}]` : ""
+                let status_and_date = x.status ? `${x.status}${status_date}` : ""
+
                 return { 
-                    acquisition_date: x[0],
-                    hra_num: x[1],
-                    hraLetterName: hraLetter + x[3],
-                    item_type: x[4],
-                    bar_tag_num: x[5],
-                    employee_id: x[6],
+                    acquisition_date: x.acquisition_date,
+                    hra_num: x.hra_num,
+                    hraLetterName: hraLetter + x["hra_last_name"],
+                    item_type: x.item_type,
+                    bar_tag_num: x.bar_tag_num,
+                    employee_id: x.employee_id,
                     employeeFullName: employeeFullName,
-                    acquisition_price:x[12],
-                    catalog_num: x[13],
-                    serial_num: x[14],
+                    acquisition_price:x.acquisition_price,
+                    catalog_num: x.catalog_num,
+                    serial_num: x.serial_num,
                     mfgrModel: mfgrModel,
-                    condition: x[17],
-                    status: status_and_date
-                    //updated_by_full_name: x[18]
-                    
+                    condition: idx != -1 ? condition[idx].alias : x.condition,
+                    status: status_and_date,
+                    employee_office_location_name: x.employee_office_location_name ? x.employee_office_location_name : ""
                 }; 
             });
 
@@ -725,55 +743,6 @@ function Equipment({history, location, match, userToken}) {
         doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')
     }
     }
-
-    // function getExcel() {
-    //   const config = {
-    //     filename: "general-ledger-Q1",
-    //     sheet: {
-    //       data: []
-    //     }
-    //   };
-  
-    //   const dataSet = config.sheet.data;
-  
-    //   // review with one level nested config
-    //   // HEADERS
-    //   headerGroups.forEach(headerGroup => {
-    //     const headerRow = [];
-    //     if (headerGroup.headers) {
-    //       headerGroup.headers.forEach(column => {
-    //         headerRow.push(...getHeader(column));
-    //       });
-    //     }
-  
-    //     dataSet.push(headerRow);
-    //   });
-  
-    //   // FILTERED ROWS
-    //   if (rows.length > 0) {
-    //     rows.forEach(row => {
-    //       const dataRow = [];
-  
-    //       Object.values(row.values).forEach(value =>
-    //         dataRow.push({
-    //           value,
-    //           type: typeof value === "number" ? "number" : "string"
-    //         })
-    //       );
-  
-    //       dataSet.push(dataRow);
-    //     });
-    //   } else {
-    //     dataSet.push([
-    //       {
-    //         value: "No data",
-    //         type: "string"
-    //       }
-    //     ]);
-    //   }
-  
-    //   return generateExcel(config);
-    // }
 
     return(
         <Box sx={{ paddingTop:'25px' }}>
@@ -826,11 +795,14 @@ function Equipment({history, location, match, userToken}) {
             options={{
                 exportMenu:[
                     {
-                        label: 'Export PDF',
-                        exportFunc: (columns, eqs) => switches[tab_idx].checkedView ? downloadPdf(columns, eqs, 'extended'): downloadPdf(columns,eqs,'normal')
+                        label: 'Export to PDF',
+                        exportFunc: (columns, eqs) => switches[tab_idx].checkedView ? downloadPdf([...columns], [...eqs], 'extended'): downloadPdf([...columns],[...eqs],'normal')
                       }, {
-                        label: 'Export CSV',
-                        exportFunc: (columns, eqs) => ExportCsv(columns, eqs, 'EquipmentReport' + generateReportDate('filename'))
+                        label: 'Export to CSV',
+                        exportFunc: (columns, eqs) => ExportCsv([...columns], [...eqs], 'EquipmentReport' + generateReportDate('filename'))
+                      }, {
+                        label: 'Export to Excel',
+                        exportFunc: (columns, eqs) => downloadExcel([...eqs],"EquipmentReport",["update_status"])
                       }
                 ],
                 filtering:showFilter[tab_idx],

@@ -61,8 +61,8 @@
     "redux-logger": "^3.0.6",
     "redux-promise-middleware": "^6.1.1",
     "uuid": "^8.3.2",
-    "yup": "^0.32.8",
-    "zipcelx": "^1.6.2"
+    "xlsx": "^0.18.5",
+    "yup": "^0.32.8"
   },
   "scripts": {
     "start": "react-scripts start",
