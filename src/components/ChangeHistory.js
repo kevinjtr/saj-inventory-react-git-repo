@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState, useEffect} from 'react';
 import 'date-fns';
 import {LoadingCircle} from './tools/tools';
 import MaterialTable from 'material-table'
@@ -23,23 +23,24 @@ function ChangeHistory({history, userToken}) {
 	const changeHistoryTabs = {0: {id:'equipment', label:'Equipment History'}, 1: {id:'employee', label:'Employee History'}, 2: {id:'hra', label:'HRA History'}}
 
 	//Hooks Declarations
-	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
-	const [loading, setLoading] = React.useState({init:true,refresh:{
+	const [alertUser, setAlertUser] = useState(ALERT.RESET);
+	const [loading, setLoading] = useState({init:true,refresh:{
 		0: false,
 		1: false,
 		2: false,
 	  }});
-	const [changeHistory, setChangeHistory] = React.useState({
+	const [changeHistory, setChangeHistory] = useState({
 		0: [],
 		1: [],
 		2: [],
 	  });
-	const [editable,setEditable] = React.useState({
+	const [editable,setEditable] = useState({
 	  0:false,
 	  1:false,
 	  2:false,
 	})
-	const [tabs, setTabs] = React.useState(0);
+	const [tabs, setTabs] = useState(0);
+	const [serverDown, setServerDown] = useState(false);
 
 	//Styles Declarations
 	//const tabClasses = tabStyles();
@@ -238,7 +239,7 @@ function ChangeHistory({history, userToken}) {
 	)
     
 	//Effects.
-	React.useEffect(() => {
+	useEffect(() => {
 	console.log('change-history call')
 	setLoading({...loading,init:true})
 
@@ -257,6 +258,7 @@ function ChangeHistory({history, userToken}) {
 		setLoading({...loading,init:false})
 
 	}).catch(function (error) {
+		setServerDown(true)
 		setLoading({...loading,init:false})
 	});
 	}, []);
@@ -266,7 +268,8 @@ function ChangeHistory({history, userToken}) {
 	    <div>
       	{displayTop}
       	{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
-      	{!loading.init ? TabsChangeHistory() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
+      	{loading.init ? <div style={{textAlign:'center'}}>{LoadingCircle()}</div> : null}
+		{!loading.init && !serverDown ? TabsChangeHistory() : null}
     	</div>
 	);
 }

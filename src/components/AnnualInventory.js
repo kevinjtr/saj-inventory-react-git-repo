@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState, useEffect} from 'react';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import 'date-fns';
@@ -22,13 +22,14 @@ function AnnualInventory({history, userToken}) {
 	const PAGE_URL = '/annualinventory'
 
 	//Hooks Declarations
-	const [initialize, setInitialize] = React.useState(true);
-	const [loading, setLoading] = React.useState(false);
-	//const [employees, setEmployees] = React.useState([]);
-	const [hras, setHras] = React.useState([]);
-	const [annualInv, setAnnualInv] = React.useState([]);
-	const [editable,setEditable] = React.useState(false)
-	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
+	const [initialize, setInitialize] = useState(true);
+	const [loading, setLoading] = useState(false);
+	//const [employees, setEmployees] = useState([]);
+	const [hras, setHras] = useState([]);
+	const [annualInv, setAnnualInv] = useState([]);
+	const [editable,setEditable] = useState(false)
+	const [alertUser, setAlertUser] = useState(ALERT.RESET);
+	const [serverDown, setServerDown] = useState(false);
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
@@ -446,9 +447,9 @@ function AnnualInventory({history, userToken}) {
 	}
 
 	//Effects
-	React.useEffect(() => {
-	console.log('AnnualInvCall')
-	setInitialize(true)
+	useEffect(() => {
+		console.log('AnnualInvCall')
+		setInitialize(true)
 		getAllAnnualInventorysApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		setAnnualInv(data.status == 200 ? data.data : data)
@@ -459,11 +460,11 @@ function AnnualInventory({history, userToken}) {
 			console.log('is editable')
 		}
 		setInitialize(false)
-		}).catch(function (error) {
+	}).catch(function (error) {
+		setServerDown(true)
 		setLoading(false)
 		setInitialize(false)
-		});
-	}, []);
+	})}, []);
 
 	//Render return.
 	return (
@@ -475,7 +476,7 @@ function AnnualInventory({history, userToken}) {
 		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 		<div style={{textAlign: 'center'}}>
 			{loading || initialize ? LoadingCircle() : null}
-			{!initialize ? materialTableSelect() : null}
+			{!initialize && !serverDown ? materialTableSelect() : null}
 		</div>
 	</div>
 	</>

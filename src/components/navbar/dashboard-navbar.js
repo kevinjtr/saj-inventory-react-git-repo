@@ -14,6 +14,7 @@ import { useTheme } from '@mui/material/styles'
 import UserDropdown from '../header/UserDropdown';
 import {Link} from "react-router-dom"
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useHistory } from "react-router-dom";
 //import { connect } from 'redux-bundler-react';
 
 // const DashboardNavbarRoot = styled(AppBar)(({ theme }) => ({
@@ -35,7 +36,7 @@ function notificationsLabel(count) {
 export const DashboardNavbar = (props) => {
   const { onSidebarOpen, mdUp, toggleForceMdUp, lgUp, doToggleDarkMode, ...other } = props;
   const [showUserDropdown,setShowUserDropdown] = useState(false)
-  const theme = useTheme();
+  const history = useHistory();
 
   return (
     <>
@@ -74,11 +75,10 @@ export const DashboardNavbar = (props) => {
           >
             <MenuIcon fontSize="small" />
           </IconButton>
-          <Link to={"/"} style={{textDecoration:'none'}}>
+          
             <Box sx={{display:"flex",alignItems:"center"}}>
-            <Button sx={{
+            <Button onClick={() => history.push("/")} sx={{
                 display: {
-                  
                   //xs: 'inline-flex',
                   left: 15,
                   //lg: 'none'
@@ -93,7 +93,7 @@ export const DashboardNavbar = (props) => {
               <img src="usace-inventory.png" alt="image" style={{height: "36px"}} />
             </Button>
             </Box>
-          </Link>
+          
           {/* <Tooltip title="Search">
             <IconButton sx={{ ml: 1 }}>
               <SearchIcon fontSize="small" />

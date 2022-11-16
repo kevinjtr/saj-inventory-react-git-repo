@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState, useEffect} from 'react';
 import '../img/style.css';
 import api from '../axios/Api';
 import MaterialTable from '@material-table/core'
@@ -14,13 +14,14 @@ import { connect } from 'redux-bundler-react';
 
 function AuthorizedUsers({ userToken }) {
     //React Hooks Declarations.
-    const [initialize, setInitialize] = React.useState(true);
-    const [authorizedUsers, setAuthorizedUsers] = React.useState([]);
-    const [names, setNames] = React.useState([]);
-    const [hras, setHRAs] = React.useState([]);
-    const [loading, setLoading] = React.useState(false);
-    const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
-    const [editable, setEditable] = React.useState(false)
+    const [initialize, setInitialize] = useState(true);
+    const [authorizedUsers, setAuthorizedUsers] = useState([]);
+    const [names, setNames] = useState([]);
+    const [hras, setHRAs] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [alertUser, setAlertUser] = useState(ALERT.RESET);
+    const [editable, setEditable] = useState(false)
+    const [serverDown, setServerDown] = useState(false);
 
     const AlertUser = (x) => {
         console.log('alert user activated')
@@ -278,9 +279,7 @@ function AuthorizedUsers({ userToken }) {
         });
     }
 
-
-
-    React.useEffect(() => {
+    useEffect(() => {
 
         console.log(`Authorized Users Call`)
         setInitialize(true)
@@ -300,6 +299,7 @@ function AuthorizedUsers({ userToken }) {
             setLoading(false)
             setInitialize(false)
         }).catch(function (error) {
+            setServerDown(true)
             setLoading(false)
             setInitialize(false)
             setAuthorizedUsers([])
@@ -321,7 +321,7 @@ function AuthorizedUsers({ userToken }) {
                 {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
                 <div style={{ textAlign: 'center' }}>
                     {loading ? LoadingCircle() : null}
-                    {!loading > 0 ? materialTableSelect() : null}
+                    {!loading && !serverDown ? materialTableSelect() : null}
 
                 </div>
             </div>

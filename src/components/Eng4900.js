@@ -3,7 +3,7 @@
 //import { connect } from 'react-redux';
 //import { addProduct } from '../publics/actions/eng4900s';
 //-start-//
-import React from 'react';
+import {useState, useEffect} from 'react';
 import api from '../axios/Api';
 import TextField from '@material-ui/core/TextField';
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
@@ -154,62 +154,63 @@ function Eng4900({history, location, match, userToken}) {
   const theme = useTheme()
 
   //Hooks Declarations.
-  const [uploadPdf, setUploadPdf] = React.useState({
+  const [uploadPdf, setUploadPdf] = useState({
     show: false,
     rowData: null,
     refresh:false
   })
-  const [create4900, setCreate4900] = React.useState({
+  const [create4900, setCreate4900] = useState({
     show: false,
     formData: null,
     formId: null,
     action: 'CREATE'
   })
-  const [searchFields, setSearchFields] = React.useState({
+  const [searchFields, setSearchFields] = useState({
     0: SEARCH_FIELD_RESET,
     1: SEARCH_FIELD_RESET,
     2: SEARCH_FIELD_RESET,
     3: SEARCH_FIELD_RESET,
   })
-  const [searchView, setSearchView] = React.useState({
+  const [searchView, setSearchView] = useState({
     0: BASIC_SEARCH,
     1: BASIC_SEARCH,
     3: BASIC_SEARCH,
     4: BASIC_SEARCH,
   });
-	const [windowSize, setWindowSize] = React.useState({
+	const [windowSize, setWindowSize] = useState({
 	width: undefined,
 	height: undefined,
 	});
-  const [loading, setLoading] = React.useState({init:true,refresh:{
+  const [loading, setLoading] = useState({init:true,refresh:{
     0: false,
     1: false,
     2: false,
     3: false,
   }});
-  const [eng4900s, setEng4900s] = React.useState({
+  const [eng4900s, setEng4900s] = useState({
       0: [],
       1: [],
       2: [],
       3: []
     });
-  const [editable,setEditable] = React.useState(false)
-  const [tabs, setTabs] = React.useState(1);
-  const [switches, setSwitches] = React.useState({
+  const [editable,setEditable] = useState(false)
+  const [tabs, setTabs] = useState(1);
+  const [switches, setSwitches] = useState({
       0: SWITCH_RESET,
       1: SWITCH_RESET,
       2: SWITCH_RESET,
       3: SWITCH_RESET,
     });
-  const [hras, setHras] = React.useState({
+  const [hras, setHras] = useState({
     0: RESET_HRAS,
     1: RESET_HRAS,
     2: RESET_HRAS,
     4: RESET_HRAS,
   });
-  const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
-  const [selectedRow, setSelectedRow] = React.useState({});
-  
+  const [alertUser, setAlertUser] = useState(ALERT.RESET);
+  const [selectedRow, setSelectedRow] = useState({});
+  const [serverDown, setServerDown] = useState(false);
+
   //Events Declarations.
   const handleTableDelete = async (rowData) => {
     let result_error = true
@@ -342,6 +343,7 @@ function Eng4900({history, location, match, userToken}) {
       setLoading({...loading,init:false})
 
     }).catch(function (error) {
+      setServerDown(true)
       setLoading({...loading,init:false})
       setEng4900s({...eng4900s, [tabs]: []})
   
@@ -1207,7 +1209,7 @@ function Eng4900({history, location, match, userToken}) {
   }
 
   //will run once.
-  React.useEffect(() => {
+  useEffect(() => {
 
     function handleResize() {
       // Set window width/height to state
@@ -1229,22 +1231,22 @@ function Eng4900({history, location, match, userToken}) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log(eng4900s)
   }, [eng4900s]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if(Object.keys(selectedRow) > 0){
       setTimeout(() => setSelectedRow({}), 20000);
     }
     
   }, [selectedRow]);
 
-  React.useEffect(() => {
+  useEffect(() => {
 		console.log(hras)
 	}, [hras]);
 
-  React.useEffect(() => {
+  useEffect(() => {
 		if(uploadPdf.refresh){
       
     }
@@ -1258,7 +1260,8 @@ function Eng4900({history, location, match, userToken}) {
     <div>
       {displayTop()}
       {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
-      {!loading.init ? TabsEng4900() : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
+      {loading.init ? <div style={{textAlign:'center'}}>{LoadingCircle()}</div> : null}
+      {!loading.init && !serverDown ? TabsEng4900() : null}
     </div>
     </>
   );

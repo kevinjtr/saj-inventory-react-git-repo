@@ -524,6 +524,7 @@ const Account = ({userToken}) => {
     active:false,
     send:false,
   });
+  const [serverDown, setServerDown] = useState(false);
 
   const { actions } = useContext(AlertContext);
   const alertTypes = ["success", "warning", "info", "error"];
@@ -554,6 +555,7 @@ const Account = ({userToken}) => {
       setLoading(false)
 
       }).catch(function (error) {
+        setServerDown(true)
         setLoading(false)
           //setLoading(false)
           //setRegistrations([])
@@ -588,7 +590,8 @@ const Account = ({userToken}) => {
               >
               <LoadingCircle/>
               </Grid>
-            ) : (
+            ) : null}
+            {!loading && !serverDown ? (
               <>
                 <Grid
                   item
@@ -608,8 +611,7 @@ const Account = ({userToken}) => {
                   
                 </Grid>
                 </>
-            )}
-
+            ) : null}
           </Grid>
         </Container>
       </Box>
