@@ -266,16 +266,14 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
                 <DialogContent dividers>
                 <form style={{width:'100%'}} name="updateForm" onChange={(e)=>handleChange(e)}>
                 <Select
-                sx={{minWidth:160
-                }}
-                    name="status"
-                    id="status"
-                    label="Status"
-                    value={status}
-                    
-                    
-                    onChange={handleChange}
-                >
+                  displayEmpty
+                  sx={{minWidth:160}}
+                  name="status"
+                  id="status"
+                  label="Status"
+                  value={status}
+                  onChange={handleChange}
+                  >
                     <MenuItem defaultValue value={"Still Possess"}>Still Possess</MenuItem>
                     <MenuItem value={"Gave Back To HRA Holder"}>Gave Back To HRA Holder</MenuItem>
                     <MenuItem value={"Lost"}>Lost</MenuItem>

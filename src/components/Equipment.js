@@ -1050,7 +1050,7 @@ function Equipment({history, location, match, userToken}) {
         { title: 'Employee Office Location', field: 'employee_office_location_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.3,editable: 'never'  },
         {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' },
         {title: 'Status Date', field:'status_date', type:'date', filterComponent: (props) => <CustomDatePicker {...props} />, col_id:6.4,editable: 'no' },
-        tab_idx === 0 ? {title: 'Update Status', field:'update_status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.5,editable: 'yes', render: (rowData) => <Link underline="always" component="button" onClick={()=>{console.log(rowData); setSelRowData(rowData); setOpenPopup(true); }}>Update</Link>}: {}
+        [0,1,2].includes(tab_idx) ? {title: 'Update Status', field:'update_status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.5,editable: 'yes', render: (rowData) => <Link underline="always" component="button" onClick={()=>{console.log(rowData); setSelRowData(rowData); setOpenPopup(true); }}>Update</Link>}: {}
     ] 
    // tab_idx === 0 || tab_idx === 1 ? {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
     //tab_idx === 1 ? {title: 'Status Date', field:'status_date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
