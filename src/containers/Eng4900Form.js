@@ -17,7 +17,6 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import PropTypes from 'prop-types';
-import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import Input from '@material-ui/core/Input';
 import FormGroup from '@material-ui/core/FormGroup';

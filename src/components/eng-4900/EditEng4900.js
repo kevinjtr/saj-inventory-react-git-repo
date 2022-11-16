@@ -22,7 +22,6 @@ import {
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import PropTypes from 'prop-types';
-import MaskedInput from 'react-text-mask';
 import NumberFormat from 'react-number-format';
 import Input from '@material-ui/core/Input';
 import FormGroup from '@material-ui/core/FormGroup';
@@ -49,21 +48,21 @@ import {LoadingCircle} from '../tools/tools'
 //Styles Import
 import { plusButtonStyles, texFieldStyles, gridStyles, itemMenuStyles, phoneTextFieldStyles, AvatarStyles } from '../styles/material-ui';
   
-  function TextMaskCustom(props) {
-    const { inputRef, ...other } = props;
+  // function TextMaskCustom(props) {
+  //   const { inputRef, ...other } = props;
   
-    return (
-      <MaskedInput
-        {...other}
-        ref={(ref) => {
-          inputRef(ref ? ref.inputElement : null);
-        }}
-        mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
-        placeholderChar={'\u2000'}
-        showMask
-      />
-    );
-  }
+  //   return (
+  //     <MaskedInput
+  //       {...other}
+  //       ref={(ref) => {
+  //         inputRef(ref ? ref.inputElement : null);
+  //       }}
+  //       mask={['(', /[1-9]/, /\d/, /\d/, ')', ' ', /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/]}
+  //       placeholderChar={'\u2000'}
+  //       showMask
+  //     />
+  //   );
+  // }
   
   TextMaskCustom.propTypes = {
     inputRef: PropTypes.func.isRequired,
