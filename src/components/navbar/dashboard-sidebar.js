@@ -92,7 +92,7 @@ export const DashboardSidebar = (props) => {
             fontSize=".7rem"
             sx={{textAlign:"center"}}
           >
-            {(lgUp && !forceMdUp) || smUp ? "Inventory App Beta" : "Inv App\nBeta"}
+            {(lgUp && !forceMdUp) || smUp ? "Inventory App" : "Inv App"}
           </Typography>
           <Typography
             color="text.secondary"
