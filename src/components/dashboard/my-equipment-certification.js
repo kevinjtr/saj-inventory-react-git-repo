@@ -1,5 +1,19 @@
 import { Avatar, Box, Card, CardContent, Grid, LinearProgress, Typography } from '@mui/material';
 import InsertChartIcon from '@mui/icons-material/InsertChartOutlined';
+import { styled } from '@mui/material/styles';
+
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  [theme.breakpoints.down('lg')]: {
+    fontSize: ".75rem"
+  },
+  [theme.breakpoints.up('lg')]: {
+    fontSize: ".62vw"
+  },
+  // [theme.breakpoints.up('lg')]: {
+  //   fontSize: 72
+  // }
+}));
 
 export const MyEquipmentCertification = (props) => (
   <Card
@@ -12,14 +26,14 @@ export const MyEquipmentCertification = (props) => (
         sx={{ justifyContent: 'space-between' }}
       >
         <Grid item>
-          <Typography
+          <StyledTypography
             color="textSecondary"
             gutterBottom
             variant="overline"
-            sx={{fontSize: ".65vw"}}
+            // sx={{ fontSize: "1rem"}}
           >
             {props.fiscal_year}<br/>MY EQUIPMENT CERTIFICATION
-          </Typography>
+          </StyledTypography>
           <Typography
             color="textPrimary"
             variant="h4"

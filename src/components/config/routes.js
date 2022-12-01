@@ -1,6 +1,7 @@
 import Eng4900 from '../Eng4900';
 import Dashboard from '../Dashboard';
 import Equipment from '../Equipment';
+import Help from '../Help';
 import Hra from '../Hra';
 import Employee from '../Employee';
 import AnnualInventory from '../AnnualInventory';
@@ -17,16 +18,19 @@ import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
 import AuthorizedUsers from '../AuthorizedUsers'
 import Account from '../Account';
-import HomeIcon from '@mui/icons-material/Home'
-import DevicesIcon from '@mui/icons-material/Devices';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import BadgeIcon from '@mui/icons-material/Badge';
-import DescriptionIcon from '@mui/icons-material/Description';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import GroupsIcon from '@mui/icons-material/Groups';
-import HistoryIcon from '@mui/icons-material/History';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
+import {Home as HomeIcon, Help as HelpIcon, Devices as DevicesIcon, Inventory as InventoryIcon, SupervisorAccount as SupervisorAccountIcon, Badge as BadgeIcon,
+    Description as DescriptionIcon, QuestionAnswer as QuestionAnswerIcon, Groups as GroupsIcon, History as HistoryIcon, HowToReg as HowToRegIcon} from "@mui/icons-material"
+// import HomeIcon from '@mui/icons-material/Home'
+// import HelpIcon from '@mui/icons-material/Help';
+//import DevicesIcon from '@mui/icons-material/Devices';
+//import InventoryIcon from '@mui/icons-material/Inventory';
+//import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+//import BadgeIcon from '@mui/icons-material/Badge';
+//import DescriptionIcon from '@mui/icons-material/Description';
+//import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+//import GroupsIcon from '@mui/icons-material/Groups';
+//import HistoryIcon from '@mui/icons-material/History';
+//import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { NavItem } from '../navbar/nav-item';
 import { NavItem as NavItemSmall } from '../navbar/nav-item-small';
 
@@ -34,7 +38,7 @@ import { NavItem as NavItemSmall } from '../navbar/nav-item-small';
 export const routes_config = [
     {path:'/dashboard',alias:'dashboard',label:'Dashboard',component:Dashboard,icon:<HomeIcon/>,tab:true,level:'user',type:'private'},
     {path:'/login',alias:'login',label:'Log In',component:SignInOut,tab:false,level:'user',type:'public'},
-    {path:'/account',alias:'Account',label:'Account',component:Account,tab:false,level:'user',type:'private'},
+    {path:'/account',alias:'Account',label:'Account',component:Account,tab:false,level:'user',type:'private'}, 
     {path:'/equipment',alias:'equipment',label:'Equipment',component:Equipment,icon:<DevicesIcon/>,tab:true,level:'user',type:'private'},
     {path:'/annualinventory',alias:'annualinventory',label:'Annual Inventory',component:AnnualInventory,icon:<InventoryIcon/>,tab:true,level:'admin',type:'private'},
     {path:'/annualinventory/:id',alias:'annualinventory',label:' View Annual Inventory',component:ViewAnnualInventory,tab:false,level:'admin',type:'private'},
@@ -45,6 +49,7 @@ export const routes_config = [
     {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, icon:<GroupsIcon/>, tab:true, level: 'admin', type: 'private' },
     {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,icon:<HistoryIcon/>,tab:true,level:'admin',type:'private'},
     {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations', alt_label:'Pending Regis- trations', component:RegistrationViewer,icon:<HowToRegIcon/>,tab:true,level:'admin',type:'private'},
+    {path:'/help',alias:'help',label:'Help',component:Help,icon:<HelpIcon/>,tab:true,level:'user',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
