@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 import {getAccount, updateAccountApi} from "../publics/actions/account-api"
 import { connect } from 'redux-bundler-react';
-import { SettingsInputAntennaTwoTone } from '@material-ui/icons';
 import {registrationDropDownItems} from "./config/constants"
 import {LoadingCircle} from './tools/tools';
 import { AlertContext } from "./context/AlertProvider";

@@ -1,7 +1,6 @@
 
 import React, {useState, useEffect, useRef} from 'react';
 import MapWrapper from "./MapWrapper"
-
 import { Snackbar, Box, AppBar, Tabs, Tab, Switch, Typography, TextField,
    MenuItem, FormControl, Select,FormGroup,FormControlLabel,Button,IconButton,
   Tooltip,Radio,RadioGroup,Grid, Link, Alert, Autocomplete as AutocompleteV5, InputAdornment, DatePicker} from '@mui/material';
@@ -12,39 +11,10 @@ import {find} from "lodash"
 import { v4 as uuid } from 'uuid';
 import * as XLSX from 'xlsx'
 import moment from "moment"
-//import SearchIcon from '@material-ui/icons/Search';
-//import ComputerIcon from '@material-ui/icons/Computer';
-
-//import { Link } from '@material-ui/core';
-//import { makeStyles } from '@material-ui/core/styles';
-
-// import AppBar from '@material-ui/core/AppBar';
-// import Tabs from '@material-ui/core/Tabs';
-// import Tab from '@material-ui/core/Tab';
-
-// import Switch from '@material-ui/core/Switch';
-// import Typography from '@material-ui/core/Typography';
-// import TextField from '@material-ui/core/TextField';
-// import MenuItem from '@material-ui/core/MenuItem';
-// import FormControl from '@material-ui/core/FormControl';
-// import Select from '@material-ui/core/Select';
-// import FormGroup from '@material-ui/core/FormGroup';
-// import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { Autocomplete} from '@material-ui/lab';
-// import Button from '@material-ui/core/Button';
-// import IconButton from '@material-ui/core/IconButton';
-// import Tooltip from '@material-ui/core/Tooltip';
-
-// import Radio from '@material-ui/core/Radio';
-// import RadioGroup from '@material-ui/core/RadioGroup';
-// import Grid from '@material-ui/core/Grid';
-
-
 import MaterialTable, {MTableToolbar,MTableBody} from '@material-table/core'
 import { ExportCsv } from '@material-table/exporters';
 import {tableIcons} from './mui/config'
-//import {texFieldStyles, gridStyles, TabPanel, a11yProps, tabStyles} from './styles/material-ui';
-
 import 'date-fns';
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
@@ -52,29 +22,11 @@ import {getQueryStringParams,LoadingCircle,contains,TextMaskCustom,NumberFormatC
 import { useDimensions } from "./tools/useDimensions";
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from './config/constants'
 
-
 import {orderBy, findIndex, filter, debounce} from 'lodash'
-//Styles Import
-
 import {updateEquipmentApi, destroyEquipmentApi, addEquipmentApi, equipmentSearchApi2} from '../publics/actions/equipment-api'
 import { connect } from 'redux-bundler-react';
 import {ALERT} from './tools/tools'
-
 import UpdateStatusPopup from './UpdateStatusPopup';
-import { viVN } from '@mui/material/locale';
-
-
-
-// const dialogStyles = makeStyles(theme => ({
-//   dialogWrapper: {
-//     padding: theme.spacing(2),
-//     position:'absolute',
-//     top: theme.spacing(5)
-//   },
-//   dialogTitle: {
-//     paddingRight:'0px'
-//   }
-// }))
 
 function Equipment({history, location, match, userToken}) {
   
@@ -115,23 +67,10 @@ function Equipment({history, location, match, userToken}) {
   }
 
   //Variables Declarations.
-//let sendData = [];
+  
 
   //Styles Declarations.
-  //const textFieldClasses = texFieldStyles();
-  //const classesItemMenu = itemMenuStyles();
-  //const classesPhoneTextField = phoneTextFieldStyles();
-  //const gridClasses = gridStyles();
-  // const avatarClasses = AvatarStyles();
-  // const plusButtonClasses = plusButtonStyles();
-  // const PlusButtonTheme = createTheme({
-  //   palette: {
-  //     primary: green,
-  //   },
-  // });
-  //const classDialog = dialogStyles();
-  //const tabClasses = tabStyles();
-  //const StepClasses = stepStyles();
+
 
   //Hooks Declarations.
   const [searchFields, setSearchFields] = useState({
