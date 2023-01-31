@@ -283,7 +283,7 @@ function Eng4900({history, location, match, userToken}) {
       opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
     })
   
-    eng4900SearchApi({
+    await eng4900SearchApi({
       'fields': fields_obj,
       'options':opts,
       'tab': formTabs[tabs].id

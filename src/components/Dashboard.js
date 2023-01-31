@@ -11,9 +11,9 @@ const Dashboard = ({userToken, userName}) => {
 	const [user, setUser] = useState({hras: []})
 	const [serverDown, setServerDown] = useState(false);
 
-	useEffect(() => {
+	useEffect(async () => {
 		
-		dashboardApi(userToken)
+		await dashboardApi(userToken)
 		  .then((response) => response.data).then((data) => {
 			  console.log(data.data)
 			setUser(data.data)

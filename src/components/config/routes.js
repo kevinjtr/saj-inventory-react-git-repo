@@ -49,7 +49,7 @@ export const routes_config = [
     {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, icon:<GroupsIcon/>, tab:true, level: 'admin', type: 'private' },
     {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,icon:<HistoryIcon/>,tab:true,level:'admin',type:'private'},
     {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations', alt_label:'Pending Regis- trations', component:RegistrationViewer,icon:<HowToRegIcon/>,tab:true,level:'admin',type:'private'},
-    {path:'/help',alias:'help',label:'Help',component:Help,icon:<HelpIcon/>,tab:true,level:'user',type:'private'},
+    //{path:'/help',alias:'help',label:'Help',component:Help,icon:<HelpIcon/>,tab:true,level:'user',type:'private'},
     {path:'/404',alias:'404',label:'Not Found',component:NotFound,tab:false,type:'public'},
     {path:'/Logout',alias:'logout',label:'Logout Successful',component:LogoutConfirm,tab:false,level:'user',type:'public'}
 ]
