@@ -1,5 +1,14 @@
 import api from '../../axios/Api';
 import {ENG4900} from '../../components/config/constants'
+import * as axiosRT from 'axios';
+import axiosRetry from 'axios-retry';
+
+const myAxiosRtInstance = axiosRT.create({
+	baseURL: process.env.REACT_APP_API
+});
+
+axiosRetry(myAxiosRtInstance, { retries: 3, shouldResetTimeout: true, retryCondition: () => true });
+
 
 export const updateEng4900Api = async (rowData, token) => {
 	return api.post(`${ENG4900}/update`,{params:rowData},{headers:{auth:token}})
@@ -27,7 +36,7 @@ export const getEng4900ByIdApi = async (id, token) => {
 };
 
 export const eng4900SearchApi = async (searchParams, token) => {
-	return api.post(`${ENG4900}/search2`,searchParams,{headers:{auth:token}})
+	return myAxiosRtInstance.post(`${ENG4900}/search2`,searchParams,{headers:{auth:token}})
 };
 
 //in progress

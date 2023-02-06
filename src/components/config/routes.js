@@ -64,7 +64,7 @@ export const routes = routes_config.map((route, i) => {
 
     if(route.path == '/login'){
         return (
-            <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} name={route.alias} path={route.path} component={route.component}/>
+            <PrivateRoute exact id={`app-route-${i}`} key={`app-route-${i}`} title ={"hellou"} name={route.alias} path={route.path} component={route.component}/>
         )
     }
 
