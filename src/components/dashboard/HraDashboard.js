@@ -22,7 +22,7 @@ const HraDashboard = ({user}) => {
 	{hras.length > 0 ? (
 	<>
 	<Box sx={{textAlign:'center',fontSize:"32px"}}>
-	<FormControl variant="standard" sx={{fontSize: "32px", m: 1, minWidth: 500 }}>
+	<FormControl variant="standard" sx={{fontSize: "32px", m: 1, minWidth: 400 }}>
         <Select
 		sx={{fontSize:"32px"}}
 		blurOnSelect    

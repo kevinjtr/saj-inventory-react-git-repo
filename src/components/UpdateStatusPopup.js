@@ -1,7 +1,7 @@
 //MUI-V5-COMPLETE.
 import {updateEquipmentApi} from '../publics/actions/equipment-api'
 import {findIndex} from 'lodash'
-import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Select,MenuItem,TextField,IconButton } from '@mui/material'
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Select,MenuItem,TextField,IconButton, FormControl, InputLabel } from '@mui/material'
 import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react'
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
@@ -265,6 +265,8 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
                 </DialogTitle>
                 <DialogContent dividers>
                 <form style={{width:'100%'}} name="updateForm" onChange={(e)=>handleChange(e)}>
+                <FormControl >
+                <InputLabel id="select-status">Status</InputLabel>
                 <Select
                   displayEmpty
                   sx={{minWidth:160}}
@@ -281,6 +283,7 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
                     <MenuItem value={"Excessed"}>Excessed</MenuItem>
                     <MenuItem value={"Other"}>Other - Describe Situation Below</MenuItem>
                 </Select>
+                </FormControl>
                 <br/>
                 <br/>
                 <br/>
