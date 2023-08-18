@@ -3,7 +3,7 @@
 import React from 'react';
 import {Link, useLocation} from "react-router-dom";
 import PropTypes from 'prop-types';
-import { Box, Button, ListItem } from '@mui/material';
+import { Box, Button, ListItem } from '@mui/material/';
 import styled from '@emotion/styled';
 
 const NavItemButtonRoot = styled(Button)(({ theme }) => ({

@@ -1,6 +1,5 @@
-//MUI-V5-COMPLETE.
 import React, { useState } from 'react'
-import { Snackbar, Alert,ClickAwayListener,Box, Button,Tooltip, Modal } from '@mui/material';
+import { Snackbar, Alert,ClickAwayListener,Box, Button,Tooltip, Modal } from '@mui/material/';
 import {Notifications as NotificationsIcon, AccountCircle as AccountCircleIcon,
 	Brightness7 as Brightness7Icon, Brightness4 as Brightness4Icon,
 Error as ErrorIcon, Logout as LogoutIcon} from '@mui/icons-material';
@@ -81,9 +80,13 @@ const UserDropDown = ({userIsLoggedIn, showUserDropdown, setShowUserDropdown, us
 				<Box sx={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px',paddingTop:'10px',paddingBottom:'10px',textAlign:'center'}}>
 					<Tooltip title="Sign Out">
 						<Button sx={{ mr: 1, width:'115px',
-						'&:focus': {
-							outline: 'none',
-							}}} onClick={()=> {if(userIsLoggedIn) doLogout()}} >
+							'&:focus': {
+								outline: 'none',
+								}}} 
+							onClick={() => {
+								if(userIsLoggedIn) doLogout()
+							}} 
+							>
 							<LogoutIcon fontSize="small" />
 							<Box sx={{display:'flex',flexDirection:'row',alignItems:'center',textAlign:'center',fontSize:'.75rem',ml:1}}>
 								Sign Out

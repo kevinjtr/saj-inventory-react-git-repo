@@ -1,5 +1,4 @@
-//MUI-V5-COMPLETE.
-import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField,IconButton } from '@mui/material'
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField,IconButton } from '@mui/material/'
 import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react'
 import {Close as CloseIcon, Send as SendIcon} from '@mui/icons-material';

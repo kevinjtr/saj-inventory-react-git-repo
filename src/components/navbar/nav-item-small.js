@@ -2,7 +2,7 @@
 //import { useRouter } from 'next/router';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Box, Button, ListItem } from '@mui/material';
+import { Box, Button, ListItem } from '@mui/material/';
 import {Link, useLocation} from "react-router-dom";
 
 export const NavItem = (props) => {

@@ -1,7 +1,8 @@
 //import styled from '@emotion/styled';
 import { deepOrange, deepPurple, green } from '@mui/material/colors';
 import PropTypes from 'prop-types';
-import {Box, Typography} from '@mui/material';
+import { Box, Typography, TextField, Paper, Avatar, Tab } from '@mui/material/';
+import { styled } from '@mui/material/styles';
 
 export const buttonClasses = {
     fab: {
@@ -69,63 +70,6 @@ export const gridClasses = {
           textAlign: 'center',
         },
     }
-  
-// export const itemMenuStyles = {
-//       formControl: {
-//         margin: theme.spacing(1),
-//         minWidth: 120,
-//       },
-//       selectEmpty: {
-//         marginTop: theme.spacing(2),
-//       },
-//     }
-
-// export const phoneTextFieldStyles = {
-//       root: {
-//         '& > *': {
-//           margin: theme.spacing(1),
-//         },
-//       },
-//     }
-  
-// export const AvatarStyles = {
-//       root: {
-//         display: 'flex',
-//         '& > *': {
-//           margin: theme.spacing(1),
-//         },
-//       },
-//       orange: {
-//         color: theme.palette.getContrastText(deepOrange[500]),
-//         backgroundColor: deepOrange[500],
-//         height:20,
-//         width:20
-//       },
-//       purple: {
-//         color: theme.palette.getContrastText(deepPurple[500]),
-//         backgroundColor: deepPurple[500],
-//       },
-//     }
-
-
-// export const alertStyles = {
-//     root: {
-//       width: '100%',
-//       '& > * + *': {
-//         marginTop: 2,
-//       },
-//     },
-// }
-    
-// export const dropDownStyles = {
-//   formControl: {
-//     margin: 1,
-//     minWidth: 120,
-//   },
-//   selectEmpty: {
-//     marginTop: 2,
-//   },
-// }
 
 export const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -168,15 +112,28 @@ export const tabClasses = {
   },
 }
 
-// export const stepStyles = {
-//   root: {
-//     width: '100%',
-//   },
-//   backButton: {
-//     marginRight: 1,
-//   },
-//   instructions: {
-//     marginTop: 1,
-//     marginBottom: 1,
-//   },
-// }
+export const StyledTextField = styled(TextField)(({ theme }) => ({
+  '& .MuiTextField-root': {
+    margin: theme.spacing(1),
+    width: '25ch',
+    textAlign: 'center',
+  },
+}));
+
+export const StyledPaper = styled(Paper)(({ theme }) => ({
+      padding: theme.spacing(2),
+      textAlign: 'center',
+      color: theme.palette.text.secondary,
+}));
+
+export const StyledOrangeAvatar = styled(Avatar)(({ theme }) => ({
+  color: theme.palette.getContrastText(deepOrange[500]),
+        backgroundColor: deepOrange[500],
+        height:20,
+        width:20
+}));
+
+export const StyledBox = styled(Box)(({ theme }) => ({
+  flexGrow: 1,
+  backgroundColor: theme.palette.background.paper,
+}));

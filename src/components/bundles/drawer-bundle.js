@@ -1,7 +1,7 @@
 import api from '../../axios/Api';
 import jwt_decode from "jwt-decode";
-import { RepeatOneSharp } from '../../../node_modules/@material-ui/icons';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { RepeatOneSharp } from '../../../node_modules/@mui/icons-material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default {
     name: "user",
@@ -33,7 +33,7 @@ export default {
     doToggleisSidebarOpen: (val, cascade, silent) => ({ dispatch, store }) => {
         if(store.selectUserIsLoggedIn()){
 
-        const saved = localStorage.getItem("force-mdup")
+        const saved = window.localStorage.getItem("force-mdup")
         const forceMdUp = JSON.parse(saved) || false
 
         const lgUp = useMediaQuery((theme) => theme.breakpoints.up('lg'), {
@@ -60,7 +60,7 @@ export default {
         }
     },
     doToggleForceMdUp: () => ({ dispatch, store}) => {
-        localStorage.setItem('force-mdup', !store.selectUserDarkMode());
+        window.localStorage.setItem('force-mdup', !store.selectUserDarkMode());
 
         dispatch({ type: 'TOGGLE_DARK_MODE', payload:{
             darkMode: !store.selectUserDarkMode()
@@ -70,14 +70,14 @@ export default {
         dispatch({
         type: 'SET_DRAWER_FROM_LOCAL',
         payload: {
-            user: localStorage.getItem('user'),
-            auth: localStorage.getItem('auth'),
-            'x-access-token-expiration': localStorage.getItem('x-access-token-expiration'),
-            level_name: localStorage.getItem('level-name'),
-            user_name: localStorage.getItem('user-name'),
-            access: JSON.parse(localStorage.getItem('access')),
-            darkMode: JSON.parse(localStorage.getItem('darkMode')),
-            district_office: localStorage.getItem('district-office'),
+            user: window.localStorage.getItem('user'),
+            auth: window.localStorage.getItem('auth'),
+            'x-access-token-expiration': window.localStorage.getItem('x-access-token-expiration'),
+            level_name: window.localStorage.getItem('level-name'),
+            user_name: window.localStorage.getItem('user-name'),
+            access: JSON.parse(window.localStorage.getItem('access')),
+            darkMode: JSON.parse(window.localStorage.getItem('darkMode')),
+            district_office: window.localStorage.getItem('district-office'),
         }
         });
       },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, useMediaQuery } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material/';
 import { styled } from '@mui/material/styles';
 import {DashboardNavbar} from './dashboard-navbar';
 import { DashboardSidebar } from './dashboard-sidebar';
@@ -24,7 +24,7 @@ const DashboardLayout = (props) => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [forceMdUp, setForceMdUp] = useState(() => {
     // getting stored value
-    const saved = localStorage.getItem("force-mdup");
+    const saved = window.localStorage.getItem("force-mdup");
     const initialValue = JSON.parse(saved);
     return initialValue || false;
   });
@@ -48,7 +48,7 @@ const DashboardLayout = (props) => {
 
   React.useEffect(() => {
     console.log(`forcemdUp : ${forceMdUp}`)
-    localStorage.setItem("force-mdup", forceMdUp)
+    window.localStorage.setItem("force-mdup", forceMdUp)
 }, [forceMdUp]);
 
   return (

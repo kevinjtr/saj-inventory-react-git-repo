@@ -1,7 +1,7 @@
 import api from '../../axios/Api';
 //import jwt_decode from "jwt-decode";
-//import { RepeatOneSharp } from '../../../node_modules/@material-ui/icons';
-//import useMediaQuery from '@material-ui/core/useMediaQuery';
+//import { RepeatOneSharp } from '../../../node_modules/@mui/icons-material';
+//import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default {
   name: "user",
@@ -83,18 +83,18 @@ export default {
         .then((response) => {
 
          if(response.data.token){
-          localStorage.setItem('auth', response.data.token);
-          localStorage.setItem('user', response.data.user);
-          localStorage.setItem('x-access-token-expiration', response.data.exp);//token duration.
-          localStorage.setItem('level-name', response.data.level_name);
-          localStorage.setItem('user-name', response.data.user_name);
-          localStorage.setItem('access', JSON.stringify(response.data.access));
-          localStorage.setItem('district-office', response.data.district_office);
-          localStorage.setItem('notifications', response.data.notifications);
+          window.localStorage.setItem('auth', response.data.token);
+          window.localStorage.setItem('user', response.data.user);
+          window.localStorage.setItem('x-access-token-expiration', response.data.exp);//token duration.
+          window.localStorage.setItem('level-name', response.data.level_name);
+          window.localStorage.setItem('user-name', response.data.user_name);
+          window.localStorage.setItem('access', JSON.stringify(response.data.access));
+          window.localStorage.setItem('district-office', response.data.district_office);
+          window.localStorage.setItem('notifications', response.data.notifications);
 
-          const saved = localStorage.getItem("darkMode");
+          const saved = window.localStorage.getItem("darkMode");
 			    const initialDarkModeValue = JSON.parse(saved) || user_prefers_dark_mode;
-          localStorage.setItem('darkMode', initialDarkModeValue);
+          window.localStorage.setItem('darkMode', initialDarkModeValue);
 
           dispatch({
             type: "LOGIN_SUCCESS",
@@ -113,14 +113,14 @@ export default {
             }
           }); 
          }else{
-          localStorage.setItem('auth', '');
-          localStorage.setItem('user','');
-          localStorage.setItem('x-access-token-expiration','');//15min token duration.
-          localStorage.setItem('user-name','');
-          localStorage.setItem('level-name','');
-          localStorage.setItem('access', JSON.stringify({}));
-          localStorage.setItem('district-office', '');
-          localStorage.setItem('notifications', '');
+          window.localStorage.setItem('auth', '');
+          window.localStorage.setItem('user','');
+          window.localStorage.setItem('x-access-token-expiration','');//15min token duration.
+          window.localStorage.setItem('user-name','');
+          window.localStorage.setItem('level-name','');
+          window.localStorage.setItem('access', JSON.stringify({}));
+          window.localStorage.setItem('district-office', '');
+          window.localStorage.setItem('notifications', '');
 
           dispatch({
             type: "LOGIN_FAILURE",
@@ -142,14 +142,14 @@ export default {
 
         })
         .catch((err) => {
-          localStorage.setItem('auth', '');
-          localStorage.setItem('user','');
-          localStorage.setItem('x-access-token-expiration','');//15min token duration.
-          localStorage.setItem('user-name','');
-          localStorage.setItem('level-name','');
-          localStorage.setItem('access', JSON.stringify({}));
-          localStorage.setItem('district-office', '');
-          localStorage.setItem('notifications', '');
+          window.localStorage.setItem('auth', '');
+          window.localStorage.setItem('user','');
+          window.localStorage.setItem('x-access-token-expiration','');//15min token duration.
+          window.localStorage.setItem('user-name','');
+          window.localStorage.setItem('level-name','');
+          window.localStorage.setItem('access', JSON.stringify({}));
+          window.localStorage.setItem('district-office', '');
+          window.localStorage.setItem('notifications', '');
 
           dispatch({
             type: "LOGIN_FAILURE",
@@ -170,15 +170,15 @@ export default {
     },
     doLogout: (val, cascade, silent) => ({ dispatch, store }) => {
 
-          localStorage.setItem('auth', '');
-          localStorage.setItem('user', '');
-          localStorage.setItem('x-access-token-expiration', '');//15min token duration.
-          localStorage.setItem('user-name', '');
-          localStorage.setItem('level-name','');
-          localStorage.setItem('access', JSON.stringify({}));
-          localStorage.setItem('district-office', '');
-          localStorage.setItem('notifications', '');
-
+      window.localStorage.setItem('auth', '');
+      window.localStorage.setItem('user', '');
+      window.localStorage.setItem('x-access-token-expiration', '');//15min token duration.
+      window.localStorage.setItem('user-name', '');
+      window.localStorage.setItem('level-name','');
+      window.localStorage.setItem('access', JSON.stringify({}));
+      window.localStorage.setItem('district-office', '');
+      window.localStorage.setItem('notifications', '');
+      
           dispatch({
             type: 'USER_LOGOUT',
             payload: {
@@ -203,20 +203,20 @@ export default {
         dispatch({
           type: 'SET_USER_LVL_FROM_LOCAL',
           payload: {
-            user: localStorage.getItem('user'),
-            auth: localStorage.getItem('auth'),
-            'x-access-token-expiration': localStorage.getItem('x-access-token-expiration'),
-            level_name: localStorage.getItem('level-name'),
-            user_name: localStorage.getItem('user-name'),
-            access: JSON.parse(localStorage.getItem('access')),
-            darkMode: JSON.parse(localStorage.getItem('darkMode')),
-            district_office: localStorage.getItem('district-office'),
+            user: window.localStorage.getItem('user'),
+            auth: window.localStorage.getItem('auth'),
+            'x-access-token-expiration': window.localStorage.getItem('x-access-token-expiration'),
+            level_name: window.localStorage.getItem('level-name'),
+            user_name: window.localStorage.getItem('user-name'),
+            access: JSON.parse(window.localStorage.getItem('access')),
+            darkMode: JSON.parse(window.localStorage.getItem('darkMode')),
+            district_office: window.localStorage.getItem('district-office'),
           }
         });
       }
     },
     doToggleDarkMode: () => ({ dispatch, store}) => {
-      localStorage.setItem('darkMode', !store.selectUserDarkMode());
+      window.localStorage.setItem('darkMode', !store.selectUserDarkMode());
 
         dispatch({ type: 'TOGGLE_DARK_MODE', payload:{
           darkMode: !store.selectUserDarkMode()
@@ -260,7 +260,7 @@ export default {
     return state.user.access;
   },
   selectUserIsLoggedIn: state => {
-    return localStorage.getItem('auth') != "" && localStorage.getItem('user') != "" && localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000);
+    return window.localStorage.getItem('auth') != "" && window.localStorage.getItem('user') != "" && window.localStorage.getItem('x-access-token-expiration') > Math.floor(Date.now() / 1000);
   },
   selectUserIsLoggedOut: state => {
     return state.user.isLoggedOut;
@@ -276,7 +276,7 @@ export default {
   },
   init: store => {
     // export function isAuthenticated() {
-    //   return localStorage.getItem('auth') && localStorage.getItem('x-access-token-expiration') > Date.now();
+    //   return window.localStorage.getItem('auth') && window.localStorage.getItem('x-access-token-expiration') > Date.now();
     // }
     
     // action creators are bound and attached to store as methods

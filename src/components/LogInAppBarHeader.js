@@ -1,16 +1,15 @@
 import React, { useState } from 'react'
 import { connect } from 'redux-bundler-react';
-import { AppBar, Grid, Box, Tabs } from '@mui/material';
+import { AppBar, Grid, Box, Tabs } from '@mui/material/';
 import { Route } from 'react-router-dom';
 import getsitelogo from '../../src/img/getsitelogo.png';
-import AccountCircle from '@material-ui/icons/AccountCircle';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 // import "./styles/AppBarStyles.css";
-import LogoutButton from './LogoutButton';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import Brightness7Icon from '@material-ui/icons/Brightness7';
-import Brightness4Icon from '@material-ui/icons/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
 //import UserDropdown from './header/UserDropdown';
-import {Button} from '@material-ui/core'
+import {Button} from '@mui/material/'
 //import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
 import { useTheme } from '@mui/material/styles'
 

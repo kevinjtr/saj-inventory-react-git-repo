@@ -18,7 +18,7 @@ export const register = (data) => {
 //         type: 'GET_PROFILE',
 //         payload: Axios.get('http://localhost:4000/users/profile', {
 //             headers:{
-//                 auth: window.localStorage.getItem("token")
+//                 auth: window.window.localStorage.getItem("token")
 //             }
 //         })
 //     }

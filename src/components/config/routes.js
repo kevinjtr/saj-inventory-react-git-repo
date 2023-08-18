@@ -1,36 +1,25 @@
-import Eng4900 from '../Eng4900';
-import Dashboard from '../Dashboard';
-import Equipment from '../Equipment';
-import Help from '../Help';
-import Hra from '../Hra';
-import Employee from '../Employee';
-import AnnualInventory from '../AnnualInventory';
-import ViewAnnualInventory from '../ViewAnnualInventory';
-import ChangeHistory from '../ChangeHistory';
-import ProblemReportViewer from '../ProblemReportViewer';
-import RegistrationViewer from '../RegistrationViewer';
+import Eng4900 from '../pages/eng4900';
+import Dashboard from '../pages/dashboard';
+import Equipment from '../pages/equipment';
+import Help from '../pages/help';
+import Hra from '../pages/Hra';
+import Employee from '../pages/Employee';
+import AnnualInventory from '../pages/annual-inventory';
+import ViewAnnualInventory from '../pages/annual-inventory/ViewAnnualInventory';
+import ChangeHistory from '../pages/ChangeHistory';
+import ProblemReportViewer from '../pages/ProblemReportViewer';
+import RegistrationViewer from '../pages/registration-viewer';
 import NotFound from '../forms/NotFound'
 import {filter} from 'lodash'
-import SignInOut from '../../containers/SignInOut'
-import {Tab} from '@mui/material'
+import SignInOut from '../pages/sign-in-out'
+import {Tab} from '@mui/material/'
 import LogoutConfirm from '../LogoutConfirm';
 import {Route, Link, Redirect, Switch} from "react-router-dom";
 import PrivateRoute from '../PrivateRoute'
-import AuthorizedUsers from '../AuthorizedUsers'
-import Account from '../Account';
+import AuthorizedUsers from '../pages/AuthorizedUsers'
+import Account from '../pages/Account';
 import {Home as HomeIcon, Help as HelpIcon, Devices as DevicesIcon, Inventory as InventoryIcon, SupervisorAccount as SupervisorAccountIcon, Badge as BadgeIcon,
     Description as DescriptionIcon, QuestionAnswer as QuestionAnswerIcon, Groups as GroupsIcon, History as HistoryIcon, HowToReg as HowToRegIcon} from "@mui/icons-material"
-// import HomeIcon from '@mui/icons-material/Home'
-// import HelpIcon from '@mui/icons-material/Help';
-//import DevicesIcon from '@mui/icons-material/Devices';
-//import InventoryIcon from '@mui/icons-material/Inventory';
-//import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-//import BadgeIcon from '@mui/icons-material/Badge';
-//import DescriptionIcon from '@mui/icons-material/Description';
-//import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-//import GroupsIcon from '@mui/icons-material/Groups';
-//import HistoryIcon from '@mui/icons-material/History';
-//import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { NavItem } from '../navbar/nav-item';
 import { NavItem as NavItemSmall } from '../navbar/nav-item-small';
 
@@ -45,7 +34,7 @@ export const routes_config = [
     {path:'/hra',label:'HRA',alias:'hra',component:Hra,icon:<SupervisorAccountIcon/>,tab:true,level:'user',type:'private'},
     {path:'/employee',alias:'employee',label:'Employee',component:Employee,icon:<BadgeIcon/>,tab:true,level:'user',type:'private'},
     {path:'/eng4900',alias:'eng4900',label:'Eng 4900',component:Eng4900,icon:<DescriptionIcon/>,tab:true,level:'admin',type:'private'},
-    {path:'/problemreportviewer',alias:'admin',label:'Problem Report Viewer',component:ProblemReportViewer,icon:<QuestionAnswerIcon/>,tab:true,level:'admin',type:'private'},
+    {path:'/problemreportviewer',alias:'admin',label:'Feedback Viewer',component:ProblemReportViewer,icon:<QuestionAnswerIcon/>,tab:true,level:'admin',type:'private'},
     {path:'/authorizedusers', alias: 'authorizedusers', label: 'My Authorized Users', component: AuthorizedUsers, icon:<GroupsIcon/>, tab:true, level: 'admin', type: 'private' },
     {path:'/changehistory',alias:'changehistory',label:'Change History',component:ChangeHistory,icon:<HistoryIcon/>,tab:true,level:'admin',type:'private'},
     {path:'/registrationviewer',alias:'registrationviewer',label:'Pending Registrations', alt_label:'Pending Regis- trations', component:RegistrationViewer,icon:<HowToRegIcon/>,tab:true,level:'admin',type:'private'},

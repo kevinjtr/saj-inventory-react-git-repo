@@ -1,33 +1,18 @@
-import React from 'react';
 import {BrowserRouter, Switch ,Route, Redirect} from "react-router-dom";
 import {routes} from './config/routes'
-
 import axios from 'axios';
 import { connect } from 'redux-bundler-react';
-import { ThemeProvider } from '@material-ui/core/styles';
-import { createTheme } from '@material-ui/core/styles/';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from '@mui/material/CssBaseline';
 import LogInAppBarHeader from './LogInAppBarHeader';
 import "./styles/GlobalStyles.css";
-import LogoutConfirm from './LogoutConfirm'
-import { LocalHospitalTwoTone } from '@material-ui/icons';
 import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
-import { ThemeProvider as ThemeProviderV5 , createTheme as createThemeV5 } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import  DashboardLayout  from './navbar/dashboard-layout';
 import { AlertContextProvider } from "./context/AlertProvider";
 
-//import appinfo from 'app-info.json'
-
 function App(props) {
 	const {userIsLoggedIn, userIsLoggingOut, userAccess, userDarkMode} = props
-	const theme = createTheme({
-			palette: {
-				type: userDarkMode ? 'dark' : 'light',
-			},
-	})
-
-	const themeV5 =  createThemeV5({
+	const theme =  createTheme({
 		palette: {
 			mode: userDarkMode ? 'dark' : 'light',
 		},
@@ -81,18 +66,14 @@ function App(props) {
 	}
 
 	  return (
-		<ThemeProviderV5 theme={themeV5}>
 			<ThemeProvider theme={theme}>
 			<CssBaseline/>
-			
 				<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
 					<div className='flex-wrapper'>
 					{DisplayData(userIsLoggedIn)}
 					</div>
 				</BrowserRouter>
-			
 			</ThemeProvider> 
-		</ThemeProviderV5>
 	)
 }
 

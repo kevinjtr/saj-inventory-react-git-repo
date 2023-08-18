@@ -1,10 +1,9 @@
-//MUI-V5-COMPLETE.
-import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField,IconButton } from '@mui/material'
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Button,TextField,IconButton } from '@mui/material/'
 import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react'
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import {notificationsUpdateRegisteredUserApi} from '../publics/actions/registered-users-api'
-import {Switch, FormGroup, FormControlLabel} from '@mui/material';
+import {Switch, FormGroup, FormControlLabel} from '@mui/material/';
 import { green, grey } from '@mui/material/colors';
 import { connect } from 'redux-bundler-react';
 
@@ -47,7 +46,7 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
 
     const [notificationsActive, setNotificationsActive] = useState(() => {
         // getting stored value
-        const saved = localStorage.getItem("notifications");
+        const saved = window.localStorage.getItem("notifications");
         const initialValue = JSON.parse(saved);
         return initialValue || false;
     });
@@ -56,16 +55,14 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
         send:false,
       });
 
-    //const plusButtonClasses = plusButtonStyles();
-
     const toggleSwitch = (event) => {
         setNotificationsActive(prev => !prev)
     };
 
-    const handleChange = (event) => {
-        event.preventDefault();
-        const fieldName = event.target.getAttribute('name');
-    }
+    // const handleChange = (event) => {
+    //     event.preventDefault();
+    //     const fieldName = event.target.getAttribute('name');
+    // }
 
     const handleSubmit = async () => {
         setSubmitButton({...submitButton, send: true})
@@ -74,7 +71,7 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
             const {error} = data
 
             if(!error){
-                localStorage.setItem("notifications", notificationsActive)
+                window.localStorage.setItem("notifications", notificationsActive)
                 setSubmitButton({...submitButton, send: false, active: false})
                 setOpenPopup(false)
                 setSnackBar({open:true,message:data.message,severity:'success'})
@@ -91,7 +88,7 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
     }
 
     React.useEffect(() => {
-        const saved = localStorage.getItem("notifications");
+        const saved = window.localStorage.getItem("notifications");
         const initialValue = JSON.parse(saved);
 
         setSubmitButton({...submitButton, active: notificationsActive != initialValue}) 
@@ -120,7 +117,8 @@ const NotificationsPopup = ({title,openPopup,setOpenPopup,setSnackBar, userToken
                 </div>
             </DialogTitle>
             <DialogContent dividers>
-                <FormGroup style={{width:'100%'}} name="problemForm" onChange={(e)=>handleChange(e)}>
+                <FormGroup style={{width:'100%'}} name="problemForm" //</DialogContent>onChange={(e)=>handleChange(e)}
+                >
                     <FormControlLabel
                         control={<Switch color="primary" checked={notificationsActive} onChange={toggleSwitch} />}
                         label={notificationsActive ? "ON" : "OFF"}

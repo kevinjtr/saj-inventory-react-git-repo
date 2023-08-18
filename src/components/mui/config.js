@@ -25,7 +25,7 @@ import PublishIcon from '@mui/icons-material/Publish';
 import SendIcon from '@mui/icons-material/Send';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import SearchIcon from '@mui/icons-material/Search';
-import {TextField} from '@material-ui/core'
+import {TextField} from '@mui/material/'
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 
 export const tableIcons = {
