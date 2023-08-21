@@ -16,10 +16,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import debounce from 'lodash/debounce'
 import { connect } from 'redux-bundler-react';
 import {updateEng4900Api} from '../../../publics/actions/eng4900-api'
-import {ALERT} from '../../../components/tools/tools'
 import { styled } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Save as SaveIcon, UploadFile as UploadFileIcon } from '@mui/icons-material';
+import toast from 'react-hot-toast';
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
     float:'right'
@@ -102,7 +102,7 @@ const img = {
   height: '100%'
 };
 
-function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, alertUser, setAlertUser, userToken}) {
+function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, userToken}) {
 
     //constant declarations
 
@@ -150,7 +150,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                 const {error, tabUpdatedData} = data
           
                 if(error){
-                  setAlertUser(ALERT.FAIL())
+                    toast.error('Could not complete action')
                   setUploadButton({...uploadButton,send:false})
                 }else {
                   let eng4900s_copy = {...eng4900s}
@@ -160,13 +160,13 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                   }
           
                   setEng4900s(eng4900s_copy)
-                  setAlertUser(ALERT.SUCCESS)
+                  toast.success('Action was completed')
                   setUploadPdf({...uploadPdf,show:false})
                 }                
             })
             .catch(function (error) {
                 console.log(error)
-                setAlertUser(ALERT.FAIL())
+                toast.error('Could not complete action')
                 setUploadButton({...uploadButton,send:false})
             });
         }
@@ -178,7 +178,6 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
     const handleSubmit = async (event) => {
         //setProgress(0)
         setSubmitButton({...submitButton,send:true})
-        setAlertUser(ALERT.RESET)
 
         if(isFormRejected()){
             const {form_id} = uploadPdf.rowData
@@ -189,7 +188,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                 const {error, tabUpdatedData} = data
           
                 if(error){
-                  setAlertUser(ALERT.FAIL())
+                    toast.error('Could not complete action')
                 }else {
                   let eng4900s_copy = {...eng4900s}
           
@@ -198,13 +197,13 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                   }
           
                   setEng4900s(eng4900s_copy)
-                  setAlertUser(ALERT.SUCCESS)
+                  toast.success('Action was completed')
                   setUploadPdf({...uploadPdf,show:false})
                 }
 
             }).catch(function (error) {
                 console.log(error)
-                setAlertUser(ALERT.FAIL())
+                toast.error('Could not complete action')
             });
 
         }else{
@@ -215,7 +214,6 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
     const handleUpload = async (event) => {
         //setProgress(0)
         setUploadButton({...uploadButton,send:true})
-        setAlertUser(ALERT.RESET)
         
         if(!isFormRejected()){
             formUpload()

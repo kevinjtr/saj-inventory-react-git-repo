@@ -3,7 +3,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import MapWrapper from "./MapWrapper"
 import { Snackbar, Box, AppBar, Tabs, Tab, Switch, Typography, TextField,
    MenuItem, FormControl, Select,FormGroup,FormControlLabel,Button,IconButton,
-  Tooltip,Radio,RadioGroup,Grid, Link, Alert, Autocomplete, InputAdornment, DatePicker} from '@mui/material';
+  Tooltip,Radio,RadioGroup,Grid, Link, Autocomplete, InputAdornment, DatePicker} from '@mui/material';
 import {List as ListIcon, LocationOn as LocationOnIcon, Search as SearchIcon, Computer as ComputerIcon,
   FilterList as FilterListIcon, Clear as ClearIcon, Event as EventIcon} from '@mui/icons-material';
 import {textFieldClasses, gridClasses, TabPanel, a11yProps, tabClasses} from '../../styles/mui';
@@ -22,8 +22,11 @@ import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_
 import {orderBy, findIndex, filter, debounce} from 'lodash'
 import {updateEquipmentApi, destroyEquipmentApi, addEquipmentApi, equipmentSearchApi2} from '../../../publics/actions/equipment-api'
 import { connect } from 'redux-bundler-react';
-import {ALERT} from '../../tools/tools'
 import UpdateStatusPopup from './UpdateStatusPopup';
+import AddCommentIcon from '@mui/icons-material/AddComment';
+import toast from 'react-hot-toast';
+import FetchChangeHistory from '../../history'
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
 function Equipment({history, location, match, userToken}) {
   
@@ -87,7 +90,6 @@ function Equipment({history, location, match, userToken}) {
 	width: undefined,
 	height: undefined,
 	});
-  const [alertUser, setAlertUser] = useState(ALERT.RESET);
   const [loading, setLoading] = useState({init:true,refresh:{
     0: false,
     1: false,
@@ -277,16 +279,13 @@ function Equipment({history, location, match, userToken}) {
   //Events Declarations.
   const handleUpdate = async (rowData) => {
       let errorFound = true
-      setAlertUser(ALERT.RESET)
-
-      console.log(rowData)
       await updateEquipmentApi(rowData, userToken)
       .then((response) => response.data).then((data) => {
         const {tabChanges, error} = data
         errorFound = error
 
         if(error){
-          setAlertUser(ALERT.FAIL())
+          toast.error('Could not complete action')
         }else {
           let equipments_copy = {...equipments}
 
@@ -304,12 +303,12 @@ function Equipment({history, location, match, userToken}) {
           }
 
           setEquipments(equipments_copy)
-          setAlertUser(ALERT.SUCCESS)
+          toast.success('Action was completed')
         }        
 
       }).catch(function (error) {
         console.log(error)
-        setAlertUser(ALERT.FAIL())
+        toast.error('Could not complete action')
       });
 
       return(errorFound)
@@ -317,14 +316,13 @@ function Equipment({history, location, match, userToken}) {
 
   const handleDelete = async (rowData) => {
     let errorFound = true
-    setAlertUser(ALERT.RESET)
 
     await destroyEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
         const {tabChanges, error} = data
         errorFound = error
 
         if(error){
-          setAlertUser(ALERT.FAIL())
+          toast.error('Could not complete action')
         }else {
           let equipments_copy = {...equipments}
 
@@ -338,12 +336,12 @@ function Equipment({history, location, match, userToken}) {
           }
 
           setEquipments(equipments_copy)
-          setAlertUser(ALERT.SUCCESS)
+          toast.success('Action was completed')
         }
       
     }).catch(function (error) {
         console.log(error)
-        setAlertUser(ALERT.FAIL())
+        toast.error('Could not complete action')
     });
 
     return errorFound
@@ -351,7 +349,6 @@ function Equipment({history, location, match, userToken}) {
 
   const handleAdd = async (rowData) => {
   let errorFound = true
-  setAlertUser(ALERT.RESET)
 
   await addEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
     const {tabChanges, error} = data
@@ -359,7 +356,7 @@ function Equipment({history, location, match, userToken}) {
     console.log(data)
 
     if(error){
-      setAlertUser(ALERT.FAIL())
+      toast.error('Could not complete action')
     }else {
       let copy_equipments = {...equipments}
 
@@ -372,12 +369,12 @@ function Equipment({history, location, match, userToken}) {
 
       setEquipments(copy_equipments)
 
-      setAlertUser(ALERT.SUCCESS)
+      toast.success('Action was completed')
     }
 
   }).catch(function (error) {
     console.log(error)
-    setAlertUser(ALERT.FAIL())
+    toast.error('Could not complete action')
   });
 
   return errorFound
@@ -421,8 +418,6 @@ function Equipment({history, location, match, userToken}) {
   }
   
   const handleSearch = async (e=null,onLoad=false) => {
-    //if(!onLoad) await UpdateUrl()
-    setAlertUser(ALERT.RESET)
     setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
   
     let opts = {
@@ -780,6 +775,21 @@ function Equipment({history, location, match, userToken}) {
             onFilterChange={() => {
                 setF(ref.current.state.data)
             }}
+            onTreeExpandChange
+            actions={[[0,1,2].includes(tab_idx) && {
+              icon: AddCommentIcon,
+              tooltip: 'Update Status',
+              onClick: (event, rowData) => {
+                setSelRowData(rowData)
+                setOpenPopup(true)
+              }
+            },{
+              icon: EventNoteIcon,
+              tooltip:'Change History',
+              onClick: (event, rowData) => {
+                FetchChangeHistory(userToken,'equipment',rowData.id)
+              }
+            }]}
             icons={tableIcons}
             columns={columns}
             data={equipmentArray}
@@ -829,6 +839,7 @@ function Equipment({history, location, match, userToken}) {
             title=""
             {...(rights.edit[tabs] && {editable:{
                 onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+                
                 onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
                 onRowAdd: async (newData) => {
                 let errorFound = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
@@ -952,7 +963,14 @@ function Equipment({history, location, match, userToken}) {
     let columns = []
 
     const equipment_cols_config = [
-        { title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0, filterComponent: (props) => <CustomFilterTextField {...props} />,
+        { title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0, 
+        customFilterAndSearch: (term, rowData, column) => {
+          if(rowData[column.field]){
+            return rowData[column.field].toString().includes(term)
+          }
+          return false
+        },  
+        filterComponent: (props) => <CustomFilterTextField {...props} />,
         editComponent: props => {
           console.log(props)
 
@@ -969,13 +987,15 @@ function Equipment({history, location, match, userToken}) {
                     }
                     props.onChange(nv)
                   }}
-                  
                   key={`combo-box-${uuid()}`}
                   options={hras_array}
-                  
                   getOptionLabel={(option) => {
                     const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
                     return `${option.hra_num}${full_name && ` - ${full_name}`}`
+                  }}
+                  renderOption={(props, option, state) => {
+                    const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
+                    return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
                   }}
                   style={{ width: 250 }}
                   renderInput={(params) => <TextField {...params} label="HRA" variant="outlined" />}
@@ -1000,7 +1020,12 @@ function Equipment({history, location, match, userToken}) {
           minWidth: 200,
           maxWidth: 200
         }, filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:4  },
-        { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', cellStyle: {
+        { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', customFilterAndSearch: (term, rowData, column) => {
+          if(rowData[column.field]){
+            return rowData[column.field].toString().includes(term)
+          }
+          return false
+        }, cellStyle: {
           minWidth: 200,
           maxWidth: 200
         },filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:5, validate: (rowData) => {
@@ -1038,14 +1063,19 @@ function Equipment({history, location, match, userToken}) {
         { title: 'Employee Office Location', field: 'employee_office_location_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.3,editable: 'never'  },
         {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' },
         {title: 'Status Date', field:'status_date', type:'date', filterComponent: (props) => <CustomDatePicker {...props} />, col_id:6.4,editable: 'no' },
-        [0,1,2].includes(tab_idx) ? {title: 'Update Status', field:'update_status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.5,editable: 'yes', render: (rowData) => <Link underline="always" component="button" onClick={()=>{console.log(rowData); setSelRowData(rowData); setOpenPopup(true); }}>Update</Link>}: {}
     ] 
    // tab_idx === 0 || tab_idx === 1 ? {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
     //tab_idx === 1 ? {title: 'Status Date', field:'status_date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
 
     const ext_equipment_cols_config = [		
         // {title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:2.3 },
-        { title: 'Employee Holder ID', field: 'employee_id', type:'numeric', filterComponent:(props) => <CustomFilterTextField {...props} />, col_id:6.0, width:"200px",
+        { title: 'Employee Holder ID', field: 'employee_id', type:'numeric',
+        customFilterAndSearch: (term, rowData, column) => {
+          if(rowData[column.field]){
+            return rowData[column.field].toString().includes(term)
+          }
+          return false
+        },  filterComponent:(props) => <CustomFilterTextField {...props} />, col_id:6.0, width:"200px",
         editComponent: props => (
             <Autocomplete
             sx={{
@@ -1064,6 +1094,7 @@ function Equipment({history, location, match, userToken}) {
                   key={`combo-box-${uuid()}`}
                   options={employees}
                   getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
+                  renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
                   style={{ width: 250 }}
                   renderInput={(params) => <TextField {...params} label="Employee" variant="outlined" />}
               />)
@@ -1072,7 +1103,12 @@ function Equipment({history, location, match, userToken}) {
           minWidth: 200,
           maxWidth: 200
         }, type: 'date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:1},
-        {title:'Acquisition Price',field:'acquisition_price',type: 'numeric', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:7},
+        {title:'Acquisition Price',field:'acquisition_price',type: 'numeric', customFilterAndSearch: (term, rowData, column) => {
+          if(rowData[column.field]){
+            return rowData[column.field].toString().includes(term)
+          }
+          return false
+        }, filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:7},
         {title:'Catalog Num',field:'catalog_num', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:8},
         {title:'Serial Num',field:'serial_num', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:9},
         {title:'Manufacturer',field:'manufacturer', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:10},
@@ -1096,6 +1132,7 @@ function Equipment({history, location, match, userToken}) {
                 key={`condition-${uuid()}`}
                 options={condition}
                 getOptionLabel={(option) => option.id + ' - ' + option.name}
+                renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + option.name}</li>}
                 style={{ width: 250 }}
                 renderInput={(params) => <TextField {...params} label="Condition" variant="outlined" />}
             />)
@@ -1159,22 +1196,6 @@ function Equipment({history, location, match, userToken}) {
     );
   })
 
-  const AlertUser = (x) => {
-
-    console.log('alert user activated')
-
-    if(x.error.active){
-      return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-    }else if(x.success.active){
-      return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-    }
-
-    //Sucessfully added data to database!
-
-    setAlertUser(ALERT.RESET)
-    return(null)
-  }
-
   //will run once.
   useEffect(() => {
 
@@ -1233,9 +1254,8 @@ function Equipment({history, location, match, userToken}) {
     <div>
       {displayTop}
       <Box sx={{display:'flex',flex:'auto'}}>
-      {openPopup ? <UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData} setSnackBar={setSnackBar} equipments={equipments} setEquipments={setEquipments} setAlertUser={setAlertUser}/> : null} 
+      {openPopup ? <UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData} setSnackBar={setSnackBar} equipments={equipments} setEquipments={setEquipments}/> : null} 
       <Box ref={ref} sx={{width: "100%"}}>
-        {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
         {!loading.init ? !serverDown ? <TabsEquipment ref={refs} />: null : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
       </Box>
       </Box>

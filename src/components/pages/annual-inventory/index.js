@@ -1,15 +1,16 @@
 import {useState, useEffect} from 'react';
 import TextField from '@mui/material/TextField';
 import 'date-fns';
-import { LoadingCircle, ALERT } from '../../tools/tools';
+import { LoadingCircle } from '../../tools/tools';
 import MaterialTable from '@material-table/core'
 import { tableIcons } from '../../material-table/config'
-import { Autocomplete, Alert } from '@mui/material';
+import { Autocomplete } from '@mui/material';
 import { findIndex, find } from 'lodash'
 import { updateAnnualInventoryApi, destroyAnnualInventoryApi, addAnnualInventoryApi, getAllAnnualInventorysApi, annualInventorySearchApi} from '../../../publics/actions/annual-inventory-api'
 import { lockOptions } from '../../config/constants'
 import { connect } from 'redux-bundler-react';
 import { v4 as uuid } from 'uuid';
+import toast from 'react-hot-toast';
 
 function AnnualInventory({history, userToken}) {
 	const PAGE_URL = '/annualinventory'
@@ -21,43 +22,30 @@ function AnnualInventory({history, userToken}) {
 	const [hras, setHras] = useState([]);
 	const [annualInv, setAnnualInv] = useState([]);
 	const [editable,setEditable] = useState(false)
-	const [alertUser, setAlertUser] = useState(ALERT.RESET);
 	const [serverDown, setServerDown] = useState(false);
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
 		let error_found = true
 		setLoading(true)
-		setAlertUser(ALERT.RESET)
 		
 		await updateAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 		const {status, error} = data
 		error_found = error
 
 		if(error){
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 		}else {
 			if(data.hasOwnProperty('changes')){
 				const {changes} = data
 				if(changes.length > 0){
-
-					//const annualInv_copy = [...annualInv]
-	
-					// for(const inv_record_change of changes){
-					//   const idx = findIndex(annualInv_copy,function(c){return c.id == inv_record_change.id})
-		  
-					//   if(idx != -1){
-					// 	annualInv_copy[idx] = inv_record_change
-					// 	console.log(annualInv_copy[idx])
 					setAnnualInv(changes)
-					setAlertUser(ALERT.SUCCESS)
-					//   }			  
-					// }
+					toast.success('Action was completed')
 				}else{
-					setAlertUser(ALERT.FAIL())
+					toast.error('Could not complete action')
 				}
 			}else{
-				setAlertUser(ALERT.FAIL())
+				toast.error('Could not complete action')
 			}			
 		}
 
@@ -65,7 +53,7 @@ function AnnualInventory({history, userToken}) {
 
 		}).catch(function (error) {
 			console.log(error)
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 			setLoading(false)
 		});
 
@@ -82,14 +70,14 @@ function AnnualInventory({history, userToken}) {
 		error_found = error
 
 		if(error){
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 		}else {
-			setAlertUser(ALERT.SUCCESS)
+			toast.success('Action was completed')
 		}
 
 		}).catch(function (error) {
 			console.log(error)
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 			setLoading(false)
 		});
 
@@ -98,7 +86,6 @@ function AnnualInventory({history, userToken}) {
 
 	const handleTableAdd = async (rowData) => {
 		let error_found = true
-		setAlertUser(ALERT.RESET)
 
 		await addAnnualInventoryApi(rowData, userToken).then((response) => response.data).then((data) => {
 			console.log(data)
@@ -106,7 +93,7 @@ function AnnualInventory({history, userToken}) {
 			error_found = error
 
 			if(error){
-				setAlertUser(ALERT.FAIL())
+				toast.error('Could not complete action')
 			}else {
 				if(data.hasOwnProperty('changes')){
 					const {changes} = data
@@ -121,20 +108,20 @@ function AnnualInventory({history, userToken}) {
 						// 	annualInv_copy[idx] = inv_record_change
 						// 	console.log(annualInv_copy[idx])
 						setAnnualInv(changes)
-						setAlertUser(ALERT.SUCCESS)
+						toast.success('Action was completed')
 						//   }			  
 						// }
 					}else{
-						setAlertUser(ALERT.FAIL())
+						toast.error('Could not complete action')
 					}
 				}else{
-					setAlertUser(ALERT.FAIL())
+					toast.error('Could not complete action')
 				}			
 			}
 
 		}).catch(function (error) {
 			console.log(error)
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 			setLoading(false)
 		});
 		
@@ -148,57 +135,6 @@ function AnnualInventory({history, userToken}) {
 	let columns = []
 	//considering move to a config file.
 	let cols_config = [
-		// { title: 'HRA Number', field: 'hra_num', type:'numeric', editable: 'onAdd', col_id:2.0,
-		// editComponent: (x) => {
-		// //console.log(x);
-		// let idx = -1
-	
-		// if(x.rowData.hra_num){
-		// 	idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == x.rowData.hra_num)); })
-		// }
-	
-		// return(
-		// 	<Autocomplete
-		// 	//onChange={e => x.onChange(e)}
-		// 	id={`combo-box-employee`}
-		// 	size="small"
-		// 	options={hras}
-		// 	getOptionLabel={(option) => option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}
-		// 	value={idx != -1 ? hras[idx] : null}
-		// 	//defaultValue={idx != -1 ? employees[idx] : null}
-		// 	onChange ={e => {
-		// 	const hraNum_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-		// 	console.log(hraNum_);
-		// 	x.onChange(hraNum_)
-		// 	}}
-		// 	//style={{ verticalAlign: 'top' }}
-		// 	renderInput={(params) => <TextField {...params} label="HRA" margin="normal"/>}
-		// 	renderOption={(option) => <a style={{fontSize:'16px'}}>{option.hra_num + ' - ' + (option.hra_first_name ? option.hra_first_name + ' ' : '') + option.hra_last_name}</a>}
-		// />
-		// )
-		// },
-		// validate :(rowData) => {
-		// 	if(rowData.hasOwnProperty('hra_num')){
-		// 		if(!isNaN(rowData.hra_num)) {
-		// 			if(rowData.hasOwnProperty('tableData')){
-		// 				if(rowData.tableData.editing === "update"){
-		// 					return true
-		// 				}
-		// 			}					
-		
-		// 			if(typeof rowData.hra_num == "number"){
-		// 				return true
-		// 			}
-		
-		// 			if(typeof rowData.hra_num === "string"){
-		// 				return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
-		// 			}
-		// 		}
-		// 	}
-			
-		// 	return ({ isValid: false, helperText: 'HRA num is required.' })
-		// },
-		// },
 		{ title: 'HRA Number', field: 'hra_num', type:'numeric', editable:'onAdd', col_id:2.0, //filterComponent: (props) => <CustomFilterTextField {...props} />,
         editComponent: props => {
           console.log(props)
@@ -223,6 +159,10 @@ function AnnualInventory({history, userToken}) {
 						const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
 						return `${option.hra_num}${full_name && ` - ${full_name}`}`
 					}}
+					renderOption={(props, option, state) => {
+						const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
+						return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
+						}}
                   style={{ width: 250 }}
                   renderInput={(params) => <TextField {...params} label="HRA" variant="outlined" />}
               />)
@@ -243,87 +183,6 @@ function AnnualInventory({history, userToken}) {
 		{ title: 'Status', field: 'locked',type:'numeric', editable: 'onUpdate',
 		render: rowData => <a value={rowData.locked} >{rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED'}</a>,
 		lookup:lockOptions
-		// editComponent: x => {
-		// 	//const table_id = x.rowData.tableData.id
-		// 	console.log(x);
-		// 	let idx = -1
-	
-		// 	if(x.rowData.locked){
-		// 		idx = findIndex(lockOptions,function(o){ return (o.value == x.rowData.locked) })
-		// 	}
-	
-		// 	return(
-		// 		<Autocomplete
-		// 		//onChange={e => x.onChange(e)}
-		// 		id={`combo-box-employee-`}
-		// 		size="small"
-		// 		options={lockOptions}
-		// 		getOptionLabel={(option) => option.status}
-		// 		value={idx != -1 ? lockOptions[idx].value : null}
-		// 		onChange ={e => {
-	
-		// 		const val_ = e.target.textContent ? (e.target.textContent == 'LOCKED' ? 1:2) : 2
-		// 		//console.log(e.target);
-		// 		x.onChange(val_)
-		// 		}}
-		// 		//style={{ verticalAlign: 'top' }}
-		// 		renderInput={(params) => <TextField {...params} label="Status" margin="normal"/>}
-		// 	/>
-		// 	)
-		// }
-		// editComponent: x => {
-		// //const table_id = x.rowData.tableData.id
-		// // console.log(x);
-		// // let idx = -1
-
-		// // if(x.rowData.office_symbol){
-		// // 	idx = findIndex(officesSymbol,function(o){ return (o.id && (o.id == x.rowData.office_symbol)); })
-		// // }
-
-		// if(x.rowData.locked === 1){
-		// 	return(
-		// 		<LockOpenIcon
-		// 		//onChange={e => x.onChange(e)}
-		// 		id={`lock-icon-${x.rowData.id}`}
-		// 		key={`lock-icon-${x.rowData.id}`}
-		// 		//size="small"
-		// 		//options={officesSymbol}
-		// 		//getOptionLabel={(option) => option.id + ' - ' + option.alias}
-		// 		//value={idx != -1 ? officesSymbol[idx] : null}
-		// 		// onChange ={e => {
-	
-		// 		// const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-		// 		// console.log(id_);
-		// 		// x.onChange(id_)
-		// 		// }}
-		// 		onClick={() => alert('lock open icon clicked.')}
-		// 		//style={{ verticalAlign: 'top' }}
-		// 		//renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
-		// 	/>
-		// 	)
-		// }
-
-		// return(
-		// 	<LockIcon
-		// 		//onChange={e => x.onChange(e)}
-		// 		id={`lock-icon-${x.rowData.id}`}
-		// 		key={`lock-icon-${x.rowData.id}`}
-		// 		//size="small"
-		// 		//options={officesSymbol}
-		// 		//getOptionLabel={(option) => option.id + ' - ' + option.alias}
-		// 		//value={idx != -1 ? officesSymbol[idx] : null}
-		// 		// onChange ={e => {
-
-		// 		// const id_ = e.target.textContent ? Number(e.target.textContent.split(' - ')[0]) : null
-		// 		// console.log(id_);
-		// 		// x.onChange(id_)
-		// 		// }}
-		// 		onClick={() => alert('lock icon clicked.')}
-		// 		//style={{ verticalAlign: 'top' }}
-		// 		//renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
-		// 	/>
-		// )
-		// }
 		},
 		{ title: 'Fiscal Year', field: 'fiscal_year', editable: 'onAdd', type:'numeric', validate: (rowData) => {
 
@@ -398,20 +257,7 @@ function AnnualInventory({history, userToken}) {
 						//await handleTableUpdate({changes:{'0':{newData:{...rowData,update:true}}}});
 						//resetAnnualInventory();
 					}
-				}),
-				// rowData => ({
-				// 	icon: tableIcons.Lock,
-				// 	tooltip: 'Lock',
-				// 	onClick: (event, rowData) => alert("You updated " + JSON.stringify(rowData)),
-				// 	disabled: !(rowData.locked == 2) //rowData.birthYear < 2000
-				// }),
-				// rowData => ({
-				// 	icon: tableIcons.Unlock,
-				// 	tooltip: 'Unlock',
-				// 	onClick: (event, rowData) => alert("You updated " + JSON.stringify(rowData)),
-				// 	disabled: !(rowData.locked != 2) //rowData.birthYear < 2000
-				// }),
-				
+				}),				
 			  ]}
 			{...(editable && {editable:{
 				isEditable: rowData => rowData.locked === 2, // only name(a) rows would be editable
@@ -464,22 +310,6 @@ function AnnualInventory({history, userToken}) {
 	});
 	}
 
-	const AlertUser = (x) => {
-
-		console.log('alert user activated')
-
-	if(x.error.active){
-		return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-	}else if(x.success.active){
-		return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-	}
-
-	//Sucessfully added data to database!
-
-	setAlertUser(ALERT.RESET)
-	return(null)
-	}
-
 	//Effects
 	useEffect(() => {
 		console.log('AnnualInvCall')
@@ -507,7 +337,6 @@ function AnnualInventory({history, userToken}) {
 		<div style={{textAlign: 'center'}}>
 			<h2 >Annual Inventory</h2>
 		</div>
-		{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 		<div style={{textAlign: 'center'}}>
 			{loading || initialize ? LoadingCircle() : null}
 			{!initialize && !serverDown ? materialTableSelect() : null}

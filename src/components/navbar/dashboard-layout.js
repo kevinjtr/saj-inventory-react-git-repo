@@ -65,7 +65,7 @@ const DashboardLayout = (props) => {
           {children}
         </Box>
       </DashboardLayoutRoot>
-      <DashboardNavbar lgUp={lgUp} mdUp={mdUp} forceMdUp={forceMdUp} toggleForceMdUp={() => setForceMdUp(prev => !prev)} onSidebarOpen={() => setSidebarOpen(true)} />
+      <DashboardNavbar lgUp={lgUp} mdUp={mdUp} toggleForceMdUp={() => setForceMdUp(prev => !prev)} onSidebarOpen={() => setSidebarOpen(true)} />
       <DashboardSidebar
         lgUp={lgUp} mdUp={mdUp} smUp={smUp}
         forceMdUp={forceMdUp}

@@ -24,6 +24,7 @@ import { styled } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { find } from "lodash"
 import { v4 as uuid } from 'uuid';
+import toast from 'react-hot-toast';
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
   float:'right'
@@ -233,12 +234,16 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
         if(!data.error){
           setEng4900s({...eng4900s, [tab]: [data.data, ...eng4900s[tab]]})
           resetCreate4900Data()
+          toast.success('Action was completed')
+        }else{
+          toast.error('Could not complete action')
         }
         
         setSubmitButton({...submitButton,send:false})
         setSelectedRow({[tab]:data.data.form_id})
     
       }).catch(function (error) {
+        toast.error('Could not complete action')
         setSubmitButton({...submitButton,send:false})
       });
 
@@ -384,6 +389,10 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                       const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
                       return `${option.hra_num}${full_name && ` - ${full_name}`}`
                     }}
+                    renderOption={(props, option, state) => {
+                      const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
+                      return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
+                    }}
                     value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
                     style={{ width: 300 }}
                     onChange={handleLosingHraChange}
@@ -458,6 +467,11 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                       const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
                       return `${option.hra_num}${full_name && ` - ${full_name}`}`
                     }}
+                    renderOption={(props, option, state) => {
+                      const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
+                      return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
+                    }}
+
                     value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
                     style={{ width: 300 }}
                     onChange={handleGainingHraChange}
@@ -562,6 +576,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 key={`combo-box-${uuid()}`}
                 options={equipments}
                 getOptionLabel={(option) => option.bar_tag_num + ' - ' + option.item_type}
+                renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.bar_tag_num + ' - ' + option.item_type}</li>}
                 style={{ width: 250 }}
                 renderInput={(params) => <TextField {...params} label="Equipments"/>}
             />)
@@ -728,7 +743,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 key={`combo-box-${uuid()}`}
                 options={condition}
                 getOptionLabel={(option) => option.id + ' - ' + option.name}
-                
+                renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + option.name}</li>}
                 style={{ width: 250 }}
                 renderInput={(params) => <TextField {...params} label="Condition"/>}
             />)
@@ -803,11 +818,8 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 					// 		}
 
 					// 		if(alert_){
-					// 			//setAlertUser({success:{active:false,text:''},error:{active:true,text:alert_}})
-					// 			setAlertUser(ALERT.FAIL(alert_))
 					// 			reject();
 					// 		}else{
-					// 			setAlertUser(ALERT.SUCCESS)
 					// 			resolve();
 					// 		}
 					// 		//for(const rowid of errorResult){}
@@ -867,12 +879,10 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 					// 		if(errorResult.errorFound){
 					// 			const col_name = Object.keys(errorResult.rows[0])[0]
 					// 			dataIsOnDatabase[col_name] = true
-					// 			setAlertUser(ALERT.FAIL())
 					// 			reject();
 					// 			return;
 					// 		}
 					// 			resetEquipments();
-					// 			setAlertUser(ALERT.SUCCESS)
 					// 			//const dataUpdate = [...equipments];
 					// 			//const index = oldData.tableData.id;
 					// 			//dataUpdate[index] = newData;

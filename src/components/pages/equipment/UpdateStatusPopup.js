@@ -5,8 +5,8 @@ import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react'
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
 import { green, grey } from '@mui/material/colors';
-import {ALERT} from '../../tools/tools'
 import { connect } from 'redux-bundler-react';
+import toast from 'react-hot-toast';
 
 const buttonClasses = {
     fab: {
@@ -43,7 +43,7 @@ const buttonClasses = {
     },
 }
 
-const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEquipments, setAlertUser, userToken}) => {
+const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEquipments, userToken}) => {
     
     const[message,setMessage] = useState(() => {
       if(rowData.status){
@@ -72,7 +72,6 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
         const changes = {changes:{'0':{newData:{...rowData, status: new_status, status_date: new Date() }, oldData:rowData}}}
 
         let errorFound = true
-        setAlertUser(ALERT.RESET)
         setSubmitButton(prev => ({...prev, send: true}))
 
         await updateEquipmentApi(changes, userToken)
@@ -82,7 +81,7 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
     
           if(error){
             setSubmitButton(prev => ({...prev, send: false, active: false}))
-            setAlertUser(ALERT.FAIL())
+            toast.error('Could not complete action')
           }else {
             let equipments_copy = {...equipments}
     
@@ -100,14 +99,14 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
             }
             setSubmitButton(prev => ({...prev, send: false, active: false}))
             setEquipments(equipments_copy)
-            setAlertUser(ALERT.SUCCESS)
+            toast.success('Action was completed')
             setOpenPopup(false)
           }        
     
         }).catch(function (error) {
           console.log(error)
           setSubmitButton(prev => ({...prev, send: false, active: false}))
-          setAlertUser(ALERT.FAIL())
+          toast.error('Could not complete action')
         });
     
         return(errorFound)

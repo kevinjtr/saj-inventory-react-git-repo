@@ -3,27 +3,21 @@ import 'date-fns';
 import { LoadingCircle } from '../tools/tools';
 import MaterialTable from '@material-table/core'
 import { changeHistoryIcons } from '../material-table/config'
-import { ALERT} from '../tools/tools';
 import { updateChangeHistoryByViewApi, getChangeHistoryByViewApi } from '../../publics/actions/change-history-api'
 import { connect } from 'redux-bundler-react';
 import { Computer as ComputerIcon, Person as PersonIcon, SupervisorAccount as SupervisorAccountIcon } from '@mui/icons-material';
-import { Tabs, Tab, Alert, AppBar } from '@mui/material/';
+import { Tabs, Tab, AppBar } from '@mui/material/';
 import { TabPanel, a11yProps, tabClasses } from '../styles/mui';
+import toast from 'react-hot-toast';
 
 const DEFAULT_CHANGES_VIEW = 'equipment'
 const DB_ID_NAME = {equipment:'id', hra:'hra_num', employee:'id'}
-// const ALERT = {
-// 	SUCCESS: {success:{active:true,text:'Data was undo successful.'},error:{active:false,text:''}},
-// 	FAIL: {success:{active:false,text:''},error:{active:true,text:'Could not undo data.'}},
-// 	RESET: {success:{active:false,text:''},error:{active:false,text:''}},
-// }
 
 function ChangeHistory({history, userToken}) {
 	//constant declarations
 	const changeHistoryTabs = {0: {id:'equipment', label:'Equipment History'}, 1: {id:'employee', label:'Employee History'}, 2: {id:'hra', label:'HRA History'}}
 
 	//Hooks Declarations
-	const [alertUser, setAlertUser] = useState(ALERT.RESET);
 	const [loading, setLoading] = useState({init:true,refresh:{
 		0: false,
 		1: false,
@@ -58,18 +52,6 @@ function ChangeHistory({history, userToken}) {
 	const handleTabChange = (event, newValue) => {
 		setTabs(newValue);
 	};
-	
-	const AlertUser = (x) => {
-
-		if(x.error.active){
-			return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-		}else if(x.success.active){
-			return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-		}
-	
-		setAlertUser(ALERT.RESET)
-		return(null)
-	}
 
 	//Functions.
 	const TabsChangeHistory = () => {
@@ -202,18 +184,17 @@ function ChangeHistory({history, userToken}) {
 				title=""
 				{...(editable[tab_idx] && {editable:{
 					onRowDelete: async (oldData) => {
-						setAlertUser(ALERT.RESET)
 						let result = await handleUndo({changes:{'0':{newData:oldData, oldData:{ [DB_ID_NAME[tab_idx]] : oldData[DB_ID_NAME[tab_idx]] }}},undo:true})
 							return (new Promise((resolve, reject) => {
 								setTimeout(() => {
 
 									if(!result.error){
-										setAlertUser(ALERT.SUCCESS)
+										toast.success('Action was completed')
 										resolve()
 										return;
 									}
 
-									setAlertUser(ALERT.FAIL())
+									toast.error('Could not complete action')
 									reject()
 
 								}, 1000);
@@ -264,7 +245,6 @@ function ChangeHistory({history, userToken}) {
 	return (
 	    <div>
       	{displayTop}
-      	{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
       	{loading.init ? <div style={{textAlign:'center'}}>{LoadingCircle()}</div> : null}
 		{!loading.init && !serverDown ? TabsChangeHistory() : null}
     	</div>

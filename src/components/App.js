@@ -9,6 +9,7 @@ import {DARK_MODE_BACKGROUND_COLOR} from "./config/constants"
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import  DashboardLayout  from './navbar/dashboard-layout';
 import { AlertContextProvider } from "./context/AlertProvider";
+import { Toaster } from 'react-hot-toast';
 
 function App(props) {
 	const {userIsLoggedIn, userIsLoggingOut, userAccess, userDarkMode} = props
@@ -65,16 +66,26 @@ function App(props) {
 		)
 	}
 
-	  return (
-			<ThemeProvider theme={theme}>
-			<CssBaseline/>
-				<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
-					<div className='flex-wrapper'>
-					{DisplayData(userIsLoggedIn)}
-					</div>
-				</BrowserRouter>
-			</ThemeProvider> 
-	)
+	  return (<>
+		<Toaster
+			toastOptions={{
+				style: {
+				zIndex: 999999 // For toasts
+				},
+				duration: 5000,
+			}}
+			
+		/>
+		<ThemeProvider theme={theme}>
+		
+		<CssBaseline/>
+			<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
+				<div className='flex-wrapper'>
+				{DisplayData(userIsLoggedIn)}
+				</div>
+			</BrowserRouter>
+		</ThemeProvider> 
+	</>)
 }
 
 export default connect(

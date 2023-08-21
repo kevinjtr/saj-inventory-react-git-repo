@@ -4,12 +4,12 @@ import { LoadingCircle } from '../tools/tools';
 import { tableIcons } from '../material-table/config'
 import MaterialTable from '@material-table/core'
 import { find, findIndex } from 'lodash'
-import { ALERT } from '../tools/tools'
 import { updateEmployeeApi, destroyEmployeeApi, addEmployeeApi, getAllEmployeesApi } from '../../publics/actions/employee-api'
 import { connect } from 'redux-bundler-react';
 import { v4 as uuid } from 'uuid';
-import { IconButton, TextField, InputAdornment, Autocomplete, Alert } from '@mui/material';
+import { IconButton, TextField, InputAdornment, Autocomplete } from '@mui/material';
 import { FilterList as FilterListIcon, Clear as ClearIcon } from '@mui/icons-material';
+import toast from 'react-hot-toast';
 
 function Employee({history, userToken}) {
 
@@ -18,7 +18,6 @@ function Employee({history, userToken}) {
 	const [officesSymbol, setOfficesSymbol] = React.useState([]);
 	const [employees, setEmployees] = React.useState([]);
 	const [rights, setRights] = React.useState({edit: false, add: false})
-	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 	const [districtOfficeLocations, setDistrictOfficeLocations] = React.useState({});
 
 	console.log(districtOfficeLocations)
@@ -34,10 +33,10 @@ function Employee({history, userToken}) {
 		const error = data.hasOwnProperty('error') ? data.error : false
 
 		if(status || error){
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 		}else {
 			errorFound = false
-			setAlertUser(ALERT.SUCCESS)
+			toast.success('Action was completed')
 		}
 
 		//setLoading(false)
@@ -55,11 +54,6 @@ function Employee({history, userToken}) {
 		
 
 		return errorFound
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
 	}
 
 	const handleTableDelete = async (rowData) => {
@@ -73,9 +67,9 @@ function Employee({history, userToken}) {
 		const error = data.hasOwnProperty('error') ? data.error : false
 
 		if(status || error){
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 		}else {
-			setAlertUser(ALERT.SUCCESS)
+			toast.success('Action was completed')
 		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
@@ -111,10 +105,10 @@ function Employee({history, userToken}) {
 		const error = data.hasOwnProperty('error') ? data.error : false
 
 		if(status || error){
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 		}else {
 			errorFound = false
-			setAlertUser(ALERT.SUCCESS)
+			toast.success('Action was completed')
 		}
 
 		
@@ -132,12 +126,6 @@ function Employee({history, userToken}) {
 		});
 		
 		return errorFound
-
-	// const tempProps = {...props};
-	//  const searchResult = await tempProps.getEquipmentByHraID(hraId)
-	//  if(!searchResult.error){
-	//   equipments = searchResult.data
-	//  }
 	}
 
 	//Functions Declarations.
@@ -200,6 +188,7 @@ function Employee({history, userToken}) {
 				key={`combo-box-${uuid()}`}
 				options={officesSymbol}
 				getOptionLabel={(option) => option.office_symbol_alias}
+				renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.office_symbol_alias}</li>}
 				style={{ width: 250 }}
 				renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
 		/>),
@@ -247,6 +236,7 @@ function Employee({history, userToken}) {
                   key={`combo-box-${uuid()}`}
                   options={districtOfficeLocations[props.rowData.district]}
                   getOptionLabel={(option) => option.office_location_name}
+				  renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.office_location_name}</li>}
                   style={{ width: 250 }}
                   renderInput={(params) => <TextField {...params} label="Office Location Name" variant="outlined" />}
             />)
@@ -332,21 +322,21 @@ function Employee({history, userToken}) {
 				//isEditHidden: rowData => rowData.name === 'x',
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
-				onBulkUpdate: async(changes) => {
-					const errorResult = await handleTableUpdate({changes:changes})
-						return(new Promise((resolve, reject) => {
-							setTimeout(() => {
-								if(errorResult){
-									reject()
-									return;
-								}
+				// onBulkUpdate: async(changes) => {
+				// 	const errorResult = await handleTableUpdate({changes:changes})
+				// 		return(new Promise((resolve, reject) => {
+				// 			setTimeout(() => {
+				// 				if(errorResult){
+				// 					reject()
+				// 					return;
+				// 				}
 
-								resetEmployees();
-								resolve();
+				// 				resetEmployees();
+				// 				resolve();
 								
-							}, 1000);
-						}))
-					},
+				// 			}, 1000);
+				// 		}))
+				// 	},
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 					onRowAdd: rights.add ? async (newData) => {
@@ -399,22 +389,6 @@ function Employee({history, userToken}) {
 
 	const reloadPage = () => {
 		window.location.reload()
-	}
-
-	const AlertUser = (x) => {
-
-		console.log('alert user activated')
-	
-		if(x.error.active){
-			return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-		}else if(x.success.active){
-			return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-		}
-	
-		//Sucessfully added data to database!
-	
-		setAlertUser(ALERT.RESET)
-		return(null)
 	}
 
 	const CustomFilterTextField = (props) => {
@@ -514,7 +488,6 @@ function Employee({history, userToken}) {
 			<div style={{textAlign: 'center'}}>
 				<h2 >Employee</h2>
 			</div>
-			{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 			<div style={{textAlign: 'center'}}>
 				{loading ? LoadingCircle() : null}
 				{employees.length > 0 ? materialTableSelect() : null}

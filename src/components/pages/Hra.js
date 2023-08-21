@@ -4,13 +4,13 @@ import 'date-fns';
 import { LoadingCircle } from '../tools/tools';
 import MaterialTable from '@material-table/core'
 import { tableIcons } from '../material-table/config'
-import { Autocomplete, Alert } from '@mui/material';
+import { Autocomplete } from '@mui/material';
 import { findIndex, find } from 'lodash'
-import { ALERT } from '../tools/tools'
 import { updateHraApi,destroyHraApi,addHraApi,getAllHrasApi, hraSearchApi } from '../../publics/actions/hra-api'
 import { getAllEmployeesApi } from '../../publics/actions/employee-api'
 import { connect } from 'redux-bundler-react';
 import { v4 as uuid } from 'uuid';
+import toast from 'react-hot-toast';
 
 function Hra({ history, userToken }) {
 	//Hooks Declarations
@@ -18,7 +18,6 @@ function Hra({ history, userToken }) {
 	const [employees, setEmployees] = React.useState([]);
 	const [hras, setHras] = React.useState([]);
 	const [editable,setEditable] = React.useState(false)
-	const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
 
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
@@ -29,10 +28,10 @@ function Hra({ history, userToken }) {
 		const error = data.hasOwnProperty('error') ? data.error : false
 
 		if(status || error){
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 		}else {
 			errorFound = false
-			setAlertUser(ALERT.SUCCESS)
+			toast.success('Action was completed')
 		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
@@ -63,9 +62,9 @@ function Hra({ history, userToken }) {
 		const error = data.hasOwnProperty('error') ? data.error : false
 
 		if(status || error){
-			setAlertUser(ALERT.FAIL())
+			toast.error('Could not complete action')
 		}else {
-			setAlertUser(ALERT.SUCCESS)
+			toast.success('Action was completed')
 		}
 		//setLoading(false)
 		//setEquipments(data.status != 400 ? data.data : data)
@@ -95,10 +94,10 @@ function Hra({ history, userToken }) {
 			const error = data.hasOwnProperty('error') ? data.error : false
 
 			if(status || error){
-				setAlertUser(ALERT.FAIL())
+				toast.error('Could not complete action')
 			}else {
 				errorFound = false
-				setAlertUser(ALERT.SUCCESS)
+				toast.success('Action was completed')
 			}
 
 			//setLoading(false)
@@ -174,6 +173,7 @@ function Hra({ history, userToken }) {
 					key={`combo-box-${uuid()}`}
 					options={employees}
 					getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
+					renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
 					style={{ width: 250 }}
 					renderInput={(params) => <TextField {...params} label="Employee" variant="outlined" />}
 				/>)
@@ -219,20 +219,20 @@ function Hra({ history, userToken }) {
 				//isEditHidden: rowData => rowData.name === 'x',
 				// isDeletable: rowData => rowData.name === 'b', // only name(b) rows would be deletable,
 				// isDeleteHidden: rowData => rowData.name === 'y',
-				onBulkUpdate: async (changes) => {
-					const errorResult = await handleTableUpdate({changes:changes})
-						return(new Promise((resolve, reject) => {
-							setTimeout(() => {
-								if(errorResult){
-									reject()
-									return
-								}
+				// onBulkUpdate: async (changes) => {
+				// 	const errorResult = await handleTableUpdate({changes:changes})
+				// 		return(new Promise((resolve, reject) => {
+				// 			setTimeout(() => {
+				// 				if(errorResult){
+				// 					reject()
+				// 					return
+				// 				}
 								
-								resetHras()
-								resolve();
-							}, 1000);
-						}))
-					},
+				// 				resetHras()
+				// 				resolve();
+				// 			}, 1000);
+				// 		}))
+				// 	},
 					onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 					onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
 					onRowAdd: async (newData) =>{
@@ -305,22 +305,6 @@ function Hra({ history, userToken }) {
 		window.location.reload()
 	}
 
-	const AlertUser = (x) => {
-
-	console.log('alert user activated')
-
-	if(x.error.active){
-		return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-	}else if(x.success.active){
-		return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-	}
-
-	//Sucessfully added data to database!
-
-	setAlertUser(ALERT.RESET)
-	return(null)
-	}
-
 	//Effects.
 	React.useEffect(() => {
 	console.log('HraCall')
@@ -377,7 +361,6 @@ function Hra({ history, userToken }) {
 			<div style={{textAlign: 'center'}}>
 				<h2 >HRA</h2>
 			</div>
-			{alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
 			<div style={{textAlign: 'center'}}>
 				{loading ? LoadingCircle() : null}
 				{hras.length > 0 ? materialTableSelect() : null}

@@ -5,7 +5,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import MaterialTable from '@material-table/core'
 import { form4900Icons } from '../../material-table/config'
 import { getQueryStringParams,LoadingCircle } from '../../tools/tools'
-import { Alert } from '@mui/lab';
 import { SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT } from '../../config/constants'
 import { filter as _filter } from 'lodash'
 import UploadFormModal from './UploadFormModal'
@@ -17,12 +16,12 @@ import { Badge, Box, Switch, Typography, Stepper, Step, StepLabel,
 import { updateEng4900Api, destroyEng4900Api, eng4900SearchApi, getEng4900PdfByIdApi } from '../../../publics/actions/eng4900-api'
 import { getHraFormApi} from '../../../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
-import { ALERT } from '../../tools/tools'
 import { useTheme } from '@mui/material/styles';
 import { Description as DescriptionIcon } from '@mui/icons-material';
 import { TabPanel, a11yProps, StyledBox } from '../../styles/mui';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { green } from '@mui/material/colors';
+import toast from 'react-hot-toast';
 
 function Eng4900({history, location, match, userToken}) {
   
@@ -126,14 +125,12 @@ function Eng4900({history, location, match, userToken}) {
     2: RESET_HRAS,
     4: RESET_HRAS,
   });
-  const [alertUser, setAlertUser] = useState(ALERT.RESET);
   const [selectedRow, setSelectedRow] = useState({});
   const [serverDown, setServerDown] = useState(false);
 
   //Events Declarations.
   const handleTableDelete = async (rowData) => {
     let result_error = true
-    setAlertUser(ALERT.RESET)
     
     await destroyEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
       console.log(data)
@@ -141,7 +138,7 @@ function Eng4900({history, location, match, userToken}) {
       result_error = error
 
       if(error){
-        setAlertUser(ALERT.FAIL())
+        toast.error('Could not complete action')
       }else {
         let eng4900s_copy = {...eng4900s}
 
@@ -150,13 +147,13 @@ function Eng4900({history, location, match, userToken}) {
         }
 
         setEng4900s(eng4900s_copy)
-        setAlertUser(ALERT.SUCCESS)
+        toast.success('Action was completed')
       }
 
 
     }).catch(function (error) {
       console.log(error)
-      setAlertUser(ALERT.FAIL())
+      toast.error('Could not complete action')
     });
 
     return result_error
@@ -320,7 +317,6 @@ function Eng4900({history, location, match, userToken}) {
 
   const handleTableUpdate = async (rowData) => {
     let result_error = true
-    setAlertUser(ALERT.RESET)
     
 		await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
       console.log(data)
@@ -328,7 +324,7 @@ function Eng4900({history, location, match, userToken}) {
       result_error = error
 
       if(error){
-        setAlertUser(ALERT.FAIL())
+        toast.error('Could not complete action')
       }else {
         let eng4900s_copy = {...eng4900s}
 
@@ -337,12 +333,12 @@ function Eng4900({history, location, match, userToken}) {
         }
 
         setEng4900s(eng4900s_copy)
-        setAlertUser(ALERT.SUCCESS)
+        toast.success('Action was completed')
       }
 
 		}).catch(function (error) {
       console.log(error)
-      setAlertUser(ALERT.FAIL())
+      toast.error('Could not complete action')
 		});
 
 		return(result_error)
@@ -364,22 +360,6 @@ function Eng4900({history, location, match, userToken}) {
   }
   
   //Function Declarations.
-  const AlertUser = (x) => {
-
-    console.log('alert user activated')
-
-    if(x.error.active){
-      return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-    }else if(x.success.active){
-      return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-    }
-
-    //Sucessfully added data to database!
-
-    setAlertUser(ALERT.RESET)
-    return(null)
-  }
-
 	const SearchCriteriaOptions = (tab, val,text="Options") => {
 
 		const menuItems = SEARCH_FIELD_OPTIONS.map(x => {
@@ -609,83 +589,6 @@ function Eng4900({history, location, match, userToken}) {
                 )
               },
             }]}
-            // actions={[
-            //   // {
-            //   //   icon: 'View',
-            //   //   tooltip: 'Save User',
-            //   //   onClick: (event, rowData) => alert("You saved "),// + rowData.name)
-            //   // },
-            //   {
-            //     icon: () => (
-            //     <Tooltip title="Crate New Form" aria-label="add">
-            //       <ThemeProvider>
-            //         <Fab  variant="extended" size="medium" color="inherit" className={ plusButtonClasses.fabGreen}>
-            //         Create 4900
-            //         </Fab>
-            //       </ThemeProvider>
-            //     </Tooltip>
-            //     ),
-            //     tooltip: "Create New Form",
-            //     position: "toolbar",
-            //     onClick: () => setCreate4900({...create4900,show:true}),
-            //     hidden: hras[tab_idx].losing.length == 0
-            //   },
-            //   // rowData => ({
-            //   //   icon: form4900Icons.Pdf,
-            //   //   tooltip: 'View PDF',
-            //   //   onClick: (event, rowData) => {
-            //   //     setAlertUser(ALERT.RESET)
-            //   //     get4900Pdf(rowData)
-            //   //   },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-            //   //   disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-            //   // }),
-            //   // rowData => ({
-            //   //   icon: form4900Icons.Publish,
-            //   //   tooltip: 'Upload PDF',
-            //   //   onClick: (event, rowData) => {
-            //   //     setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-            //   //   },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
-            //   //   disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-            //   // })               
-            // ]}
-            // {...(editable && {editable:{
-            //   isDeleteHidden: rowData => rowData.originator !== 1 || rowData.status > 6,
-            //   onRowUpdate: async (newData, oldData) =>{
-            //     const errorResult = false
-            //     return(new Promise((resolve, reject) => {
-            //       setTimeout(() => {
-            //         if(errorResult){
-            //           reject()
-            //           return;
-            //         }
-    
-            //         //resetEmployees();
-            //         resolve();
-                      
-            //       }, 1000);
-            //     }))
-            //     },
-            //   // onRowDelete: async (oldData) => {
-            //   //   const result = await handleTableDelete(oldData)
-
-            //   //   return(new Promise((resolve, reject) => {
-            //   //     setTimeout(() => {
-
-            //   //       if(!result.error){
-            //   //         const dataDelete = [...eng4900s[tab_idx]];
-            //   //         const index = oldData.tableData.id;
-            //   //         dataDelete.splice(index, 1);
-            //   //         //setEng4900s([...dataDelete]);
-            //   //         resolve()
-            //   //         return;
-            //   //       }  
-    
-            //   //       reject();
-            //   //     }, 1000);
-            //   //   }
-            //   // ))
-            //   //   }
-            // }})}
           />
     </div>
     )
@@ -817,10 +720,9 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
-                  setAlertUser(ALERT.RESET)
                   get4900Pdf(rowData)
                   //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                },
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),            
             ]}
@@ -939,10 +841,8 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
-                  setAlertUser(ALERT.RESET)
                   get4900Pdf(rowData)
-                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                },
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
               rowData => ({
@@ -950,12 +850,11 @@ function Eng4900({history, location, match, userToken}) {
                 tooltip: 'Upload PDF',
                 onClick: (event, rowData) => {
                   setUploadPdf({...uploadPdf,show:true,rowData:rowData})
-                },//rowData.folder_link ? openInNewTab(rowData.folder_link) : alert("Error: PDF not found."), // + rowData.name),
+                },
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               })               
             ]}
             {...(editable && {editable:{
-              //isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
               isEditHidden: () => true,
               onRowUpdate: async (newData, oldData) =>{
                 console.log(newData, oldData)
@@ -1062,7 +961,6 @@ function Eng4900({history, location, match, userToken}) {
                 icon: form4900Icons.Pdf,
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
-                  setAlertUser(ALERT.RESET)
                   get4900Pdf(rowData)
                 },
                 disabled: ! (rowData.document_source != 2)
@@ -1166,11 +1064,10 @@ function Eng4900({history, location, match, userToken}) {
   //Render return.
   return (
     <>
-    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} alertUser={alertUser} setAlertUser={setAlertUser}/> : null}
-    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" setSelectedRow={setSelectedRow} hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900} alertUser={alertUser} setAlertUser={setAlertUser}/> : null}
+    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s}/> : null}
+    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" setSelectedRow={setSelectedRow} hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <div>
       {displayTop()}
-      {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
       {loading.init ? <div style={{textAlign:'center'}}>{LoadingCircle()}</div> : null}
       {!loading.init && !serverDown ? TabsEng4900() : null}
     </div>

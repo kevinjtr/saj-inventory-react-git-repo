@@ -5,10 +5,10 @@ import MaterialTable from '@material-table/core'
 import SaveIcon from '@mui/icons-material/Save'
 import {tableIcons} from '../../material-table/config'
 // import Typography from '@mui/material/Typography';
-import {Autocomplete, Alert} from '@mui/material';
+import {Autocomplete} from '@mui/material';
 // import {TextField, InputLabel, MenuItem, Select, Grid, IconButton, FormControl, Radio, RadioGroup, FormControlLabel, FormGroup} from '@mui/material/';
 // import {orderBy, findIndex, filter} from 'lodash'
-import {LoadingCircle, getQueryStringParams, ALERT} from '../../tools/tools';
+import {LoadingCircle, getQueryStringParams} from '../../tools/tools';
 import { getAllRegistrationsApi,destroyRegistrationApi } from '../../../publics/actions/register-api';
 import { getEmployeeByEDIPIWithOffice } from '../../../publics/actions/employee-api';
 import { connect } from 'redux-bundler-react';
@@ -23,7 +23,6 @@ function RegistrationViewer({userToken,user}) {
     const [initialize, setInitialize] = React.useState(true);
     const [registrations, setRegistrations] = useState([]);
     const [loading, setLoading] = React.useState(false);
-    const [alertUser, setAlertUser] = React.useState(ALERT.RESET);
     const [editable,setEditable] = React.useState(false)
     const [openApproval,setOpenApproval] = useState(false);
     const [openDelete,setOpenDelete] = useState(false);
@@ -31,20 +30,6 @@ function RegistrationViewer({userToken,user}) {
     const [result,setResult] = useState({});
     // Steps for forms.  Approval starts at Step 1, Delete starts at Step 98
     const [step,setStep] = useState(0)
-
-    const AlertUser = (x) => {
-		console.log('alert user activated')
-        if(x.error.active){
-            return(<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-        }
-        else if(x.success.active){
-            return(<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-        }
-        setAlertUser(ALERT.RESET)
-        return(null)
-    
-    }
-
 
     const handleTableDelete = async (id) => {
    
@@ -306,7 +291,6 @@ React.useEffect(() => {
             <div style={{textAlign: 'center'}}>
                  <h2 >Pending User Registrations</h2>
 			</div>
-             {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
              <div style={{textAlign: 'center'}}>
                 {loading ? LoadingCircle() : null}
                 {!loading > 0  ? materialTableSelect() : null}

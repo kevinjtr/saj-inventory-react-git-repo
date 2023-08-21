@@ -2,13 +2,14 @@ import {useState, useEffect} from 'react';
 import '../../img/style.css';
 import MaterialTable from '@material-table/core'
 import { tableIcons } from '../material-table/config'
-import { Autocomplete, Alert } from '@mui/material';
+import { Autocomplete } from '@mui/material';
 import { TextField } from '@mui/material/';
 import { findIndex, find } from 'lodash'
-import { LoadingCircle, ALERT } from '../tools/tools';
+import { LoadingCircle } from '../tools/tools';
 import { addAuthorizedUsersApi, getAuthorizedUsersApi, deleteAuthorizedUsersApi } from '../../publics/actions/authorized-users'
 import { connect } from 'redux-bundler-react';
 import { v4 as uuid } from 'uuid';
+import toast from 'react-hot-toast';
 
 function AuthorizedUsers({ userToken }) {
     //React Hooks Declarations.
@@ -17,45 +18,29 @@ function AuthorizedUsers({ userToken }) {
     const [names, setNames] = useState([]);
     const [hras, setHRAs] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [alertUser, setAlertUser] = useState(ALERT.RESET);
     const [editable, setEditable] = useState(false)
     const [serverDown, setServerDown] = useState(false);
 
-    const AlertUser = (x) => {
-        console.log('alert user activated')
-        if (x.error.active) {
-            return (<Alert variant="filled" severity="error">{x.error.text}</Alert>)
-        }
-        else if (x.success.active) {
-            return (<Alert variant="filled" severity="success">{x.success.text}</Alert>)
-        }
-        setAlertUser(ALERT.RESET)
-        return (null)
-
-    }
-
     const handleTableAdd = async (newData) => {
-
         let errorFound = false
-        setAlertUser(ALERT.RESET)
 
         await addAuthorizedUsersApi(newData, userToken).then((response) => response.data).then((data) => {
             const {error} = data
             errorFound = error
 
             if (error) {
-                setAlertUser(ALERT.FAIL())
+                toast.error('Could not complete action')
             } else {
                 if(data.authorizedUsers){
                     setAuthorizedUsers(data.authorizedUsers)
                 }
                 
-                setAlertUser(ALERT.SUCCESS)
+                toast.success('Action was completed')
             }
 
         }).catch(function (error) {
             console.log(error)
-            setAlertUser(ALERT.FAIL())
+            toast.error('Could not complete action')
         });
 
         return errorFound
@@ -64,25 +49,24 @@ function AuthorizedUsers({ userToken }) {
 
     const handleTableDelete = async (rowData) => {
         let errorFound = false
-        setAlertUser(ALERT.RESET)
 
         await deleteAuthorizedUsersApi(rowData, userToken).then((response) => response.data).then((data) => {
             const {error} = data
             errorFound = error
 
             if (error) {
-                setAlertUser(ALERT.FAIL())
+                toast.error('Could not complete action')
             } else {
                 if(data.authorizedUsers){
                     setAuthorizedUsers(data.authorizedUsers)
                 }
                 
-                setAlertUser(ALERT.SUCCESS)
+                toast.success('Action was completed')
             }
 
         }).catch(function (error) {
             console.log(error)
-            setAlertUser(ALERT.FAIL())
+            toast.error('Could not complete action')
         });
 
         return errorFound
@@ -396,7 +380,6 @@ function AuthorizedUsers({ userToken }) {
                 <div style={{ textAlign: 'center' }}>
                     <h2 >Authorized Users</h2>
                 </div>
-                {alertUser.success.active || alertUser.error.active ? AlertUser(alertUser) : null}
                 <div style={{ textAlign: 'center' }}>
                     {loading ? LoadingCircle() : null}
                     {!loading && !serverDown ? materialTableSelect() : null}

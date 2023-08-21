@@ -16,13 +16,14 @@ import {
     TextField,
     Typography,
     Select,
-    MenuItem
+    MenuItem,
+    FormControl,
+    InputLabel
 } from '@mui/material/';
 import {getAccount, updateAccountApi} from "../../publics/actions/account-api"
 import { connect } from 'redux-bundler-react';
 import {registrationDropDownItems} from "../config/constants"
 import {LoadingCircle} from '../tools/tools';
-import { AlertContext } from "../context/AlertProvider";
 import Notification from "../tools/Notification";
 import {LoadingButton} from '@mui/lab';
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
@@ -30,8 +31,8 @@ import { green, grey } from '@mui/material/colors';
 import {diff} from "lodash"
 import { Formik, useFormik, Field, Form, ErrorMessage } from 'formik'
 import * as yup from 'yup'
-  
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
+import toast from 'react-hot-toast';
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -312,10 +313,6 @@ const AccountProfileDetails = ({userToken, user, setUser, triggerNotification, s
 		validationSchema: validationSchema,
 		onSubmit: (values, submitProps) => {
       handleSubmit(values, submitProps)
-      //triggerNotification("success")
-      //console.log("here")
-		    //alert(JSON.stringify(values, null, 2));
-		    //handleAdd(values);
 		},
 	  });
 
@@ -465,7 +462,9 @@ const AccountProfileDetails = ({userToken, user, setUser, triggerNotification, s
               md={6}
               xs={12}
             >
-              <Select
+              <FormControl fullWidth>
+                <InputLabel id="select-status-office-location-id">Office Location</InputLabel>
+                <Select
                 fullWidth
                 label="Office Location"
                 name="office_location_id"
@@ -488,6 +487,7 @@ const AccountProfileDetails = ({userToken, user, setUser, triggerNotification, s
                   // </option>
                 ))}
               </Select>
+              </FormControl>
             </Grid>
           </Grid>
         </CardContent>
@@ -525,24 +525,15 @@ const Account = ({userToken}) => {
   });
   const [serverDown, setServerDown] = useState(false);
 
-  const { actions } = useContext(AlertContext);
-  const alertTypes = ["success", "warning", "info", "error"];
-  const selectedType =
-    alertTypes[Math.floor(Math.random() * alertTypes.length)];
-
   const triggerNotification = (type,title=null) => {
-    const notification_title = title != null ? title : (type == "success" ? "Sucessfully updated data." : "Error: Could not update data.")
-    actions.addAlert({
-      //text: "Notification text",
-      title: notification_title,
-      show_date:true,
-      type: type,
-      id: Date.now()
-    });
+    if(type === "success"){
+      toast.success('Action was completed')
+    }else if(type === "error"){
+      toast.error('Could not complete action')
+    }    
   };
 
   useEffect(() => {
-    actions.clearAlert();
     setLoading(true)
 
     getAccount(userToken).then((response) => response.data).then((data) => data.data).then((employee) => {

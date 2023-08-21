@@ -42,12 +42,6 @@ export const openInNewTab = (url) => {
     if (newWindow) newWindow.opener = null
 }
 
-export const ALERT = {
-	SUCCESS: {success:{active:true,text:`Action was completed [${moment(new Date()).format('L HH:mm:ss')}].`},error:{active:false,text:''}},
-	FAIL: (text=null) => { return {success:{active:true,text:''},error:{active:true,text:`${text ? text : 'Could not complete action'} [${moment(new Date()).format('L HH:mm:ss')}].`}}},
-	RESET: {success:{active:false,text:''},error:{active:false,text:''}},
-}
-
 export const generateReportDate= (dateType) => {
 
     const date = new Date();
