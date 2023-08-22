@@ -67,7 +67,7 @@ let cols_config = {
     ]
 }
 
-export default function HistoryTable  ({ data, table_name }) {
+export default function HistoryTable  ({ history, componentName }) {
 
     return (
         <div style={{ maxWidth: '100%' }}>
@@ -84,8 +84,8 @@ export default function HistoryTable  ({ data, table_name }) {
                         deleteTooltip: "Undo"
                     }
                 }}
-                columns={cols_config[table_name]}
-                data={data}
+                columns={cols_config[componentName]}
+                data={history}
                 options={{
                     headerStyle: {
                         backgroundColor: "#969696",

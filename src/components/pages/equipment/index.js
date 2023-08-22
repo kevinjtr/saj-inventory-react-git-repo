@@ -1,7 +1,7 @@
 
 import React, {useState, useEffect, useRef} from 'react';
 import MapWrapper from "./MapWrapper"
-import { Snackbar, Box, AppBar, Tabs, Tab, Switch, Typography, TextField,
+import { Snackbar, Box, AppBar, Tabs, Tab, Switch, Typography, TextField, Icon,
    MenuItem, FormControl, Select,FormGroup,FormControlLabel,Button,IconButton,
   Tooltip,Radio,RadioGroup,Grid, Link, Autocomplete, InputAdornment, DatePicker} from '@mui/material';
 import {List as ListIcon, LocationOn as LocationOnIcon, Search as SearchIcon, Computer as ComputerIcon,
@@ -11,7 +11,7 @@ import {find} from "lodash"
 import { v4 as uuid } from 'uuid';
 import * as XLSX from 'xlsx'
 import moment from "moment"
-import MaterialTable, { MTableToolbar, MTableBody } from '@material-table/core'
+import MaterialTable, { MTableToolbar, MTableBody, MTableAction } from '@material-table/core'
 import {tableIcons} from '../../mui/config'
 import 'date-fns';
 import jsPDF from 'jspdf'
@@ -21,11 +21,12 @@ import { useDimensions } from "../../tools/useDimensions";
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from '../../config/constants'
 import {orderBy, findIndex, filter, debounce} from 'lodash'
 import {updateEquipmentApi, destroyEquipmentApi, addEquipmentApi, equipmentSearchApi2} from '../../../publics/actions/equipment-api'
+import {getChangeHistoryByTableApi} from '../../../publics/actions/change-history-api'
 import { connect } from 'redux-bundler-react';
 import UpdateStatusPopup from './UpdateStatusPopup';
 import AddCommentIcon from '@mui/icons-material/AddComment';
 import toast from 'react-hot-toast';
-import FetchChangeHistory from '../../history'
+import ChangeHistoryButton from '../../history'
 import EventNoteIcon from '@mui/icons-material/EventNote';
 
 function Equipment({history, location, match, userToken}) {
@@ -139,7 +140,7 @@ function Equipment({history, location, match, userToken}) {
     const initialValue = JSON.parse(saved);
     return initialValue || false;
 });
-  const [mapFilters, setMapFilters] = useState([]);
+  const [openChangeHistory, setMapFilters] = useState([]);
 
   // state variable for showing/hiding column filters in material table
     const [showFilter,setShowFilter] = useState({
@@ -785,10 +786,8 @@ function Equipment({history, location, match, userToken}) {
               }
             },{
               icon: EventNoteIcon,
-              tooltip:'Change History',
-              onClick: (event, rowData) => {
-                FetchChangeHistory(userToken,'equipment',rowData.id)
-              }
+              name:'change-history',
+              tooltip: 'Change History',
             }]}
             icons={tableIcons}
             columns={columns}
@@ -798,7 +797,28 @@ function Equipment({history, location, match, userToken}) {
                 searchPlaceholder: "Filter Search"
                 }}}
             // Add custom show/hide filter button to material table toolbar
-            components={{   
+            components={{  
+                Action: (props, rowData) => {
+                  const {icon: MuiIcon} = props.action
+                  if(props.action.name === 'change-history') {
+                    return (
+                      <ChangeHistoryButton id={props.data.id} componentName={'equipment'} token={userToken} />
+                    )
+                  }
+
+                  return <MTableAction {...props} />;
+
+                  // return (
+                  //   <Tooltip title={props.action.tooltip}>
+                  //     <IconButton aria-label={props.action.icon} size="small"
+                  //               onClick={(event) => props.action.onClick(event, props.data)}
+                  //           >
+                  //               <MuiIcon/>
+                  //     </IconButton>
+                  //   </Tooltip>
+                  // )
+
+                }, 
                 Toolbar: props =>(
                     <>
                     <div style={{display:"flex", flexDirection:"row", justifyContent:"flex-end"}}>

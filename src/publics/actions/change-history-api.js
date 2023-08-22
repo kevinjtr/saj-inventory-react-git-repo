@@ -10,22 +10,10 @@ export const updateChangeHistoryByViewApi = {
     [EQUIPMENT]: updateEquipmentApi,
 }
 
-// export const destroyAnnualInventoryApi = async (rowData, token) => {
-// 	return api.post(`${CHANGE_HISTORY}/destroy`,{params:rowData},{headers:{auth:token}})
-// };
-
-// export const addAnnualInventoryApi = async (rowData, token) => {
-// 	return api.post(`${CHANGE_HISTORY}/add`,{params:rowData},{headers:{auth:token}})
-// };
-
-// export const getAllAnnualInventorysApi = async (token) => {
-// 	return api.get(CHANGE_HISTORY,{headers:{auth:token}})
-// };
-
 export const getChangeHistoryByViewApi = async (obj, token) => {
 	return api.post(`${CHANGE_HISTORY}`,{tab:obj.tab,init:obj.init},{headers:{auth:token}})
 };
 
-// export const annualInventorySearchApi = async (searchParams, token) => {
-// 	return api.post(`${CHANGE_HISTORY}/search`,searchParams,{headers:{auth:token}})
-// };
+export const getChangeHistoryByTableApi = async (id, table_name, token) => {
+    return api.get(`${CHANGE_HISTORY}/${table_name}/${id}`,{},{headers:{auth:token}})
+};
