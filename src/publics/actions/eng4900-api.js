@@ -43,3 +43,8 @@ export const eng4900SearchApi = async (searchParams, token) => {
 export const eng4900UploadApi = async (searchParams, token) => {
 	return api.post(`${ENG4900}/upload`,searchParams,{headers:{auth:token}})
 };
+
+export const signEng4900Api = async (rowData, token) => {
+	return api.post(`${ENG4900}/sign`,{params:rowData},{headers:{auth:token}})
+};
+

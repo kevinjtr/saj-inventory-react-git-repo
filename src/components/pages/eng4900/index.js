@@ -7,7 +7,7 @@ import { form4900Icons } from '../../material-table/config'
 import { getQueryStringParams,LoadingCircle } from '../../tools/tools'
 import { SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT } from '../../config/constants'
 import { filter as _filter } from 'lodash'
-import UploadFormModal from './UploadFormModal'
+import FormSignModal from './FormSignModal'
 import Eng4900Form from './Eng4900Form'
 import { Badge, Box, Switch, Typography, Stepper, Step, StepLabel,
   AppBar, Tabs, Tab, TextField, MenuItem, FormControl,
@@ -22,6 +22,7 @@ import { TabPanel, a11yProps, StyledBox } from '../../styles/mui';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { green } from '@mui/material/colors';
 import toast from 'react-hot-toast';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
 
 function Eng4900({history, location, match, userToken}) {
   
@@ -72,7 +73,7 @@ function Eng4900({history, location, match, userToken}) {
   const theme = useTheme()
 
   //Hooks Declarations.
-  const [uploadPdf, setUploadPdf] = useState({
+  const [formSignModal, setFormSignModal] = useState({
     show: false,
     rowData: null,
     refresh:false
@@ -721,7 +722,7 @@ function Eng4900({history, location, match, userToken}) {
                 tooltip: 'View PDF',
                 onClick: (event, rowData) => {
                   get4900Pdf(rowData)
-                  //setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                  //setFormSignModal({...formSignModal,show:true,rowData:rowData})
                 },
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),            
@@ -846,10 +847,10 @@ function Eng4900({history, location, match, userToken}) {
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               }),
               rowData => ({
-                icon: form4900Icons.Publish,
-                tooltip: 'Upload PDF',
+                icon: BorderColorIcon,
+                tooltip: 'Sign Form',
                 onClick: (event, rowData) => {
-                  setUploadPdf({...uploadPdf,show:true,rowData:rowData})
+                  setFormSignModal({...formSignModal,show:true,rowData:rowData})
                 },
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
               })               
@@ -1056,15 +1057,15 @@ function Eng4900({history, location, match, userToken}) {
 	}, [hras]);
 
   useEffect(() => {
-		if(uploadPdf.refresh){
+		if(formSignModal.refresh){
       
     }
-	}, [uploadPdf.refresh]);
+	}, [formSignModal.refresh]);
 
   //Render return.
   return (
     <>
-    {uploadPdf.show ? <UploadFormModal uploadPdf={uploadPdf} setUploadPdf={setUploadPdf} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s}/> : null}
+    {formSignModal.show ? <FormSignModal formSignModal={formSignModal} setFormSignModal={setFormSignModal} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s}/> : null}
     {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" setSelectedRow={setSelectedRow} hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
     <div>
       {displayTop()}

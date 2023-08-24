@@ -1082,7 +1082,12 @@ function Equipment({history, location, match, userToken}) {
         { title: 'Employee Last', field: 'employee_last_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.2,editable: 'never'  },
         { title: 'Employee Office Location', field: 'employee_office_location_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.3,editable: 'never'  },
         {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' },
-        {title: 'Status Date', field:'status_date', type:'date', filterComponent: (props) => <CustomDatePicker {...props} />, col_id:6.4,editable: 'no' },
+        {title: 'Status Date', field:'status_date', type:'date', render: rowData => {
+          if(rowData.status_date){
+            return <a>{moment(rowData.status_date).format("MM/DD/YY HH:mm:ss")}</a>
+          }
+          return <a></a>
+      }, filterComponent: (props) => <CustomDatePicker {...props} />, col_id:6.4,editable: 'no' },
     ] 
    // tab_idx === 0 || tab_idx === 1 ? {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
     //tab_idx === 1 ? {title: 'Status Date', field:'status_date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},

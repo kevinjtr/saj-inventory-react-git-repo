@@ -6,19 +6,19 @@ import CloseIcon from '@mui/icons-material/Close';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
-import { Select } from '@mui/material/';
+import { Select, FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material/';
 import FormControl from '@mui/material/FormControl';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { blue, grey } from '@mui/material/colors';
+import { blue, grey, red } from '@mui/material/colors';
 import {useDropzone} from 'react-dropzone';
 import api from '../../../axios/Api';
 import DeleteIcon from '@mui/icons-material/Delete';
 import debounce from 'lodash/debounce'
 import { connect } from 'redux-bundler-react';
-import {updateEng4900Api} from '../../../publics/actions/eng4900-api'
+import {updateEng4900Api, signEng4900Api} from '../../../publics/actions/eng4900-api'
 import { styled } from '@mui/material/styles';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Save as SaveIcon, UploadFile as UploadFileIcon } from '@mui/icons-material';
+import { Save as SaveIcon, UploadFile as UploadFileIcon, Edit as EditIcon } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
@@ -31,11 +31,11 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     top: theme.spacing(5),
 }));
 
-const StyledLoadingButton = styled(LoadingButton)(({ theme, active }) => ({
+const StyledLoadingButton = styled(LoadingButton)(({ theme, active, name }) => ({
     color: theme.palette.common.white,
-    backgroundColor: active ? blue[500] : grey[500],
+    backgroundColor: active ? name === "sign" ? red[500] : blue[500]  : grey[500],
     '&:hover': {
-        backgroundColor: active ? blue[600] : grey[600],
+        backgroundColor: active ? name === "sign" ? red[600] : blue[500] : grey[600],
     },
     height:'50px',
     width:'50%',
@@ -102,7 +102,7 @@ const img = {
   height: '100%'
 };
 
-function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, userToken}) {
+function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEng4900s, userToken}) {
 
     //constant declarations
 
@@ -123,10 +123,12 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
       });
       const [uploadButton, setUploadButton] = React.useState({
         active:false,
+        sign:false,
         send:false,
       });
     const [progress, setProgress] = useState(0); // progess bar
-
+    const [uploadOrSign, setUploadOrSign] = useState(null); // progess bar
+    
     //Styles declaration
 
     //Functions declaration
@@ -135,8 +137,8 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
         if(files.length != 0){
             var formData = new FormData();
             formData.append('file', files[0]);
-            const {form_id} = uploadPdf.rowData
-            console.log(uploadPdf)
+            const {form_id} = formSignModal.rowData
+            console.log(formSignModal)
 
             await api.post(`eng4900/upload/${form_id}`, formData, { headers: {auth: userToken, changes: JSON.stringify({status: modal.newStatus})},
                 // onUploadProgress: (ProgressEvent) => {
@@ -161,7 +163,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
           
                   setEng4900s(eng4900s_copy)
                   toast.success('Action was completed')
-                  setUploadPdf({...uploadPdf,show:false})
+                  setFormSignModal({...formSignModal,show:false})
                 }                
             })
             .catch(function (error) {
@@ -179,36 +181,60 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
         //setProgress(0)
         setSubmitButton({...submitButton,send:true})
 
-        if(isFormRejected()){
-            const {form_id} = uploadPdf.rowData
-            const rowData = {changes:{'0':{newData:{ form_id: form_id, status:modal.newStatus}}}}
-            console.log(rowData)
-            await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
-                console.log(data)
-                const {error, tabUpdatedData} = data
-          
-                if(error){
-                    toast.error('Could not complete action')
-                }else {
-                  let eng4900s_copy = {...eng4900s}
-          
-                  for(const tab_number in tabUpdatedData){
-                    eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
-                  }
-          
-                  setEng4900s(eng4900s_copy)
-                  toast.success('Action was completed')
-                  setUploadPdf({...uploadPdf,show:false})
-                }
-
-            }).catch(function (error) {
-                console.log(error)
+        const {form_id} = formSignModal.rowData
+        const rowData = {changes:{'0':{newData:{ form_id: form_id, status:modal.newStatus}}}}
+        await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
+            console.log(data)
+            const {error, tabUpdatedData} = data
+        
+            if(error){
                 toast.error('Could not complete action')
-            });
+            }else {
+                let eng4900s_copy = {...eng4900s}
+        
+                for(const tab_number in tabUpdatedData){
+                eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
+                }
+        
+                setEng4900s(eng4900s_copy)
+                toast.success('Action was completed')
+                setFormSignModal({...formSignModal,show:false})
+            }
 
-        }else{
-            setSubmitButton({...submitButton,send:false})
-        }
+        }).catch(function (error) {
+            console.log(error)
+            toast.error('Could not complete action')
+        });
+    }
+
+    const handleSign = async (event) => {
+        //setProgress(0)
+        setSubmitButton({...submitButton,send:true})
+
+        const {form_id} = formSignModal.rowData
+        const rowData = {id: form_id, status:modal.newStatus}
+        await signEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
+            console.log(data)
+            const {error, tabUpdatedData} = data
+        
+            if(error){
+                toast.error('Could not complete action')
+            }else {
+                let eng4900s_copy = {...eng4900s}
+        
+                for(const tab_number in tabUpdatedData){
+                eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
+                }
+        
+                setEng4900s(eng4900s_copy)
+                toast.success('Action was completed')
+                setFormSignModal({...formSignModal,show:false})
+            }
+
+        }).catch(function (error) {
+            console.log(error)
+            toast.error('Could not complete action')
+        });
     }
 
     const handleUpload = async (event) => {
@@ -235,7 +261,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
     }
 
     const resetModalData = () => {
-        setUploadPdf({...uploadPdf,show:false})
+        setFormSignModal({...formSignModal,show:false})
         setModal({...modal,
             reset: false,
             text:"",
@@ -304,8 +330,8 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
             return (<p>Upload is Complete. </p>)
         }
 
-        // const keys = filter(uploadPdf.rowData.status_options,function(option){ 
-        //     const {rowData} = uploadPdf
+        // const keys = filter(formSignModal.rowData.status_options,function(option){ 
+        //     const {rowData} = formSignModal
         
         //     if(Object.keys(rowData).length > 0){
         //         const {status, originator} = rowData
@@ -320,7 +346,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
         //     return false
         // })
 
-        const uploadStatusItems = uploadPdf.rowData.status_options.map(option => {
+        const uploadStatusItems = formSignModal.rowData.status_options.map(option => {
                 return <MenuItem value={option.id}>{option.label}</MenuItem>
         })
 
@@ -366,11 +392,31 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
             console.log(submitButton)
         }, [submitButton]);
 
-        const newStatusSelected = modal.newStatus && ( modal.newStatus != uploadPdf.rowData.status)
+        const newStatusSelected = modal.newStatus && ( modal.newStatus != formSignModal.rowData.status)
         
+        const SignOrUpload = () => {
+            return (
+                <FormControl>
+                <FormLabel id="demo-row-radio-buttons-group-label">Choose signature:</FormLabel>
+                <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="row-radio-buttons-group"
+                    value={uploadOrSign}
+                    onChange={(e) => {
+                        setUploadButton((prev) => ({...prev, sign: e.target.value === "sign"}))
+                        setUploadOrSign(e.target.value)
+                    }}
+                >
+                    <FormControlLabel value="sign" control={<Radio />} label="Digitally sign" />
+                    <FormControlLabel value="upload" control={<Radio />} label="Upload signed form" />
+                </RadioGroup>
+                </FormControl>
+            )
+        }
 
         return(
-            <StyledDialog open={uploadPdf.show} fullWidth onClose={(event, reason) => {
+            <StyledDialog open={formSignModal.show} fullWidth onClose={(event, reason) => {
                 if (reason !== 'backdropClick') {
                     //setModal({...modal,active:false})
                 }
@@ -379,7 +425,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                 <div>
                 <StyledDialogTitle disableTypography>
                     <div style={{position:'absolute',left:'15px',paddingTop:'15px'}}>
-                        <h5>Upload Signed ENG 4900{uploadPdf.rowData ? ' - ' + uploadPdf.rowData.form_id : null}</h5>  
+                        <h5>SIGN ENG 4900{formSignModal.rowData ? ' - ' + formSignModal.rowData.form_id : null}</h5>  
                     </div>
                     <IconButton onClick={()=>resetModalData()}>
                         <CloseIcon />
@@ -397,7 +443,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                         label="Select"
                         labelId="demo-simple-select-label"
                         id="demo-simple-select"
-                        value={modal.newStatus ? modal.newStatus : uploadPdf.rowData.status}
+                        value={modal.newStatus ? modal.newStatus : formSignModal.rowData.status}
                         onChange={handleModalStatusChange}
                         >
                         {uploadStatusItems}
@@ -405,8 +451,9 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                     </FormControl>
                 </div>
                 ) : null}
-                
-                { newStatusSelected ? (modal.uploadDone ? returnCompleteLabel() : returnUploadDropZone()) : null}
+    
+                {newStatusSelected && !isFormRejected() ? <SignOrUpload/> : null}
+                { uploadOrSign === "upload" ? (modal.uploadDone ? returnCompleteLabel() : returnUploadDropZone()) : null}
                 {isFormRejected() ? (
                     <div style={{textAlign:'center'}}>
                         <StyledLoadingButton 
@@ -420,17 +467,33 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
                         Submit
                         </StyledLoadingButton>
                     </div>
-                ):(
+                ): uploadOrSign === "upload" ? (
                     <div style={{textAlign:'center'}}>
                         <StyledLoadingButton 
+                        name={uploadOrSign}
                         onClick={ handleUpload }
                         active={ uploadButton.active && newStatusSelected }
                         disabled={ !uploadButton.active || uploadButton.send || !newStatusSelected }
                         loading={ uploadButton.send }
                         loadingPosition="start"
-                        startIcon={<SaveIcon />}
+                        startIcon={<EditIcon/>}
                         >
                         Upload
+                        </StyledLoadingButton>
+                    </div>
+                    
+                ) : (
+                    <div style={{textAlign:'center'}}>
+                        <StyledLoadingButton 
+                        name={uploadOrSign}
+                        onClick={ handleSign }
+                        active={ uploadButton.sign && newStatusSelected }
+                        disabled={ !uploadButton.sign || uploadButton.send || !newStatusSelected }
+                        loading={ uploadButton.send }
+                        loadingPosition="start"
+                        startIcon={<SaveIcon />}
+                        >
+                        Sign Form
                         </StyledLoadingButton>
                     </div>
                 )}
@@ -439,7 +502,7 @@ function UploadFormModal({type, uploadPdf, setUploadPdf, eng4900s, setEng4900s, 
         )
     }
 
-    if(uploadPdf.rowData)
+    if(formSignModal.rowData)
         return(<UploadModal/>)
 
     return(null)
