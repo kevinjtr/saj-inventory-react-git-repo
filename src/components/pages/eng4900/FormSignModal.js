@@ -120,10 +120,15 @@ function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEn
     const [submitButton, setSubmitButton] = React.useState({
         active:false,
         send:false,
+        sign:false,
       });
       const [uploadButton, setUploadButton] = React.useState({
         active:false,
-        sign:false,
+        send:false,
+      });
+
+      const [signButton, setSignButton] = React.useState({
+        active:false,
         send:false,
       });
     const [progress, setProgress] = useState(0); // progess bar
@@ -189,6 +194,7 @@ function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEn
         
             if(error){
                 toast.error('Could not complete action')
+                setSubmitButton({...submitButton,send:false, active: true})
             }else {
                 let eng4900s_copy = {...eng4900s}
         
@@ -203,13 +209,14 @@ function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEn
 
         }).catch(function (error) {
             console.log(error)
+            setSubmitButton({...submitButton,send:false, active: true})
             toast.error('Could not complete action')
         });
     }
 
     const handleSign = async (event) => {
         //setProgress(0)
-        setSubmitButton({...submitButton,send:true})
+        setSignButton({...signButton,send:true})
 
         const {form_id} = formSignModal.rowData
         const rowData = {id: form_id, status:modal.newStatus}
@@ -219,6 +226,7 @@ function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEn
         
             if(error){
                 toast.error('Could not complete action')
+                setSignButton({...signButton,send:false, active: true})
             }else {
                 let eng4900s_copy = {...eng4900s}
         
@@ -233,6 +241,7 @@ function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEn
 
         }).catch(function (error) {
             console.log(error)
+            setSignButton({...signButton,send:false, active: true})
             toast.error('Could not complete action')
         });
     }
@@ -404,7 +413,7 @@ function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEn
                     name="row-radio-buttons-group"
                     value={uploadOrSign}
                     onChange={(e) => {
-                        setUploadButton((prev) => ({...prev, sign: e.target.value === "sign"}))
+                        setSignButton((prev) => ({...prev, active: e.target.value === "sign"}))
                         setUploadOrSign(e.target.value)
                     }}
                 >
@@ -487,9 +496,9 @@ function UploadFormModal({type, formSignModal, setFormSignModal, eng4900s, setEn
                         <StyledLoadingButton 
                         name={uploadOrSign}
                         onClick={ handleSign }
-                        active={ uploadButton.sign && newStatusSelected }
-                        disabled={ !uploadButton.sign || uploadButton.send || !newStatusSelected }
-                        loading={ uploadButton.send }
+                        active={ signButton.active && newStatusSelected }
+                        disabled={ !signButton.active || signButton.send || !newStatusSelected }
+                        loading={ signButton.send }
                         loadingPosition="start"
                         startIcon={<SaveIcon />}
                         >

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import 'date-fns';
 import SearchIcon from '@mui/icons-material/Search';
-import MaterialTable from '@material-table/core'
+import MaterialTable, {MTableAction} from '@material-table/core'
 import { form4900Icons } from '../../material-table/config'
 import { getQueryStringParams,LoadingCircle } from '../../tools/tools'
 import { SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT } from '../../config/constants'
@@ -23,6 +23,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import { green } from '@mui/material/colors';
 import toast from 'react-hot-toast';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import ChangeHistoryButton from '../../history'
 
 function Eng4900({history, location, match, userToken}) {
   
@@ -536,6 +537,17 @@ function Eng4900({history, location, match, userToken}) {
     return(
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
+            components={{  
+              Action: (props, rowData) => {
+                if(props.action.name === 'change-history') {
+                  return (
+                    <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
+                  )
+                }
+
+                return <MTableAction {...props} />;
+              },
+          }}
           icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
@@ -646,6 +658,17 @@ function Eng4900({history, location, match, userToken}) {
     return(
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
+            components={{  
+              Action: (props, rowData) => {
+                if(props.action.name === 'change-history') {
+                  return (
+                    <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
+                  )
+                }
+
+                return <MTableAction {...props} />;
+              },
+          }}
           icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
@@ -725,7 +748,9 @@ function Eng4900({history, location, match, userToken}) {
                   //setFormSignModal({...formSignModal,show:true,rowData:rowData})
                 },
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              }),            
+              }),{
+                name:'change-history',
+              }        
             ]}
             {...(editable && {editable:{
               isDeletable: rowData => rowData.status == 1,
@@ -786,6 +811,17 @@ function Eng4900({history, location, match, userToken}) {
     return(
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
+            components={{  
+              Action: (props, rowData) => {
+                if(props.action.name === 'change-history') {
+                  return (
+                    <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
+                  )
+                }
+
+                return <MTableAction {...props} />;
+              },
+          }}
           icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
@@ -853,7 +889,9 @@ function Eng4900({history, location, match, userToken}) {
                   setFormSignModal({...formSignModal,show:true,rowData:rowData})
                 },
                 disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              })               
+              }),{
+                name:'change-history',
+              }            
             ]}
             {...(editable && {editable:{
               isEditHidden: () => true,
@@ -908,6 +946,17 @@ function Eng4900({history, location, match, userToken}) {
     return(
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
           <MaterialTable
+          components={{  
+            Action: (props, rowData) => {
+              if(props.action.name === 'change-history') {
+                return (
+                  <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
+                )
+              }
+
+              return <MTableAction {...props} />;
+            },
+        }}
           icons={form4900Icons}
             columns={columns}
             data={eng4900s[tab_idx]}
@@ -965,7 +1014,9 @@ function Eng4900({history, location, match, userToken}) {
                   get4900Pdf(rowData)
                 },
                 disabled: ! (rowData.document_source != 2)
-              }),           
+              }), {
+                name:'change-history',
+              }          
             ]}
           />
     </div>

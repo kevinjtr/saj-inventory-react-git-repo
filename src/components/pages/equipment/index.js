@@ -785,9 +785,9 @@ function Equipment({history, location, match, userToken}) {
                 setOpenPopup(true)
               }
             },{
-              icon: EventNoteIcon,
+              //icon: EventNoteIcon,
               name:'change-history',
-              tooltip: 'Change History',
+              //tooltip: 'Change History',
             }]}
             icons={tableIcons}
             columns={columns}
@@ -799,7 +799,6 @@ function Equipment({history, location, match, userToken}) {
             // Add custom show/hide filter button to material table toolbar
             components={{  
                 Action: (props, rowData) => {
-                  const {icon: MuiIcon} = props.action
                   if(props.action.name === 'change-history') {
                     return (
                       <ChangeHistoryButton id={props.data.id} componentName={'equipment'} token={userToken} />
@@ -807,17 +806,6 @@ function Equipment({history, location, match, userToken}) {
                   }
 
                   return <MTableAction {...props} />;
-
-                  // return (
-                  //   <Tooltip title={props.action.tooltip}>
-                  //     <IconButton aria-label={props.action.icon} size="small"
-                  //               onClick={(event) => props.action.onClick(event, props.data)}
-                  //           >
-                  //               <MuiIcon/>
-                  //     </IconButton>
-                  //   </Tooltip>
-                  // )
-
                 }, 
                 Toolbar: props =>(
                     <>
