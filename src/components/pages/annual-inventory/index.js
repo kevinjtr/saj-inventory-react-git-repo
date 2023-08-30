@@ -2,8 +2,8 @@ import {useState, useEffect} from 'react';
 import TextField from '@mui/material/TextField';
 import 'date-fns';
 import { LoadingCircle } from '../../tools/tools';
-import MaterialTable from '@material-table/core'
 import { tableIcons } from '../../material-table/config'
+import MuiTable from '../../material-table'
 import { Autocomplete } from '@mui/material';
 import { findIndex, find } from 'lodash'
 import { updateAnnualInventoryApi, destroyAnnualInventoryApi, addAnnualInventoryApi, getAllAnnualInventorysApi, annualInventorySearchApi} from '../../../publics/actions/annual-inventory-api'
@@ -16,7 +16,7 @@ function AnnualInventory({history, userToken}) {
 	const PAGE_URL = '/annualinventory'
 
 	//Hooks Declarations
-	const [initialize, setInitialize] = useState(true);
+	//const [initialize, setInitialize] = useState(true);
 	const [loading, setLoading] = useState(false);
 	//const [employees, setEmployees] = useState([]);
 	const [hras, setHras] = useState([]);
@@ -131,8 +131,8 @@ function AnnualInventory({history, userToken}) {
 	//Functions.
 	const materialTableSelect = () => {
 
-	const cols = annualInv.length > 0 ? Object.keys(annualInv[0]) : []
-	let columns = []
+	//const cols = annualInv.length > 0 ? Object.keys(annualInv[0]) : []
+	//let columns = []
 	//considering move to a config file.
 	let cols_config = [
 		{ title: 'HRA Number', field: 'hra_num', type:'numeric', editable:'onAdd', col_id:2.0, //filterComponent: (props) => <CustomFilterTextField {...props} />,
@@ -164,7 +164,7 @@ function AnnualInventory({history, userToken}) {
 						return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
 						}}
                   style={{ width: 250 }}
-                  renderInput={(params) => <TextField {...params} label="HRA" variant="outlined" />}
+                  renderInput={(params) => <TextField {...params} helperText="HRA" variant="standard" />}
               />)
         },
           validate: (rowData) => {
@@ -184,7 +184,10 @@ function AnnualInventory({history, userToken}) {
 		render: rowData => <a value={rowData.locked} >{rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED'}</a>,
 		lookup:lockOptions
 		},
-		{ title: 'Fiscal Year', field: 'fiscal_year', editable: 'onAdd', type:'numeric', validate: (rowData) => {
+		{ title: 'Fiscal Year', cellStyle: {
+			minWidth: 200,
+			maxWidth: 200
+		  }, field: 'fiscal_year', editable: 'onAdd', type:'numeric', validate: (rowData) => {
 
 			if(rowData.hasOwnProperty('fiscal_year')){
 				if(!isNaN(rowData.fiscal_year)) {
@@ -219,19 +222,25 @@ function AnnualInventory({history, userToken}) {
 		{ title: 'Equipment Quantity', field: 'annual_equipment_count',editable: 'never'}
 	]
 
-	for(const col_config of cols_config){
-		if(cols.includes(col_config.field)) columns.push(col_config)
-	}
+	// for(const col_config of cols_config){
+	// 	if(cols.includes(col_config.field)) columns.push(col_config)
+	// }
 
 	return(
 		<div style={{ maxWidth: '100%' }}>
-			<MaterialTable
+			<MuiTable
+			name={'Inventory'}
+			componentName={'annualinventory'}
+			addProps={{
+				sx:{height: 35, width: 180}
+			}}
+			isLoading={loading}
 			icons={tableIcons}
-			columns={columns.length > 0 ? columns : cols_config}
+			columns={cols_config}
 			data={annualInv}
 			options={{
 				exportButton: true,
-				exportAllData: true,
+				//exportAllData: true,
 				headerStyle: {
 				backgroundColor: "#969696",
 				color: "#FFF",
@@ -312,8 +321,8 @@ function AnnualInventory({history, userToken}) {
 
 	//Effects
 	useEffect(() => {
-		console.log('AnnualInvCall')
-		setInitialize(true)
+		setLoading(true)
+		//setInitialize(true)
 		getAllAnnualInventorysApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		setAnnualInv(data.status == 200 ? data.data : data)
@@ -323,25 +332,23 @@ function AnnualInventory({history, userToken}) {
 			setHras(data.hras.length > 0 ? data.hras : [])
 			console.log('is editable')
 		}
-		setInitialize(false)
+		//setInitialize(false)
+		setLoading(false)
 	}).catch(function (error) {
 		setServerDown(true)
 		setLoading(false)
-		setInitialize(false)
+		//setInitialize(false)
 	})}, []);
 
 	//Render return.
 	return (
 	<>
-	<div>
-		<div style={{textAlign: 'center'}}>
+		<div style={{textAlign: 'center', paddingBottom: 10}}>
 			<h2 >Annual Inventory</h2>
 		</div>
 		<div style={{textAlign: 'center'}}>
-			{loading || initialize ? LoadingCircle() : null}
-			{!initialize && !serverDown ? materialTableSelect() : null}
+			{materialTableSelect()}
 		</div>
-	</div>
 	</>
 	);
 }

@@ -11,7 +11,8 @@ import {find} from "lodash"
 import { v4 as uuid } from 'uuid';
 import * as XLSX from 'xlsx'
 import moment from "moment"
-import MaterialTable, { MTableToolbar, MTableBody, MTableAction } from '@material-table/core'
+import { MTableToolbar, MTableBody, MTableAction } from '@material-table/core'
+import MuiTable from '../../material-table'
 import {tableIcons} from '../../mui/config'
 import 'date-fns';
 import jsPDF from 'jspdf'
@@ -768,130 +769,92 @@ function Equipment({history, location, match, userToken}) {
                         />
                     </FormGroup>
                 </Grid>) : null}
-            <MaterialTable
-            tableRef={ref}
-            onOrderChange={() => {
-                setF(ref.current.state.data)
-            }}
-            onFilterChange={() => {
-                setF(ref.current.state.data)
-            }}
-            onTreeExpandChange
-            actions={[[0,1,2].includes(tab_idx) && {
-              icon: AddCommentIcon,
-              tooltip: 'Update Status',
-              onClick: (event, rowData) => {
-                setSelRowData(rowData)
-                setOpenPopup(true)
-              }
-            },{
-              //icon: EventNoteIcon,
-              name:'change-history',
-              //tooltip: 'Change History',
-            }]}
-            icons={tableIcons}
-            columns={columns}
-            data={equipmentArray}
-            localization={{
-                toolbar: {
-                searchPlaceholder: "Filter Search"
-                }}}
-            // Add custom show/hide filter button to material table toolbar
-            components={{  
-                Action: (props, rowData) => {
-                  if(props.action.name === 'change-history') {
-                    return (
-                      <ChangeHistoryButton id={props.data.id} componentName={'equipment'} token={userToken} />
-                    )
-                  }
+                <MuiTable
+      name={'Equipment'}
+      componentName={'equipment'}
+      exportButton={true}
+      showHistory={true}
+      ref={ref}
+      onOrderChange={() => {
+            setF([])
+      }}
+      onFilterChange={() => {
+          setF([])
+      }}
+      onTreeExpandChange
+      actions={[[0,1,2].includes(tab_idx) && {
+        icon: AddCommentIcon,
+        tooltip: 'Update Status',
+        onClick: (event, rowData) => {
+          setSelRowData(rowData)
+          setOpenPopup(true)
+        }
+      }]}
+      icons={tableIcons}
+      columns={columns}
+      data={equipmentArray}
+      // localization={{
+      //     toolbar: {
+      //     searchPlaceholder: "Filter Search"
+      //     }}}
 
-                  return <MTableAction {...props} />;
-                }, 
-                Toolbar: props =>(
-                    <>
-                    <div style={{display:"flex", flexDirection:"row", justifyContent:"flex-end"}}>
-                    <div style={{display:"flex", flexDirection:"column", justifyContent:"space-around"}}>
-                        {showFilter[tab_idx] ? (
-                            <Button variant="outlined" size="small" color="primary" onClick={()=>setShowFilter({...showFilter, [tab_idx]: false})}>Hide Filters</Button>
-                        ) : (
-                            <Button variant="contained" size="small" color="primary" onClick={()=>setShowFilter({...showFilter, [tab_idx]: true})}><><SearchIcon/> Show Filters</> </Button>
-                        )	
-                        }	
-                    </div>
-                    <MTableToolbar {...props} />
-                    </div>
-                    </>
-                ),
-            }}
 
-            options={{
-                exportMenu:[
-                    {
-                        label: 'Export to PDF',
-                        exportFunc: (columns, eqs) => switches[tab_idx].checkedView ? downloadPdf([...columns], [...eqs], 'extended'): downloadPdf([...columns],[...eqs],'normal')
-                      }, {
-                        label: 'Export to Excel',
-                        exportFunc: (columns, eqs) => downloadExcel([...eqs],"EquipmentReport",["update_status"])
-                      }
-                ],
-                filtering:showFilter[tab_idx],
-                search:false,
-                exportAllData: true,
-                headerStyle: {
-                backgroundColor: "#969696",
-                color: "#FFF",
-                fontWeight: 'bold',
-                tableLayout: 'fixed'
-            }
-            }}
-            title=""
-            {...(rights.edit[tabs] && {editable:{
-                onRowAddCancelled: rowData => console.log('Row adding cancelled'),
-                
-                onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-                onRowAdd: async (newData) => {
-                let errorFound = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
+      options={{
+          headerStyle: {
+          backgroundColor: "#969696",
+          color: "#FFF",
+          fontWeight: 'bold',
+          tableLayout: 'fixed'
+      }
+      }}
+      title=""
+      {...(rights.edit[tabs] && {editable:{
+          onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+          
+          onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
+          onRowAdd: async (newData) => {
+          let errorFound = await handleAdd({changes:{'0':{newData:newData, oldData:null}}})
 
-                    return (new Promise((resolve, reject) => {
-                        setTimeout(() => {
-                          if(errorFound){
-                              reject();
-                              return;
-                          }
+              return (new Promise((resolve, reject) => {
+                  setTimeout(() => {
+                    if(errorFound){
+                        reject();
+                        return;
+                    }
 
-                          resolve();
-                        }, 1000);
-                    }))
-                    },
-                onRowUpdate: async (newData, oldData) => {
-                let errorFound = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
-                    return (new Promise((resolve, reject) => {
-                        setTimeout(() => {  
-                          if(errorFound){
-                              reject();
-                              return;
-                          }
+                    resolve();
+                  }, 1000);
+              }))
+              },
+          onRowUpdate: async (newData, oldData) => {
+          let errorFound = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
+              return (new Promise((resolve, reject) => {
+                  setTimeout(() => {  
+                    if(errorFound){
+                        reject();
+                        return;
+                    }
 
-                          resolve();
-                        }, 1000);
-                    }))
-                },
-                // onRowDelete: async (newData, oldData) => {
-                //   let errorFound = await handleDelete({changes:{'0':{newData:newData, oldData:oldData}}})
-                //       return (new Promise((resolve, reject) => {
-                //           setTimeout(() => {  
-                //             if(errorFound){
-                //                 reject();
-                //                 return;
-                //             }
-  
-                //             resolve();
-                //           }, 1000);
-                //       }))
-                //   },
+                    resolve();
+                  }, 1000);
+              }))
+          },
+          // onRowDelete: async (newData, oldData) => {
+          //   let errorFound = await handleDelete({changes:{'0':{newData:newData, oldData:oldData}}})
+          //       return (new Promise((resolve, reject) => {
+          //           setTimeout(() => {  
+          //             if(errorFound){
+          //                 reject();
+          //                 return;
+          //             }
 
-            }})}
-           />
+          //             resolve();
+          //           }, 1000);
+          //       }))
+          //   },
+
+      }})}
+     />
     </Box>
     )
   })
@@ -1006,7 +969,7 @@ function Equipment({history, location, match, userToken}) {
                     return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
                   }}
                   style={{ width: 250 }}
-                  renderInput={(params) => <TextField {...params} label="HRA" variant="outlined" />}
+                  renderInput={(params) => <TextField {...params} helperText="HRA" variant="standard" />}
               />)
         },
           validate: (rowData) => {
@@ -1109,7 +1072,7 @@ function Equipment({history, location, match, userToken}) {
                   getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
                   renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
                   style={{ width: 250 }}
-                  renderInput={(params) => <TextField {...params} label="Employee" variant="outlined" />}
+                  renderInput={(params) => <TextField {...params} helperText="Employee" variant="standard" />}
               />)
         },
         {title:'Acquisition Date',field:'acquisition_date', cellStyle: {
@@ -1147,7 +1110,7 @@ function Equipment({history, location, match, userToken}) {
                 getOptionLabel={(option) => option.id + ' - ' + option.name}
                 renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + option.name}</li>}
                 style={{ width: 250 }}
-                renderInput={(params) => <TextField {...params} label="Condition" variant="outlined" />}
+                renderInput={(params) => <TextField {...params} helperText="Condition" variant="standard" />}
             />)
         }
     ]
@@ -1178,11 +1141,11 @@ function Equipment({history, location, match, userToken}) {
       <div className={tabClasses.root}>
         <AppBar position="static" color="default">
           <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
-            <Tab label={equipmentTabs[0].label.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
-            <Tab label={equipmentTabs[1].label.toUpperCase()} hidden={!rights.view[3] || equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
-            <Tab label={equipmentTabs[2].label.toUpperCase()} hidden={!rights.view[3] || equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
-            <Tab label={equipmentTabs[3].label.toUpperCase()} hidden={!rights.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
-            <Tab label={equipmentTabs[4].label.toUpperCase()} hidden={!rights.view[3] || equipments[4].length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
+            <Tab label={equipmentTabs[0].label?.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
+            <Tab label={equipmentTabs[1].label?.toUpperCase()} hidden={!rights.view[3] || equipments[1].length == 0} icon={<ComputerIcon/>} {...a11yProps(1)} />
+            <Tab label={equipmentTabs[2].label?.toUpperCase()} hidden={!rights.view[3] || equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
+            <Tab label={equipmentTabs[3].label?.toUpperCase()} hidden={!rights.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
+            <Tab label={equipmentTabs[4].label?.toUpperCase()} hidden={!rights.view[3] || equipments[4].length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
           </Tabs>
         </AppBar>
         <TabPanel value={tabs} index={0}>

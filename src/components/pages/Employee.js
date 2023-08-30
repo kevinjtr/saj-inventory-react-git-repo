@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import 'date-fns';
 import { LoadingCircle } from '../tools/tools';
 import { tableIcons } from '../material-table/config'
+import MuiTable from '../material-table'
 import MaterialTable from '@material-table/core'
 import { find, findIndex } from 'lodash'
 import { updateEmployeeApi, destroyEmployeeApi, addEmployeeApi, getAllEmployeesApi } from '../../publics/actions/employee-api'
@@ -151,13 +152,16 @@ function Employee({history, userToken}) {
 
 	const materialTableSelect = () => {
 
-	const cols = Object.keys(employees[0])
-	let columns = []
+	//const cols = Object.keys(employees[0])
+	//let columns = []
 	//considering moving to a config file.
 	const employee_cols_config = [
 		{ title: 'ID', field: 'id',editable: 'never'},
 		{ title: 'First Name', field: 'first_name' },
-		{ title: 'Last name', field: 'last_name', validate: (rowData) => {		
+		{ title: 'Last name', field: 'last_name', cellStyle: {
+			minWidth: 200,
+			maxWidth: 200
+		  }, validate: (rowData) => {		
 			if(rowData.hasOwnProperty('last_name')){
 				if(rowData.last_name) {
 					if(rowData.hasOwnProperty('tableData')){
@@ -190,7 +194,7 @@ function Employee({history, userToken}) {
 				getOptionLabel={(option) => option.office_symbol_alias}
 				renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.office_symbol_alias}</li>}
 				style={{ width: 250 }}
-				renderInput={(params) => <TextField {...params} label="Office Symbol" margin="normal"/>}
+				renderInput={(params) => <TextField {...params} variant={"standard"} helperText="Office Symbol" margin="normal"/>}
 		/>),
 	},
 		{ title: 'Work Phone', field: 'work_phone',type:'numeric',validate: rowData => {
@@ -238,7 +242,7 @@ function Employee({history, userToken}) {
                   getOptionLabel={(option) => option.office_location_name}
 				  renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.office_location_name}</li>}
                   style={{ width: 250 }}
-                  renderInput={(params) => <TextField {...params} label="Office Location Name" variant="outlined" />}
+                  renderInput={(params) => <TextField {...params} helperText="Office Location Name" variant="standard" />}
             />)
         },
           validate: (rowData) => {
@@ -289,25 +293,28 @@ function Employee({history, userToken}) {
 
 	if(rights.edit) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
-	for(const col_config of employee_cols_config){
-		if(col_config.hasOwnProperty('field') && col_config){
-			if(cols.includes(col_config.field)) columns.push(col_config)
-		}
-	}
+	// for(const col_config of employee_cols_config){
+	// 	if(col_config.hasOwnProperty('field') && col_config){
+	// 		if(cols.includes(col_config.field)) columns.push(col_config)
+	// 	}
+	// }
 
 	return(
 		<div style={{ maxWidth: '100%' }}>
-			<MaterialTable
+			<MuiTable
+			name={'Employee'}
+			componentName={'employee'}
+			addProps={{
+				sx:{height: 35, width: 180}
+			}}
+			isLoading={loading}
+			exportButton={true}
 			icons={tableIcons}
-			columns={columns}
+			columns={employee_cols_config}
 			data={employees}
-			localization={{
-				toolbar: {
-				searchPlaceholder: "Filter Search"
-				}}}
 			options={{
 				exportButton: true,
-				exportAllData: true,
+				//exportAllData: true,
 				headerStyle: {
 				backgroundColor: "#969696",
 				color: "#FFF",
@@ -484,15 +491,12 @@ function Employee({history, userToken}) {
 	//Render return.
 	return (
 		<>
-		<div>
-			<div style={{textAlign: 'center'}}>
+			<div style={{textAlign: 'center',paddingBottom: 10 }}>
 				<h2 >Employee</h2>
 			</div>
 			<div style={{textAlign: 'center'}}>
-				{loading ? LoadingCircle() : null}
-				{employees.length > 0 ? materialTableSelect() : null}
+				{materialTableSelect()}
 			</div>
-		</div>
 		</>
 	);
   }
@@ -500,138 +504,3 @@ function Employee({history, userToken}) {
 export default connect(
 'selectUserToken',
 Employee);
-
-
-
-// import React, { Component } from 'react';
-// import qs from 'querystring';
-// import { connect } from 'react-redux';
-// import { addProduct } from '../publics/actions/eng4900s';
-// import api from '../axios/Api';
-
-// export class AddProduct extends Component {
-
-// 	constructor(props) {
-// 		super(props);
-
-// 		this.state = {
-// 			equipments: [],
-// 			currentEquipment: { id: null, item_type: '' },
-// 			editing: false,
-// 			product_name: '',
-// 			description: '',
-// 			image: '',
-// 			id_category: '',
-// 			quantity: '',
-// 			categories: [],
-// 		};
-// 	}
-
-// 	componentDidMount() {
-// 		//this.refreshCategoryTable();
-// 		//this.refreshEquipmentList();
-// 	}
-
-// 	refreshEquipmentList() {
-// 		console.log('equipmentDataCALL')
-// 		this.equipmentData = api.get('employee', this.state).then((response) => response.data).then((data) => {
-// 			console.log(data)
-// 			// this.setState({
-// 			// 	equipments: data.status != 400 ? data.values: data,
-// 			// 	setequipment: data
-// 			// });
-// 			//console.log(this.state.equipment.values);
-// 			// console.log(this.props, this.state);
-// 		});
-// 	}
-
-// 	getEquipmentByHraID(hraID) {
-// 		this.equipmentData = api.get(`/equipment/hra/${hraID}`, this.state).then((response) => response.data).then((data) => {
-// 			console.log(data)
-// 			// this.setState({
-// 			// 	equipments: data.status != 400 ? data.values: data,
-// 			// 	setequipment: data
-// 			// });
-// 			return(data.status != 400 ? data.values: data)
-// 			//console.log(this.state.equipment.values);
-// 			// console.log(this.props, this.state);
-// 		});
-// 	}
-
-// 	addEquipment = (equipment) => {
-// 		api.post('equipment', qs.stringify(equipment)).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-// 	};
-
-// 	deleteEquipment = (id) => {
-// 		api.delete(`equipment/${id}`).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-// 	};
-
-// 	updateEquipment = (id, equipment) => {
-
-// 		console.log(`equipment/${id}`,qs.stringify(equipment))
-// 		api.patch(`equipment/${id}`, qs.stringify(equipment)).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-
-// 		this.setState({
-// 			currentEquipment: { id: null, item_type: '' }
-// 		});
-
-// 		this.setEditing(false);
-// 	};
-
-// 	editRow = (equipment) => {
-// 		console.log(equipment)
-// 		this.setState({
-// 			currentEquipment: { id: equipment.id, item_type: equipment.item_type }
-// 		});
-
-// 		this.setEditing(true);
-// 	};
-
-// 	setEditing = (isEditing) => {
-// 		this.setState({ editing: isEditing });
-// 	};
-
-// 	// refreshCategoryTable() {
-// 	// 	this.categoriesData = api.get('categories', this.state).then((response) => response.data).then((data) => {
-// 	// 		this.setState({
-// 	// 			categories: data.status != 400 ? data.values: data,
-// 	// 			setCategories: data
-// 	// 		});
-// 	// 		//console.log(this.state.categories.values);
-// 	// 		// console.log(this.props, this.state);
-// 	// 	});
-// 	// }
-
-// 	// handlerChange = (e) => {
-// 	// 	this.setState({ [e.target.name]: e.target.value });
-// 	// };
-
-// 	handlerSubmit = async () => {
-// 		//window.event.preventDefault();
-// 		//await this.dispatch(addProduct(this.state));
-// 		//this.history.push('/products');
-// 	};
-
-// 	render() {
-// 		//const { equipments } = this.state;
-
-// 		return(
-// 			<EmployeeForm
-// 			/>
-// 		);
-// 	}
-// }
-
-// const mapStateToProps = (state) => {
-// 	return {
-// 		products: state.products
-// 	};
-// };
-
-// export default connect(mapStateToProps)(AddProduct);

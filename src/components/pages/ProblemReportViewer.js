@@ -41,9 +41,9 @@ function ProblemReportViewer({userToken}) {
     }
 
     const materialTableSelect = () => {
-	    if(problems.length > 0){
-            const cols = Object.keys(problems[0])
-            let columns = []
+	    //if(problems.length > 0){
+            //const cols = Object.keys(problems[0])
+            //let columns = []
             /* const dataIsOnDatabase = {
             bar_tag_num:false
             } */
@@ -59,17 +59,18 @@ function ProblemReportViewer({userToken}) {
             ]
     
             
-            for(const col_config of problems_cols_config){
-                if(col_config.hasOwnProperty('field') && col_config){
-                    if(cols.includes(col_config.field)) columns.push(col_config)
-                }
-            }
+            // for(const col_config of problems_cols_config){
+            //     if(col_config.hasOwnProperty('field') && col_config){
+            //         if(cols.includes(col_config.field)) columns.push(col_config)
+            //     }
+            // }
     
             return(
                 <div style={{ maxWidth: '100%' }}>
                     <MaterialTable
+                    isLoading={loading}
                     icons={tableIcons}
-                    columns={columns}
+                    columns={problems_cols_config}
                     data={problems}
                     localization={{
                         toolbar: {
@@ -107,9 +108,9 @@ function ProblemReportViewer({userToken}) {
                     />
                 </div>
             )
-        }
+        //}
 
-        return(<p>No Problems Reported Found.</p>)
+        //return(<p>No Problems Reported Found.</p>)
     }   
 
     const resetProblems = () => {
@@ -152,15 +153,12 @@ React.useEffect(() => {
 //Render return.
 	return (
          <>
-        <div>
             <div style={{textAlign: 'center'}}>
                  <h2 >Feedback Viewer</h2>
 			</div>
              <div style={{textAlign: 'center'}}>
-                {loading ? LoadingCircle() : null}
-                {!loading > 0  ? materialTableSelect() : null}
+                {materialTableSelect()}
             </div>
-         </div>
         </>
 	);
 }

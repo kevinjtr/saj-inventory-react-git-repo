@@ -15,5 +15,5 @@ export const getChangeHistoryByViewApi = async (obj, token) => {
 };
 
 export const getChangeHistoryByTableApi = async (id, table_name, token) => {
-    return api.get(`${CHANGE_HISTORY}/${table_name}/${id}`,{},{headers:{auth:token}})
+    return api.get(`${CHANGE_HISTORY}/${table_name}/${id}`,{headers:{auth:token}})
 };

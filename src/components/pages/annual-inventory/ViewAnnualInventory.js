@@ -2,7 +2,7 @@ import React from 'react';
 import 'date-fns';
 import { LoadingCircle } from '../../tools/tools';
 import { tableIcons } from '../../material-table/config'
-import MaterialTable from '@material-table/core'
+import MuiTable from '../../material-table'
 import { generateReportDate, downloadExcel, downloadPdf } from '../../tools/tools'
 import { getAnnualInventoryByIdApi } from '../../../publics/actions/annual-inventory-api'
 import { connect } from 'redux-bundler-react';
@@ -27,8 +27,8 @@ function ViewAnnualInventory({match, userToken}) {
 
 	const materialTableSelect = () => {
 
-        if(annualInventories.length > 0){
-            const cols = Object.keys(annualInventories[0])
+        //if(annualInventories.length > 0){
+            //const cols = Object.keys(annualInventories[0])
             let columns = []
             //considering moving to a config file.
             const cols_config = [
@@ -42,34 +42,38 @@ function ViewAnnualInventory({match, userToken}) {
 
             if(editable) cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
-            for(const col_config of cols_config){
-                if(col_config.hasOwnProperty('field') && col_config){
-                    if(cols.includes(col_config.field)) columns.push(col_config)
-                }
-            }
+            // for(const col_config of cols_config){
+            //     if(col_config.hasOwnProperty('field') && col_config){
+            //         if(cols.includes(col_config.field)) columns.push(col_config)
+            //     }
+            // }
 
             return(
                 <div style={{ maxWidth: '100%' }}>
-                    <MaterialTable
+                    <MuiTable
+                    isLoading={loading}
+                    name={'Inventory'}
+                    componentName={'annualinventory'}
                     icons={tableIcons}
-                    columns={columns}
+                    columns={cols_config}
                     data={annualInventories}
+                    exportButton={true}
                     localization={{
                         toolbar: {
                         searchPlaceholder: "Filter Search"
                         }}}
                     options={{
-						exportMenu:[
-							{
-								label: 'Export to PDF',
-								exportFunc: (columns, eqs) => downloadPdf([...columns], [...eqs])
-							}, {
-								label: 'Export to Excel',
-								exportFunc: (columns, eqs) => downloadExcel([...eqs],"EquipmentReport",["update_status"])
-							  }
-						],
-                        exportButton: true,
-                        exportAllData: true,
+						// exportMenu:[
+						// 	{
+						// 		label: 'Export to PDF',
+						// 		exportFunc: (columns, eqs) => downloadPdf([...columns], [...eqs])
+						// 	}, {
+						// 		label: 'Export to Excel',
+						// 		exportFunc: (columns, eqs) => downloadExcel([...eqs],"EquipmentReport",["update_status"])
+						// 	  }
+						// ],
+                        // exportButton: true,
+                        // exportAllData: true,
                         headerStyle: {
                         backgroundColor: "#969696",
                         color: "#FFF",
@@ -81,9 +85,9 @@ function ViewAnnualInventory({match, userToken}) {
                     />
                 </div>
             )
-        }
+        //}
 
-        return(<p>No Data Found.</p>)
+        //return(<p>No Data Found.</p>)
 	}
 
 	const reloadPage = () => {
@@ -119,15 +123,12 @@ function ViewAnnualInventory({match, userToken}) {
 	//Render return.
 	return (
 		<>
-		<div>
 			<div style={{textAlign: 'center'}}>
 				<h2 >View Annual Inventory</h2>
 			</div>
 			<div style={{textAlign: 'center'}}>
-				{loading ? LoadingCircle() : null}
-				{!loading ? materialTableSelect() : null}
+				{materialTableSelect()}
 			</div>
-		</div>
 		</>
 	);
   }

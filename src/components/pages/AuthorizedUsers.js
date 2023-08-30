@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react';
 import '../../img/style.css';
-import MaterialTable from '@material-table/core'
 import { tableIcons } from '../material-table/config'
+import MuiTable from '../material-table'
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@mui/material/';
 import { findIndex, find } from 'lodash'
@@ -141,8 +141,9 @@ function AuthorizedUsers({ userToken }) {
                         key={`combo-box-${uuid()}`}
                         options={names}
                         getOptionLabel={(option) => option.full_name}
+                        renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.full_name}</li>}
                         style={{ width: 250 }}
-                        renderInput={(params) => <TextField {...params} label="User Name" variant="outlined" />}
+                        renderInput={(params) => <TextField {...params} helperText="User Name" variant="standard" />}
                     />),
                     validate: (rowData) => {
                         if(rowData.hasOwnProperty('hra_num')){
@@ -234,8 +235,9 @@ function AuthorizedUsers({ userToken }) {
                           key={`combo-box-${uuid()}`}
                           options={hras}
                           getOptionLabel={(option) =>  option.hra_num ? option.hra_num.toString(): ""}
+                          renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.hra_num ? option.hra_num.toString(): ""}</li>}
                           style={{ width: 250 }}
-                          renderInput={(params) => <TextField {...params} label="HRA" variant="outlined" />}
+                          renderInput={(params) => <TextField {...params} helperText="HRA" variant="standard" />}
                       />)
                 },
                 validate: (rowData) => {
@@ -259,18 +261,21 @@ function AuthorizedUsers({ userToken }) {
                 },
             ]
 
-            for (const col_config of authorizedUsers_cols_config) {
-                if (col_config.hasOwnProperty('field') && col_config) {
-                     columns.push(col_config)
+            // for (const col_config of authorizedUsers_cols_config) {
+            //     if (col_config.hasOwnProperty('field') && col_config) {
+            //          columns.push(col_config)
 
-                }
-            }
+            //     }
+            // }
 
             return (
                 <div style={{ maxWidth: '100%' }}>
-                    <MaterialTable
+                    <MuiTable
+                        name={'User'}
+                        componentName={'Authorized Users'}
                         icons={tableIcons}
-                        columns={columns}
+                        isLoading={loading}
+                        columns={authorizedUsers_cols_config}
                         data={authorizedUsers}
                         localization={{
                             toolbar: {
@@ -278,8 +283,8 @@ function AuthorizedUsers({ userToken }) {
                             }
                         }}
                         options={{
-                            exportButton: true,
-                            exportAllData: true,
+                            //exportButton: true,
+                            //exportAllData: true,
                             headerStyle: {
                                 backgroundColor: "#969696",
                                 color: "#FFF",
@@ -376,15 +381,11 @@ function AuthorizedUsers({ userToken }) {
     //Render return.
     return (
         <>
-            <div>
-                <div style={{ textAlign: 'center' }}>
-                    <h2 >Authorized Users</h2>
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                    {loading ? LoadingCircle() : null}
-                    {!loading && !serverDown ? materialTableSelect() : null}
-
-                </div>
+            <div style={{textAlign: 'center',paddingBottom: 10 }}>
+                <h2>Authorized Users</h2>
+			</div>
+            <div style={{ textAlign: 'center' }}>
+                {materialTableSelect()}
             </div>
         </>
     );

@@ -1,38 +1,12 @@
 import React from "react";
 import { connect } from "redux-bundler-react";
-
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
 import IconButton from '@mui/material/IconButton';
 import EventNoteIcon from '@mui/icons-material/EventNote';
 import Popover from '@mui/material/Popover';
-import Typography from "@mui/material/Typography";
 import Tooltip from '@mui/material/Tooltip';
 import orderBy from 'lodash/orderBy';
 import RenderHistoryPopover from "./table";
 import {getChangeHistoryByTableApi} from '../../publics/actions/change-history-api'
-
-// let request = obj => {
-//     return new Promise((resolve, reject) => {
-//         let xhr = new XMLHttpRequest();
-//         xhr.open(obj.method || "GET", obj.url);
-//         if (obj.headers) {
-//             Object.keys(obj.headers).forEach(key => {
-//                 xhr.setRequestHeader(key, obj.headers[key]);
-//             });
-//         }
-//         xhr.onload = () => {
-//             if (xhr.status >= 200 && xhr.status < 300) {
-//                 resolve(xhr.response);
-//             } else {
-//                 reject(xhr.statusText);
-//             }
-//         };
-//         xhr.onerror = () => reject(xhr.statusText);
-//         xhr.send(obj.body);
-//     });
-//   };
-
 
 class HistoryIconComponent extends React.Component {
     constructor(props) {
@@ -67,7 +41,7 @@ class HistoryIconComponent extends React.Component {
         if(!fetching) {
             this.setState({fetching: true, fetched: true, history: [], anchorEl:event.target, open:true});
             
-            const { id, componentName, token} = this.props;
+            const { id, componentName, userToken} = this.props;
             // const url = `${apiRoot}/orgs/${orgsByRoute.slug}/changeHistory?table=${table}&attr=${attr}&id=${changeHistoryId}`
             // this.cancelablePromise = makeCancelable(
             //     request({
@@ -80,11 +54,9 @@ class HistoryIconComponent extends React.Component {
             //     }),
             // );
             // this.cancelablePromise
-            getChangeHistoryByTableApi(id, componentName, token).then((response) => response.data).then((results) => {
+            getChangeHistoryByTableApi(id, componentName, userToken).then((response) => response.data).then((results) => {
                 if(results.data){
                 const jsonData = results.data;
-
-                console.log(jsonData)
                 this.setState({fetching: false, fetched: true, history: orderBy(jsonData,['id','updated_date'], 'desc')});                
                 
                 }else{
@@ -143,4 +115,5 @@ class HistoryIconComponent extends React.Component {
     }
 }
 
-export default HistoryIconComponent;
+export default connect('selectUserToken',
+HistoryIconComponent);

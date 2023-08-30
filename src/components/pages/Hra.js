@@ -2,7 +2,7 @@ import React from 'react';
 import TextField from '@mui/material/TextField';
 import 'date-fns';
 import { LoadingCircle } from '../tools/tools';
-import MaterialTable from '@material-table/core'
+import MuiTable from '../material-table'
 import { tableIcons } from '../material-table/config'
 import { Autocomplete } from '@mui/material';
 import { findIndex, find } from 'lodash'
@@ -125,11 +125,11 @@ function Hra({ history, userToken }) {
 	//Functions.
 	const materialTableSelect = () => {
 
-	const cols = Object.keys(hras[0])
-	let columns = []
-	//considering move to a config file.
 	let hras_cols_config = [
-		{ title: 'HRA Number', field: 'hra_num', editable: 'onAdd', type:'numeric', validate: (rowData) => {
+		{ title: 'HRA Number', cellStyle: {
+			minWidth: 200,
+			maxWidth: 200
+		  },field: 'hra_num', editable: 'onAdd', type:'numeric', validate: (rowData) => {
 				if(rowData.hasOwnProperty('hra_num')){
 					if(!isNaN(rowData.hra_num)) {
 						if(rowData.hasOwnProperty('tableData')){
@@ -161,22 +161,23 @@ function Hra({ history, userToken }) {
 		},
 		{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric',
 			editComponent: props => (
-				<Autocomplete
-					value={props.value ? find(employees,function(employee){ return employee.id === props.value}) : null}
-					onChange={(e, nv) => { 
-						if(nv?.id){
-							props.onChange(nv.id) 
-							return;
-						}
-						props.onChange(nv)
-					}}
-					key={`combo-box-${uuid()}`}
-					options={employees}
-					getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
-					renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
-					style={{ width: 250 }}
-					renderInput={(params) => <TextField {...params} label="Employee" variant="outlined" />}
-				/>)
+					<Autocomplete
+						value={props.value ? find(employees,function(employee){ return employee.id === props.value}) : null}
+						onChange={(e, nv) => { 
+							if(nv?.id){
+								props.onChange(nv.id) 
+								return;
+							}
+							props.onChange(nv)
+						}}
+						key={`combo-box-${uuid()}`}
+						options={employees}
+						getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
+						renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
+						style={{ width: 250 }}
+						renderInput={(params) => <TextField {...params} variant="standard" helperText={'Employee'}/>}
+					/>
+				)
 		},
 		{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
 		{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
@@ -188,31 +189,30 @@ function Hra({ history, userToken }) {
 
 	if(editable) hras_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
-	for(const col_config of hras_cols_config){
-		if(col_config.hasOwnProperty('field') && col_config){
-			if(cols.includes(col_config.field)) columns.push(col_config)
-		}
-	}
-
 	return(
 		<div style={{ maxWidth: '100%' }}>
-			<MaterialTable
-			icons={tableIcons}
-			columns={columns}
-			data={hras}
-			localization={{
-				toolbar: {
-				searchPlaceholder: "Filter Search"
-				}}}
-			options={{
-				exportButton: true,
-				exportAllData: true,
-				headerStyle: {
-				backgroundColor: "#969696",
-				color: "#FFF",
-				fontWeight: 'bold',
-			}
+			<MuiTable
+			name={'HRA'}
+			componentName={'hra'}
+			addProps={{
+				sx:{height: 35, width: 125}
 			}}
+			isLoading={loading}
+			exportButton={true}
+			icons={tableIcons}
+			columns={hras_cols_config}
+			data={hras}
+			// localization={{
+			// 	toolbar: {
+			// 	searchPlaceholder: "Filter Search"
+			// 	}}}
+			// options={{
+			// 	headerStyle: {
+			// 	backgroundColor: "#969696",
+			// 	color: "#FFF",
+			// 	fontWeight: 'bold',
+			// }
+			// }}
 			title=""
 			{...(editable && {editable:{
 				//isEditable: rowData => rowData.field !== 'id', // only name(a) rows would be editable
@@ -356,16 +356,12 @@ function Hra({ history, userToken }) {
 	//Render return.
 	return (
 		<>
-		<div>
-		
-			<div style={{textAlign: 'center'}}>
+			<div style={{textAlign: 'center',paddingBottom: 10 }}>
 				<h2 >HRA</h2>
 			</div>
 			<div style={{textAlign: 'center'}}>
-				{loading ? LoadingCircle() : null}
-				{hras.length > 0 ? materialTableSelect() : null}
+				{materialTableSelect()}
 			</div>
-		</div>
 		</>
 	);
 }
@@ -373,122 +369,3 @@ function Hra({ history, userToken }) {
 export default connect(
 	'selectUserToken',
 	Hra);
-
-
-
-
-
-// import React, { Component } from 'react';
-// import qs from 'querystring';
-// import { connect } from 'react-redux';
-// import { addProduct } from '../publics/actions/eng4900s';
-// import api from '../axios/Api';
-
-// export class AddProduct extends Component {
-
-// 	constructor(props) {
-// 		super(props);
-
-// 		this.state = {
-// 			equipments: [],
-// 			currentEquipment: { id: null, item_type: '' },
-// 			editing: false,
-// 			product_name: '',
-// 			description: '',
-// 			image: '',
-// 			id_category: '',
-// 			quantity: '',
-// 			categories: [],
-// 		};
-// 	}
-
-// 	componentDidMount() {
-// 		//this.refreshCategoryTable();
-// 		//this.refreshEquipmentList();
-// 	}
-
-// 	refreshEquipmentList() {
-// 		console.log('equipmentDataCALL')
-// 		this.equipmentData = api.get('employee', this.state).then((response) => response.data).then((data) => {
-// 			console.log(data)
-// 			// this.setState({
-// 			// 	equipments: data.status != 400 ? data.values: data,
-// 			// 	setequipment: data
-// 			// });
-// 			//console.log(this.state.equipment.values);
-// 			// console.log(this.props, this.state);
-// 		});
-// 	}
-
-// 	getEquipmentByHraID(hraID) {
-// 		this.equipmentData = api.get(`/equipment/hra/${hraID}`, this.state).then((response) => response.data).then((data) => {
-// 			console.log(data)
-// 			// this.setState({
-// 			// 	equipments: data.status != 400 ? data.values: data,
-// 			// 	setequipment: data
-// 			// });
-// 			return(data.status != 400 ? data.values: data)
-// 			//console.log(this.state.equipment.values);
-// 			// console.log(this.props, this.state);
-// 		});
-// 	}
-
-// 	addEquipment = (equipment) => {
-// 		api.post('equipment', qs.stringify(equipment)).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-// 	};
-
-// 	deleteEquipment = (id) => {
-// 		api.delete(`equipment/${id}`).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-// 	};
-
-// 	updateEquipment = (id, equipment) => {
-
-// 		console.log(`equipment/${id}`,qs.stringify(equipment))
-// 		api.patch(`equipment/${id}`, qs.stringify(equipment)).then((res) => {
-// 			this.refreshEquipmentList();
-// 		});
-
-// 		this.setState({
-// 			currentEquipment: { id: null, item_type: '' }
-// 		});
-
-// 		this.setEditing(false);
-// 	};
-
-// 	editRow = (equipment) => {
-// 		console.log(equipment)
-// 		this.setState({
-// 			currentEquipment: { id: equipment.id, item_type: equipment.item_type }
-// 		});
-
-// 		this.setEditing(true);
-// 	};
-
-// 	setEditing = (isEditing) => {
-// 		this.setState({ editing: isEditing });
-// 	};
-
-// 	handlerSubmit = async () => {
-// 		//window.event.preventDefault();
-// 		//await this.props.dispatch(addProduct(this.state));
-// 		//this.props.history.push('/products');
-// 	};
-	
-// 	render() {
-// 		return(
-// 			<HraForm/>
-// 		);
-// 	}
-// }
-
-// const mapStateToProps = (state) => {
-// 	return {
-// 		products: state.products
-// 	};
-// };
-
-// export default connect(mapStateToProps)(AddProduct);

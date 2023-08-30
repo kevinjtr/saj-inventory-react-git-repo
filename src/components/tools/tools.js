@@ -66,36 +66,55 @@ export const generateReportDate= (dateType) => {
 }
 
 export const downloadExcel = (arrayOfObjects, name="exported_doc", ignore=[]) => {
-  const newData = arrayOfObjects.map(row=>{
-    delete row.tableData
-    ignore.map(x => {
-      delete row[x]
-    })
-    return row
-  })
-  const workSheet=XLSX.utils.json_to_sheet(newData)
-  const workBook=XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(workBook,workSheet,"Sheet 1")
-  //Buffer
-  let buf = XLSX.write(workBook,{bookType:"xlsx",type:"buffer"})
-  //Binary string
-  XLSX.write(workBook,{bookType:"xlsx",type:"binary"})
-  const report_date = generateReportDate('filename')
-  //Download
-  XLSX.writeFile(workBook,`${name} ${report_date}.xlsx`)
+    try{
+        const temp_array = JSON.parse(JSON.stringify(arrayOfObjects))
+        const newData = temp_array?.map(row=>{
+            delete row.tableData
+            ignore.map(x => {
+              delete row[x]
+            })
+            return row
+          })
+          const workSheet=XLSX.utils.json_to_sheet(newData)
+          const workBook=XLSX.utils.book_new()
+          XLSX.utils.book_append_sheet(workBook,workSheet,"Sheet 1")
+          //Buffer
+          let buf = XLSX.write(workBook,{bookType:"xlsx",type:"buffer"})
+          //Binary string
+          XLSX.write(workBook,{bookType:"xlsx",type:"binary"})
+          const report_date = generateReportDate('filename')
+          //Download
+          XLSX.writeFile(workBook,`${name} ${report_date}.xlsx`)
+    }catch(err){
+        console.log(err)
+    }
 }
 
-export const downloadPdf = (columns, equipment_array, viewType) => {
-    const doc = new jsPDF({orientation:"landscape"})
-    doc.setFontSize(12)
-    doc.text("Equipment Report",15,10)
-    doc.setFontSize(8)
-    doc.text("Generated on " + generateReportDate('footer'),240,200)
-    doc.autoTable({
-    columns:columns.map(col=>({...col,dataKey:col.field})),
-    body:equipment_array,
-    styles: { fontSize: 9 }
-    })
-
-    doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')
+export const downloadPdf = (columns, dataArray, viewType) => {
+    try{
+        const cols = JSON.parse(JSON.stringify(columns))
+        const data = JSON.parse(JSON.stringify(dataArray))
+        const doc = new jsPDF({orientation:"landscape"})
+        doc.setFontSize(12)
+        doc.text("Report",15,10)
+        doc.setFontSize(8)
+        doc.text("Generated on " + generateReportDate('footer'),240,200)
+        doc.autoTable({
+        columns:cols.map(col=>({...col,dataKey:col.field})),
+        body:data,
+        styles: { fontSize: 9 }
+        })
+    
+        doc.save('report' + generateReportDate('filename') + '.pdf')
+    }catch(err){
+        console.log(err)
+    }
 }
+
+export const printElements = (elements) => {
+    let str = ""
+    for (let i = 0; i < elements.length; i++) {
+      str = str + (i ? ', ' : '') + elements[i]
+    }
+    return str
+  }

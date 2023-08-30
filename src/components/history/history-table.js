@@ -65,6 +65,20 @@ let cols_config = {
         { title: 'Deleted', field: 'deleted', editable: 'never', sorting: false, type: 'boolean' },
         { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false }
     ],
+    
+    // bar_tags: printElements(form_groups[id].map(x => x.bar_tag_num)),
+    // document_source: document_source,
+    // form_id: form_id,
+    // gaining_hra: gaining_hra_num ? `${gaining_hra_num} - ${gaining_hra_full_name}` : '',
+    // losing_hra: losing_hra_num ? `${losing_hra_num} - ${losing_hra_full_name}` : '',
+    // status: status,
+    // originator: originator,
+    // is_losing_hra: is_losing_hra,
+    // is_gaining_hra: is_gaining_hra,
+    // requested_action: requested_action,
+    // status_alias: status_alias,
+    // updated_date: updated_date,
+    
     eng4900: [//eng4900
         //{ title: 'Item No.', field: 'hra_num', type:'numeric', editable:'never'},
         { title: 'Requested Action', field: 'requested_action', editable: 'never', sorting: false },

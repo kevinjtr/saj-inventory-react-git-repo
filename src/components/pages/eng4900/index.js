@@ -2,19 +2,22 @@
 import { useState, useEffect } from 'react';
 import 'date-fns';
 import SearchIcon from '@mui/icons-material/Search';
-import MaterialTable, {MTableAction} from '@material-table/core'
+import { MTableAction } from '@material-table/core'
 import { form4900Icons } from '../../material-table/config'
-import { getQueryStringParams,LoadingCircle } from '../../tools/tools'
+import MuiTable from '../../material-table'
+import { getQueryStringParams, LoadingCircle } from '../../tools/tools'
 import { SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT } from '../../config/constants'
 import { filter as _filter } from 'lodash'
 import FormSignModal from './FormSignModal'
 import Eng4900Form from './Eng4900Form'
-import { Badge, Box, Switch, Typography, Stepper, Step, StepLabel,
+import {
+  Badge, Box, Switch, Typography, Stepper, Step, StepLabel,
   AppBar, Tabs, Tab, TextField, MenuItem, FormControl,
   Select, Grid, FormGroup, FormControlLabel, IconButton,
-  Radio, RadioGroup } from '@mui/material';
+  Radio, RadioGroup
+} from '@mui/material';
 import { updateEng4900Api, destroyEng4900Api, eng4900SearchApi, getEng4900PdfByIdApi } from '../../../publics/actions/eng4900-api'
-import { getHraFormApi} from '../../../publics/actions/hra-api'
+import { getHraFormApi } from '../../../publics/actions/hra-api'
 import { connect } from 'redux-bundler-react';
 import { useTheme } from '@mui/material/styles';
 import { Description as DescriptionIcon } from '@mui/icons-material';
@@ -24,34 +27,35 @@ import { green } from '@mui/material/colors';
 import toast from 'react-hot-toast';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import ChangeHistoryButton from '../../history'
+import AddIcon from '@mui/icons-material/Add';
 
-function Eng4900({history, location, match, userToken}) {
-  
+function Eng4900({ history, location, match, userToken }) {
+
   //Constants Declarations.
   const search = getQueryStringParams(location.search)
   const FORM_STATUS = {
-    1:"Form Edit",
-		2:"Individual/Vendor signature required",
-		3:"Completed Individual/Vendor signature",
-		4:"Losing HRA signature required",
-		5:"Completed losing HRA signature",
-		6:"Gaining HRA signature required",
-		7:"Completed gaining HRA signature",
-		8:"Logistics signature required",
-		9:"Completed Logistics signature",
-		10:"PBO signature required",
-		11:"Completed PBO signature",
-		12:"Form Rejected",
-}
-  const formTabs = {0: {id:'my_forms', label:'My Forms'}, 1: {id:'hra_forms', label:'HRA Forms'}, 2: {id:'sign_forms', label:'Sign Forms'}, 3: {id:'completed_and_ipg_forms', label:'Completed & IP Gaining HRA Forms'}}
+    1: "Form Edit",
+    2: "Individual/Vendor signature required",
+    3: "Completed Individual/Vendor signature",
+    4: "Losing HRA signature required",
+    5: "Completed losing HRA signature",
+    6: "Gaining HRA signature required",
+    7: "Completed gaining HRA signature",
+    8: "Logistics signature required",
+    9: "Completed Logistics signature",
+    10: "PBO signature required",
+    11: "Completed PBO signature",
+    12: "Form Rejected",
+  }
+  const formTabs = { 0: { id: 'my_forms', label: 'My Forms' }, 1: { id: 'hra_forms', label: 'HRA Forms' }, 2: { id: 'sign_forms', label: 'Sign Forms' }, 3: { id: 'completed_and_ipg_forms', label: 'Completed & IP Gaining HRA Forms' } }
   const SEARCH_FIELD_RESET = {
-    id: {label: 'Form ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    requestedAction: {label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    losingHra: {label: 'Losing HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    losingHraName: {label: 'Losing HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    gainingHra: {label: 'Gaining HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    gainingHraName: {label: 'Gaining HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
-    bartagNum: {label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
+    id: { label: 'Form ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
+    requestedAction: { label: 'Requested Action', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
+    losingHra: { label: 'Losing HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
+    losingHraName: { label: 'Losing HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
+    gainingHra: { label: 'Gaining HRA', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
+    gainingHraName: { label: 'Gaining HRA Name', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
+    bartagNum: { label: 'Bar Tag', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
     // itemType: {label: 'Item Description', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     // catalogNum: {label: 'Catalog Number', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
     // acqPrice: {label: 'Acquisition Price', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT},
@@ -62,10 +66,10 @@ function Eng4900({history, location, match, userToken}) {
     blanks: {}
   }
   const SWITCH_RESET = {
-		checkedView: false,
-		showSearch: false,
+    checkedView: false,
+    showSearch: false,
   }
-  const RESET_HRAS = {losing:[],gaining:[]}
+  const RESET_HRAS = { losing: [], gaining: [] }
 
   //Variables Declarations.
 
@@ -74,11 +78,8 @@ function Eng4900({history, location, match, userToken}) {
   const theme = useTheme()
 
   //Hooks Declarations.
-  const [formSignModal, setFormSignModal] = useState({
-    show: false,
-    rowData: null,
-    refresh:false
-  })
+  const [openModal, setOpenModal] = useState(false)
+  const [formData, setFormData] = useState({})
   const [create4900, setCreate4900] = useState({
     show: false,
     formData: null,
@@ -97,30 +98,32 @@ function Eng4900({history, location, match, userToken}) {
     3: BASIC_SEARCH,
     4: BASIC_SEARCH,
   });
-	const [windowSize, setWindowSize] = useState({
-	width: undefined,
-	height: undefined,
-	});
-  const [loading, setLoading] = useState({init:true,refresh:{
-    0: false,
-    1: false,
-    2: false,
-    3: false,
-  }});
+  const [windowSize, setWindowSize] = useState({
+    width: undefined,
+    height: undefined,
+  });
+  const [loading, setLoading] = useState({
+    init: true, refresh: {
+      0: false,
+      1: false,
+      2: false,
+      3: false,
+    }
+  });
   const [eng4900s, setEng4900s] = useState({
-      0: [],
-      1: [],
-      2: [],
-      3: []
-    });
-  const [editable,setEditable] = useState(false)
+    0: [],
+    1: [],
+    2: [],
+    3: []
+  });
+  const [editable, setEditable] = useState(false)
   const [tabs, setTabs] = useState(1);
   const [switches, setSwitches] = useState({
-      0: SWITCH_RESET,
-      1: SWITCH_RESET,
-      2: SWITCH_RESET,
-      3: SWITCH_RESET,
-    });
+    0: SWITCH_RESET,
+    1: SWITCH_RESET,
+    2: SWITCH_RESET,
+    3: SWITCH_RESET,
+  });
   const [hras, setHras] = useState({
     0: RESET_HRAS,
     1: RESET_HRAS,
@@ -133,18 +136,18 @@ function Eng4900({history, location, match, userToken}) {
   //Events Declarations.
   const handleTableDelete = async (rowData) => {
     let result_error = true
-    
+
     await destroyEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
       console.log(data)
-      const {error, tabUpdatedData} = data
+      const { error, tabUpdatedData } = data
       result_error = error
 
-      if(error){
+      if (error) {
         toast.error('Could not complete action')
-      }else {
-        let eng4900s_copy = {...eng4900s}
+      } else {
+        let eng4900s_copy = { ...eng4900s }
 
-        for(const tab_number in tabUpdatedData){
+        for (const tab_number in tabUpdatedData) {
           eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
         }
 
@@ -161,157 +164,157 @@ function Eng4900({history, location, match, userToken}) {
     return result_error
   }
 
-	const handleSearchFieldsChange = (event) => {
+  const handleSearchFieldsChange = (event) => {
 
-    if(event.target.value == ''){
-      setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], value: event.target.value, options: OPTIONS_DEFAULT}} })
-		}else{
+    if (event.target.value == '') {
+      setSearchFields({ ...searchFields, [tabs]: { ...searchFields[tabs], [event.target.name]: { ...searchFields[tabs][event.target.name], value: event.target.value, options: OPTIONS_DEFAULT } } })
+    } else {
 
-			setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], value: event.target.value, blanks : BLANKS_DEFAULT}} })
+      setSearchFields({ ...searchFields, [tabs]: { ...searchFields[tabs], [event.target.name]: { ...searchFields[tabs][event.target.name], value: event.target.value, blanks: BLANKS_DEFAULT } } })
     }
-	};
+  };
 
-	const handleSearchFieldsOptions = (event) => {
-    const opts = SEARCH_FIELD_OPTIONS.map(x=>x.value).includes(event.target.value) ? event.target.value : OPTIONS_DEFAULT
+  const handleSearchFieldsOptions = (event) => {
+    const opts = SEARCH_FIELD_OPTIONS.map(x => x.value).includes(event.target.value) ? event.target.value : OPTIONS_DEFAULT
     //const tab = event.target.id.split('-')[1]
 
     //setSearchFields({...searchFields,  [event.target.name]: {...searchFields[event.target.name], options : opts} })
-    
-    setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], options : opts}} })
-	}
 
-	const handleSearchFieldsBlanks = (event) => {
-    const blks = SEARCH_FIELD_BLANKS.map(x=>x.value).includes(event.target.value) ? event.target.value : BLANKS_DEFAULT
-    setSearchFields({...searchFields,  [tabs] : {...searchFields[tabs], [event.target.name] : {...searchFields[tabs][event.target.name], blanks : blks}} })
+    setSearchFields({ ...searchFields, [tabs]: { ...searchFields[tabs], [event.target.name]: { ...searchFields[tabs][event.target.name], options: opts } } })
   }
-  
-  const handleSearch = async (e=null,onLoad=false) => {
-    setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
+
+  const handleSearchFieldsBlanks = (event) => {
+    const blks = SEARCH_FIELD_BLANKS.map(x => x.value).includes(event.target.value) ? event.target.value : BLANKS_DEFAULT
+    setSearchFields({ ...searchFields, [tabs]: { ...searchFields[tabs], [event.target.name]: { ...searchFields[tabs][event.target.name], blanks: blks } } })
+  }
+
+  const handleSearch = async (e = null, onLoad = false) => {
+    setLoading({ ...loading, refresh: { ...loading.refresh, [tabs]: true } })
 
     let opts = {
       includes: {},
       blanks: {}
     }
-  
+
     let fields_obj = {}
-  
+
     Object.keys(searchFields[tabs]).map(key => {
       fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[tabs][key].value
-  
+
       opts.includes[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].options : OPTIONS_DEFAULT
       opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
     })
-  
+
     await eng4900SearchApi({
       'fields': fields_obj,
-      'options':opts,
+      'options': opts,
       'tab': formTabs[tabs].id
     }, userToken)
-    .then((response) => response.data).then((data) => {
-      console.log(data)
-      setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
-      setEng4900s({...eng4900s, [tabs]: data.status != 400 ? data.data[tabs] : []})
+      .then((response) => response.data).then((data) => {
+        console.log(data)
+        setLoading({ ...loading, refresh: { ...loading.refresh, [tabs]: false } })
+        setEng4900s({ ...eng4900s, [tabs]: data.status != 400 ? data.data[tabs] : [] })
 
-      if(data.status == 200 && data.editable){
-        setEditable(data.editable)
-      }
-  
-    }).catch(function (error) {
-      setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
-      setEng4900s({...eng4900s, [tabs]: []})
-  
-    });
-  
+        if (data.status == 200 && data.editable) {
+          setEditable(data.editable)
+        }
+
+      }).catch(function (error) {
+        setLoading({ ...loading, refresh: { ...loading.refresh, [tabs]: false } })
+        setEng4900s({ ...eng4900s, [tabs]: [] })
+
+      });
+
   }
 
   const pageInitialize = () => {
-    setLoading({...loading,init:true})
+    setLoading({ ...loading, init: true })
     eng4900SearchApi({
       'fields': {},
-      'options':OPTS_RESET,
+      'options': OPTS_RESET,
       'tab': formTabs[tabs].id,
       'init': true
     }, userToken)
-    .then((response) => response.data).then((data) => {
-      console.log(data)
+      .then((response) => response.data).then((data) => {
+        console.log(data)
 
-      if(data.status == 200 && data.editable){
-        setEditable(data.editable)
-        setEng4900s(data.data)
+        if (data.status == 200 && data.editable) {
+          setEditable(data.editable)
+          setEng4900s(data.data)
 
-        // for(const tab_num in data.data){
-        //   if(data.data[tab_num].length > 0){
-        //     const num = Number(tab_num)
-        //     setTabs(num)
-        //     break;
-        //   }
-        // }
+          // for(const tab_num in data.data){
+          //   if(data.data[tab_num].length > 0){
+          //     const num = Number(tab_num)
+          //     setTabs(num)
+          //     break;
+          //   }
+          // }
 
-        if(data.hasOwnProperty('hras')){
-          for(const key in data.hras){
-            setHras({...hras, [key]: data.hras[key] })
-          }        
+          if (data.hasOwnProperty('hras')) {
+            for (const key in data.hras) {
+              setHras({ ...hras, [key]: data.hras[key] })
+            }
+          }
+
+          // if(data.data[0].length == 0){
+          //   setTabs(1)
+          // }
         }
 
-        // if(data.data[0].length == 0){
-        //   setTabs(1)
-        // }
-      }
-      
-      setLoading({...loading,init:false})
+        setLoading({ ...loading, init: false })
 
-    }).catch(function (error) {
-      setServerDown(true)
-      setLoading({...loading,init:false})
-      setEng4900s({...eng4900s, [tabs]: []})
-  
-    });
+      }).catch(function (error) {
+        setServerDown(true)
+        setLoading({ ...loading, init: false })
+        setEng4900s({ ...eng4900s, [tabs]: [] })
+
+      });
 
     //getHrasAndEquipments()
   }
-  
+
   const handleSearchView = (e) => {
 
-  setSearchView({...searchView, [e.target.name]: e.target.value})
+    setSearchView({ ...searchView, [e.target.name]: e.target.value })
   }
 
   async function get4900Pdf(rowData) {
-    const {form_id} = rowData
+    const { form_id } = rowData
 
-    setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
-    if(typeof form_id != 'undefined'){
+    setLoading({ ...loading, refresh: { ...loading.refresh, [tabs]: true } })
+    if (typeof form_id != 'undefined') {
       await getEng4900PdfByIdApi(form_id, userToken)
-      .then(response => {
-      //Create a Blob from the PDF Stream
+        .then(response => {
+          //Create a Blob from the PDF Stream
           const file = new Blob(
-            [response.data], 
-            {type: 'application/pdf'});
-      //Build a URL from the file
+            [response.data],
+            { type: 'application/pdf' });
+          //Build a URL from the file
           const fileURL = URL.createObjectURL(file);
-      //Open the URL on new Window
+          //Open the URL on new Window
           window.open(fileURL, '_blank');
-          setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
-      })
-      .catch(error => {
+          setLoading({ ...loading, refresh: { ...loading.refresh, [tabs]: false } })
+        })
+        .catch(error => {
           console.log(error);
-          setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
-      });
+          setLoading({ ...loading, refresh: { ...loading.refresh, [tabs]: false } })
+        });
     }
-    
-  } 
+
+  }
 
   const handleSwitchesChange = (event) => {
     const target = event.target.name.split('-')
-		setSwitches({ ...switches, [target[1]]: {...switches[target[1]], [target[0]]: event.target.checked} });
+    setSwitches({ ...switches, [target[1]]: { ...switches[target[1]], [target[0]]: event.target.checked } });
   };
 
   const handleSearchKeyPress = (event) => {
     //const tab = event.target.id.split('-')[1]
 
-		if(event.key == "Enter"){//enter key pressed.
-		   handleSearch()
-		}
-	}
+    if (event.key == "Enter") {//enter key pressed.
+      handleSearch()
+    }
+  }
 
   const handleTabChange = (event, newValue) => {
     setTabs(newValue);
@@ -319,18 +322,18 @@ function Eng4900({history, location, match, userToken}) {
 
   const handleTableUpdate = async (rowData) => {
     let result_error = true
-    
-		await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
+
+    await updateEng4900Api(rowData, userToken).then((response) => response.data).then((data) => {
       console.log(data)
-      const {error, tabUpdatedData} = data
+      const { error, tabUpdatedData } = data
       result_error = error
 
-      if(error){
+      if (error) {
         toast.error('Could not complete action')
-      }else {
-        let eng4900s_copy = {...eng4900s}
+      } else {
+        let eng4900s_copy = { ...eng4900s }
 
-        for(const tab_number in tabUpdatedData){
+        for (const tab_number in tabUpdatedData) {
           eng4900s_copy[tab_number] = tabUpdatedData[tab_number]
         }
 
@@ -338,91 +341,91 @@ function Eng4900({history, location, match, userToken}) {
         toast.success('Action was completed')
       }
 
-		}).catch(function (error) {
+    }).catch(function (error) {
       console.log(error)
       toast.error('Could not complete action')
-		});
+    });
 
-		return(result_error)
+    return (result_error)
   }
 
   const getHrasAndEquipments = () => {
 
     //api.get(`hra/form`)
     getHraFormApi(userToken).then((hra_res) => hra_res.data).then((h_data) => {
-        console.log('hra_download',h_data)
+      console.log('hra_download', h_data)
 
-        for(const key in h_data.data){
-          setHras({...hras, [key]: (h_data.status != 400 ? h_data.data[key] : RESET_HRAS) })
-        }        
+      for (const key in h_data.data) {
+        setHras({ ...hras, [key]: (h_data.status != 400 ? h_data.data[key] : RESET_HRAS) })
+      }
 
-      }).catch(function (error) {
-        setHras(RESET_HRAS)
-      });
+    }).catch(function (error) {
+      setHras(RESET_HRAS)
+    });
   }
-  
+
   //Function Declarations.
-	const SearchCriteriaOptions = (tab, val,text="Options") => {
+  const SearchCriteriaOptions = (tab, val, text = "Options") => {
 
-		const menuItems = SEARCH_FIELD_OPTIONS.map(x => {
-			return(
-				<MenuItem value={x.value}>{x.label}</MenuItem>
-			)
-		})
+    const menuItems = SEARCH_FIELD_OPTIONS.map(x => {
+      return (
+        <MenuItem value={x.value}>{x.label}</MenuItem>
+      )
+    })
 
-		return (
-		<div>
-				<Typography noWrap>{text}</Typography>
-				<Select
-					//labelId="demo-simple-select-outlined-label"
-					id={`opts-${tab}-${text}`}
-					key={`opts-${tab}-${text}`}
-					select
-					value={searchFields[tab][val].options ? searchFields[tab][val].options : OPTIONS_DEFAULT}
-					name={val}
-					onChange={handleSearchFieldsOptions}
-					style={{width:'80%'}}
-					//InputLabelProps={{style: {fontSize: '8vw'}}}
-					//label={text}
-					variant="outlined"
-					>
-					{menuItems}
-				</Select>
-			
-		</div>	
-		);
-	}
+    return (
+      <div>
+        <Typography noWrap>{text}</Typography>
+        <Select
+          //labelId="demo-simple-select-outlined-label"
+          id={`opts-${tab}-${text}`}
+          key={`opts-${tab}-${text}`}
+          select
+          value={searchFields[tab][val].options ? searchFields[tab][val].options : OPTIONS_DEFAULT}
+          name={val}
+          onChange={handleSearchFieldsOptions}
+          style={{ width: '80%' }}
+          //InputLabelProps={{style: {fontSize: '8vw'}}}
+          //label={text}
+          variant="outlined"
+        >
+          {menuItems}
+        </Select>
 
-	const SearchBlanksOptions = (tab, val,text="") => {
+      </div>
+    );
+  }
 
-		const menuItems = SEARCH_FIELD_BLANKS.map(x => {
-			return <MenuItem value={x.value}>{x.label}</MenuItem>
-		})
+  const SearchBlanksOptions = (tab, val, text = "") => {
 
-		return (
-			<div>
-				<Typography noWrap>{text}</Typography>
-				<Select
-					id={`blanks-${tab}-${text}`}
-					key={`blanks-${tab}-${text}`}
-					select
-					value={searchFields[tab][val].blanks ? searchFields[tab][val].blanks : BLANKS_DEFAULT}
-					name={val}
-					onChange={handleSearchFieldsBlanks}
-					style={{width:'80%'}}
-				    //label="Sort By"
-					//style={{width:'100%',paddingLeft:'20px'}}
-					variant="outlined"
-				>
-					{menuItems}
-				</Select>
-			</div>
-		);
-	}
+    const menuItems = SEARCH_FIELD_BLANKS.map(x => {
+      return <MenuItem value={x.value}>{x.label}</MenuItem>
+    })
+
+    return (
+      <div>
+        <Typography noWrap>{text}</Typography>
+        <Select
+          id={`blanks-${tab}-${text}`}
+          key={`blanks-${tab}-${text}`}
+          select
+          value={searchFields[tab][val].blanks ? searchFields[tab][val].blanks : BLANKS_DEFAULT}
+          name={val}
+          onChange={handleSearchFieldsBlanks}
+          style={{ width: '80%' }}
+          //label="Sort By"
+          //style={{width:'100%',paddingLeft:'20px'}}
+          variant="outlined"
+        >
+          {menuItems}
+        </Select>
+      </div>
+    );
+  }
 
   const searchForm = (tab) => {
-      return(
-        <div style={{textAlign: 'center'}}>
+    return (
+      <div style={{ textAlign: 'center' }}>
         <Grid container justifyContent="center">
           <Grid>
             <FormGroup>
@@ -434,24 +437,24 @@ function Eng4900({history, location, match, userToken}) {
           </Grid>
         </Grid>
         {switches[tab].showSearch ?
-        <FormControl component="fieldset">
-          <RadioGroup row aria-label="position" name={tab} id={`radio-group-${tab}`} key={`radio-group-${tab}`} value={searchView[tab]} onChange={handleSearchView}>
-          <FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
-          <FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Search" />
-          </RadioGroup>
-        </FormControl> : null
-        }		
+          <FormControl component="fieldset">
+            <RadioGroup row aria-label="position" name={tab} id={`radio-group-${tab}`} key={`radio-group-${tab}`} value={searchView[tab]} onChange={handleSearchView}>
+              <FormControlLabel value="std" control={<Radio color="primary" />} label="Basic Search" />
+              <FormControlLabel value="adv" control={<Radio color="primary" />} label="Advanced Search" />
+            </RadioGroup>
+          </FormControl> : null
+        }
         {switches[tab].showSearch ?
-        <div style={{textAlign: 'center'}}>
-        <form noValidate autoComplete="off">
-          <div>
-          <Grid container spacing={2} justifyContent={'center'}>
-            {searchTextFieldsGridItems(tab)}
-            {searchButtonGridItem(tab)}
-          </Grid>
-          </div>
-        </form>
-        </div> : null
+          <div style={{ textAlign: 'center' }}>
+            <form noValidate autoComplete="off">
+              <div>
+                <Grid container spacing={2} justifyContent={'center'}>
+                  {searchTextFieldsGridItems(tab)}
+                  {searchButtonGridItem(tab)}
+                </Grid>
+              </div>
+            </form>
+          </div> : null
         }
       </div>
     )
@@ -461,31 +464,31 @@ function Eng4900({history, location, match, userToken}) {
     return (
       <StyledBox>
         <AppBar position="static" color="default">
-          <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
-            <Tab label={formTabs[0].label.toUpperCase()} hidden={true} icon={<DescriptionIcon/>} {...a11yProps(0)} />
-            <Tab label={formTabs[1].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(1)} />
-            <Tab label={formTabs[2].label.toUpperCase()} icon= {
-            <Badge badgeContent={eng4900s[2].length} color="secondary">
-                <DescriptionIcon/>
-              </Badge>  
-            } {...a11yProps(2)}/>  
-            <Tab label={formTabs[3].label.toUpperCase()} icon={<DescriptionIcon/>} {...a11yProps(3)} />
+          <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary">
+            <Tab label={formTabs[0].label.toUpperCase()} hidden={true} icon={<DescriptionIcon />} {...a11yProps(0)} />
+            <Tab label={formTabs[1].label.toUpperCase()} icon={<DescriptionIcon />} {...a11yProps(1)} />
+            <Tab label={formTabs[2].label.toUpperCase()} icon={
+              <Badge badgeContent={eng4900s[2].length} color="secondary">
+                <DescriptionIcon />
+              </Badge>
+            } {...a11yProps(2)} />
+            <Tab label={formTabs[3].label.toUpperCase()} icon={<DescriptionIcon />} {...a11yProps(3)} />
           </Tabs>
         </AppBar>
         <TabPanel value={tabs} index={0}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
+          <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
           {!loading.init ? [searchForm(0), materialTableMyForms(0)] : null}
         </TabPanel>
         <TabPanel value={tabs} index={1}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
+          <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
           {!loading.init ? [searchForm(1), materialTableHraForms(1)] : null}
         </TabPanel>
         <TabPanel value={tabs} index={2}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
+          <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
           {!loading.init ? [searchForm(2), materialTableSignForms(2)] : null}
         </TabPanel>
         <TabPanel value={tabs} index={3}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
+          <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
           {!loading.init ? [searchForm(3), materialTableCompletedForms(3)] : null}
         </TabPanel>
       </StyledBox>
@@ -495,273 +498,255 @@ function Eng4900({history, location, match, userToken}) {
   const materialTableMyForms = (tab_idx) => {
 
     let columns = [
-      { title: 'Status', field: 'status', editable:'onUpdate', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
-      editComponent: ({ value, onChange, rowData }) => (
-        <Select
-           value={value}
-           onChange={(event) => {
+      {
+        title: 'Status', field: 'status', editable: 'onUpdate', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+        editComponent: ({ value, onChange, rowData }) => (
+          <Select
+            value={value}
+            onChange={(event) => {
               onChange(event.target.value);
-           }}
-        >
-           {(rowData.status_options).map((option) => (
-            <MenuItem key={option.id} value={option.id}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
-      ),
-       validate: (rowData) => {		
-        if(rowData.hasOwnProperty('status')){
-          if(rowData.status) {
-            if(rowData.hasOwnProperty('tableData')){
+            }}
+          >
+            {(rowData.status_options).map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        ),
+        validate: (rowData) => {
+          if (rowData.hasOwnProperty('status')) {
+            if (rowData.status) {
+              if (rowData.hasOwnProperty('tableData')) {
 
-              if(rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
-                return ({ isValid: false, helperText: 'Please select a different Status.' })
+                if (rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
+                  return ({ isValid: false, helperText: 'Please select a different Status.' })
 
-              //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
+                //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
                 return true
+              }
             }
           }
+
+          return ({ isValid: false, helperText: 'Status selection is incorrect.' })
+
         }
-        
-        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
-  
-      }},
-      { title: 'Requested Action', field: "requested_action",editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable:'never'},
-      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
-      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
+      },
+      { title: 'Requested Action', field: "requested_action", editable: 'never' },
+      { title: 'Form ID', field: 'form_id', editable: 'never' },
+      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
+      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
     ]
-  
-    return(
-      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
-          <MaterialTable
-            components={{  
-              Action: (props, rowData) => {
-                if(props.action.name === 'change-history') {
-                  return (
-                    <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
-                  )
-                }
 
-                return <MTableAction {...props} />;
-              },
-          }}
+    return (
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
+        <MuiTable
+          componentName={'eng4900'}
           icons={form4900Icons}
-            columns={columns}
-            data={eng4900s[tab_idx]}
-            localization={{
-              toolbar: {
-              searchPlaceholder: "Filter Search"
-              },
-              body: {
-                editTooltip : "Update Status",
-                emptyDataSourceMessage:<h6>No Forms Found.</h6>
-              }}}
-            options={{
-              rowStyle: rowData => ({
-                //backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
-              }),
-              //exportButton: true,
-              //exportAllData: true,
-              headerStyle: {
-                backgroundColor: "#969696",
-                color: "#FFF",
-                fontWeight: 'bold',
-                actionsColumnIndex: -1,
+          columns={columns}
+          data={eng4900s[tab_idx]}
+          localization={{
+            body: {
+              editTooltip: "Update Status",
+              emptyDataSourceMessage: <h6>No Forms Found.</h6>
             }
-            }}
-            title=""
-            detailPanel={[{
-              tooltip: 'Show Status',
-              render: ({rowData}) => {
-                return (
-                  <Box sx={{ width: '100%', py: 3 }}>
+          }}
+          options={{
+            rowStyle: rowData => ({
+              //backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
+            }),
+            //exportButton: true,
+            //exportAllData: true,
+            headerStyle: {
+              backgroundColor: "#969696",
+              color: "#FFF",
+              fontWeight: 'bold',
+              actionsColumnIndex: -1,
+            }
+          }}
+          title=""
+          detailPanel={[{
+            tooltip: 'Show Status',
+            render: ({ rowData }) => {
+              return (
+                <Box sx={{ width: '100%', py: 3 }}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                  {rowData.all_status_steps?.map((option, i) => {
-                    const labelProps = {};
+                    {rowData.all_status_steps?.map((option, i) => {
+                      const labelProps = {};
 
-                    if(rowData.status == 12) {
+                      if (rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)                      
-                    }else if(rowData.status != 12){
-                      return (<Step key={option.label}>
-                        <StepLabel {...labelProps}>{option.label}</StepLabel>
-                      </Step>)
+                        </Step>)
+                      } else if (rowData.status != 12) {
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+
+                      return;
                     }
 
-                    return;
-                  }
-                      
                     )}
                   </Stepper>
                 </Box>
-                )
-              },
-            }]}
-          />
-    </div>
+              )
+            },
+          }]}
+        />
+      </div>
     )
   }
 
   const materialTableHraForms = (tab_idx) => {
 
     let columns = [
-      { title: 'Status', field: 'status', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
-      editComponent: ({ value, onChange, rowData }) => (
-        <Select
-           value={value}
-           onChange={(event) => {
+      {
+        title: 'Status', field: 'status', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+        editComponent: ({ value, onChange, rowData }) => (
+          <Select
+            value={value}
+            onChange={(event) => {
               onChange(event.target.value);
-           }}
-        >
-           {(rowData.status_options).map((option) => (
-            <MenuItem key={option.id} value={option.id}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
-      ),
-       validate: (rowData) => {		
-         console.log(rowData)
-        if(rowData.hasOwnProperty('status')){
-          if(rowData.status) {
-            if(rowData.hasOwnProperty('tableData')){
+            }}
+          >
+            {(rowData.status_options).map((option) => (
+              <MenuItem key={option.id} value={option.id}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        ),
+        validate: (rowData) => {
+          console.log(rowData)
+          if (rowData.hasOwnProperty('status')) {
+            if (rowData.status) {
+              if (rowData.hasOwnProperty('tableData')) {
 
-              if(rowData.tableData.editing == "delete" && rowData.status == 1){
-                return true
-              }
-
-              if(rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
-                return ({ isValid: false, helperText: 'Please select a different Status.' })
-
-              //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
-                return true
-            }
-          }
-        }
-        
-        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
-  
-      }
-    },
-      { title: 'Requested Action', field: "requested_action",editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable:'never'},
-      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
-      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
-    ]
-  
-    return(
-      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
-          <MaterialTable
-            components={{  
-              Action: (props, rowData) => {
-                if(props.action.name === 'change-history') {
-                  return (
-                    <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
-                  )
+                if (rowData.tableData.editing == "delete" && rowData.status == 1) {
+                  return true
                 }
 
-                return <MTableAction {...props} />;
-              },
-          }}
-          icons={form4900Icons}
-            columns={columns}
-            data={eng4900s[tab_idx]}
-            localization={{
-              toolbar: {
-              searchPlaceholder: "Filter Search"
-              },
-              body: {
-                editTooltip : "Update Status",
-                emptyDataSourceMessage:<h6>No Forms Found.</h6>
-              }}}
-            options={{
-              rowStyle: rowData => ({
-                //backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
-              }),
-              //exportButton: true,
-              //exportAllData: true,
-              headerStyle: {
-                backgroundColor: "#969696",
-                color: "#FFF",
-                fontWeight: 'bold',
-                actionsColumnIndex: -1,
-            }
-            }}
-            title=""
-            detailPanel={[{
-              tooltip: 'Show Status',
-              render: ({rowData}) => {
-                return (
-                  <Box sx={{ width: '100%', py: 3 }}>
-                  <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                  {rowData.all_status_steps?.map((option, i) => {
-                    const labelProps = {};
+                if (rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
+                  return ({ isValid: false, helperText: 'Please select a different Status.' })
 
-                    if(rowData.status == 12) {
+                //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
+                return true
+              }
+            }
+          }
+
+          return ({ isValid: false, helperText: 'Status selection is incorrect.' })
+
+        }
+      },
+      { title: 'Requested Action', field: "requested_action", editable: 'never' },
+      { title: 'Form ID', field: 'form_id', editable: 'never' },
+      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
+      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
+    ]
+
+    return (
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
+        <MuiTable
+          componentName={'eng4900'}
+          icons={form4900Icons}
+          columns={columns}
+          data={eng4900s[tab_idx]}
+          localization={{
+            body: {
+              editTooltip: "Update Status",
+              emptyDataSourceMessage: <h6>No Forms Found.</h6>
+            }
+          }}
+          options={{
+            rowStyle: rowData => ({
+              //backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
+            }),
+            //exportButton: true,
+            //exportAllData: true,
+            headerStyle: {
+              backgroundColor: "#969696",
+              color: "#FFF",
+              fontWeight: 'bold',
+              actionsColumnIndex: -1,
+            }
+          }}
+          title=""
+          detailPanel={[{
+            tooltip: 'Show Status',
+            render: ({ rowData }) => {
+              return (
+                <Box sx={{ width: '100%', py: 3 }}>
+                  <Stepper activeStep={rowData.status - 1} alternativeLabel>
+                    {rowData.all_status_steps?.map((option, i) => {
+                      const labelProps = {};
+
+                      if (rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)                      
-                    }else if(rowData.status != 12){
-                      return (<Step key={option.label}>
-                        <StepLabel {...labelProps}>{option.label}</StepLabel>
-                      </Step>)
+                        </Step>)
+                      } else if (rowData.status != 12) {
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+
+                      return;
                     }
 
-                    return;
-                  }
-                      
                     )}
                   </Stepper>
                 </Box>
-                )
+              )
+            },
+          }]}
+          actions={[
+            {
+              icon: () => (
+                <AddBoxIcon sx={{ width: '30px', height: '30px', color: green['500'] }} />
+              ),
+              tooltip: "Create New Form",
+              position: "toolbar",
+              onClick: () => setCreate4900({ ...create4900, show: true, action: 'CREATE', formId: null }),
+              hidden: hras[tab_idx].losing.length == 0,
+              display: 'button',
+              color: 'success',
+              sx: { height: 35, width: 150 },
+              label: 'New Form',
+              startIcon: <AddIcon/>
+            },
+            // rowData => ({
+            //   icon: CommentIcon,
+            //   tooltip: 'Edit Form',
+            //   onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
+            //   //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
+            //   disabled: !(rowData.status == 1) //rowData.birthYear < 2000
+            // }),
+            rowData => ({
+              icon: form4900Icons.Pdf,
+              tooltip: 'View PDF',
+              onClick: (event, rowData) => {
+                get4900Pdf(rowData)
               },
-            }]}
-            actions={[
-              {
-                icon: () => (
-                    <AddBoxIcon sx={{width: '30px', height: '30px', color: green['500']}}/>
-                ),
-                tooltip: "Create New Form",
-                position: "toolbar",
-                onClick: () => setCreate4900({...create4900, show:true, action:'CREATE', formId:null}),
-                hidden: hras[tab_idx].losing.length == 0             
-              },
-              // rowData => ({
-              //   icon: CommentIcon,
-              //   tooltip: 'Edit Form',
-              //   onClick: () => setCreate4900({...create4900, show:true, action:'EDIT', formId:rowData.form_id}),
-              //   //onClick: (event, rowData) => ViewFormById(rowData.form_id), // + rowData.name),
-              //   disabled: !(rowData.status == 1) //rowData.birthYear < 2000
-              // }),
-              rowData => ({
-                icon: form4900Icons.Pdf,
-                tooltip: 'View PDF',
-                onClick: (event, rowData) => {
-                  get4900Pdf(rowData)
-                  //setFormSignModal({...formSignModal,show:true,rowData:rowData})
-                },
-                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              }),{
-                name:'change-history',
-              }        
-            ]}
-            {...(editable && {editable:{
+              disabled: !(rowData.document_source != 2)  //rowData.birthYear < 2000
+            })
+          ]}
+          {...(editable && {
+            editable: {
               isDeletable: rowData => rowData.status == 1,
               isDeleteHidden: rowData => rowData.status != 1,
               onRowUpdate: async (newData, oldData) => {
-                const errorFound = await handleTableUpdate({changes:{'0':{newData:{ form_id: newData.form_id, status:newData.status, tab: tab_idx}}}})
+                const errorFound = await handleTableUpdate({ changes: { '0': { newData: { form_id: newData.form_id, status: newData.status, tab: tab_idx } } } })
 
-                return(new Promise((resolve, reject) => {
+                return (new Promise((resolve, reject) => {
                   setTimeout(() => {
 
-                    if(errorFound){
+                    if (errorFound) {
                       reject()
                       return;
                     }
@@ -771,297 +756,275 @@ function Eng4900({history, location, match, userToken}) {
                     // dataUpdate[index] = result.data;
                     // setEng4900s({...eng4900s, [tab_idx]: [...dataUpdate]});
                     resolve();
-                      
+
                   }, 1000);
                 }))
               },
               onRowDelete: async (oldData) => {
                 const errorFound = await handleTableDelete(oldData)
 
-                return(new Promise((resolve, reject) => {
+                return (new Promise((resolve, reject) => {
                   setTimeout(() => {
 
-                    if(!errorFound){
+                    if (!errorFound) {
                       resolve()
                       return;
-                    }  
-    
+                    }
+
                     reject();
                   }, 1000);
                 }
                 ))
               }
-            }})}
-          />
-    </div>
+            }
+          })}
+        />
+      </div>
     )
   }
 
   const materialTableSignForms = (tab_idx) => {
-    
+
     let columns = [
-      { title: 'Status', field: 'status', editable:'never', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>},
-      { title: 'Requested Action', field: "requested_action",editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable:'never'},
-      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
-      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
+      { title: 'Status', field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a> },
+      { title: 'Requested Action', field: "requested_action", editable: 'never' },
+      { title: 'Form ID', field: 'form_id', editable: 'never' },
+      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
+      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
     ]
-  
-    return(
-      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
-          <MaterialTable
-            components={{  
-              Action: (props, rowData) => {
-                if(props.action.name === 'change-history') {
-                  return (
-                    <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
-                  )
-                }
 
-                return <MTableAction {...props} />;
-              },
-          }}
+    return (
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
+        <MuiTable
+          componentName={'eng4900'}
           icons={form4900Icons}
-            columns={columns}
-            data={eng4900s[tab_idx]}
-            localization={{
-              toolbar: {
-              searchPlaceholder: "Filter Search"
-              },
-              body: {
-                editTooltip : "Update Status",
-                emptyDataSourceMessage:<h6>No Forms Found.</h6>
-              }}}
-            options={{
-              //exportButton: true,
-              //exportAllData: true,
-              headerStyle: {
-                backgroundColor: "#969696",
-                color: "#FFF",
-                fontWeight: 'bold',
-                actionsColumnIndex: -1,
+          columns={columns}
+          data={eng4900s[tab_idx]}
+          localization={{
+            body: {
+              editTooltip: "Update Status",
+              emptyDataSourceMessage: <h6>No Forms Found.</h6>
             }
-            }}
-            title=""
-            detailPanel={[{
-              tooltip: 'Show Status',
-              render: ({rowData}) => {
-                return (
-                  <Box sx={{ width: '100%', py: 3 }}>
+          }}
+          options={{
+            //exportButton: true,
+            //exportAllData: true,
+            headerStyle: {
+              backgroundColor: "#969696",
+              color: "#FFF",
+              fontWeight: 'bold',
+              actionsColumnIndex: -1,
+            }
+          }}
+          title=""
+          detailPanel={[{
+            tooltip: 'Show Status',
+            render: ({ rowData }) => {
+              return (
+                <Box sx={{ width: '100%', py: 3 }}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                  {rowData.all_status_steps?.map((option, i) => {
-                    const labelProps = {};
+                    {rowData.all_status_steps?.map((option, i) => {
+                      const labelProps = {};
 
-                    if(rowData.status == 12) {
+                      if (rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)                      
-                    }else if(rowData.status != 12){
-                      return (<Step key={option.label}>
-                        <StepLabel {...labelProps}>{option.label}</StepLabel>
-                      </Step>)
+                        </Step>)
+                      } else if (rowData.status != 12) {
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+
+                      return;
                     }
 
-                    return;
-                  }
-                      
                     )}
                   </Stepper>
                 </Box>
-                )
+              )
+            },
+          }]}
+          actions={[
+            rowData => ({
+              icon: form4900Icons.Pdf,
+              tooltip: 'View PDF',
+              onClick: (event, rowData) => {
+                get4900Pdf(rowData)
               },
-            }]}
-            actions={[
-              rowData => ({
-                icon: form4900Icons.Pdf,
-                tooltip: 'View PDF',
-                onClick: (event, rowData) => {
-                  get4900Pdf(rowData)
-                },
-                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              }),
-              rowData => ({
-                icon: BorderColorIcon,
-                tooltip: 'Sign Form',
-                onClick: (event, rowData) => {
-                  setFormSignModal({...formSignModal,show:true,rowData:rowData})
-                },
-                disabled: ! (rowData.document_source != 2)  //rowData.birthYear < 2000
-              }),{
-                name:'change-history',
-              }            
-            ]}
-            {...(editable && {editable:{
+              disabled: !(rowData.document_source != 2)  //rowData.birthYear < 2000
+            }),
+            rowData => ({
+              icon: BorderColorIcon,
+              tooltip: 'Sign Form',
+              onClick: (event, rowData) => {
+                setFormData(rowData)
+                setOpenModal(true)
+              },
+              disabled: !(rowData.document_source != 2)  //rowData.birthYear < 2000
+            })
+          ]}
+          {...(editable && {
+            editable: {
               isEditHidden: () => true,
-              onRowUpdate: async (newData, oldData) =>{
+              onRowUpdate: async (newData, oldData) => {
                 console.log(newData, oldData)
                 const errorResult = false
 
-                return(new Promise((resolve, reject) => {
+                return (new Promise((resolve, reject) => {
                   setTimeout(() => {
-                    if(errorResult){
+                    if (errorResult) {
                       reject()
                       return;
                     }
-    
+
                     //resetEmployees();
                     resolve();
-                      
+
                   }, 1000);
                 }))
-                },
-            }})}
-          />
-    </div>
+              },
+            }
+          })}
+        />
+      </div>
     )
   }
 
   const materialTableCompletedForms = (tab_idx) => {
-    
+
     let columns = [
-      { title: 'Status', field: 'status', editable:'never', type:'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>
-      ,validate: (rowData) => {		
-        if(rowData.hasOwnProperty('status')){
-          if(rowData.status) {
-            if(rowData.hasOwnProperty('tableData')){
-              if(rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status){
-                return true
+      {
+        title: 'Status', field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>
+        , validate: (rowData) => {
+          if (rowData.hasOwnProperty('status')) {
+            if (rowData.status) {
+              if (rowData.hasOwnProperty('tableData')) {
+                if (rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status) {
+                  return true
+                }
               }
             }
           }
+
+          return ({ isValid: false, helperText: 'Status selection is incorrect.' })
+
         }
-        
-        return ({ isValid: false, helperText: 'Status selection is incorrect.' })
-  
-      }},
-      { title: 'Requested Action', field: "requested_action",editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable:'never'},
-      { title: 'Bar Tags', field: "bar_tags",editable: 'never'},
-      { title: 'Losing HRA', field: "losing_hra",editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra",editable: 'never' },
+      },
+      { title: 'Requested Action', field: "requested_action", editable: 'never' },
+      { title: 'Form ID', field: 'form_id', editable: 'never' },
+      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
+      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
+      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
     ]
-  
-    return(
-      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%',paddingTop:'25px' }}>
-          <MaterialTable
-          components={{  
-            Action: (props, rowData) => {
-              if(props.action.name === 'change-history') {
-                return (
-                  <ChangeHistoryButton id={props.data.id} componentName={'eng4900'} token={userToken} />
-                )
-              }
 
-              return <MTableAction {...props} />;
-            },
-        }}
+    return (
+      <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
+        <MuiTable
+          componentName={'eng4900'}
           icons={form4900Icons}
-            columns={columns}
-            data={eng4900s[tab_idx]}
-            localization={{
-              toolbar: {
-              searchPlaceholder: "Filter Search"
-              },
-              body: {
-                editTooltip : "Update Status",
-                emptyDataSourceMessage:<h6>No Forms Found.</h6>
-              }}}
-            options={{
-              headerStyle: {
-                backgroundColor: "#969696",
-                color: "#FFF",
-                fontWeight: 'bold',
-                actionsColumnIndex: -1,
+          columns={columns}
+          data={eng4900s[tab_idx]}
+          localization={{
+            body: {
+              editTooltip: "Update Status",
+              emptyDataSourceMessage: <h6>No Forms Found.</h6>
             }
-            }}
-            title=""
-            detailPanel={[{
-              tooltip: 'Show Status',
-              render: ({rowData}) => {
-                return (
-                  <Box sx={{ width: '100%', py: 3 }}>
+          }}
+          options={{
+            headerStyle: {
+              backgroundColor: "#969696",
+              color: "#FFF",
+              fontWeight: 'bold',
+              actionsColumnIndex: -1,
+            }
+          }}
+          title=""
+          detailPanel={[{
+            tooltip: 'Show Status',
+            render: ({ rowData }) => {
+              return (
+                <Box sx={{ width: '100%', py: 3 }}>
                   <Stepper activeStep={rowData.status - 1} alternativeLabel>
-                  {rowData.all_status_steps?.map((option, i) => {
-                    const labelProps = {};
+                    {rowData.all_status_steps?.map((option, i) => {
+                      const labelProps = {};
 
-                    if(rowData.status == 12) {
+                      if (rowData.status == 12) {
                         labelProps.error = true
                         return (<Step key={option.label}>
                           <StepLabel {...labelProps}>{option.label}</StepLabel>
-                        </Step>)                      
-                    }else if(rowData.status != 12){
-                      return (<Step key={option.label}>
-                        <StepLabel {...labelProps}>{option.label}</StepLabel>
-                      </Step>)
+                        </Step>)
+                      } else if (rowData.status != 12) {
+                        return (<Step key={option.label}>
+                          <StepLabel {...labelProps}>{option.label}</StepLabel>
+                        </Step>)
+                      }
+
+                      return;
                     }
 
-                    return;
-                  }
-                      
                     )}
                   </Stepper>
                 </Box>
-                )
+              )
+            },
+          }]}
+          actions={[
+            rowData => ({
+              icon: form4900Icons.Pdf,
+              tooltip: 'View PDF',
+              onClick: (event, rowData) => {
+                get4900Pdf(rowData)
               },
-            }]}
-            actions={[
-              rowData => ({
-                icon: form4900Icons.Pdf,
-                tooltip: 'View PDF',
-                onClick: (event, rowData) => {
-                  get4900Pdf(rowData)
-                },
-                disabled: ! (rowData.document_source != 2)
-              }), {
-                name:'change-history',
-              }          
-            ]}
-          />
-    </div>
+              disabled: !(rowData.document_source != 2)
+            })
+          ]}
+        />
+      </div>
     )
   }
 
   //Render Variables
   const searchTextFieldsGridItems = (tab) => Object.keys(searchFields[tab]).map(key => {
-		const nFields = Object.keys(searchFields[tab]).length
-    const w = windowSize.width*.75 / nFields >= 100 && 120 >= windowSize.width*.75 / nFields ? windowSize.width*.75 / nFields : 120
-	return(	
-    <div>
-      <Typography noWrap>{`Search ${searchFields[tab][key].label}`}</Typography>         
-      <TextField
-        id={`outlined-search-${key}`}
-        key={`outlined-search-${key}`}
-        name={key} 
-        type="search" variant="outlined" 
-        value={searchFields[tab][key].value} 
-        onChange={handleSearchFieldsChange}
-        onKeyPress={handleSearchKeyPress}
-        style={{paddingRight:'10px'}}
-      />
-      {searchFields[tab][key].value && searchView[tab] !== BASIC_SEARCH ? SearchCriteriaOptions(tab, key, `${searchFields[tab][key].label} Options`) :
-      !searchFields[tab][key].value && searchView[tab] !== BASIC_SEARCH ? SearchBlanksOptions(tab, key, `${searchFields[tab][key].label}`) : null
-      }
-    </div>
-	)
+    const nFields = Object.keys(searchFields[tab]).length
+    const w = windowSize.width * .75 / nFields >= 100 && 120 >= windowSize.width * .75 / nFields ? windowSize.width * .75 / nFields : 120
+    return (
+      <div>
+        <Typography noWrap>{`Search ${searchFields[tab][key].label}`}</Typography>
+        <TextField
+          id={`outlined-search-${key}`}
+          key={`outlined-search-${key}`}
+          name={key}
+          type="search" variant="outlined"
+          value={searchFields[tab][key].value}
+          onChange={handleSearchFieldsChange}
+          onKeyPress={handleSearchKeyPress}
+          style={{ paddingRight: '10px' }}
+        />
+        {searchFields[tab][key].value && searchView[tab] !== BASIC_SEARCH ? SearchCriteriaOptions(tab, key, `${searchFields[tab][key].label} Options`) :
+          !searchFields[tab][key].value && searchView[tab] !== BASIC_SEARCH ? SearchBlanksOptions(tab, key, `${searchFields[tab][key].label}`) : null
+        }
+      </div>
+    )
   });
 
-	const searchButtonGridItem = (tab) => { 
-		return(
-			<div style={{paddingTop:'27px'}}>
-				<IconButton id={`search-${tab}`} key={`search-${tab}`} name={tab} aria-label="search" color="primary" onClick={handleSearch}>
-					<SearchIcon style={{ fontSize: 40 }}/>
-				</IconButton>
-			</div>)
-	}
+  const searchButtonGridItem = (tab) => {
+    return (
+      <div style={{ paddingTop: '27px' }}>
+        <IconButton id={`search-${tab}`} key={`search-${tab}`} name={tab} aria-label="search" color="primary" onClick={handleSearch}>
+          <SearchIcon style={{ fontSize: 40 }} />
+        </IconButton>
+      </div>)
+  }
 
   const displayTop = () => (
-  <div style={{textAlign: 'center'}}>
-    <h2>ENG 4900</h2>     
-  </div>
+    <div style={{ textAlign: 'center', paddingBottom: 10 }}>
+      <h2>ENG 4900</h2>
+    </div>
   )
-      
+
   const disableFields = {
     PBO: true,
     logistics: true,
@@ -1081,7 +1044,7 @@ function Eng4900({history, location, match, userToken}) {
     }
 
     pageInitialize();
-    
+
     // Add event listener
     window.addEventListener("resize", handleResize);
 
@@ -1097,32 +1060,26 @@ function Eng4900({history, location, match, userToken}) {
   }, [eng4900s]);
 
   useEffect(() => {
-    if(Object.keys(selectedRow) > 0){
+    if (Object.keys(selectedRow) > 0) {
       setTimeout(() => setSelectedRow({}), 20000);
     }
-    
+
   }, [selectedRow]);
 
   useEffect(() => {
-		console.log(hras)
-	}, [hras]);
-
-  useEffect(() => {
-		if(formSignModal.refresh){
-      
-    }
-	}, [formSignModal.refresh]);
+    console.log(hras)
+  }, [hras]);
 
   //Render return.
   return (
     <>
-    {formSignModal.show ? <FormSignModal formSignModal={formSignModal} setFormSignModal={setFormSignModal} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s}/> : null}
-    {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" setSelectedRow={setSelectedRow} hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900}/> : null}
-    <div>
-      {displayTop()}
-      {loading.init ? <div style={{textAlign:'center'}}>{LoadingCircle()}</div> : null}
-      {!loading.init && !serverDown ? TabsEng4900() : null}
-    </div>
+      <FormSignModal openModal={openModal} setOpenModal={setOpenModal} formData={formData} type={"eng4900"} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} />
+      {create4900.show ? <Eng4900Form formId={create4900.formId} action={create4900.action} type="DIALOG" setSelectedRow={setSelectedRow} hras={hras[tabs]} eng4900s={eng4900s} tab={tabs} setEng4900s={setEng4900s} create4900={create4900} setCreate4900={setCreate4900} /> : null}
+      <div>
+        {displayTop()}
+        {loading.init ? <div style={{ textAlign: 'center' }}>{LoadingCircle()}</div> : null}
+        {!loading.init && !serverDown ? TabsEng4900() : null}
+      </div>
     </>
   );
 }
