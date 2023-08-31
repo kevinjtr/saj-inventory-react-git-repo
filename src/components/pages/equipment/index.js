@@ -1,5 +1,5 @@
 
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import MapWrapper from "./MapWrapper"
 import { Snackbar, Box, AppBar, Tabs, Tab, Switch, Typography, TextField, Icon,
    MenuItem, FormControl, Select,FormGroup,FormControlLabel,Button,IconButton,
@@ -11,13 +11,13 @@ import {find} from "lodash"
 import { v4 as uuid } from 'uuid';
 import * as XLSX from 'xlsx'
 import moment from "moment"
-import { MTableToolbar, MTableBody, MTableAction } from '@material-table/core'
+import MaterialTable, { MTableToolbar, MTableBody, MTableAction } from '@material-table/core'
 import MuiTable from '../../material-table'
 import {tableIcons} from '../../mui/config'
 import 'date-fns';
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import {getQueryStringParams,LoadingCircle, generateReportDate, downloadExcel, contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../../tools/tools'
+import {getQueryStringParams,LoadingCircle, generateReportDate, contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../../tools/tools'
 import { useDimensions } from "../../tools/useDimensions";
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from '../../config/constants'
 import {orderBy, findIndex, filter, debounce} from 'lodash'
@@ -36,11 +36,11 @@ function Equipment({history, location, match, userToken}) {
   const search = getQueryStringParams(location.search)
   const PAGE_URL = `/${EQUIPMENT}`
   const [{ height, width }, ref] = useDimensions();
-  const ref0 = useRef();
-  const ref1 = useRef();
-  const ref2 = useRef();
-  const ref3 = useRef();
-  const ref4 = useRef();
+  const ref0 = useRef(MuiTable)
+  const ref1 = useRef(MuiTable)
+  const ref2 = useRef(MuiTable)
+  const ref3 = useRef(MuiTable)
+  const ref4 = useRef(MuiTable)
   const refs = useRef({ ref0, ref1, ref2, ref3, ref4 });
 
   const [filteredEquipments, setFilteredEquipments] = useState({
@@ -92,13 +92,14 @@ function Equipment({history, location, match, userToken}) {
 	width: undefined,
 	height: undefined,
 	});
-  const [loading, setLoading] = useState({init:true,refresh:{
+  const [initialLoad, setInitialLoad] = useState(true)
+  const [loading, setLoading] = useState({
     0: false,
     1: false,
     2: false,
     3: false,
     4: false,
-  }});
+  });
   const [equipments, setEquipments] = useState({
       0: [],
       1: [],
@@ -131,8 +132,6 @@ function Equipment({history, location, match, userToken}) {
   const [hras, setHras] = useState([]);
   const [my_hras, setMyHras] = useState([]);
 	const [employees, setEmployees] = useState([]);
-  const [openPopup,setOpenPopup] =  useState(false);
-  const [selRowData, setSelRowData] = useState({});
   let [snackBar,setSnackBar] = useState({open:false,message:'',severity:'warning'});
   const [serverDown, setServerDown] = useState(false);
   const [viewSwitch, setViewSwitch] = useState(() => {
@@ -200,7 +199,7 @@ function Equipment({history, location, match, userToken}) {
 
   const displayTop = (
       <div style={{display:"flex", justifyContent:"center"}}>
-        <h2>Equipment</h2>
+        <h2 style={{paddingBottom: 10}}>Equipment</h2>
         <Box sx={{position:'absolute',top:"75px",right:"20px",spacing:1}}>
           <Button
           onClick={() => setViewSwitch(prev => !prev)}
@@ -420,7 +419,8 @@ function Equipment({history, location, match, userToken}) {
   }
   
   const handleSearch = async (e=null,onLoad=false) => {
-    setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
+    setLoading({...loading, [tabs]: true})
+    //setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
   
     let opts = {
       includes: {},
@@ -443,11 +443,13 @@ function Equipment({history, location, match, userToken}) {
     }, userToken)
     .then((response) => response.data).then((data) => {
       console.log(data)
-      setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
+      setLoading({...loading, [tabs]: false})
+      //setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
       setEquipments({...equipments, [tabs]: data.status != 400 ? data.data[tabs] : []})
 
     }).catch(function (error) {
-      setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
+      setLoading({...loading, [tabs]: false})
+      //setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
       setEquipments({...equipments, [tabs]: []})
   
     });
@@ -455,7 +457,8 @@ function Equipment({history, location, match, userToken}) {
   }
 
   const pageInitialize = () => {
-    setLoading({...loading,init:true})
+    setInitialLoad(true)
+    //setLoading({...loading,init:true})
     equipmentSearchApi2({
       'fields': {},
       'options':OPTS_RESET,
@@ -480,12 +483,13 @@ function Equipment({history, location, match, userToken}) {
         setMyHras(data.my_hras)
         setEmployees(data.employees)
       }
-
-      setLoading({...loading,init:false})
+      setInitialLoad(false)
+      //setLoading({...loading,init:false})
 
     }).catch(function (error) {
       setServerDown(true)
-      setLoading({...loading,init:false})
+      setInitialLoad(false)
+      //setLoading({...loading,init:false})
       setEquipments({...equipments, [tabs]: []})
     });
 
@@ -616,149 +620,49 @@ function Equipment({history, location, match, userToken}) {
   }
 
   const MaterialTableSelect = React.forwardRef((props,ref) => {
-    const {columns, equipmentArray} = props
+    const { columns, equipmentArray, loading } = props
     const tab_idx = tabs
-    const [f, setF] = useState([...equipmentArray])
+    const [openPopup,setOpenPopup] =  useState(false);
+    const [selRowData, setSelRowData] = useState({});
 
-    // Custom Pdf Export for Extended View
-    const downloadPdf=(columns, equipment_array, viewType)=>{
-    
-      console.log(equipment_array)
-        /* Create new jsPDF() object */
-        const doc = new jsPDF({orientation:"landscape"})
-        //Title can go here
-        doc.setFontSize(12)
-        doc.text("Equipment Report",15,10)
-        doc.setFontSize(8)
-        doc.text("Generated on " + generateReportDate('footer'),240,200)
+    /**  OPTION 2 - MaterialTable.onSearchChange callback
+     * same as the useEffect example above, But instead of useEffect.. 
+     *  hooking into the MaterialTable.onSearchChange callback
+     * One benifit from this is you don't get the extra "clutter" during the rendering phase
+     * and less thinks to check/validate/assert 
+     * 
+    */
+    const [filteredDataRowsUsingOnSearchChange, setFilteredDataRowsUsingOnSearchChange] = useState([...equipmentArray]);
 
-        if(viewType === 'extended'){
+    //just for logging the update and show an example.. you might want to have a chain reaction here
+    useEffect(() => {
+        console.log('filteredDataRows was updated - using materialTable.onSearchChange : ', filteredDataRowsUsingOnSearchChange)
+    }, [filteredDataRowsUsingOnSearchChange])
 
-            /* Remove extraneous columns using filter */
-            let printColumns = columns.filter(col => 
-                col.field !== "updated_by_full_name" && col.field !== "employee_id" && col.field !== "hra_last_name" && col.field !== "employee_last_name" && col.field !== "model" && col.field !== "status_date"
-                )
-        
-            /* Rename column titles using map function */
-            printColumns.map(col => 
-                    {
-                        if(col.field =="acquisition_date")
-                            col.title = "Acq. Date"
-                        if(col.field =="acquisition_price")
-                            col.title = "Acq. Price"
-                        if(col.field == "item_type")
-                            col.title = "Description"
-                        if(col.field =="employee_id")
-                            col.title = "EmployeeID"
-                        if(col.field =="hra_num")
-                            col.title = "HRA #"
-                        if(col.field =="hra_first_name"){
-                            col.field = "hraLetterName" 			// note field column is renamed for letter name
-                            col.title = "HRA Name"}
-                        if(col.field =="employee_first_name"){
-                            col.field = "employeeFullName" 			// note field column is renamed for full employee name
-                            col.title = "Employee"}
-                        if(col.field =="manufacturer"){
-                            col.field = "mfgrModel"					
-                            col.title = "Mft/Model"}
-                        if(col.field =="bar_tag_num")
-                            col.title = "Bar Tag"
-                        if(col.field =="catalog_num")
-                            col.title = "Catalog Num."
-                        if(col.field =="serial_num")
-                            col.title = "Serial Num."
-                        if(col.field =="status")
-                            col.title = "Status"
-                        if(col.field =="employee_office_location_name")
-                            col.title = "Emp Office Loc"
-                    }
-                );
-
-            var printEquipments = equipment_array.map(function(x) {
-                let hraLetter = x["hra_first_name"] ? x["hra_first_name"].charAt(0) + ". " : ""
-
-                let firstName = x.employee_first_name ? x.employee_first_name + " " : ""
-                let lastName = x.employee_last_name ? x.employee_last_name : ""
-                let employeeFullName = firstName.charAt(0) + ". " + lastName
-
-                let mfgr = x.manufacturer ? x.manufacturer + " " : ""
-                let model = x.model ? x.model : ""
-                let mfgrModel = mfgr + model
-
-                const idx = findIndex(condition,function(c){ return c.id == x.condition})
-                let status_date = x.status_date ? ` [${moment(status_date).format("MM/DD/YY hh:mmm:ss")}]` : ""
-                let status_and_date = x.status ? `${x.status}${status_date}` : ""
-
-                return { 
-                    acquisition_date: x.acquisition_date,
-                    hra_num: x.hra_num,
-                    hraLetterName: hraLetter + x["hra_last_name"],
-                    item_type: x.item_type,
-                    bar_tag_num: x.bar_tag_num,
-                    employee_id: x.employee_id,
-                    employeeFullName: employeeFullName,
-                    acquisition_price:x.acquisition_price,
-                    catalog_num: x.catalog_num,
-                    serial_num: x.serial_num,
-                    mfgrModel: mfgrModel,
-                    condition: idx != -1 ? condition[idx].alias : x.condition,
-                    status: status_and_date,
-                    employee_office_location_name: x.employee_office_location_name ? x.employee_office_location_name : ""
-                }; 
-            });
-
-            /* Format data, such as dates or currency */
-            printEquipments.map(row => {
-                const dateOptions = {day:'2-digit',month:'2-digit',year:'2-digit'}
-                row.acquisition_date = new Date(row.acquisition_date).toLocaleDateString('en-EN',dateOptions)
-                row.acquisition_price = (Math.round(row.acquisition_price * 100) / 100).toFixed(2);
-            })
-
-            /* Generate autoTable with custom column widths */
-            doc.autoTable({
-                columns:printColumns.map(col=>({...col,dataKey:col.field})),
-                body:printEquipments,
-                styles: {fontSize: 7},
-                columnStyles:{        // Set fixed width for columns
-                    0: {cellWidth: 14},
-                    1: {cellWidth: 11},
-                    2: {cellWidth: 24},
-                    3: {cellWidth: 32},
-                    4: {cellWidth: 13},
-                    5: {cellWidth: 20},
-                    6: {cellWidth: 25},
-                    7: {cellWidth: 25},
-                    8: {cellWidth: 18},
-                    9: {cellWidth: 18},
-                    10: {cellWidth:18}
-                   // 11: {cellWidth: 14}
-                   
-                }
-            }
-            )
-
-            /* Output .pdf file */
-            doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')  
-            
-        }
-    else if (viewType === 'normal'){
-        /* Generate autoTable with custom column widths */
-        doc.autoTable({
-            columns:columns.map(col=>({...col,dataKey:col.field})),
-            body:equipment_array,
-            styles: {fontSize: 9}
-        }
-        )
-
-        /* Output .pdf file */
-        doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')
+    /** you don't need the search text, but it's available as the default input in your callback. */
+    const handleSearchChange = (searchText) => {
+        console.log(`handleSearchChange. search text : "${searchText}" - data : `, ref.current.state.data)
+        //no need to assert 'state.data' prop exists here; if not available something else probably is broken.
+        // debugger;
+        setFilteredDataRowsUsingOnSearchChange(ref.current.state.data);
     }
+
+    /** you can also call the handler with the state data directly
+     *  and like here deconstruct the props you want, or only pass the state.data if that is all you need
+     */
+    const handleSearchChangeDirect = ({ data, searchText }) => {
+
+        console.log(`handleSearchChangeDirect : search text : "${searchText}" - data : `, data)
+        //no need to assert 'state.data' prop exists here; if not available something else probably is broken.
+        // debugger;
+        setFilteredDataRowsUsingOnSearchChange(data);
     }
 
     return(
         <Box sx={{ paddingTop:'25px' }}>
-        {!viewSwitch ? <MapWrapper equipments={[...f]}/> : null}
-        {<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}></Snackbar>}
+        {!viewSwitch ? <MapWrapper equipments={[...filteredDataRowsUsingOnSearchChange]}/> : null}
+        <UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData} setSnackBar={setSnackBar} equipments={{...equipments}} setEquipments={setEquipments}/>
+        {/* {<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}></Snackbar>} */}
             {/* {editable[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ?  */}
             {rights.edit[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ? 
                 (<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
@@ -774,31 +678,24 @@ function Equipment({history, location, match, userToken}) {
       componentName={'equipment'}
       exportButton={true}
       showHistory={true}
+      fetchKey={'id'}
+      isLoading={loading}
       ref={ref}
-      onOrderChange={() => {
-            setF([])
-      }}
-      onFilterChange={() => {
-          setF([])
-      }}
+      onOrderChange={() => handleSearchChangeDirect(ref.current.state)}
+      onFilterChange={() => handleSearchChangeDirect(ref.current.state)}
+      //onSearchChange={() => handleSearchChangeDirect(ref.current.state)}
       onTreeExpandChange
       actions={[[0,1,2].includes(tab_idx) && {
         icon: AddCommentIcon,
         tooltip: 'Update Status',
         onClick: (event, rowData) => {
-          setSelRowData(rowData)
+          setSelRowData({...rowData})
           setOpenPopup(true)
         }
       }]}
       icons={tableIcons}
       columns={columns}
       data={equipmentArray}
-      // localization={{
-      //     toolbar: {
-      //     searchPlaceholder: "Filter Search"
-      //     }}}
-
-
       options={{
           headerStyle: {
           backgroundColor: "#969696",
@@ -859,72 +756,6 @@ function Equipment({history, location, match, userToken}) {
     )
   })
 
-  const CustomDatePicker = (props) => {
-    const [date, setDate] = useState("");
-    const handleClearClick = () => {
-      props.onFilterChanged(props.columnDef.tableData.id, null);
-      setDate("");
-    };
-
-    return (
-      <TextField
-        variant="standard"
-        format="dd/MM/yyyy"
-        value={date}
-        ampm
-        autoOk
-        allowKeyboardControl
-        style={{ width: 150 }}
-        onChange={(event) => {
-          setDate(event.target.value);
-          props.onFilterChanged(props.columnDef.tableData.id, event.target.value ? new Date(event.target.value) : null);
-        }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <FilterListIcon />
-            </InputAdornment>
-          ),
-          endAdornment: <IconButton fontSize="small" sx={{visibility: date? "visible": "hidden"}} onClick={handleClearClick}><ClearIcon fontSize="small"/></IconButton>
-        }}
-      />
-    );
-  };
-
-  const CustomFilterTextField = (props) => {
-    const [text, setText] = useState("");
-    
-    const handleClearClick = () => {
-      props.onFilterChanged(props.columnDef.tableData.id, null);
-      setText("");
-    };
-
-    return (
-      <TextField
-        variant="standard"
-        value={text}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <FilterListIcon />
-            </InputAdornment>
-          ),
-          endAdornment: <IconButton fontSize="small" sx={{visibility: text? "visible": "hidden"}} onClick={handleClearClick}><ClearIcon fontSize="small"/></IconButton>
-        }}
-        style={{ width: 125 }}
-        onChange={(event) => {
-          console.log(event.target.value)
-          setText(event.target.value);
-          props.onFilterChanged(props.columnDef.tableData.id, event.target.value);
-        }}
-
-      />
-
-    );
-  };
-
-  const search_form = searchForm(3)
-
   const TabsEquipment = React.forwardRef((props, ref) => {
     const { ref0, ref1, ref2, ref3, ref4 } = ref.current;
     const tab_idx = tabs
@@ -941,7 +772,6 @@ function Equipment({history, location, match, userToken}) {
           }
           return false
         },  
-        filterComponent: (props) => <CustomFilterTextField {...props} />,
         editComponent: props => {
           console.log(props)
 
@@ -985,12 +815,15 @@ function Equipment({history, location, match, userToken}) {
               return true
           }
         },
-        { title: 'HRA First', field: 'hra_first_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:2.1,editable: 'never' },
-        { title: 'HRA Last', field: 'hra_last_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:2.2,editable: 'never' },
+        { title: 'HRA First', field: 'hra_first_name',
+         col_id:2.1,editable: 'never' },
+        { title: 'HRA Last', field: 'hra_last_name',
+         col_id:2.2,editable: 'never' },
         { title: 'Item Description', field: 'item_type', cellStyle: {
           minWidth: 200,
           maxWidth: 200
-        }, filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:4  },
+        },
+         col_id:4  },
         { title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
             return rowData[column.field].toString().includes(term)
@@ -999,7 +832,8 @@ function Equipment({history, location, match, userToken}) {
         }, cellStyle: {
           minWidth: 200,
           maxWidth: 200
-        },filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:5, validate: (rowData) => {
+        },
+         col_id:5, validate: (rowData) => {
             if(rowData.hasOwnProperty('bar_tag_num')){
                 if(!isNaN(rowData.bar_tag_num)) {
                     if(typeof rowData.bar_tag_num === "number"){
@@ -1029,29 +863,32 @@ function Equipment({history, location, match, userToken}) {
 
         }
         },
-        { title: 'Employee First', field: 'employee_first_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.1 ,editable: 'never' },
-        { title: 'Employee Last', field: 'employee_last_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.2,editable: 'never'  },
-        { title: 'Employee Office Location', field: 'employee_office_location_name', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.3,editable: 'never'  },
-        {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' },
+        { title: 'Employee First', field: 'employee_first_name',
+         col_id:6.1 ,editable: 'never' },
+        { title: 'Employee Last', field: 'employee_last_name',
+         col_id:6.2,editable: 'never'  },
+        { title: 'Employee Office Location', field: 'employee_office_location_name',
+         col_id:6.3,editable: 'never'  },
+        {title: 'Status', field:'status',
+         col_id:6.4,editable: 'no' },
         {title: 'Status Date', field:'status_date', type:'date', render: rowData => {
           if(rowData.status_date){
             return <a>{moment(rowData.status_date).format("MM/DD/YY HH:mm:ss")}</a>
           }
           return <a></a>
-      }, filterComponent: (props) => <CustomDatePicker {...props} />, col_id:6.4,editable: 'no' },
-    ] 
-   // tab_idx === 0 || tab_idx === 1 ? {title: 'Status', field:'status', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
-    //tab_idx === 1 ? {title: 'Status Date', field:'status_date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:6.4,editable: 'no' } : {},
+      },
+       col_id:6.4,editable: 'no' },
+    ]
 
     const ext_equipment_cols_config = [		
-        // {title: 'HRA Employee ID', field: 'hra_employee_id',editable: 'never', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:2.3 },
         { title: 'Employee Holder ID', field: 'employee_id', type:'numeric',
         customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
             return rowData[column.field].toString().includes(term)
           }
           return false
-        },  filterComponent:(props) => <CustomFilterTextField {...props} />, col_id:6.0, width:"200px",
+        },
+         col_id:6.0, width:"200px",
         editComponent: props => (
             <Autocomplete
             sx={{
@@ -1078,18 +915,25 @@ function Equipment({history, location, match, userToken}) {
         {title:'Acquisition Date',field:'acquisition_date', cellStyle: {
           minWidth: 200,
           maxWidth: 200
-        }, type: 'date', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:1},
+        }, type: 'date',
+         col_id:1},
         {title:'Acquisition Price',field:'acquisition_price',type: 'numeric', customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
             return rowData[column.field].toString().includes(term)
           }
           return false
-        }, filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:7},
-        {title:'Catalog Num',field:'catalog_num', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:8},
-        {title:'Serial Num',field:'serial_num', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:9},
-        {title:'Manufacturer',field:'manufacturer', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:10},
-        {title:'Model',field:'model', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:11},
-        {title:'Condition',field:'condition', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:12,
+        },
+         col_id:7},
+        {title:'Catalog Num',field:'catalog_num',
+         col_id:8},
+        {title:'Serial Num',field:'serial_num',
+         col_id:9},
+        {title:'Manufacturer',field:'manufacturer',
+         col_id:10},
+        {title:'Model',field:'model',
+         col_id:11},
+        {title:'Condition',field:'condition',
+         col_id:12,
         editComponent: props => (
           <Autocomplete
           sx={{
@@ -1116,7 +960,8 @@ function Equipment({history, location, match, userToken}) {
     ]
     
 
-    if(editable) ext_equipment_cols_config.push({title:'Updated By', filterComponent: (props) => <CustomFilterTextField {...props} />, col_id:13,field:'updated_by_full_name',editable:'never' })
+    if(editable) ext_equipment_cols_config.push({title:'Updated By',
+     col_id:13,field:'updated_by_full_name',editable:'never' })
 
     for(const col_config of equipment_cols_config){
         if(col_config.hasOwnProperty('field') && col_config){
@@ -1149,24 +994,19 @@ function Equipment({history, location, match, userToken}) {
           </Tabs>
         </AppBar>
         <TabPanel value={tabs} index={0}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
-          {!loading.init ? <MaterialTableSelect ref={ref0} columns={[...columns]} equipmentArray={[...equipmentArray]}/> : null}
+          <MaterialTableSelect ref={ref0} columns={[...columns]} loading={loading[0]} equipmentArray={[...equipmentArray]}/>
         </TabPanel>
         <TabPanel value={tabs} index={1}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
-          {!loading.init ? <MaterialTableSelect ref={ref1} columns={[...columns]} equipmentArray={[...equipmentArray]}/> : null}
+          <MaterialTableSelect ref={ref1} columns={[...columns]} loading={loading[1]} equipmentArray={[...equipmentArray]}/>
         </TabPanel>
         <TabPanel value={tabs} index={2}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
-          {!loading.init ? <MaterialTableSelect ref={ref2} columns={[...columns]} equipmentArray={[...equipmentArray]}/> : null}
+          <MaterialTableSelect ref={ref2} columns={[...columns]} loading={loading[2]} equipmentArray={[...equipmentArray]}/>
         </TabPanel>
         <TabPanel value={tabs} index={3}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
-          {!loading.init ? [<MaterialTableSelect ref={ref3} columns={[...columns]} equipmentArray={[...equipmentArray]}/>] : null}
+          <MaterialTableSelect ref={ref3} columns={[...columns]} loading={loading[3]} equipmentArray={[...equipmentArray]}/>
         </TabPanel>
         <TabPanel value={tabs} index={4}>
-          <div style={{textAlign: 'center',position:'relative'}}> {loading.init || loading.refresh[4] ? LoadingCircle() : null} </div>
-          {!loading.init ? [<MaterialTableSelect ref={ref4} columns={[...columns]} equipmentArray={[...equipmentArray]}/>] : null}
+          <MaterialTableSelect ref={ref4} columns={[...columns]} loading={loading[4]} equipmentArray={[...equipmentArray]}/>
         </TabPanel>
       </div>
     );
@@ -1230,9 +1070,8 @@ function Equipment({history, location, match, userToken}) {
     <div>
       {displayTop}
       <Box sx={{display:'flex',flex:'auto'}}>
-      {openPopup ? <UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData} setSnackBar={setSnackBar} equipments={equipments} setEquipments={setEquipments}/> : null} 
       <Box ref={ref} sx={{width: "100%"}}>
-        {!loading.init ? !serverDown ? <TabsEquipment ref={refs} />: null : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
+        {!initialLoad ? !serverDown ? <TabsEquipment ref={refs} />: null : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
       </Box>
       </Box>
     </div>

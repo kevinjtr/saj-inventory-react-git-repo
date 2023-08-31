@@ -1,6 +1,7 @@
 
 import {Typography, Stack, CircularProgress} from '@mui/material';
 import TableHistory from './history-table';
+import TableHistoryNew from './table-history';
 
 export default function BasicTable(props) {
   
@@ -15,7 +16,7 @@ export default function BasicTable(props) {
       ) : (
         (
           props.fetched && props.history && props.history.length>0) ? (
-          <TableHistory {...props}/>
+          <TableHistoryNew {...props}/>
         ) : (
           <Typography sx={{mx: 1}}>No History</Typography>
         )

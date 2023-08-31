@@ -36,87 +36,80 @@ import CustomExportButton from './custom-export-button'
 import { ThemeProvider } from '@mui/styles'
 import { createTheme } from '@mui/material';
 
-const CustomDatePicker = (props) => {
-  const [date, setDate] = useState("");
-  const handleClearClick = () => {
-    props.onFilterChanged(props.columnDef.tableData.id, '');
-    setDate("");
-  };
-
-  return (
-    <TextField
-      variant="standard"
-      format="dd/MM/yyyy"
-      value={date}
-      ampm
-      autoOk
-      allowKeyboardControl
-      style={{ width: 150 }}
-      onChange={(event) => {
-        setDate(event.target.value);
-        props.onFilterChanged(props.columnDef.tableData.id, event.target.value ? new Date(event.target.value) : '');
-      }}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <FilterListIcon />
-          </InputAdornment>
-        ),
-        endAdornment: <IconButton fontSize="small" sx={{ visibility: date ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
-      }}
-    />
-  );
-};
-
-const CustomFilterTextField = (props) => {
-  const [text, setText] = useState("");
-
-  const handleClearClick = () => {
-    props.onFilterChanged(props.columnDef.tableData.id, null);
-    setText("");
-  };
-
-  return (
-    <TextField
-      variant="standard"
-      value={text}
-      InputProps={{
-        startAdornment: (
-          <InputAdornment position="start">
-            <FilterListIcon />
-          </InputAdornment>
-        ),
-        endAdornment: <IconButton fontSize="small" sx={{ visibility: text ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
-      }}
-      style={{ width: 125 }}
-      onChange={(event) => {
-        setText(event.target.value);
-        props.onFilterChanged(props.columnDef.tableData.id, event.target.value);
-      }}
-
-    />
-
-  );
-};
-
-
-const MuiTable = React.forwardRef(({ name, addProps, showHistory, exportButton, columns, options, components, Action, Toolbar, actions, componentName, ...rest }, ref) => {
+const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, exportButton, columns, options, components, Action, Toolbar, actions, componentName, ...rest }, innref) => {
   const [showFilter, setShowFilter] = useState(false)
-  const [filteredData, setFilteredData] = useState([])
-  const mytheme =  createTheme({
-  });
+  const [muiTableKey, setMuiTableKey] = React.useState(0);
+
+  const ref = innref ? innref : React.createRef(innref)
+  const CustomDatePicker = (props) => {
+    const [date, setDate] = useState("");
+    const handleClearClick = () => {
+      props.onFilterChanged(props.columnDef.tableData.id, '');
+      setDate("");
+    };
+  
+    return (
+      <TextField
+        variant="standard"
+        format="dd/MM/yyyy"
+        value={date}
+        ampm
+        autoOk
+        allowKeyboardControl
+        style={{ width: 150 }}
+        onChange={(event) => {
+          setDate(event.target.value);
+          props.onFilterChanged(props.columnDef.tableData.id, event.target.value ? new Date(event.target.value) : '');
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FilterListIcon />
+            </InputAdornment>
+          ),
+          endAdornment: <IconButton fontSize="small" sx={{ visibility: date ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
+        }}
+      />
+    );
+  };
+  
+  const CustomFilterTextField = (props) => {
+    const [text, setText] = useState("");
+  
+    const handleClearClick = () => {
+      props.onFilterChanged(props.columnDef.tableData.id, "");
+      setText("");
+    };
+  
+    return (
+      <TextField
+        variant="standard"
+        value={text}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FilterListIcon />
+            </InputAdornment>
+          ),
+          endAdornment: <IconButton fontSize="small" sx={{ visibility: text ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
+        }}
+        style={{ width: 125 }}
+        onChange={(event) => {
+          setText(event.target.value);
+          props.onFilterChanged(props.columnDef.tableData.id, event.target.value);
+        }}
+  
+      />
+  
+    );
+  };
+  
 
   let all_actions = [{ name: 'filter', position: 'toolbar' }]
 
   if (actions?.length > 0) {
-    const temp_actions = actions.filter((act) => {
-
-      return Object.keys(act).length > 0
-    })
-    all_actions = [...all_actions, ...temp_actions]
+    all_actions = [...all_actions, ...actions]
   }
-
-  console.log(all_actions)
 
   if (showHistory) {
     all_actions = [{ name: 'change-history' }, ...all_actions]
@@ -129,23 +122,31 @@ const MuiTable = React.forwardRef(({ name, addProps, showHistory, exportButton, 
   return (
     <MaterialTable
       tableRef={ref}
+      key={muiTableKey}
       onTreeExpandChange
       columns={columns.map(col => {
-        let temp_col = { ...col }
-        if (temp_col.type === 'numeric') {
-          temp_col = {
-            ...temp_col, customFilterAndSearch: (term, rowData, column) => {
+        if (col.type === 'numeric' && !col.customFilterAndSearch) {
+          col.customFilterAndSearch = (term, rowData, column) => {
               if (rowData[column.field]) {
                 return rowData[column.field].toString().includes(term)
               }
               return false
             }
-          }
+          
         }
-        if (temp_col.type === 'date') {
-          return { ...temp_col, filterComponent: (props) => <CustomDatePicker {...props} />, }
+
+        // if(col.filterComponent){
+        //   return col
+        // }
+
+        if (col.type == 'date') {
+          //col.filterComponent = (props) => <CustomDatePicker {...props} />
+          col.filtering = false
+        }else{
+          col.filterComponent = (props) => <CustomFilterTextField {...props} />
         }
-        return { ...temp_col, filterComponent: (props) => <CustomFilterTextField {...props} />, }
+        
+        return col
       })}
 
       {...(all_actions && {
@@ -157,7 +158,7 @@ const MuiTable = React.forwardRef(({ name, addProps, showHistory, exportButton, 
         Action: (props, rowData) => {
           if (props.action.name === 'change-history') {
             return (
-              <ChangeHistoryButton id={props.data.id} componentName={componentName} />
+              <ChangeHistoryButton id={fetchKey ? props.data[fetchKey] : props.data.id} componentName={componentName}/>
             )
           }
           
@@ -174,7 +175,14 @@ const MuiTable = React.forwardRef(({ name, addProps, showHistory, exportButton, 
               variant={showFilter ? 'outlined' : 'contained'}
               size="small"
               color="primary"
-              onClick={() => setShowFilter(prev => !prev)}
+              onClick={() => {
+                ref?.current?.dataManager?.columns?.forEach((item) => {
+                  console.log(item?.tableData?.id)
+                  if(item.type != 'date')
+                    ref.current?.onFilterChange(item?.tableData?.id, "");
+                })
+                setShowFilter(prev => !prev)
+              }}
               >
                 {showFilter ? 'Hide Filters' : 'Show Filters'}
               </Button>
@@ -201,38 +209,8 @@ const MuiTable = React.forwardRef(({ name, addProps, showHistory, exportButton, 
 
           return <MTableAction {...props} />;
         },
-        // Toolbar: props => (
-        //   <>
-        //     <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
-        //       <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-around" }}>
-        //         {showFilter ? (
-        //           <Button sx={{ height: 35 }} startIcon={<FilterListIcon />} variant="outlined" size="small" color="primary" onClick={() => setShowFilter(false)}>Hide Filters</Button>
-        //         ) : (
-        //           <Button sx={{ height: 35 }} startIcon={<FilterListIcon />} variant="contained" size="small" color="primary" onClick={() => setShowFilter(true)}>Show Filters</Button>
-        //         )
-        //         }
-        //       </div>
-        //       <MTableToolbar {...props} />
-        //     </div>
-        //   </>
-        // ),
       }}
       options={{
-        // ...(exportButton && {
-        //   exportMenu: [
-        //     {
-        //       label: 'Export to PDF',
-        //       exportFunc: (columns, rows) => {
-        //         downloadPdf([...columns], [...rows])
-        //       }
-        //     }, {
-        //       label: 'Export to Excel',
-        //       exportFunc: (columns, rows) => downloadExcel([...rows], "report", ["update_status"])
-        //     }
-        //   ],
-        //   exportButton: false,
-        //   exportAllData: false,
-        // }),
         filtering: showFilter,
         search: false,
         headerStyle: {

@@ -10,6 +10,7 @@ let cols_config = {
             }
             return <a></a>
         }, defaultSort: 'desc',},
+        { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'HRA Number', field: 'hra_num', type: 'numeric', editable: 'never', sorting: false },
         { title: 'HRA First', field: 'hra_first_name', editable: 'never', sorting: false },
         { title: 'HRA Last', field: 'hra_last_name', editable: 'never', sorting: false },
@@ -27,7 +28,6 @@ let cols_config = {
         { title: 'Model', field: 'model', editable: 'never', sorting: false },
         { title: 'Condition', field: 'condition', editable: 'never', sorting: false },
         { title: 'Deleted', field: 'deleted', editable: 'never', sorting: false, type: 'boolean' },
-        { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false }
     ],
     employee: [//employee
         { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date', render: rowData => {
@@ -36,6 +36,7 @@ let cols_config = {
             }
             return <a></a>
         }, defaultSort: 'desc'},
+        { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'ID', field: 'id', editable: 'never', sorting: false },
         { title: 'First Name', field: 'first_name', editable: 'never', sorting: false },
         { title: 'Last name', field: 'last_name', editable: 'never', sorting: false },
@@ -45,7 +46,6 @@ let cols_config = {
         { title: 'Work Phone', field: 'work_phone', type: 'numeric', editable: 'never', sorting: false },
         { title: 'Equipment Quantity', field: 'employee_equipment_count', editable: 'never', sorting: false },
         { title: 'Deleted', field: 'deleted', editable: 'never', sorting: false, type: 'boolean' },
-        { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false }
     ],
     hra: [//hra
         { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date', render: rowData => {
@@ -54,16 +54,10 @@ let cols_config = {
             }
             return <a></a>
         },defaultSort: 'desc' },
+        { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'HRA Number', field: 'hra_num', editable: 'never', sorting: false, type: 'numeric' },
         { title: 'Employee ID', field: 'hra_employee_id', type: 'numeric', editable: 'never', sorting: false },
-        { title: 'Employee First Name', field: 'hra_first_name', editable: 'never', sorting: false },
-        { title: 'Employee Last name', field: 'hra_last_name', editable: 'never', sorting: false },
-        { title: 'Title', field: 'hra_title', editable: 'never', sorting: false },
-        { title: 'Office Symbol', field: 'hra_office_symbol_alias', editable: 'never', sorting: false },
-        { title: 'Work Phone', field: 'hra_work_phone', editable: 'never', sorting: false },
-        { title: 'Equipment Quantity', field: 'hra_equipment_count', editable: 'never', sorting: false },
-        { title: 'Deleted', field: 'deleted', editable: 'never', sorting: false, type: 'boolean' },
-        { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false }
+        { title: 'HRA Full Name', field: 'hra_full_name', editable: 'never', sorting: false },
     ],
     
     // bar_tags: printElements(form_groups[id].map(x => x.bar_tag_num)),

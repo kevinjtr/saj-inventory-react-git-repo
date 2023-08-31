@@ -197,11 +197,13 @@ function Hra({ history, userToken }) {
 			addProps={{
 				sx:{height: 35, width: 125}
 			}}
+			fetchKey={'hra_num'}
 			isLoading={loading}
 			exportButton={true}
 			icons={tableIcons}
 			columns={hras_cols_config}
 			data={hras}
+			showHistory={true}
 			// localization={{
 			// 	toolbar: {
 			// 	searchPlaceholder: "Filter Search"

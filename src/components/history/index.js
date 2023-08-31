@@ -55,9 +55,11 @@ class HistoryIconComponent extends React.Component {
             // );
             // this.cancelablePromise
             getChangeHistoryByTableApi(id, componentName, userToken).then((response) => response.data).then((results) => {
+
+                console.log(results.data)
                 if(results.data){
                 const jsonData = results.data;
-                this.setState({fetching: false, fetched: true, history: orderBy(jsonData,['id','updated_date'], 'desc')});                
+                this.setState({fetching: false, fetched: true, history: orderBy(jsonData,['updated_date'], 'desc')});                
                 
                 }else{
                 this.setState({fetching: false, fetched: true, history: []});

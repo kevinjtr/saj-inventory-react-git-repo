@@ -307,6 +307,8 @@ function Employee({history, userToken}) {
 			addProps={{
 				sx:{height: 35, width: 180}
 			}}
+			fetchKey={'id'}
+			showHistory={true}
 			isLoading={loading}
 			exportButton={true}
 			icons={tableIcons}

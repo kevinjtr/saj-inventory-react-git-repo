@@ -477,19 +477,19 @@ function Eng4900({ history, location, match, userToken }) {
         </AppBar>
         <TabPanel value={tabs} index={0}>
           <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[0] ? LoadingCircle() : null} </div>
-          {!loading.init ? [searchForm(0), materialTableMyForms(0)] : null}
+          {!loading.init ? materialTableMyForms(0) : null}
         </TabPanel>
         <TabPanel value={tabs} index={1}>
           <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[1] ? LoadingCircle() : null} </div>
-          {!loading.init ? [searchForm(1), materialTableHraForms(1)] : null}
+          {!loading.init ? materialTableHraForms(1) : null}
         </TabPanel>
         <TabPanel value={tabs} index={2}>
           <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[2] ? LoadingCircle() : null} </div>
-          {!loading.init ? [searchForm(2), materialTableSignForms(2)] : null}
+          {!loading.init ? materialTableSignForms(2) : null}
         </TabPanel>
         <TabPanel value={tabs} index={3}>
           <div style={{ textAlign: 'center', position: 'relative' }}> {loading.init || loading.refresh[3] ? LoadingCircle() : null} </div>
-          {!loading.init ? [searchForm(3), materialTableCompletedForms(3)] : null}
+          {!loading.init ? materialTableCompletedForms(3) : null}
         </TabPanel>
       </StyledBox>
     );
@@ -543,6 +543,7 @@ function Eng4900({ history, location, match, userToken }) {
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
         <MuiTable
           componentName={'eng4900'}
+          showHistory={true}
           icons={form4900Icons}
           columns={columns}
           data={eng4900s[tab_idx]}
@@ -554,7 +555,7 @@ function Eng4900({ history, location, match, userToken }) {
           }}
           options={{
             rowStyle: rowData => ({
-              //backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
+              backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
             }),
             //exportButton: true,
             //exportAllData: true,
@@ -653,6 +654,7 @@ function Eng4900({ history, location, match, userToken }) {
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
         <MuiTable
           componentName={'eng4900'}
+          showHistory={true}
           icons={form4900Icons}
           columns={columns}
           data={eng4900s[tab_idx]}
@@ -664,7 +666,7 @@ function Eng4900({ history, location, match, userToken }) {
           }}
           options={{
             rowStyle: rowData => ({
-              //backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
+              backgroundColor: (selectedRow[tab_idx] === rowData.form_id) ? (theme.palette.mode == "dark" ? theme.palette.text.disabled : '#CCFFCC') : theme.palette.background.paper
             }),
             //exportButton: true,
             //exportAllData: true,
@@ -798,6 +800,7 @@ function Eng4900({ history, location, match, userToken }) {
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
         <MuiTable
           componentName={'eng4900'}
+          showHistory={true}
           icons={form4900Icons}
           columns={columns}
           data={eng4900s[tab_idx]}
@@ -924,6 +927,9 @@ function Eng4900({ history, location, match, userToken }) {
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
         <MuiTable
           componentName={'eng4900'}
+          //exportButton={true}
+          showHistory={true}
+          fetchKey={'form_id'}
           icons={form4900Icons}
           columns={columns}
           data={eng4900s[tab_idx]}

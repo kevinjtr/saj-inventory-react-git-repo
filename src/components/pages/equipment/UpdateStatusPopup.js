@@ -1,6 +1,6 @@
 import {updateEquipmentApi} from '../../../publics/actions/equipment-api'
 import {findIndex} from 'lodash'
-import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Select,MenuItem,TextField,IconButton, FormControl, InputLabel } from '@mui/material/'
+import { Dialog, DialogActions, DialogContent, DialogTitle, Typography,Select,MenuItem,TextField,IconButton, FormControl, InputLabel, FormHelperText } from '@mui/material/'
 import {LoadingButton} from '@mui/lab';
 import React, {useState} from 'react'
 import {Close as CloseIcon, Save as SaveIcon} from '@mui/icons-material';
@@ -45,6 +45,7 @@ const buttonClasses = {
 
 const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEquipments, userToken}) => {
     
+  console.log(rowData.status)
     const[message,setMessage] = useState(() => {
       if(rowData.status){
         if(rowData.status.includes("Other")){
@@ -60,7 +61,7 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
       
     );
     
-    const[status, setStatus] = useState(rowData.status ? (rowData.status.includes("Other") ? "Other" : rowData.status) : "");
+    const[status, setStatus] = useState("");
     const [submitButton, setSubmitButton] = React.useState({
         active:false,
         send:false,
@@ -150,52 +151,6 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
        
     }
 
-    /* const validateMessage = (value) =>{
-
-        console.log('validating message...')
-        let newMessage = {...message}
-        //newMessage.text = value;
-
-        if(value.trim() === ''){
-            newMessage.error = `A message is required`
-            setMessage(newMessage)
-            return false
-        }
-        else{
-            newMessage.error = ''
-            newMessage.text = 'Other - ' + newMessage.text;
-            setMessage(newMessage)
-            setStatus(newMessage.text);
-            console.log(status)
-            return true
-        }
-        
-    } */
-
-    // const handleSubmit = async () => {      
-    //     //console.log("You've hit the handleSubmit method")
-    //     //rowData.status = status;
-    //     //const current = new Date();
-    //     //const date = `${current.getMonth()+1}/${current.getDate()}/${current.getFullYear()}`;
-    //     //rowData.status_date = date;
-    //     //const updateStatus = {rowData}
-    //     //console.log(updateStatus);
-
-    //     const new_status = status === "Other" ? `${status} - ${message.text}` : status
-    //     const updateStatus = {changes:{'0':{newData:{...rowData, status: new_status, status_date: new Date() }, oldData:rowData}}}
-
-    //     const errorFound = await handleUpdate(updateStatus);
-
-    //     if(!errorFound){
-    //         setOpenPopup(false)
-
-    //         //setSnackBar({open:true,message:resul,severity:'success'})
-    //         //setMessage({message:'',error:''})
-    //     } else {
-    //         //setMessage({...message})
-    //         //setSnackBar({open:true,message:result.message,severity:'error'})
-    //     }
-    // }
     const ValidateOtherInput = () => {
       if(status == "Other" && message.text.length >= 3){
         const split_text = message.text?.split(" - ")
@@ -217,7 +172,7 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
         if(status){
           if(ValidateOtherInput()){
               setSubmitButton({...submitButton, active: true})  
-          }else if(status != "Other" && status != rowData.status){
+          }else if(status != "Other"){
               setSubmitButton({...submitButton, active: true})
           }else {
               setSubmitButton({...submitButton, active: false})
@@ -276,13 +231,14 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
                   label="Status"
                   value={status}
                   onChange={handleChange}
+                  helperText={status === rowData.status ? 'match' : 'not match'}
                   >
-                    <MenuItem defaultValue value={"Still Possess"}>Still Possess</MenuItem>
-                    <MenuItem value={"Gave Back To HRA Holder"}>Gave Back To HRA Holder</MenuItem>
-                    <MenuItem value={"Lost"}>Lost</MenuItem>
-                    <MenuItem value={"Stolen"}>Stolen</MenuItem>
-                    <MenuItem value={"Excessed"}>Excessed</MenuItem>
-                    <MenuItem value={"Other"}>Other - Describe Situation Below</MenuItem>
+                    <MenuItem defaultValue value={"Still Possess"}>{`Still Possess${rowData.status === "Still Possess" ? ' (Current)' : '' }`}</MenuItem>
+                    <MenuItem value={"Gave Back To HRA Holder"}>{`Gave Back To HRA Holder${rowData.status === "Gave Back To HRA Holder" ? ' (Current)' : '' }`}</MenuItem>
+                    <MenuItem value={"Lost"}>{`Lost${rowData.status === "Lost" ? ' (Current)' : '' }`}</MenuItem>
+                    <MenuItem value={"Stolen"}>{`Stolen${rowData.status === "Stolen" ? ' (Current)' : '' }`}</MenuItem>
+                    <MenuItem value={"Excessed"}>{`Excessed${rowData.status === "Excessed" ? ' (Current)' : '' }`}</MenuItem>
+                    <MenuItem value={"Other"}>{`Other - Describe Situation Below${rowData.status === "Other" ? ' (Current)' : '' }`}</MenuItem>
                 </Select>
                 </FormControl>
                 <br/>
