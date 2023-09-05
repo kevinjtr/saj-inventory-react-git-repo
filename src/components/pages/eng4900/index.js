@@ -499,7 +499,12 @@ function Eng4900({ history, location, match, userToken }) {
 
     let columns = [
       {
-        title: 'Status', field: 'status', editable: 'onUpdate', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+        title: 'Status', field: 'status', customFilterAndSearch: (term, rowData, column) => {
+          if (rowData[column.field]) {
+            return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
+          }
+          return false
+        },editable: 'onUpdate', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
         editComponent: ({ value, onChange, rowData }) => (
           <Select
             value={value}
@@ -544,6 +549,7 @@ function Eng4900({ history, location, match, userToken }) {
         <MuiTable
           componentName={'eng4900'}
           showHistory={true}
+          fetchKey={'form_id'}
           icons={form4900Icons}
           columns={columns}
           data={eng4900s[tab_idx]}
@@ -605,7 +611,12 @@ function Eng4900({ history, location, match, userToken }) {
 
     let columns = [
       {
-        title: 'Status', field: 'status', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+        title: 'Status', customFilterAndSearch: (term, rowData, column) => {
+          if (rowData[column.field]) {
+            return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
+          }
+          return false
+        }, field: 'status', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
         editComponent: ({ value, onChange, rowData }) => (
           <Select
             value={value}
@@ -655,6 +666,7 @@ function Eng4900({ history, location, match, userToken }) {
         <MuiTable
           componentName={'eng4900'}
           showHistory={true}
+          fetchKey={'form_id'}
           icons={form4900Icons}
           columns={columns}
           data={eng4900s[tab_idx]}
@@ -788,7 +800,12 @@ function Eng4900({ history, location, match, userToken }) {
   const materialTableSignForms = (tab_idx) => {
 
     let columns = [
-      { title: 'Status', field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a> },
+      { title: 'Status', customFilterAndSearch: (term, rowData, column) => {
+        if (rowData[column.field]) {
+          return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
+        }
+        return false
+      }, field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a> },
       { title: 'Requested Action', field: "requested_action", editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable: 'never' },
       { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
@@ -801,6 +818,7 @@ function Eng4900({ history, location, match, userToken }) {
         <MuiTable
           componentName={'eng4900'}
           showHistory={true}
+          fetchKey={'form_id'}
           icons={form4900Icons}
           columns={columns}
           data={eng4900s[tab_idx]}
@@ -900,7 +918,12 @@ function Eng4900({ history, location, match, userToken }) {
 
     let columns = [
       {
-        title: 'Status', field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>
+        title: 'Status', customFilterAndSearch: (term, rowData, column) => {
+          if (rowData[column.field]) {
+            return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
+          }
+          return false
+        }, field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>
         , validate: (rowData) => {
           if (rowData.hasOwnProperty('status')) {
             if (rowData.status) {

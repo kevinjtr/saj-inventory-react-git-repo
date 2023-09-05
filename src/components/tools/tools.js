@@ -1,10 +1,13 @@
-import React from 'react'
 import {CircularProgress} from '@mui/material/';
-import moment from 'moment'
 import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
+import React, { useState } from 'react';
+import { TextField, IconButton, InputAdornment, DatePicker } from '@mui/material';
+import {
+  FilterList as FilterListIcon, Clear as ClearIcon
+} from '@mui/icons-material';
 
 export const numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -131,3 +134,66 @@ export function convertToLabel(inputString) {
     
     return convertedString;
   }
+
+  export const CustomDatePicker = (props) => {
+    const [date, setDate] = useState("");
+    const handleClearClick = () => {
+      props.onFilterChanged(props.columnDef.tableData.id, '');
+      setDate("");
+    };
+  
+    return (
+      <TextField
+        variant="standard"
+        format="dd/MM/yyyy"
+        value={date}
+        ampm
+        autoOk
+        allowKeyboardControl
+        style={{ width: 150 }}
+        onChange={(event) => {
+          setDate(event.target.value);
+          props.onFilterChanged(props.columnDef.tableData.id, event.target.value ? new Date(event.target.value) : '');
+        }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FilterListIcon />
+            </InputAdornment>
+          ),
+          endAdornment: <IconButton fontSize="small" sx={{ visibility: date ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
+        }}
+      />
+    );
+  };
+  
+  export const CustomFilterTextField = (props) => {
+    const [text, setText] = useState("");
+  
+    const handleClearClick = () => {
+      props.onFilterChanged(props.columnDef.tableData.id, "");
+      setText("");
+    };
+  
+    return (
+      <TextField
+        variant="standard"
+        value={text}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <FilterListIcon />
+            </InputAdornment>
+          ),
+          endAdornment: <IconButton fontSize="small" sx={{ visibility: text ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
+        }}
+        style={{ width: '100%' }}
+        onChange={(event) => {
+          setText(event.target.value);
+          props.onFilterChanged(props.columnDef.tableData.id, event.target.value);
+        }}
+  
+      />
+  
+    );
+  };

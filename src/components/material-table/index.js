@@ -19,7 +19,7 @@ import { tableIcons } from '../mui/config'
 import 'date-fns';
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import { getQueryStringParams, LoadingCircle, generateReportDate, contains, TextMaskCustom, NumberFormatCustom, numberWithCommas, openInNewTab, downloadExcel, downloadPdf } from '../tools/tools'
+import { getQueryStringParams, LoadingCircle, generateReportDate, contains, TextMaskCustom, NumberFormatCustom, numberWithCommas, openInNewTab, downloadExcel, downloadPdf, CustomFilterTextField } from '../tools/tools'
 import { useDimensions } from "../tools/useDimensions";
 import { SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition } from '../config/constants'
 import { orderBy, findIndex, filter, debounce } from 'lodash'
@@ -38,73 +38,7 @@ import { createTheme } from '@mui/material';
 
 const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, exportButton, columns, options, components, Action, Toolbar, actions, componentName, ...rest }, innref) => {
   const [showFilter, setShowFilter] = useState(false)
-  const [muiTableKey, setMuiTableKey] = React.useState(0);
-
-  const ref = innref ? innref : React.createRef(innref)
-  const CustomDatePicker = (props) => {
-    const [date, setDate] = useState("");
-    const handleClearClick = () => {
-      props.onFilterChanged(props.columnDef.tableData.id, '');
-      setDate("");
-    };
-  
-    return (
-      <TextField
-        variant="standard"
-        format="dd/MM/yyyy"
-        value={date}
-        ampm
-        autoOk
-        allowKeyboardControl
-        style={{ width: 150 }}
-        onChange={(event) => {
-          setDate(event.target.value);
-          props.onFilterChanged(props.columnDef.tableData.id, event.target.value ? new Date(event.target.value) : '');
-        }}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <FilterListIcon />
-            </InputAdornment>
-          ),
-          endAdornment: <IconButton fontSize="small" sx={{ visibility: date ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
-        }}
-      />
-    );
-  };
-  
-  const CustomFilterTextField = (props) => {
-    const [text, setText] = useState("");
-  
-    const handleClearClick = () => {
-      props.onFilterChanged(props.columnDef.tableData.id, "");
-      setText("");
-    };
-  
-    return (
-      <TextField
-        variant="standard"
-        value={text}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <FilterListIcon />
-            </InputAdornment>
-          ),
-          endAdornment: <IconButton fontSize="small" sx={{ visibility: text ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
-        }}
-        style={{ width: 125 }}
-        onChange={(event) => {
-          setText(event.target.value);
-          props.onFilterChanged(props.columnDef.tableData.id, event.target.value);
-        }}
-  
-      />
-  
-    );
-  };
-  
-
+  const ref = innref ? innref : React.createRef(innref) 
   let all_actions = [{ name: 'filter', position: 'toolbar' }]
 
   if (actions?.length > 0) {
@@ -122,13 +56,11 @@ const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, expo
   return (
     <MaterialTable
       tableRef={ref}
-      key={muiTableKey}
-      onTreeExpandChange
       columns={columns.map(col => {
         if (col.type === 'numeric' && !col.customFilterAndSearch) {
           col.customFilterAndSearch = (term, rowData, column) => {
               if (rowData[column.field]) {
-                return rowData[column.field].toString().includes(term)
+                return rowData[column.field].toString()?.toUpperCase().includes(term?.toUpperCase())
               }
               return false
             }
@@ -143,7 +75,7 @@ const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, expo
           //col.filterComponent = (props) => <CustomDatePicker {...props} />
           col.filtering = false
         }else{
-          col.filterComponent = (props) => <CustomFilterTextField {...props} />
+          col.filterComponent = (props) => <CustomFilterTextField {...props}/>
         }
         
         return col
@@ -157,7 +89,9 @@ const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, expo
       components={{
         Action: (props, rowData) => {
           if (props.action.name === 'change-history') {
+            console.log(fetchKey)
             return (
+              
               <ChangeHistoryButton id={fetchKey ? props.data[fetchKey] : props.data.id} componentName={componentName}/>
             )
           }
@@ -176,11 +110,11 @@ const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, expo
               size="small"
               color="primary"
               onClick={() => {
-                ref?.current?.dataManager?.columns?.forEach((item) => {
-                  console.log(item?.tableData?.id)
-                  if(item.type != 'date')
-                    ref.current?.onFilterChange(item?.tableData?.id, "");
-                })
+                if(showFilter)
+                  ref?.current?.dataManager?.columns?.forEach((item) => {
+                    if(item.type != 'date' && item?.tableData?.filterValue)
+                      ref.current?.onFilterChange(item?.tableData?.id, "");
+                  })
                 setShowFilter(prev => !prev)
               }}
               >

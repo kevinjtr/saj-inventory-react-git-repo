@@ -17,7 +17,7 @@ import {tableIcons} from '../../mui/config'
 import 'date-fns';
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import {getQueryStringParams,LoadingCircle, generateReportDate, contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab} from '../../tools/tools'
+import {getQueryStringParams,LoadingCircle, generateReportDate, contains,TextMaskCustom,NumberFormatCustom, numberWithCommas,openInNewTab, CustomFilterTextField} from '../../tools/tools'
 import { useDimensions } from "../../tools/useDimensions";
 import {SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, EQUIPMENT, AVD_SEARCH, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, condition} from '../../config/constants'
 import {orderBy, findIndex, filter, debounce} from 'lodash'
@@ -29,6 +29,8 @@ import AddCommentIcon from '@mui/icons-material/AddComment';
 import toast from 'react-hot-toast';
 import ChangeHistoryButton from '../../history'
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import AddIcon from '@mui/icons-material/Add';
+import CustomExportButton from '../../../components/material-table/custom-export-button'
 
 function Equipment({history, location, match, userToken}) {
   
@@ -36,11 +38,11 @@ function Equipment({history, location, match, userToken}) {
   const search = getQueryStringParams(location.search)
   const PAGE_URL = `/${EQUIPMENT}`
   const [{ height, width }, ref] = useDimensions();
-  const ref0 = useRef(MuiTable)
-  const ref1 = useRef(MuiTable)
-  const ref2 = useRef(MuiTable)
-  const ref3 = useRef(MuiTable)
-  const ref4 = useRef(MuiTable)
+  const ref0 = useRef(MaterialTable)
+  const ref1 = useRef(MaterialTable)
+  const ref2 = useRef(MaterialTable)
+  const ref3 = useRef(MaterialTable)
+  const ref4 = useRef(MaterialTable)
   const refs = useRef({ ref0, ref1, ref2, ref3, ref4 });
 
   const [filteredEquipments, setFilteredEquipments] = useState({
@@ -143,13 +145,6 @@ function Equipment({history, location, match, userToken}) {
   const [openChangeHistory, setMapFilters] = useState([]);
 
   // state variable for showing/hiding column filters in material table
-    const [showFilter,setShowFilter] = useState({
-        0: false,
-        1: false,
-        2: false,
-        3: false,
-        4: false
-      })
 
         //Render Variables
 	const searchTextFieldsGridItems = (tab) => Object.keys(searchFields[tab]).map(key => {
@@ -624,44 +619,17 @@ function Equipment({history, location, match, userToken}) {
     const tab_idx = tabs
     const [openPopup,setOpenPopup] =  useState(false);
     const [selRowData, setSelRowData] = useState({});
+    const [name, componentName, fetchKey] = ['Equipment', 'equipment','id']
+    const [showFilter,setShowFilter] = useState(false)
 
-    /**  OPTION 2 - MaterialTable.onSearchChange callback
-     * same as the useEffect example above, But instead of useEffect.. 
-     *  hooking into the MaterialTable.onSearchChange callback
-     * One benifit from this is you don't get the extra "clutter" during the rendering phase
-     * and less thinks to check/validate/assert 
-     * 
-    */
-    const [filteredDataRowsUsingOnSearchChange, setFilteredDataRowsUsingOnSearchChange] = useState([...equipmentArray]);
+    const [filteredDataRows, setFilteredDataRows] = useState([...equipmentArray]);
 
-    //just for logging the update and show an example.. you might want to have a chain reaction here
-    useEffect(() => {
-        console.log('filteredDataRows was updated - using materialTable.onSearchChange : ', filteredDataRowsUsingOnSearchChange)
-    }, [filteredDataRowsUsingOnSearchChange])
-
-    /** you don't need the search text, but it's available as the default input in your callback. */
-    const handleSearchChange = (searchText) => {
-        console.log(`handleSearchChange. search text : "${searchText}" - data : `, ref.current.state.data)
-        //no need to assert 'state.data' prop exists here; if not available something else probably is broken.
-        // debugger;
-        setFilteredDataRowsUsingOnSearchChange(ref.current.state.data);
-    }
-
-    /** you can also call the handler with the state data directly
-     *  and like here deconstruct the props you want, or only pass the state.data if that is all you need
-     */
-    const handleSearchChangeDirect = ({ data, searchText }) => {
-
-        console.log(`handleSearchChangeDirect : search text : "${searchText}" - data : `, data)
-        //no need to assert 'state.data' prop exists here; if not available something else probably is broken.
-        // debugger;
-        setFilteredDataRowsUsingOnSearchChange(data);
-    }
+    const handleSearchChangeDirect = ({ data, searchText }) => setFilteredDataRows(data)
 
     return(
         <Box sx={{ paddingTop:'25px' }}>
-        {!viewSwitch ? <MapWrapper equipments={[...filteredDataRowsUsingOnSearchChange]}/> : null}
         <UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData} setSnackBar={setSnackBar} equipments={{...equipments}} setEquipments={setEquipments}/>
+        {!viewSwitch ? <MapWrapper equipments={[...filteredDataRows]}/> : null}
         {/* {<Snackbar open={snackBar.open} anchorOrigin={{vertical:'top',horizontal:'center'}} autoHideDuration={3000} onClose={()=>setSnackBar({open:false,message:'',severity:''})}></Snackbar>} */}
             {/* {editable[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ?  */}
             {rights.edit[tabs] || equipmentTabs[tab_idx].id == "excess_equipment" ? 
@@ -673,19 +641,71 @@ function Equipment({history, location, match, userToken}) {
                         />
                     </FormGroup>
                 </Grid>) : null}
-                <MuiTable
-      name={'Equipment'}
-      componentName={'equipment'}
-      exportButton={true}
-      showHistory={true}
-      fetchKey={'id'}
+                <MaterialTable
       isLoading={loading}
-      ref={ref}
+      tableRef={ref}
+      components={{
+        Action: (props, rowData) => {
+          if (props.action.name === 'change-history') {
+            return (
+              <ChangeHistoryButton id={fetchKey ? props.data[fetchKey] : props.data.id} componentName={componentName}/>
+            )
+          }
+          
+          if(props.action.name === "export"){
+              return (<div style={{paddingLeft: 10}}>
+                <CustomExportButton {...ref?.current?.state}/>
+              </div>)
+          }
+
+          if(props.action.name === "filter"){
+            return (<div style={{paddingLeft: 10}}>
+              <Button sx={{ height: 35, width: 150 }}
+              startIcon={<FilterListIcon />}
+              variant={showFilter ? 'outlined' : 'contained'}
+              size="small"
+              color="primary"
+              onClick={() => {
+                ref?.current?.dataManager?.columns?.forEach((item) => {
+                  if(item.type != 'date' && item?.tableData?.filterValue)
+                    ref.current?.onFilterChange(item?.tableData?.id, "");
+                })
+                setShowFilter(prev => !prev)
+              }}
+              >
+                {showFilter ? 'Hide Filters' : 'Show Filters'}
+              </Button>
+            </div>)  
+          }
+
+          // if(props.action.tooltip === "Add" && !switches[tab_idx].checkedView){
+          //   return <></>
+          // }
+
+          if (props.action.display === 'button' || (props.action.tooltip === "Add")) {
+            const title = `${props.action.tooltip} ${name}`
+            return (
+              <div style={{paddingLeft: 10}}>
+                <Button
+                color={'success'}
+                startIcon={<AddIcon />}
+                {...props.action}
+                onClick={(event) => props.action.onClick(event, props.data)}
+                variant="contained"
+                title={title}
+              >{props.action.label || title}
+              </Button>
+            </div>
+           )
+          }
+
+          return <MTableAction {...props} />;
+        },
+      }}
       onOrderChange={() => handleSearchChangeDirect(ref.current.state)}
       onFilterChange={() => handleSearchChangeDirect(ref.current.state)}
       //onSearchChange={() => handleSearchChangeDirect(ref.current.state)}
-      onTreeExpandChange
-      actions={[[0,1,2].includes(tab_idx) && {
+      actions={[{ name: 'filter', position: 'toolbar' }, { name: 'change-history' }, { name: 'export', position: 'toolbar' }, [0,1,2].includes(tab_idx) && {
         icon: AddCommentIcon,
         tooltip: 'Update Status',
         onClick: (event, rowData) => {
@@ -693,10 +713,13 @@ function Equipment({history, location, match, userToken}) {
           setOpenPopup(true)
         }
       }]}
+    
       icons={tableIcons}
       columns={columns}
       data={equipmentArray}
       options={{
+        filtering: showFilter,
+        search: false,
           headerStyle: {
           backgroundColor: "#969696",
           color: "#FFF",
@@ -765,10 +788,13 @@ function Equipment({history, location, match, userToken}) {
     let columns = []
 
     const equipment_cols_config = [
-        { title: 'HRA Number', field: 'hra_num', type:'numeric', col_id:2.0, 
+        { title: 'HRA', field: 'hra_num', type:'numeric', col_id:2.0, render: (rowData) => {
+            return <a value={rowData.hra_first_name}>{`${rowData.hra_num} -${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}` }</a>
+        },
         customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
-            return rowData[column.field].toString().includes(term)
+            const option = `${rowData.hra_num} -${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}`
+            return option.toString()?.toUpperCase().includes(term?.toUpperCase())
           }
           return false
         },  
@@ -802,23 +828,23 @@ function Equipment({history, location, match, userToken}) {
                   renderInput={(params) => <TextField {...params} helperText="HRA" variant="standard" />}
               />)
         },
-          validate: (rowData) => {
-              if(rowData.hasOwnProperty('hra_num')){
-                  if(!isNaN(rowData.hra_num)) {
-                    if(rowData.hra_num){
-                      const idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == rowData.hra_num)); })
-                      return idx != -1
-                    }
+        validate: (rowData) => {
+            if(rowData.hasOwnProperty('hra_num')){
+                if(!isNaN(rowData.hra_num)) {
+                  if(rowData.hra_num){
+                    const idx = findIndex(hras_array,function(e){ return (e.hra_num && (e.hra_num == rowData.hra_num)); })
+                    return idx != -1
                   }
-              }
-    
-              return true
-          }
+                }
+            }
+  
+            return true
+        }
         },
-        { title: 'HRA First', field: 'hra_first_name',
-         col_id:2.1,editable: 'never' },
-        { title: 'HRA Last', field: 'hra_last_name',
-         col_id:2.2,editable: 'never' },
+        // { title: 'HRA First', field: 'hra_first_name',
+        //  col_id:2.1,editable: 'never' },
+        // { title: 'HRA Last', field: 'hra_last_name',
+        //  col_id:2.2,editable: 'never' },
         { title: 'Item Description', field: 'item_type', cellStyle: {
           minWidth: 200,
           maxWidth: 200
@@ -863,28 +889,27 @@ function Equipment({history, location, match, userToken}) {
 
         }
         },
-        { title: 'Employee First', field: 'employee_first_name',
-         col_id:6.1 ,editable: 'never' },
-        { title: 'Employee Last', field: 'employee_last_name',
-         col_id:6.2,editable: 'never'  },
-        { title: 'Employee Office Location', field: 'employee_office_location_name',
-         col_id:6.3,editable: 'never'  },
-        {title: 'Status', field:'status',
-         col_id:6.4,editable: 'no' },
-        {title: 'Status Date', field:'status_date', type:'date', render: rowData => {
-          if(rowData.status_date){
-            return <a>{moment(rowData.status_date).format("MM/DD/YY HH:mm:ss")}</a>
-          }
-          return <a></a>
-      },
-       col_id:6.4,editable: 'no' },
-    ]
+        {title:'Serial Num',field:'serial_num', cellStyle: {
+          minWidth: 200,
+          maxWidth: 200
+        }, validate: (rowData) => {
+          if(rowData.hasOwnProperty('serial_num')){
+                      if(rowData.serial_num.toString().length < 3){
+                          return ({ isValid: false, helperText: 'Serial Num is too short.' })
+                      }
 
-    const ext_equipment_cols_config = [		
-        { title: 'Employee Holder ID', field: 'employee_id', type:'numeric',
+                      return true  
+          }
+          return ({ isValid: false, helperText: 'Serial Num is required.' })
+        },
+         col_id:5.5},
+         { title: 'Employee', field: 'employee_id', type:'numeric', render: (rowData) => {
+          return <a>{`${rowData.employee_first_name ? ` ${rowData.employee_first_name}`: ''}${rowData.employee_last_name ? ` ${rowData.employee_last_name}` : ''}` }</a>
+        },
         customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
-            return rowData[column.field].toString().includes(term)
+            const option = `${rowData.employee_first_name ? ` ${rowData.employee_first_name}`: ''}${rowData.employee_last_name ? ` ${rowData.employee_last_name}` : ''}`
+            return option.toString()?.toUpperCase().includes(term?.toUpperCase())
           }
           return false
         },
@@ -912,6 +937,55 @@ function Equipment({history, location, match, userToken}) {
                   renderInput={(params) => <TextField {...params} helperText="Employee" variant="standard" />}
               />)
         },
+        // { title: 'Employee First', field: 'employee_first_name',
+        //  col_id:6.1 ,editable: 'never' },
+        // { title: 'Employee Last', field: 'employee_last_name',
+        //  col_id:6.2,editable: 'never'  },
+        { title: 'Employee Office Location', field: 'employee_office_location_name',
+         col_id:6.3,editable: 'never'  },
+        {title: 'Status', field:'status',
+         col_id:6.4,editable: 'no' },
+        {title: 'Status Date', field:'status_date', type:'date', render: rowData => {
+          if(rowData.status_date){
+            return <a>{moment(rowData.status_date).format("MM/DD/YY HH:mm:ss")}</a>
+          }
+          return <a></a>
+      },
+       col_id:6.4,editable: 'no' },
+    ]
+
+    const ext_equipment_cols_config = [		
+        // { title: 'Employee Holder ID', field: 'employee_id', type:'numeric',
+        // customFilterAndSearch: (term, rowData, column) => {
+        //   if(rowData[column.field]){
+        //     return rowData[column.field].toString().includes(term)
+        //   }
+        //   return false
+        // },
+        //  col_id:6.0, width:"200px",
+        // editComponent: props => (
+        //     <Autocomplete
+        //     sx={{
+        //       '.MuiAutocomplete-option': {
+        //         fontSize: '.5rem'
+        //       }
+        //     }}
+        //           value={props.value ? find(employees,function(employee){ return employee.id === props.value}) : null}
+        //           onChange={(e, nv) => { 
+        //               if(nv?.id){
+        //                 props.onChange(nv.id) 
+        //                 return;
+        //               }
+        //             props.onChange(nv)
+        //           }}
+        //           key={`combo-box-${uuid()}`}
+        //           options={employees}
+        //           getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
+        //           renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
+        //           style={{ width: 250 }}
+        //           renderInput={(params) => <TextField {...params} helperText="Employee" variant="standard" />}
+        //       />)
+        // },
         {title:'Acquisition Date',field:'acquisition_date', cellStyle: {
           minWidth: 200,
           maxWidth: 200
@@ -926,8 +1000,6 @@ function Equipment({history, location, match, userToken}) {
          col_id:7},
         {title:'Catalog Num',field:'catalog_num',
          col_id:8},
-        {title:'Serial Num',field:'serial_num',
-         col_id:9},
         {title:'Manufacturer',field:'manufacturer',
          col_id:10},
         {title:'Model',field:'model',
@@ -958,7 +1030,6 @@ function Equipment({history, location, match, userToken}) {
             />)
         }
     ]
-    
 
     if(editable) ext_equipment_cols_config.push({title:'Updated By',
      col_id:13,field:'updated_by_full_name',editable:'never' })
@@ -981,6 +1052,31 @@ function Equipment({history, location, match, userToken}) {
         columns = [...columns,...extended_columns]
         columns = orderBy(columns,'col_id','asc')
     }
+
+    columns.map(col => {
+      if (col.type === 'numeric' && !col.customFilterAndSearch) {
+        col.customFilterAndSearch = (term, rowData, column) => {
+            if (rowData[column.field]) {
+              return rowData[column.field].toString().includes(term)
+            }
+            return false
+          }
+        
+      }
+
+      // if(col.filterComponent){
+      //   return col
+      // }
+
+      if (col.type == 'date') {
+        //col.filterComponent = (props) => <CustomDatePicker {...props} />
+        col.filtering = false
+      }else{
+        col.filterComponent = (props) => <CustomFilterTextField {...props} />
+      }
+      
+      return col
+    })
 
     return (
       <div className={tabClasses.root}>

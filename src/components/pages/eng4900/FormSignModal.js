@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
-import { Select, FormLabel, FormControlLabel, RadioGroup, Radio } from '@mui/material/';
+import { Select, FormLabel, FormControlLabel, RadioGroup, Radio, Typography } from '@mui/material/';
 import FormControl from '@mui/material/FormControl';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { blue, grey, red } from '@mui/material/colors';
@@ -307,9 +307,10 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
                         setUploadOrSign(e.target.value)
                     }}
                 >
-                    <FormControlLabel value="sign" control={<Radio />} label="Digitally sign" />
+                    {Boolean(!formData.file_storage) && <FormControlLabel value="sign" control={<Radio />} label="Digitally sign" />}
                     <FormControlLabel value="upload" control={<Radio />} label="Upload signed form" />
                 </RadioGroup>
+                {Boolean(formData.file_storage) && <Typography sx={{color: 'warning.main'}}>Note: A PDF file was previosly uploaded. Digitally sign has been disabled.</Typography>}
             </FormControl>
         )
     }

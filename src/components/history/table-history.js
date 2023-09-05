@@ -15,8 +15,6 @@ import { changeHistoryIcons } from '../material-table/config'
 
 export default function TableHistory(props) {
     const [value, setValue] = React.useState(0);
-
-    console.log(props)
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };

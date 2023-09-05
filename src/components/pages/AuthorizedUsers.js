@@ -127,7 +127,12 @@ function AuthorizedUsers({ userToken }) {
                 //     return ({ isValid: false, helperText: 'Selection is required.' })
                 // }
                 // },
-                { title: 'User Name', field: 'registered_users_id', col_id: 2.0, render: rowData => <a value={rowData.registered_users_id} >{rowData.full_name}</a>,
+                { title: 'User Name', field: 'registered_users_id', col_id: 2.0, customFilterAndSearch: (term, rowData, column) => {
+                    if (rowData.full_name) {
+                      return rowData.full_name.toString()?.toUpperCase().includes(term.toUpperCase())
+                    }
+                    return false
+                }, render: rowData => <a value={rowData.registered_users_id} >{rowData.full_name}</a>,
                 editComponent: props => (
                     <Autocomplete
                         value={props.value ? find(names,function(o){ return o.registered_users_id === props.value}) : null}

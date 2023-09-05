@@ -178,7 +178,12 @@ function Employee({history, userToken}) {
 
 		}},
 		{ title: 'Title', field: 'title' },
-		{ title: 'Office Symbol', field: 'office_symbol', render: rowData => <a value={rowData.office_symbol}>{rowData.office_symbol_alias}</a>,
+		{ title: 'Office Symbol', field: 'office_symbol', customFilterAndSearch: (term, rowData, column) => {
+			if (rowData.office_symbol_alias) {
+			  return rowData.office_symbol_alias.toString()?.toUpperCase().includes(term.toUpperCase())
+			}
+			return false
+		  }, render: rowData => <a value={rowData.office_symbol}>{rowData.office_symbol_alias}</a>,
 		editComponent: props => (
 			<Autocomplete
 				value={props.value ? find(officesSymbol,function(os){ return os.office_symbol === props.value}) : null}
@@ -203,6 +208,7 @@ function Employee({history, userToken}) {
 		}
 		return(true)
 		}},
+		{ title: 'Email',field:'email',editable: 'never'},
 		{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
 		// { title: 'Office Location Name',field:'office_location_id',editable: 'onUpdate', render: rowData => <a value={rowData.office_location_id} >{rowData.office_location_name}</a>,
 		// editComponent: props => (
@@ -222,7 +228,12 @@ function Employee({history, userToken}) {
 		// 		renderInput={(params) => <TextField {...params} label="Office Location" margin="normal"/>}
 		// />),
 		// },
-		{ title: 'Office Location Name',field:'office_location_id',editable: 'onUpdate', render: rowData => <a value={rowData.office_location_id} >{rowData.office_location_name}</a>, //filterComponent: (props) => <CustomFilterTextField {...props} />,
+		{ title: 'Office Location Name',field:'office_location_id',editable: 'onUpdate', customFilterAndSearch: (term, rowData, column) => {
+			if (rowData.office_location_name) {
+			  return rowData.office_location_name.toString()?.toUpperCase().includes(term.toUpperCase())
+			}
+			return false
+		}, render: rowData => <a value={rowData.office_location_id} >{rowData.office_location_name}</a>, //filterComponent: (props) => <CustomFilterTextField {...props} />,
         editComponent: props => {
           console.log(props)
 

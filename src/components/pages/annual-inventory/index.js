@@ -180,7 +180,13 @@ function AnnualInventory({history, userToken}) {
               return true
           }
         },
-		{ title: 'Status', field: 'locked',type:'numeric', editable: 'onUpdate',
+		{ title: 'Status', field: 'locked',type:'numeric', editable: 'onUpdate',customFilterAndSearch: (term, rowData, column) => {
+			const option = rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED'
+			if (rowData.locked) {
+			  return option.toString()?.toUpperCase().includes(term.toUpperCase())
+			}
+			return false
+		},
 		render: rowData => <a value={rowData.locked} >{rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED'}</a>,
 		lookup:lockOptions
 		},
