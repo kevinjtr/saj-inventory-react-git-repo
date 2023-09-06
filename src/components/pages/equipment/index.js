@@ -654,7 +654,7 @@ function Equipment({history, location, match, userToken}) {
           
           if(props.action.name === "export"){
               return (<div style={{paddingLeft: 10}}>
-                <CustomExportButton {...ref?.current?.state}/>
+                <CustomExportButton {...{...ref?.current?.state, table: {name: 'equipment', viewType: switches[tab_idx].checkedView ? 'extended' : 'normal'}}}/>
               </div>)
           }
 
@@ -788,12 +788,12 @@ function Equipment({history, location, match, userToken}) {
     let columns = []
 
     const equipment_cols_config = [
-        { title: 'HRA', field: 'hra_num', type:'numeric', col_id:2.0, render: (rowData) => {
-            return <a value={rowData.hra_first_name}>{`${rowData.hra_num} -${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}` }</a>
+        { title: 'HRA', field: 'hra_num', type:'numeric', print_title: 'HRA Num', col_id:2.0, render: (rowData) => {
+            return `${rights.edit[tab_idx] && rowData.hra_num ? `${rowData.hra_num} -`: ''}${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}`
         },
         customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
-            const option = `${rowData.hra_num} -${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}`
+            const option = `${rights.edit[tab_idx] && rowData.hra_num ? `${rowData.hra_num} -`: ''}${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}`
             return option.toString()?.toUpperCase().includes(term?.toUpperCase())
           }
           return false
@@ -841,10 +841,10 @@ function Equipment({history, location, match, userToken}) {
             return true
         }
         },
-        // { title: 'HRA First', field: 'hra_first_name',
-        //  col_id:2.1,editable: 'never' },
-        // { title: 'HRA Last', field: 'hra_last_name',
-        //  col_id:2.2,editable: 'never' },
+        { title: 'HRA First', field: 'hra_first_name', hidden: true,
+         col_id:2.1,editable: 'never' },
+        { title: 'HRA Last', field: 'hra_last_name', hidden: true,
+         col_id:2.2,editable: 'never' },
         { title: 'Item Description', field: 'item_type', cellStyle: {
           minWidth: 200,
           maxWidth: 200
@@ -903,8 +903,8 @@ function Equipment({history, location, match, userToken}) {
           return ({ isValid: false, helperText: 'Serial Num is required.' })
         },
          col_id:5.5},
-         { title: 'Employee', field: 'employee_id', type:'numeric', render: (rowData) => {
-          return <a>{`${rowData.employee_first_name ? ` ${rowData.employee_first_name}`: ''}${rowData.employee_last_name ? ` ${rowData.employee_last_name}` : ''}` }</a>
+         { title: 'Employee', print_title: 'Employee ID', field: 'employee_id', type:'numeric', render: (rowData) => {
+          return `${rowData.employee_first_name ? ` ${rowData.employee_first_name}`: ''}${rowData.employee_last_name ? ` ${rowData.employee_last_name}` : ''}`
         },
         customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
@@ -937,19 +937,19 @@ function Equipment({history, location, match, userToken}) {
                   renderInput={(params) => <TextField {...params} helperText="Employee" variant="standard" />}
               />)
         },
-        // { title: 'Employee First', field: 'employee_first_name',
-        //  col_id:6.1 ,editable: 'never' },
-        // { title: 'Employee Last', field: 'employee_last_name',
-        //  col_id:6.2,editable: 'never'  },
+        { title: 'Employee First', field: 'employee_first_name', hidden: true,
+         col_id:6.1 ,editable: 'never' },
+        { title: 'Employee Last', field: 'employee_last_name', hidden: true,
+         col_id:6.2,editable: 'never'  },
         { title: 'Employee Office Location', field: 'employee_office_location_name',
          col_id:6.3,editable: 'never'  },
         {title: 'Status', field:'status',
          col_id:6.4,editable: 'no' },
         {title: 'Status Date', field:'status_date', type:'date', render: rowData => {
           if(rowData.status_date){
-            return <a>{moment(rowData.status_date).format("MM/DD/YY HH:mm:ss")}</a>
+            return moment(rowData.status_date).format("MM/DD/YY HH:mm:ss")
           }
-          return <a></a>
+          return ''
       },
        col_id:6.4,editable: 'no' },
     ]
@@ -1004,7 +1004,7 @@ function Equipment({history, location, match, userToken}) {
          col_id:10},
         {title:'Model',field:'model',
          col_id:11},
-        {title:'Condition',field:'condition',
+        {title:'Condition',field:'condition', render: rowData => rowData.condition_name, exportColumn: 'condition_name',
          col_id:12,
         editComponent: props => (
           <Autocomplete
@@ -1031,8 +1031,8 @@ function Equipment({history, location, match, userToken}) {
         }
     ]
 
-    if(editable) ext_equipment_cols_config.push({title:'Updated By',
-     col_id:13,field:'updated_by_full_name',editable:'never' })
+    // if(editable) ext_equipment_cols_config.push({title:'Updated By',
+    //  col_id:13,field:'updated_by_full_name',editable:'never' })
 
     for(const col_config of equipment_cols_config){
         if(col_config.hasOwnProperty('field') && col_config){
@@ -1102,7 +1102,7 @@ function Equipment({history, location, match, userToken}) {
           <MaterialTableSelect ref={ref3} columns={[...columns]} loading={loading[3]} equipmentArray={[...equipmentArray]}/>
         </TabPanel>
         <TabPanel value={tabs} index={4}>
-          <MaterialTableSelect ref={ref4} columns={[...columns]} loading={loading[4]} equipmentArray={[...equipmentArray]}/>
+          <MaterialTableSelect ref={ref4} columns={filter(columns,(col) => !['hra_num','hra_first_name','hra_last_name','employee_id','employee_first_name','employee_last_name','status','status_date','employee_office_location_name'].includes(col.field))} loading={loading[4]} equipmentArray={[...equipmentArray]}/>
         </TabPanel>
       </div>
     );

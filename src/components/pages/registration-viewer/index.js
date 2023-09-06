@@ -3,6 +3,7 @@ import '../../../img/style.css';
 // import api from '../axios/Api';
 import MaterialTable from '@material-table/core'
 import SaveIcon from '@mui/icons-material/Save'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {tableIcons} from '../../material-table/config'
 // import Typography from '@mui/material/Typography';
 import {Autocomplete} from '@mui/material';
@@ -50,8 +51,8 @@ function RegistrationViewer({userToken,user}) {
             return (
                 [
                     {
-                        icon: ()=> <SaveIcon />,
-                        tooltip:'Save User',
+                        icon: ()=> <CheckCircleIcon />,
+                        tooltip:'Approve User',
                         onClick: (event,rowData) => {
                             console.log(rowData)
                             setRegistrationRow(rowData)
@@ -133,7 +134,7 @@ function RegistrationViewer({userToken,user}) {
 
                 <div style={{ maxWidth: '100%'}}>
                     <MaterialTable
-                    style={{fontSize:'10px'}}
+                    //style={{fontSize:'10px'}}
                     icons={tableIcons}
                     columns={columns}
                     data={registrations}
@@ -148,7 +149,7 @@ function RegistrationViewer({userToken,user}) {
                         backgroundColor: "#969696",
                         color: "#FFF",
                         fontWeight: 'bold',
-                        fontSize:'10px'
+                        //fontSize:'10px'
                     }
                     
                     }}

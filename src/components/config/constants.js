@@ -311,14 +311,14 @@ export const registrationDropDownItems = {
     ],
     "userType": [
       {
-        "value": 2,
-        "alias": "hra",
-        "label": "HRA Employee"
-      },
-      {
         "value": 4,
         "alias": "employee",
         "label": "Regular Employee"
+      },
+      {
+        "value": 2,
+        "alias": "hra",
+        "label": "HRA Employee"
       }
     ],
     "officeLocation":[

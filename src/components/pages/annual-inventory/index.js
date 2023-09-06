@@ -187,7 +187,7 @@ function AnnualInventory({history, userToken}) {
 			}
 			return false
 		},
-		render: rowData => <a value={rowData.locked} >{rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED'}</a>,
+		render: rowData => rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED',
 		lookup:lockOptions
 		},
 		{ title: 'Fiscal Year', cellStyle: {

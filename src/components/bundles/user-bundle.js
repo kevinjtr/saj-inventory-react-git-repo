@@ -2,6 +2,7 @@ import api from '../../axios/Api';
 //import jwt_decode from "jwt-decode";
 //import { RepeatOneSharp } from '../../../node_modules/@mui/icons-material';
 //import useMediaQuery from '@mui/material/useMediaQuery';
+import toast from 'react-hot-toast';
 
 export default {
   name: "user",
@@ -122,6 +123,9 @@ export default {
           window.localStorage.setItem('district-office', '');
           window.localStorage.setItem('notifications', '');
 
+          toast.error(`Login Failed${response.data.message ? ` - ${response.data.message}` : ""}`,{
+            id: "login-failed"
+          })
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
@@ -151,6 +155,9 @@ export default {
           window.localStorage.setItem('district-office', '');
           window.localStorage.setItem('notifications', '');
 
+          toast.error('Login Failed - A server error occured.',{
+            id: "login-failed"
+          })
           dispatch({
             type: "LOGIN_FAILURE",
             payload: {
@@ -161,7 +168,7 @@ export default {
                 'x-access-token-expiration': '',
                 isLoggingIn: false,
                 loginFailure: true,
-                loginMessage:'a server error occured.',
+                loginMessage:'A server error occured.',
                 access: {},
                 district_office: ''
             }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Signup from './Signup'
 import "../../../components/styles/SignInStyles.css";
 import PersonIcon from '@mui/icons-material/Person';
-import { CircularProgress } from '@mui/material/';
+// import { CircularProgress } from '@mui/material/';
 import { connect } from 'redux-bundler-react';
 import { Grid, Paper, Avatar, TextField, Button, Typography, Link } from '@mui/material/'
 import Alert from '@mui/lab/Alert';
@@ -145,15 +145,15 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                   </StyledAppBar>
                 ) : null}
             <div className='signin-page-container' style={{display:'flex',justifyContent:'center'}}>
-                {userLoginFailure ? <div styles={{ width: '100%', marginTop: 2 }}>
+                {/* {userLoginFailure ? <div styles={{ width: '100%', marginTop: 2 }}>
                                         <Alert variant="outlined" severity="error">
                                             {`Login Failed${userLoginMessage ? ` - ${userLoginMessage}` : ""}`}
                                         </Alert>
-                                    </div> : null}
+                                    </div> : null} */}
                 {registrationResult && <RegistrationMessage registrationResult={registrationResult} />}
                 {/* <NiceSlideShow style={{position:'absolute',width:'25%'}}/> */}
                 <div className="signin-box">
-                    {loading && <div className="login-panel-disabled"><div className="login-panel-loading"><CircularProgress size={20} color={'white'} /> &nbsp;&nbsp; Please wait...</div></div>}
+                    {loading ? <div className="login-panel-disabled"><div className="login-panel-loading">&nbsp;&nbsp; Please wait...</div></div> : null}
    
                     <div className='signin-box-logo'><img src="usace-inventory.png" alt="image" style={{ height: "75px"}} /></div>
                     {selectedTab === 1 &&

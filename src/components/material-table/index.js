@@ -38,7 +38,7 @@ import { createTheme } from '@mui/material';
 
 const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, exportButton, columns, options, components, Action, Toolbar, actions, componentName, ...rest }, innref) => {
   const [showFilter, setShowFilter] = useState(false)
-  const ref = innref ? innref : React.createRef(innref) 
+  const ref = innref ? innref : React.createRef(MaterialTable) 
   let all_actions = [{ name: 'filter', position: 'toolbar' }]
 
   if (actions?.length > 0) {

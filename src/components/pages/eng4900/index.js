@@ -504,7 +504,7 @@ function Eng4900({ history, location, match, userToken }) {
             return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
           }
           return false
-        },editable: 'onUpdate', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+        },editable: 'onUpdate', type: 'numeric', render: rowData => FORM_STATUS[rowData.status],
         editComponent: ({ value, onChange, rowData }) => (
           <Select
             value={value}
@@ -616,7 +616,7 @@ function Eng4900({ history, location, match, userToken }) {
             return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
           }
           return false
-        }, field: 'status', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>,
+        }, field: 'status', type: 'numeric', render: rowData => FORM_STATUS[rowData.status],
         editComponent: ({ value, onChange, rowData }) => (
           <Select
             value={value}
@@ -805,7 +805,7 @@ function Eng4900({ history, location, match, userToken }) {
           return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
         }
         return false
-      }, field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a> },
+      }, field: 'status', editable: 'never', type: 'numeric', render: rowData => FORM_STATUS[rowData.status]},
       { title: 'Requested Action', field: "requested_action", editable: 'never' },
       { title: 'Form ID', field: 'form_id', editable: 'never' },
       { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
@@ -923,7 +923,7 @@ function Eng4900({ history, location, match, userToken }) {
             return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
           }
           return false
-        }, field: 'status', editable: 'never', type: 'numeric', render: rowData => <a value={rowData.status} >{FORM_STATUS[rowData.status]}</a>
+        }, field: 'status', editable: 'never', type: 'numeric', render: rowData => FORM_STATUS[rowData.status]
         , validate: (rowData) => {
           if (rowData.hasOwnProperty('status')) {
             if (rowData.status) {

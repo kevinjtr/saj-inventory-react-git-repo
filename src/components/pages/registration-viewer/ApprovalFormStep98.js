@@ -26,20 +26,20 @@ const ApprovalFormStep98 = (props) => {
     return(
         <div style={{display:'flex',flexDirection:'column',overflowX:'auto'}}>
         <div style={{display:'flex',justifyContent:'space-between',backgroundColor:bColor.c1}}>
-                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'0.75em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>
+                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'1.5em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>
                         Confirm Delete
                     </div>
                     <div className='assign-registration-close' style={{display:'flex',cursor:'pointer',padding:'0.25em'}} onClick={()=>setOpenPopup(false)}>
-                        <CloseIcon style={{color:'white',fontSize:'1em'}}/>
+                        <CloseIcon style={{color:'white',fontSize:'2.5em'}}/>
                     </div>
         </div>
         <div style={{display:'flex',flexDirection:'column',padding:'1em',backgroundColor:bColor.rgb245}}>
-            <div style={{width:'18em',display:'flex',flexDirection:'column',border:'1px solid rgb(225,225,225)',backgroundColor:bColor.rgb255,padding:'1em',borderRadius:'1em',boxShadow: '0px 4px 6px 0px rgba(0,0,0,0.2)'}}>
-                <div style={{textAlign:'center',textTransform:'uppercase',fontSize:'1.25em',fontWeight:'600',color:'#225dd4'}}>    
+            <div style={{width: 500,display:'flex',flexDirection:'column',border:'1px solid rgb(225,225,225)',backgroundColor:bColor.rgb255,padding:'1em',borderRadius:'1em',boxShadow: '0px 4px 6px 0px rgba(0,0,0,0.2)'}}>
+                <div style={{textAlign:'center',textTransform:'uppercase',fontSize:'2.5em',fontWeight:'600',color:'#225dd4'}}>    
                     Delete Registration
                 </div>
-                <div style={{fontSize:'1em',color:'gray',textAlign:'center',marginBottom:'1em'}}>record will be marked as deleted</div>
-                    <table style={{tableLayout:'fixed',width:'100%',backgroundColor:bColor.white,fontSize:'0.75em',textAlign:'left',borderCollapse:'collapse',borderTop:'0',whiteSpace:'nowrap'}}>
+                <div style={{fontSize:'1em',color:'gray',textAlign:'center',marginBottom:'1.5em'}}>record will be marked as deleted</div>
+                    <table style={{tableLayout:'fixed',width:'100%',backgroundColor:bColor.white,fontSize:'1.5em',textAlign:'left',borderCollapse:'collapse',borderTop:'0',whiteSpace:'nowrap'}}>
                         <tr style={{backgroundColor:bColor.rgb240}}>
                             <th style={{width:'7em'}}>First Name</th>
                             <td style={{display:'block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis'}}>
@@ -47,7 +47,7 @@ const ApprovalFormStep98 = (props) => {
                                     <div>
                                         {registrationRow.first_name}&nbsp;
                                     </div>
-                                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'0.85em'}}>
+                                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'1em'}}>
                                         (CAC:&nbsp;{registrationRow.first_name_cac})
                                     </div>
                                 </div>
@@ -60,7 +60,7 @@ const ApprovalFormStep98 = (props) => {
                                             <div>
                                                 {registrationRow.last_name}&nbsp;
                                             </div>
-                                            <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'0.85em'}}>
+                                            <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'1em'}}>
                                                 (CAC:&nbsp;{registrationRow.last_name_cac})
                                             </div>
                                         </div>
@@ -109,10 +109,10 @@ const ApprovalFormStep98 = (props) => {
                             </table>
                         </div>
             <div style={{display:'flex',justifyContent:'space-between',marginTop:'1em'}}>
-                <Button style={{marginRight:'0.5em'}} fullWidth size='small' variant='contained' disabled={loading} onClick={()=>setOpenPopup(false)}>
+                <Button style={{marginRight:'0.5em'}} fullWidth  variant='contained' disabled={loading} onClick={()=>setOpenPopup(false)}>
                     Cancel
                 </Button>
-                <Button style={{marginLeft:'0.5em'}} fullWidth size='small' variant='contained' color='primary' disabled={loading} onClick={()=>{setLoading(true);handleTableDelete(registrationRow.id)}}>
+                <Button style={{marginLeft:'0.5em'}} fullWidth  variant='contained' color='primary' disabled={loading} onClick={()=>{setLoading(true);handleTableDelete(registrationRow.id)}}>
                     Confirm
                 </Button>
             </div>

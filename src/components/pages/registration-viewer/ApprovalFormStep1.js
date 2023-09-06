@@ -122,7 +122,7 @@ const ApprovalFormStep1 = ({user,matchSelection,setMatchSelection,selection,setS
                     newRegisteredUserRow.edipi = data.data[0].edipi
                     setRegisteredUserRow(newRegisteredUserRow)
                 }
-            }).error(() => {
+            }).catch(() => {
                 //do nothing
             }).then(() => {
                 if(!edipiMatch){

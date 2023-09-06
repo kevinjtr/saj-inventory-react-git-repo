@@ -20,7 +20,8 @@ function Employee({history, userToken}) {
 	const [employees, setEmployees] = React.useState([]);
 	const [rights, setRights] = React.useState({edit: false, add: false})
 	const [districtOfficeLocations, setDistrictOfficeLocations] = React.useState({});
-
+	const [divisions, setDivisions] = React.useState([]);
+	const [districts, setDistricts] = React.useState([]);
 	console.log(districtOfficeLocations)
 	//Event Handlers.
 	const handleTableUpdate = async (rowData) => {
@@ -179,11 +180,11 @@ function Employee({history, userToken}) {
 		}},
 		{ title: 'Title', field: 'title' },
 		{ title: 'Office Symbol', field: 'office_symbol', customFilterAndSearch: (term, rowData, column) => {
-			if (rowData.office_symbol_alias) {
+			if (rowData.office_symbol_alias && rowData.office_symbol) {
 			  return rowData.office_symbol_alias.toString()?.toUpperCase().includes(term.toUpperCase())
 			}
 			return false
-		  }, render: rowData => <a value={rowData.office_symbol}>{rowData.office_symbol_alias}</a>,
+		  }, render: rowData => rowData.office_symbol_alias, exportColumn: 'office_symbol_alias',
 		editComponent: props => (
 			<Autocomplete
 				value={props.value ? find(officesSymbol,function(os){ return os.office_symbol === props.value}) : null}
@@ -209,6 +210,78 @@ function Employee({history, userToken}) {
 		return(true)
 		}},
 		{ title: 'Email',field:'email',editable: 'never'},
+		{ title: 'Division',field:'division',editable: 'onAdd', exportColumn: 'division_symbol', render: rowData => rowData.division_symbol, editComponent: props => { 
+			return (
+			  <Autocomplete
+					value={props.value ? find(divisions,function(d){ return d.id  === props.value}) : null}
+					onChange={(e, nv) => {
+					  if(nv?.id){
+						props.onChange(nv.id) 
+						return;
+					  }
+					  props.onChange(nv)
+					}}
+					
+					key={`combo-box-${uuid()}`}
+					options={divisions}
+					getOptionLabel={(option) => option.symbol}
+					renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.symbol}</li>}
+					style={{ width: 250 }}
+					renderInput={(params) => <TextField {...params} error={!props.value} helperText={props.value ? "Division" : "Division is required"} variant="standard" />}
+			  />)
+		  }, validate: (rowData) => {		
+			if(rowData.hasOwnProperty('division')){
+				if(rowData.division) {
+					if(rowData.hasOwnProperty('tableData')){
+						if(rowData.tableData.editing === "update"){
+							return true
+						}
+					}
+
+					return true
+				}
+			}
+			
+			return ({ isValid: false, helperText: 'Division is required.' })
+
+			},
+		},
+		{ title: 'District',field:'district',editable: 'onAdd', exportColumn: 'district_symbol', render: rowData => rowData.district_symbol, editComponent: props => { 
+			return (
+			  <Autocomplete
+					value={props.value ? find(districts,function(d){ return d.id  === props.value}) : null}
+					onChange={(e, nv) => {
+					  if(nv?.id){
+						props.onChange(nv.id) 
+						return;
+					  }
+					  props.onChange(nv)
+					}}
+					
+					key={`combo-box-${uuid()}`}
+					options={districts}
+					getOptionLabel={(option) => option.symbol}
+					renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.symbol}</li>}
+					style={{ width: 250 }}
+					renderInput={(params) => <TextField {...params} error={!props.value} helperText={props.value ? "District" : "District is required"} variant="standard" />}
+			  />)
+		  }, validate: (rowData) => {		
+			if(rowData.hasOwnProperty('district')){
+				if(rowData.district) {
+					if(rowData.hasOwnProperty('tableData')){
+						if(rowData.tableData.editing === "update"){
+							return true
+						}
+					}
+
+					return true
+				}
+			}
+			
+			return ({ isValid: false, helperText: 'District is required.' })
+
+			},
+		},
 		{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
 		// { title: 'Office Location Name',field:'office_location_id',editable: 'onUpdate', render: rowData => <a value={rowData.office_location_id} >{rowData.office_location_name}</a>,
 		// editComponent: props => (
@@ -233,8 +306,8 @@ function Employee({history, userToken}) {
 			  return rowData.office_location_name.toString()?.toUpperCase().includes(term.toUpperCase())
 			}
 			return false
-		}, render: rowData => <a value={rowData.office_location_id} >{rowData.office_location_name}</a>, //filterComponent: (props) => <CustomFilterTextField {...props} />,
-        editComponent: props => {
+		}, render: rowData => rowData.office_location_name, //filterComponent: (props) => <CustomFilterTextField {...props} />,
+        exportColumn: 'office_location_name', editComponent: props => {
           console.log(props)
 
           return (
@@ -249,25 +322,25 @@ function Employee({history, userToken}) {
                   }}
                   
                   key={`combo-box-${uuid()}`}
-                  options={districtOfficeLocations[props.rowData.district]}
+                  options={props.rowData.district ? districtOfficeLocations[props.rowData.district] : []}
                   getOptionLabel={(option) => option.office_location_name}
 				  renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.office_location_name}</li>}
                   style={{ width: 250 }}
                   renderInput={(params) => <TextField {...params} helperText="Office Location Name" variant="standard" />}
             />)
         },
-          validate: (rowData) => {
-              if(rowData.hasOwnProperty('office_location_id')){
-                  if(!isNaN(rowData.office_location_id)) {
-                    if(rowData.office_location_id){
-                      const idx = findIndex(districtOfficeLocations[rowData?.district],function(e){ return (e.office_location_id && (e.office_location_id == rowData.office_location_id)); })
-                      return idx != -1
-                    }
-                  }
-              }
+        //   validate: (rowData) => {
+        //       if(rowData.hasOwnProperty('office_location_id')){
+        //           if(!isNaN(rowData.office_location_id)) {
+        //             if(rowData.office_location_id){
+        //               const idx = findIndex(districtOfficeLocations[rowData.district],function(e){ return (e.office_location_id && (e.office_location_id == rowData.office_location_id)); })
+        //               return idx != -1
+        //             }
+        //           }
+        //       }
     
-              return true
-          }
+        //       return true
+        //   }
         },
 		// editComponent: x => {
 		// 	let idx = -1
@@ -302,7 +375,7 @@ function Employee({history, userToken}) {
 		// }}
 	]
 
-	if(rights.edit) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
+	//if(rights.edit) employee_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
 	// for(const col_config of employee_cols_config){
 	// 	if(col_config.hasOwnProperty('field') && col_config){
@@ -460,8 +533,15 @@ function Employee({history, userToken}) {
 			setDistrictOfficeLocations(data.district_office_locations)
 		}
 
-		if(Object.keys(data.office_symbol).length > 0){
-			console.log('office_symbol_update')
+		if(data.divisions?.length){
+			setDivisions(data.divisions)
+		}
+
+		if(data.districts?.length){
+			setDistricts(data.districts)
+		}
+
+		if(data.office_symbol?.length){
 			setOfficesSymbol(data.office_symbol)
 		}		
 

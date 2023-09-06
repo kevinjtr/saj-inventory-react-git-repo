@@ -6,9 +6,9 @@ let cols_config = {
     equipment: [//equipment
         { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date',render: rowData => {
             if(rowData.updated_date){
-              return <a>{moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")}</a>
+              return moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")
             }
-            return <a></a>
+            return ''
         }, defaultSort: 'desc',},
         { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'Status', field: 'status', editable: 'never', sorting: false},
@@ -34,9 +34,9 @@ let cols_config = {
     employee: [//employee
         { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date', render: rowData => {
             if(rowData.updated_date){
-              return <a>{moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")}</a>
+              return moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")
             }
-            return <a></a>
+            return ''
         }, defaultSort: 'desc'},
         { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'ID', field: 'id', editable: 'never', sorting: false },
@@ -56,9 +56,9 @@ let cols_config = {
     hra: [//hra
         { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date', render: rowData => {
             if(rowData.updated_date){
-              return <a>{moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")}</a>
+              return moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")
             }
-            return <a></a>
+            return ''
         },defaultSort: 'desc' },
         { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'HRA Number', field: 'hra_num', editable: 'never', sorting: false, type: 'numeric' },
@@ -83,9 +83,9 @@ let cols_config = {
         //{ title: 'Item No.', field: 'hra_num', type:'numeric', editable:'never'},
         { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date',render: rowData => {
             if(rowData.updated_date){
-              return <a>{moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")}</a>
+              return moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")
             }
-            return <a></a>
+            return ''
         }, defaultSort: 'desc',},
         { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'Requested Action', field: 'requested_action', editable: 'never', sorting: false, },

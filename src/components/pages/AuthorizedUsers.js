@@ -132,7 +132,7 @@ function AuthorizedUsers({ userToken }) {
                       return rowData.full_name.toString()?.toUpperCase().includes(term.toUpperCase())
                     }
                     return false
-                }, render: rowData => <a value={rowData.registered_users_id} >{rowData.full_name}</a>,
+                }, render: rowData => rowData.full_name,
                 editComponent: props => (
                     <Autocomplete
                         value={props.value ? find(names,function(o){ return o.registered_users_id === props.value}) : null}

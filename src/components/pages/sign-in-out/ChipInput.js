@@ -32,10 +32,9 @@ export default function ChipInput({chips, setChips}) {
 
     // Add Chip
     function handleChipAdd () {
-        console.log(inputVal)
-        if(inputVal.length === 3){
+        if(Number(inputVal) && isFinite(inputVal)){
             const chipAdd = [...chips]
-            chipAdd.push(inputVal)
+            chipAdd.push(inputVal.toString().padStart(3,0))
             setChips(chipAdd)
             setInputVal('')
         }

@@ -223,7 +223,7 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
 
 	const divisionDropDownItems = registrationDropDownItems.division.map((c, i)=>{
 		return( 
-            <option id={c.symbol} key={c.symbol} value={c.value} name={c.label} title={c.label} > {c.label}</option> 
+            <option id={c.symbol} key={c.symbol} value={c.value} name={c.label} title={c.label} > {`${c.label} - ${c.symbol}`}</option> 
         )})
 
 	const officeSymbolDropDownItems = registrationDropDownItems.officeSymbol.map((c, i)=>{
@@ -298,10 +298,11 @@ const Signup = ({hideNewAccountForm, handleLoading,setSelectedTab}) => {
         if(idx !== -1){
             const {symbol} =registrationDropDownItems.division[idx]
             const ddItems = registrationDropDownItems.district[symbol].map((c, i)=>{
+                console.log(c)
                 return(
                 
                 <option value={c.symbol} name={c.symbol} >
-                {c.label}
+                {`${c.label} - ${c.symbol}`}
                 </option>
             
                 )

@@ -56,7 +56,7 @@ const UserDropDown = ({userIsLoggedIn, showUserDropdown, setShowUserDropdown, us
 						{userDarkMode ? 
 						<Brightness7Icon style={{fontSize:'1rem',color: userDarkMode ? '#fff' : 'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/> :
 						<Brightness4Icon style={{fontSize:'1rem',color: userDarkMode ? '#fff' : 'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>}
-						<a style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)', fontSize:'.75rem'}}>{userDarkMode ? "Enable Light Mode" : "Enable Dark Mode"}</a>
+						<p style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)', fontSize:'.75rem'}}>{userDarkMode ? "Enable Light Mode" : "Enable Dark Mode"}</p>
 					</Button>
 				</Box>
 				<Box sx={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px',paddingTop:'10px',paddingBottom:'10px'}}>
@@ -65,7 +65,7 @@ const UserDropDown = ({userIsLoggedIn, showUserDropdown, setShowUserDropdown, us
 							outline: 'none',
 							}}} onClick={()=>setOpenNotifications(true)}>
 						<NotificationsIcon style={{fontSize:'1rem',color: userDarkMode ? '#fff' : 'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>
-						<a style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)', fontSize:'.75rem'}}>Email Notifications</a>
+						<p style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)', fontSize:'.75rem'}}>Email Notifications</p>
 					</Button>
 				</Box>
 				<Box sx={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px',paddingTop:'10px',paddingBottom:'10px'}}>
@@ -74,7 +74,7 @@ const UserDropDown = ({userIsLoggedIn, showUserDropdown, setShowUserDropdown, us
 							outline: 'none',
 							}}} onClick={()=>setOpenProblem(true)}>
 						<ErrorIcon style={{fontSize:'1rem',color: userDarkMode ? '#fff' : 'rgb(125,125,125)',marginBottom:'3px',marginRight:'5px'}}/>
-						<a style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)', fontSize:'.75rem'}}>Submit Feedback</a>
+						<p style={{color: userDarkMode ? '#fff' : 'rgb(125,125,125)', fontSize:'.75rem'}}>Submit Feedback</p>
 					</Button>
 				</Box>
 				<Box sx={{backgroundColor:'rgba(0,0,0,0)',border:'0px',borderTop:'1px solid rgb(230,230,230)',width:'100%',fontSize:'0.75rem',color:'rgb(125,125,125)',padding:'5px',outline:'0px',paddingTop:'10px',paddingBottom:'10px',textAlign:'center'}}>

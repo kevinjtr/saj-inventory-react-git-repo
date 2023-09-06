@@ -30,9 +30,9 @@ export default function TableHistory(props) {
                             columns={[
                                 { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date',render: rowData => {
                                     if(rowData.updated_date){
-                                      return <a>{moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")}</a>
+                                      return moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")
                                     }
-                                    return <a></a>
+                                    return ''
                                 }, defaultSort: 'desc',},
                                 { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
                                 { title: 'Old Value', field: 'oldValue', editable: 'never', sorting: false, type: 'date' },

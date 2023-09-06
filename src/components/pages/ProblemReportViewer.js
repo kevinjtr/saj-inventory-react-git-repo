@@ -52,9 +52,9 @@ function ProblemReportViewer({userToken}) {
                 { title: 'Date Reported', field: 'date_reported', type:'date', col_id:2.0, editable: 'never'},
                 { title: 'Problem', field: 'message',col_id:2.1,editable: 'never' },
                 { title: 'Employee', field: 'full_name',col_id:2.2,editable: 'never' },
-                { title: 'Resolved', field: 'resolved',col_id:4, editable:"onUpdate", render: rowData => <a value={rowData.resolved} >{rowData.resolved === 'Yes' ? 'Yes' : 'No'}</a>,
+                { title: 'Resolved', field: 'resolved',col_id:4, editable:"onUpdate", render: rowData => rowData.resolved === 'Yes' ? 'Yes' : 'No',
                 lookup:Resolved_Deleted_Options  },
-                { title: 'Deleted', field: 'deleted',col_id:5, editable:"onUpdate",  render: rowData => <a value={rowData.deleted} >{rowData.deleted === 'Yes' ? 'Yes' : 'No'}</a>,
+                { title: 'Deleted', field: 'deleted',col_id:5, editable:"onUpdate",  render: rowData => rowData.deleted === 'Yes' ? 'Yes' : 'No',
                 lookup:Resolved_Deleted_Options  }
             ]
     

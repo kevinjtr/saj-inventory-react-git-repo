@@ -187,7 +187,7 @@ function Hra({ history, userToken }) {
 		{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'}
 	]
 
-	if(editable) hras_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
+	//if(editable) hras_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
 	return(
 		<div style={{ maxWidth: '100%' }}>

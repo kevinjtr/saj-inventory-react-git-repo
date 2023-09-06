@@ -4,9 +4,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Fade from '@mui/material/Fade';
 import SaveAlt from '@mui/icons-material/SaveAlt';
-import { downloadExcel, downloadPdf } from '../tools/tools'
+import { downloadExcel, downloadPdf, downloadEquipmentPdf } from '../tools/tools'
 
-export default function CustomExportButton({columns, data}) {
+export default function CustomExportButton({columns, data, table}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -15,8 +15,9 @@ export default function CustomExportButton({columns, data}) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  console.log(columns, data, table)
   return (
+    
     <div>
       <Button
         id="fade-button"
@@ -41,11 +42,16 @@ export default function CustomExportButton({columns, data}) {
         TransitionComponent={Fade}
       >
         <MenuItem onClick={() => {
+          if(table?.name === 'equipment'){
+            downloadEquipmentPdf([...columns], [...data],table.name,table.viewType)
+          }else{
             downloadPdf([...columns], [...data])
-            handleClose()
+          }
+
+          handleClose()
         }}>Export to PDF</MenuItem>
         <MenuItem onClick={() => {
-            downloadExcel([...data], "report", ["update_status"])
+            downloadExcel([...columns],[...data], "report", ["update_status"])
             handleClose()
         }}>Export to Excel</MenuItem>
       </Menu>
