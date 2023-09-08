@@ -101,9 +101,8 @@ export const downloadExcel = (columns, arrayOfObjects, name="exported_doc", igno
     }
 }
 
-export const downloadEquipmentPdf=(columns, equipment_array, viewType)=>{
-    
-  //console.log(equipment_array)
+export const downloadEquipmentPdf=(columns, equipment_array, table={})=>{
+    const { viewType } = table
     /* Create new jsPDF() object */
     const doc = new jsPDF({orientation:"landscape"})
     //Title can go here
@@ -217,28 +216,27 @@ export const downloadEquipmentPdf=(columns, equipment_array, viewType)=>{
 
         /* Output .pdf file */
         doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')  
-        
+        return;
     }
-    else if (viewType === 'normal'){
-        /* Generate autoTable with custom column widths */
-        doc.autoTable({
-            columns:columns.map(col=>{
-              console.log(col)
-              if(col.print_title){
-                return {...col, title: col.print_title, dataKey:col.field}
-              }
-              return {...col,dataKey:col.field}
-            }
-              
-              ),
-            body:equipment_array,
-            styles: {fontSize: 9}
-        }
-        )
 
-        /* Output .pdf file */
-        doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')
+    /* Generate autoTable with custom column widths */
+    doc.autoTable({
+        columns:columns.map(col=>{
+          console.log(col)
+          if(col.print_title){
+            return {...col, title: col.print_title, dataKey:col.field}
+          }
+          return {...col,dataKey:col.field}
+        }
+          
+          ),
+        body:equipment_array,
+        styles: {fontSize: 9}
     }
+    )
+
+    /* Output .pdf file */
+    doc.save('EquipmentReport' + generateReportDate('filename') + '.pdf')
 }
 
 export const downloadPdf = (columns, dataArray, viewType) => {

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -16,6 +16,13 @@ export default function CustomExportButton({columns, data, table}) {
     setAnchorEl(null);
   };
   console.log(columns, data, table)
+  useEffect(() => {
+    const preventScrolling = e => e.preventDefault()
+  
+    window.addEventListener('scroll', preventScrolling);
+    return () => window.removeEventListener('scroll', preventScrolling);
+  }, []);
+
   return (
     
     <div>
@@ -36,14 +43,16 @@ export default function CustomExportButton({columns, data, table}) {
         MenuListProps={{
           'aria-labelledby': 'fade-button',
         }}
+        disableScrollLock
         anchorEl={anchorEl}
         open={open}
+        sx={{position: 'absolute !important'}}
         onClose={handleClose}
         TransitionComponent={Fade}
       >
         <MenuItem onClick={() => {
           if(table?.name === 'equipment'){
-            downloadEquipmentPdf([...columns], [...data],table.name,table.viewType)
+            downloadEquipmentPdf([...columns], [...data],table)
           }else{
             downloadPdf([...columns], [...data])
           }

@@ -1,6 +1,6 @@
 {
   "name": "inventories",
-  "version": "0.9.8",
+  "version": "0.9.8.1",
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "^1.3.13",

@@ -40,7 +40,7 @@ function ViewAnnualInventory({match, userToken}) {
                 { title: 'Employee Holder', field: 'employee_full_name',editable: 'never' }
             ]
 
-            if(editable) cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
+            //if(editable) cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
             // for(const col_config of cols_config){
             //     if(col_config.hasOwnProperty('field') && col_config){

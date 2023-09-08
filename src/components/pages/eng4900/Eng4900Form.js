@@ -575,10 +575,11 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 }}
                 key={`combo-box-${uuid()}`}
                 options={equipments}
+                getOptionDisabled={(option) => selectedForm.equipment_group.map(x => x.bar_tag_num)?.includes(option.bar_tag_num)}
                 getOptionLabel={(option) => option.bar_tag_num + ' - ' + option.item_type}
                 renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.bar_tag_num + ' - ' + option.item_type}</li>}
                 style={{ width: 250 }}
-                renderInput={(params) => <TextField {...params} label="Equipments"/>}
+                renderInput={(params) => <TextField {...params} variant={"standard"} helperText="Equipments"/>}
             />)
       },
       },
@@ -612,22 +613,22 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
         }}
         title= { selectedForm.equipment_group.length >= 5 ? "Note: ENG4900 has a limit of 5 equipments." : ""}
         {...(editEnabled && {editable:{
-          onBulkUpdate: (changes) => {
-          //await handleTableUpdate({changes:changes})
-            new Promise((resolve, reject) => {
+          // onBulkUpdate: (changes) => {
+          // //await handleTableUpdate({changes:changes})
+          //   new Promise((resolve, reject) => {
             
-              setTimeout(() => {
-                //setHras([...hras, newData]);
-                //console.log('bulk update')
+          //     setTimeout(() => {
+          //       //setHras([...hras, newData]);
+          //       //console.log('bulk update')
                 
-                //resetHras()
-                resolve();
-              }, 1000);
-            })
-          },
+          //       //resetHras()
+          //       resolve();
+          //     }, 1000);
+          //   })
+          // },
           //onRowAddCancelled: rowData => console.log('Row adding cancelled'),
           //onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
-          onRowAdd: selectedForm.equipment_group.length < 5 ? newData =>
+          onRowAdd: newData =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
               //const equipments_losing_hra = selectedForm.hra.losing.hra_num && Object.keys(equipments) > 0 ? equipments[selectedForm.hra.losing.hra_num] : []
@@ -635,11 +636,13 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 
               if(idx != -1 && selectedForm.equipment_group.length < 5){
                 setSelectedForm({...selectedForm,equipment_group:[...selectedForm.equipment_group, equipments[idx]]});
+                resolve();
+                return
               }
 
-              resolve();
+              reject();             
             }, 1000)
-          }) : undefined,
+          }),
         onRowUpdate: (newData, oldData) =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -654,11 +657,16 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
           onRowDelete: (oldData) => new Promise((resolve, reject) => {
               setTimeout(() => {
                 const dataDelete = [...selectedForm.equipment_group];
-                const index = oldData.tableData.id;
-                dataDelete.splice(index, 1);
-                setSelectedForm({...selectedForm,equipment_group:[...dataDelete]});
+                const index = findIndex(dataDelete, (data) => data.bar_tag_num === oldData.bar_tag_num)
 
-                resolve();
+                if(index != -1){
+                  dataDelete.splice(index, 1);
+                  setSelectedForm({...selectedForm,equipment_group:[...dataDelete]});
+                  resolve();
+                  return;
+                }
+                
+                reject();
               }, 1000);
             }),
         }})}
@@ -728,14 +736,14 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
       }},
 			{title:'Manufacturer',field:'manufacturer',col_id:10 },
 			{title:'Model',field:'model',col_id:11 },
-			{title:'Condition',field:'condition',col_id:12, 
+			{title:'Condition',field:'condition',col_id:12, render: rowData => find(condition,(c) => c.id === rowData.condition)?.name,
       editComponent: props => {
         return (
           <Autocomplete
-                value={props.value ? find(condition,function(c){ return c.id === props.value.id}) : null}
+                value={props.value ? find(condition,function(c){ return c.id === props.value}) : null}
                 onChange={(e, nv) => {
-                  if(nv?.condition){
-                    props.onChange(nv.condition) 
+                  if(nv?.id){
+                    props.onChange(nv.id) 
                     return;
                   }
                   props.onChange(nv)
@@ -745,7 +753,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 getOptionLabel={(option) => option.id + ' - ' + option.name}
                 renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + option.name}</li>}
                 style={{ width: 250 }}
-                renderInput={(params) => <TextField {...params} label="Condition"/>}
+                renderInput={(params) => <TextField {...params} variant={"standard"} helperText="Condition"/>}
             />)
       },
 			}
@@ -839,16 +847,22 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 					// 	}, 1000);
 					// }))
 					// },
-          onRowAdd: selectedForm.equipment_group.length < 5 ? newData =>
+          onRowAdd: newData =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
               if(selectedForm.equipment_group.length < 5){
-                setSelectedForm({...selectedForm, equipment_group:[...selectedForm.equipment_group, newData]});
+                const idx = findIndex(selectedForm.equipment_group,function(e){ return e.bar_tag_num === newData.bar_tag_num})
+
+                if(idx === -1 && selectedForm.equipment_group.length < 5){
+                  setSelectedForm({...selectedForm, equipment_group:[...selectedForm.equipment_group, newData]});
+                  resolve();
+                  return;
+                }
               }
               
-              resolve();
+              reject();
             }, 1000)
-          }): undefined,
+          }),
           onRowUpdate: (newData, oldData) =>
           new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -861,14 +875,19 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
             }, 1000)
           }),
           onRowDelete: (oldData) => new Promise((resolve, reject) => {
-              setTimeout(() => {
-                const dataDelete = [...selectedForm.equipment_group];
-                const index = oldData.tableData.id;
+            setTimeout(() => {
+              const dataDelete = [...selectedForm.equipment_group];
+              const index = findIndex(dataDelete, (data) => data.bar_tag_num === oldData.bar_tag_num)
+
+              if(index != -1){
                 dataDelete.splice(index, 1);
                 setSelectedForm({...selectedForm,equipment_group:[...dataDelete]});
-
                 resolve();
-              }, 1000);
+                return;
+              }
+              
+              reject();
+            }, 1000);
           }),
 					// onRowUpdate: async (newData, oldData) => {
 					// let result = await handleUpdate({changes:{'0':{newData:newData, oldData:oldData}}})
@@ -1005,7 +1024,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
           }}>
           
           <div >
-          <StyledDialogTitle disableTypography>
+          <StyledDialogTitle>
             <IconButton onClick={()=>resetCreate4900Data()}>
                 <CloseIcon />
             </IconButton>

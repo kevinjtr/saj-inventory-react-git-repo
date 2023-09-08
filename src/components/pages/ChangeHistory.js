@@ -118,9 +118,13 @@ function ChangeHistory({history, userToken}) {
 					{ title: 'Office Symbol ID', field: 'office_symbol',type:'numeric', editable: 'never'},
 					{ title: 'Office Symbol Alias',field:'office_symbol_alias',editable: 'never'},
 					{ title: 'Work Phone', field: 'work_phone',type:'numeric', editable: 'never'},
+					{ title: 'Email',field:'email',editable: 'never',  editable: 'never'},
+					{ title: 'Division',field:'division',editable: 'onAdd', exportColumn: 'division_symbol',  editable: 'never'},
+					{ title: 'District',field:'district',editable: 'onAdd', exportColumn: 'district_symbol',  editable: 'never'},
 					{ title: 'Equipment Quantity',field:'employee_equipment_count',editable: 'never'},
 					{ title: 'Deleted', field: 'deleted', editable: 'never', type:'boolean'},
-					{title:'Updated By',field:'updated_by_full_name',editable:'never' }
+					{ title: 'Office Location Name',field:'office_location_id',editable: 'never'},
+					{ title:'Updated By',field:'updated_by_full_name',editable:'never' }
 				],
 				2: [//hra
 					{ title: 'Updated Date', field: 'updated_date', editable: 'never', type:'date'},

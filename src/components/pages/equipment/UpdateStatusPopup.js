@@ -99,7 +99,7 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
               }
             }
             setSubmitButton(prev => ({...prev, send: false, active: false}))
-            setEquipments(equipments_copy)
+            //setEquipments(equipments_copy)
             toast.success('Action was completed')
             setOpenPopup(false)
           }        

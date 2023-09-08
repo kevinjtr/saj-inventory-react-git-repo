@@ -106,6 +106,7 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
 
     //constant declarations
 
+    console.log(formData)
     //hooks declaration.
     const [modal, setModal] = React.useState({
         reset: false,
@@ -140,11 +141,11 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
     const formUpload = debounce(async () => {
 
         if (files.length != 0) {
-            var formData = new FormData();
-            formData.append('file', files[0]);
+            let formDataUpload = new FormData();
+            formDataUpload.append('file', files[0]);
             const { form_id } = formData
 
-            await api.post(`eng4900/upload/${form_id}`, formData, {
+            await api.post(`eng4900/upload/${form_id}`, formDataUpload, {
                 headers: { auth: userToken, changes: JSON.stringify({ status: modal.newStatus }) },
                 // onUploadProgress: (ProgressEvent) => {
                 //     let progress = Math.round(
@@ -158,7 +159,7 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
 
                     if (error) {
                         toast.error('Could not complete action')
-                        setUploadButton({ ...uploadButton, send: false })
+                        setUploadButton({ ...uploadButton, send: false, active: true })
                     } else {
                         let eng4900s_copy = { ...eng4900s }
 
@@ -168,13 +169,15 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
 
                         setEng4900s(eng4900s_copy)
                         toast.success('Action was completed')
+                        setUploadButton({ ...uploadButton, send: false, active: false })
                         setOpenModal(false)
+                        resetModalData()
                     }
                 })
                 .catch(function (error) {
                     console.log(error)
                     toast.error('Could not complete action')
-                    setUploadButton({ ...uploadButton, send: false })
+                    setUploadButton({ ...uploadButton, send: false, active: true })
                 });
         }
 
@@ -204,7 +207,9 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
 
                 setEng4900s(eng4900s_copy)
                 toast.success('Action was completed')
+                setSubmitButton({ ...submitButton, send: false, active: false })
                 setOpenModal(false)
+                resetModalData()
             }
 
         }).catch(function (error) {
@@ -236,7 +241,10 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
 
                 setEng4900s(eng4900s_copy)
                 toast.success('Action was completed')
+                setSignButton({ ...signButton, send: false, active: false })
+                setUploadOrSign(null)
                 setOpenModal(false)
+                resetModalData()
             }
 
         }).catch(function (error) {
@@ -270,6 +278,22 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
     }
 
     const resetModalData = () => {
+
+        setSubmitButton({
+            active: false,
+            send: false,
+        });
+        setUploadButton({
+            active: false,
+            send: false,
+        });
+    
+        setSignButton({
+            active: false,
+            send: false,
+        });
+        setUploadOrSign(null)
+        setFiles([])
         setOpenModal(false)
         setModal({
             ...modal,
@@ -295,7 +319,7 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
 
     const SignOrUpload = () => {
         return (
-            <FormControl>
+            <FormControl disabled={signButton.send || uploadButton.send}>
                 <FormLabel id="demo-row-radio-buttons-group-label">Choose signature:</FormLabel>
                 <RadioGroup
                     row
@@ -307,10 +331,10 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
                         setUploadOrSign(e.target.value)
                     }}
                 >
-                    {Boolean(!formData.file_storage) && <FormControlLabel value="sign" control={<Radio />} label="Digitally sign" />}
+                    {(Boolean(!formData.file_storage) && Boolean(formData.can_digitally_sign)) && <FormControlLabel value="sign" control={<Radio />} label="Digitally sign" />}
                     <FormControlLabel value="upload" control={<Radio />} label="Upload signed form" />
                 </RadioGroup>
-                {Boolean(formData.file_storage) && <Typography sx={{color: 'warning.main'}}>Note: A PDF file was previosly uploaded. Digitally sign has been disabled.</Typography>}
+                {(Boolean(formData.file_storage) || !formData.can_digitally_sign) && <Typography sx={{color: 'warning.main', pb: 1}}>Note: {Boolean(formData.file_storage) && 'A PDF file was previosly uploaded.' }Digitally sign has been disabled.</Typography>}
             </FormControl>
         )
     }
@@ -412,7 +436,7 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
     return (
         <StyledDialog open={openModal} fullWidth>
             <div>
-                <StyledDialogTitle disableTypography>
+                <StyledDialogTitle>
                     <div style={{ position: 'absolute', left: '15px', paddingTop: '15px' }}>
                         <h5>SIGN ENG 4900{formData ? ' - ' + formData.form_id : null}</h5>
                     </div>
@@ -426,7 +450,7 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
 
                 {!modal.uploadDone ? (
                     <div style={{ textAlign: 'center' }}>
-                        <FormControl style={{ paddingBottom: 20, width: '50%', justifyContent: 'center' }}>
+                        <FormControl disabled={signButton.send || uploadButton.send || submitButton.send} style={{ paddingBottom: 20, width: '50%', justifyContent: 'center' }}>
                             <InputLabel id="demo-simple-select-label">Status</InputLabel>
                             <Select
                                 label="Select"

@@ -240,6 +240,7 @@ function AnnualInventory({history, userToken}) {
 			addProps={{
 				sx:{height: 35, width: 180}
 			}}
+			showHistory={true}
 			isLoading={loading}
 			icons={tableIcons}
 			columns={cols_config}
@@ -262,11 +263,12 @@ function AnnualInventory({history, userToken}) {
 						await handleTableUpdate({changes:{'0':{newData:{...rowData,update:true}}}});
 						//resetAnnualInventory();
 					},
-					disabled: (rowData.locked != 2) //rowData.birthYear < 2000
+					disabled: (rowData.locked != 2 ) //rowData.birthYear < 2000
 				}),
 				rowData => ({
 					icon: tableIcons.View,
 					tooltip: 'View',
+					disabled: (rowData.annual_equipment_count === 0),
 					onClick: async (event, rowData) => {
 						history.replace(`${PAGE_URL}/${rowData.id}`)
 						//await handleTableUpdate({changes:{'0':{newData:{...rowData,update:true}}}});

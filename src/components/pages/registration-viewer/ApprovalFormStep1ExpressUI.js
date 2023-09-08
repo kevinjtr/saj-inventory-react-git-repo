@@ -125,7 +125,7 @@ const ApprovalFormStep1ExpressUI = ({handleUseExisting,handleNewEmployee,selecti
                     </div>
                 </div>
                 <div style={{display:'flex',justifyContent:'space-between',paddingBottom:'1em',paddingLeft:'1em',paddingRight:'1em',paddingTop:'0em'}}>
-                    <Button onClick={()=>{setOpenPopup(false)}} variant='contained' size='small'>
+                    <Button onClick={()=>{setOpenPopup(false)}} variant='outlined' size='small'>
                         Cancel
                     </Button>
                     <Button variant='contained' size='small' color='primary' disabled={(selection < 0)} onClick={()=>{selection >= 1 ? handleUseExisting(selection-1,false):handleNewEmployee(false)}}>

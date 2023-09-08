@@ -41,7 +41,7 @@ const ApprovalFormStep1RegularUI = ({handlePrev,handleNext,handleUseExisting,han
         <>
            <div style={{display:'flex',flexDirection:'column'}}>
                 <div style={{display:'flex',justifyContent:'space-between',backgroundColor:bColor.c1}}>
-                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'1.5em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>Select Employee (a)</div>
+                    <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'1.5em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>Select Employee</div>
                     <div className='assign-registration-close' style={{display:'flex',cursor:'pointer',padding:'0.25em'}} onClick={()=>setOpenPopup(false)}>
                         <CloseIcon style={{color:'white',fontSize:'2.5em'}}/>
                     </div>
@@ -212,7 +212,7 @@ const ApprovalFormStep1RegularUI = ({handlePrev,handleNext,handleUseExisting,han
                 
                 </div>
                 <div style={{display:'flex',justifyContent:'space-between',paddingBottom:'1em',paddingLeft:'2em',paddingRight:'2em',paddingTop:'0em',backgroundColor:bColor.rgb245}}>
-                    <Button onClick={()=>{setOpenPopup(false)}} variant='contained' size='small'>Cancel</Button>
+                    <Button onClick={()=>{setOpenPopup(false)}} variant='outlined' size='small'>Cancel</Button>
                     <Button variant='contained' size='small' color='primary' onClick={()=>{selection === 1 ? handleUseExisting(matchSelection,true):handleNewEmployee(true)}} disabled={(selection !== 0 && selection !== 1)}>Next</Button>
                 </div>
             </div>

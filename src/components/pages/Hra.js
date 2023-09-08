@@ -288,7 +288,7 @@ function Hra({ history, userToken }) {
 	getAllHrasApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
-		setHras(data.status == 200 ? data.data : data)
+		setHras(prev => prev)
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,
 		// 	setequipment: data

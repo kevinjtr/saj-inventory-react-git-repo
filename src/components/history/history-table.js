@@ -3,6 +3,22 @@ import { changeHistoryIcons } from '../material-table/config'
 import moment from 'moment'
 
 let cols_config = {
+    annualinventory: [
+        { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date',render: rowData => {
+            if(rowData.updated_date){
+              return moment(rowData.updated_date).format("MM/DD/YY HH:mm:ss")
+            }
+            return ''
+        }, defaultSort: 'desc',},
+        { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
+		{ title: 'HRA Number', field: 'hra_num', type:'numeric', editable:'never', col_id:2.0},
+		{ title: 'Status', field: 'locked',type:'numeric', editable: 'never', render: rowData => rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED',
+		},
+        { title: 'Update', field: 'locked',editable: 'never', sorting: false, render: (rowData) => rowData.locked === 2 ? 'YES' : 'NO'},
+		{ title: 'Fiscal Year', field: 'fiscal_year', editable: 'never', type:'numeric', sorting: false},
+		{ title: 'HRA First Name', field: 'hra_first_name',editable: 'never', sorting: false},
+		{ title: 'HRA Last name', field: 'hra_last_name',editable: 'never', sorting: false},
+	],
     equipment: [//equipment
         { title: 'Updated Date', field: 'updated_date', editable: 'never', type: 'date',render: rowData => {
             if(rowData.updated_date){

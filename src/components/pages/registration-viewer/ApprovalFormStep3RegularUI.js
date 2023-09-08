@@ -73,7 +73,7 @@ const ApprovalFormStep3RegularUI = (props) => {
 	}
     
     return(
-        <div style={{display:'flex',flexDirection:'column'}}>
+        <div style={{display:'flex',flexDirection:'column', width:650}}>
 
             <div style={{display:'flex',justifyContent:'space-between',backgroundColor:bColor.c1}}>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',fontSize:'1.55em',fontWeight:'600',color:'white',paddingLeft:'0.25em'}}>Confirm Actions</div>
@@ -83,12 +83,12 @@ const ApprovalFormStep3RegularUI = (props) => {
                     </div>
             </div>
 
-            <div style={{display:'flex',flexDirection:'column',padding:'1rem',backgroundColor:bColor.rgb245,height:'34rem'}}>
+            <div style={{display:'flex',flexDirection:'column',padding:'1rem',backgroundColor:bColor.rgb245,height:'25rem'}}>
                 <StyledBox
                 onClick={()=>{setActionTab(actionTab === 1 ? 0:1)}}
                 style={{border: addEmployeeStatus === 'Executing' ? '1px solid #ff4d00':''}}>
                     <div style={{display:'flex'}}>
-                        <div style={{display:'flex',width: 500,height:'3rem'}}>
+                        <div style={{display:'flex',width: '14.5rem',height:'3rem'}}>
                             <div style={{display:'flex',flexDirection:'column',justifyContent:'center',width:'3.5em'}}>
                                     {addEmployeeStatus === 'Pending' && <PendingOutlinedIcon style={{color:'rgb(200,200,200)',fontSize:'3rem'}}/>}
                                     {addEmployeeStatus === 'Executing' && <CircularProgress size={30}/>}
@@ -99,19 +99,19 @@ const ApprovalFormStep3RegularUI = (props) => {
                                 <div style={{fontWeight:'600'}}>   
                                     Create Employee
                                 </div>
-                                <div style={{fontSize:'1.5em',color:'rgb(100,100,100)'}}>
+                                <div style={{fontSize:'1.25em',color:'rgb(100,100,100)'}}>
                                     {addEmployeeStatus}
                                     {matchingEmployee && ' (match found)'}
                                 </div>
                             </div>
                         </div>
                         <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'12rem'}}>
-                            <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Table</div>
-                            <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.5em'}}>Employee</div>
+                            <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Table</div>
+                            <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.25em'}}>Employee</div>
                         </div>
                         <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'6em'}}>
-                            <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Action</div>
-                            <div style={{fontSize:'1.5em'}}>{matchingEmployee ? 'None':'Add'}</div>
+                            <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Action</div>
+                            <div style={{fontSize:'1.25em'}}>{matchingEmployee ? 'None':'Add'}</div>
                         </div>
                         <div style={{display:'flex',flexDirection:'column',justifyContent:'center',color:'#225dd4'}}>
                             <div style={{display:'flex'}}>
@@ -126,7 +126,7 @@ const ApprovalFormStep3RegularUI = (props) => {
                             </div>
                         </div>
                     </div>
-                    <div style={{display:actionTab === 1 ? 'flex':'none',flexDirection:'column',border:'1px solid rgb(225,225,225)',marginTop:'0.5em'}}>
+                    <div style={{display:actionTab === 1 ? 'flex':'none',overflowY:'auto', height:180, flexDirection:'column',border:'1px solid rgb(225,225,225)',marginTop:'0.5em'}}>
                         <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em',backgroundColor:"inherit"}}>Record</div>
                         <div style={{display:'flex',flexDirection:'column',fontSize:'1.25em'}}>
                             <table style={{tableLayout:'fixed',whiteSpace:'nowrap',borderCollapse:'collapse',textAlign:'left'}}>
@@ -187,19 +187,19 @@ const ApprovalFormStep3RegularUI = (props) => {
                             <div style={{fontWeight:'600'}}>
                                 Create HRA
                             </div>
-                            <div style={{fontSize:'1.5em',color:'rgb(100,100,100)'}}>
+                            <div style={{fontSize:'1.25em',color:'rgb(100,100,100)'}}>
                                 {addHraStatus}
                                 {matchingHRA && ' (match found)'}
                             </div>
                         </div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'12rem'}}>
-                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Table</div>
-                        <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.5em'}}>HRA</div>
+                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Table</div>
+                        <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.25em'}}>HRA</div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'6em'}}>
-                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Action</div>
-                        <div style={{fontSize:'1.5em'}}>{matchingHRA ? 'None':'Add'}</div>
+                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Action</div>
+                        <div style={{fontSize:'1.25em'}}>{matchingHRA ? 'None':'Add'}</div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',color:'#225dd4'}}>
                         <div style={{display:'flex'}}>
@@ -253,18 +253,18 @@ const ApprovalFormStep3RegularUI = (props) => {
                             <div style={{fontWeight:'600'}}>
                                 Create Registered User
                             </div>
-                            <div style={{fontSize:'1.5em',color:'rgb(100,100,100)'}}>
+                            <div style={{fontSize:'1.25em',color:'rgb(100,100,100)'}}>
                                 {addRegisteredUserStatus}
                             </div>
                         </div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'12rem'}}>
-                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Table</div>
-                        <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.5em'}}>Registered Users</div>
+                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Table</div>
+                        <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.25em'}}>Registered Users</div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'6em'}}>
-                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Action</div>
-                        <div style={{fontSize:'1.5em'}}>Add</div>
+                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Action</div>
+                        <div style={{fontSize:'1.25em'}}>Add</div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',color:'#225dd4'}}>
                         <div style={{display:'flex'}}>
@@ -280,11 +280,11 @@ const ApprovalFormStep3RegularUI = (props) => {
                     </div>
                     </div>
                     {(registrationRow.user_type_label === 'HRA' && registeredUserRow.user_level !== '11' && registeredUserRow.user_level !== '12') &&
-                    <div style={{marginTop:'0.5em',border:'1px solid #592e2e', color:'#592e2e',borderRadius:'1rem',padding:'0.5em',paddingTop:'0.25em',paddingBottom:'0.25em',fontSize:'1.5em'}}>
+                    <div style={{marginTop:'0.5em',border:'1px solid #592e2e', color:'#592e2e',borderRadius:'1rem',padding:'0.5em',paddingTop:'0.25em',paddingBottom:'0.25em',fontSize:'1.25em'}}>
                         Note: Employee registered as HRA but has been assigned non-hra user level. No HRA number will be assigned.
                     </div>
                     }
-                    <div style={{display:actionTab === 3 ? 'flex':'none',flexDirection:'column',border:'1px solid rgb(225,225,225)',marginTop:'0.5em'}}>
+                    <div style={{display:actionTab === 3 ? 'flex':'none', overflowY:'auto', height:180,flexDirection:'column',border:'1px solid rgb(225,225,225)',marginTop:'0.5em'}}>
                         <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em',backgroundColor:"inherit"}}>Record</div>
                         <div style={{display:'flex',flexDirection:'column',fontSize:'1.25em'}}>
                             <table style={{tableLayout:'fixed',whiteSpace:'nowrap',borderCollapse:'collapse',textAlign:'left'}}>
@@ -324,18 +324,18 @@ const ApprovalFormStep3RegularUI = (props) => {
                             <div style={{fontWeight:'600'}}>
                                 Delete Registration
                             </div>
-                            <div style={{fontSize:'1.5em',color:'rgb(100,100,100)'}}>
+                            <div style={{fontSize:'1.25em',color:'rgb(100,100,100)'}}>
                                 {deleteRegistrationStatus}
                             </div>
                         </div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'12rem'}}>
-                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Table</div>
-                        <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.5em'}}>Employee Registration</div>
+                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Table</div>
+                        <div style={{display:'inline-block',overflow:'hidden',whitespace:'nowrap',textOverflow:'ellipsis',fontSize:'1.25em'}}>Employee Registration</div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',whiteSpace:'nowrap',width:'6em'}}>
-                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.5em'}}>Action</div>
-                        <div style={{fontSize:'1.5em'}}>Delete</div>
+                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em'}}>Action</div>
+                        <div style={{fontSize:'1.25em'}}>Delete</div>
                     </div>
                     <div style={{display:'flex',flexDirection:'column',justifyContent:'center',color:'#225dd4'}}>
                         <div style={{display:'flex'}}>
@@ -350,9 +350,9 @@ const ApprovalFormStep3RegularUI = (props) => {
                         </div>
                     </div>
                     </div>
-                    <div style={{display:actionTab === 4 ? 'flex':'none',flexDirection:'column',border:'1px solid rgb(225,225,225)',whiteSpace:'nowrap',marginTop:'0.5em'}}>
-                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25rem',backgroundColor:"inherit"}}>Record</div>
-                        <div style={{display:'flex',flexDirection:'column',fontSize:'1.25rem'}}>
+                    <div style={{display:actionTab === 4 ? 'flex':'none',overflowY:'auto', height:180,flexDirection:'column',border:'1px solid rgb(225,225,225)',whiteSpace:'nowrap',marginTop:'0.5em'}}>
+                        <div style={{fontWeight:'600',textTransform:'uppercase',fontSize:'1.25em',backgroundColor:"inherit"}}>Record</div>
+                        <div style={{display:'flex',flexDirection:'column',fontSize:'1.25em'}}>
                             <table style={{tableLayout:'fixed',borderCollapse:'collapse',textAlign:'left'}}>
                                 <tr style={{backgroundColor:"inherit"}}>
                                     <th style={{width:'8em'}}>First Name</th>
