@@ -2,7 +2,7 @@ import React from 'react';
 import 'date-fns';
 import { LoadingCircle } from '../../tools/tools';
 import { tableIcons } from '../../material-table/config'
-import MuiTable from '../../material-table'
+import AnnualInvMuiTable from '../../material-table/annual-inventory-mui-table'
 import { generateReportDate, downloadExcel, downloadPdf } from '../../tools/tools'
 import { getAnnualInventoryByIdApi } from '../../../publics/actions/annual-inventory-api'
 import { connect } from 'redux-bundler-react';
@@ -27,35 +27,14 @@ function ViewAnnualInventory({match, userToken}) {
 
 	const materialTableSelect = () => {
 
-        //if(annualInventories.length > 0){
-            //const cols = Object.keys(annualInventories[0])
-            let columns = []
-            //considering moving to a config file.
-            const cols_config = [
-                { title: 'HRA Num', field: 'hra_num',editable: 'never'},
-                { title: 'Fiscal Year', field: 'fiscal_year',editable: 'never' },
-                { title: 'Item Type', field: 'item_type',editable: 'never'},
-                { title: 'Bar Tag Num', field: 'bar_tag_num',editable: 'never' },
-                { title: 'Serial Number', field: 'serial_num',editable: 'never' },
-                { title: 'Employee Holder', field: 'employee_full_name',editable: 'never' }
-            ]
-
-            //if(editable) cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
-
-            // for(const col_config of cols_config){
-            //     if(col_config.hasOwnProperty('field') && col_config){
-            //         if(cols.includes(col_config.field)) columns.push(col_config)
-            //     }
-            // }
-
             return(
                 <div style={{ maxWidth: '100%' }}>
-                    <MuiTable
+                    <AnnualInvMuiTable
+                    tab_name={'view_inventory'}
                     isLoading={loading}
                     name={'Inventory'}
                     componentName={'annualinventory'}
                     icons={tableIcons}
-                    columns={cols_config}
                     data={annualInventories}
                     exportButton={true}
                     localization={{

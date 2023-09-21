@@ -37,7 +37,7 @@ export const EmployeesEquipmentCert = (props) => (
             color="textPrimary"
             variant="h4"
           >
-            {props.total_equipments_cert_porcentage}%
+            {props.total_equipments_cert_porcentage?.toFixed(1)}%
           </Typography>
         </Grid>
         <Grid item>

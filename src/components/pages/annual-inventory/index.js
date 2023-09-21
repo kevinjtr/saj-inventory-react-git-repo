@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import 'date-fns';
 import { LoadingCircle } from '../../tools/tools';
 import { tableIcons } from '../../material-table/config'
-import MuiTable from '../../material-table'
+import AnnualInvMuiTable from '../../material-table/annual-inventory-mui-table'
 import { Autocomplete } from '@mui/material';
 import { findIndex, find } from 'lodash'
 import { updateAnnualInventoryApi, destroyAnnualInventoryApi, addAnnualInventoryApi, getAllAnnualInventorysApi, annualInventorySearchApi} from '../../../publics/actions/annual-inventory-api'
@@ -131,119 +131,19 @@ function AnnualInventory({history, userToken}) {
 	//Functions.
 	const materialTableSelect = () => {
 
-	//const cols = annualInv.length > 0 ? Object.keys(annualInv[0]) : []
-	//let columns = []
-	//considering move to a config file.
-	let cols_config = [
-		{ title: 'HRA Number', field: 'hra_num', type:'numeric', editable:'onAdd', col_id:2.0, //filterComponent: (props) => <CustomFilterTextField {...props} />,
-        editComponent: props => {
-          console.log(props)
-
-          return (
-            <Autocomplete
-            ListboxProps={{
-              sx: { fontSize: 3 },
-            }}
-                  value={props.value ? find(hras,function(h){ return h.hra_num === props.value}) : null}
-                  onChange={(e, nv) => {
-                    if(nv?.hra_num){
-                      props.onChange(nv.hra_num) 
-                      return;
-                    }
-                    props.onChange(nv)
-                  }}
-                  
-                  key={`combo-box-${uuid()}`}
-                  options={hras}
-                  getOptionLabel={(option) => {
-						const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
-						return `${option.hra_num}${full_name && ` - ${full_name}`}`
-					}}
-					renderOption={(props, option, state) => {
-						const full_name = (option.hra_first_name ? option.hra_first_name + ' ' : '') + (option.hra_last_name || '')
-						return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
-						}}
-                  style={{ width: 250 }}
-                  renderInput={(params) => <TextField {...params} helperText="HRA" variant="standard" />}
-              />)
-        },
-          validate: (rowData) => {
-              if(rowData.hasOwnProperty('hra_num')){
-                  if(!isNaN(rowData.hra_num)) {
-                    if(rowData.hra_num){
-                      const idx = findIndex(hras,function(e){ return (e.hra_num && (e.hra_num == rowData.hra_num)); })
-                      return idx != -1
-                    }
-                  }
-              }
-    
-              return true
-          }
-        },
-		{ title: 'Status', field: 'locked',type:'numeric', editable: 'onUpdate',customFilterAndSearch: (term, rowData, column) => {
-			const option = rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED'
-			if (rowData.locked) {
-			  return option.toString()?.toUpperCase().includes(term.toUpperCase())
-			}
-			return false
-		},
-		render: rowData => rowData.locked != 2 ? 'LOCKED' : 'UNLOCKED',
-		lookup:lockOptions
-		},
-		{ title: 'Fiscal Year', cellStyle: {
-			minWidth: 200,
-			maxWidth: 200
-		  }, field: 'fiscal_year', editable: 'onAdd', type:'numeric', validate: (rowData) => {
-
-			if(rowData.hasOwnProperty('fiscal_year')){
-				if(!isNaN(rowData.fiscal_year)) {
-					if(rowData.hasOwnProperty('tableData')){
-						if(rowData.tableData.editing === "update"){
-							return true
-						}
-					}					
-		
-					console.log((new Date()).getFullYear() + 1,rowData.fiscal_year,typeof rowData.fiscal_year,typeof rowData.fiscal_year,rowData.fiscal_year)
-					if(typeof rowData.fiscal_year == "number"){
-						if(rowData.fiscal_year.toString().length != 4){
-							return ({ isValid: false, helperText: 'four digits are required.' })
-						}else if(rowData.fiscal_year < 1990 || rowData.fiscal_year > (new Date()).getFullYear() + 1){
-							return ({ isValid: false, helperText: 'year is out of range.' })
-						}
-
-						return true
-					}
-		
-					if(typeof rowData.fiscal_year === "string"){
-						return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
-					}
-				}
-			}
-			
-			return ({ isValid: false, helperText: 'Fiscal Year is required.' })
-
-		}},
-		{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
-		{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
-		{ title: 'Equipment Quantity', field: 'annual_equipment_count',editable: 'never'}
-	]
-
-	// for(const col_config of cols_config){
-	// 	if(cols.includes(col_config.field)) columns.push(col_config)
-	// }
-
 	return(
 		<div style={{ maxWidth: '100%' }}>
-			<MuiTable
+			<AnnualInvMuiTable
 			name={'Inventory'}
+			tab_name={'add_inventory'}
 			componentName={'annualinventory'}
 			addProps={{
 				sx:{height: 35, width: 180}
 			}}
+			hras={hras}
 			showHistory={true}
 			isLoading={loading}
 			icons={tableIcons}
-			columns={cols_config}
 			data={annualInv}
 			options={{
 				exportButton: true,

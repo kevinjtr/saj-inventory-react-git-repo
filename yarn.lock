@@ -1703,10 +1703,10 @@
   "resolved" "https://registry.npmjs.org/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz"
   "version" "2.0.4"
 
-"@material-table/core@^6.2.3":
-  "integrity" "sha512-v8ejNErnys8WSwPOJrG4BvJ65EIX93N+MjM9oxF9iN942hZLljgB+n0JVA5xi7PRsR9A6JDWjaSZ3iVFo5qjdw=="
-  "resolved" "https://registry.npmjs.org/@material-table/core/-/core-6.2.3.tgz"
-  "version" "6.2.3"
+"@material-table/core@^6.2.4":
+  "integrity" "sha512-7aqMnTIH5HN+hRRKVRAeGsHlej6ujdBrwe3J2OK361O/RXpE96MQ9CJzCTfNlWMvWo2ldN17wDVTQtEpt/9zJw=="
+  "resolved" "https://registry.npmjs.org/@material-table/core/-/core-6.2.4.tgz"
+  "version" "6.2.4"
   dependencies:
     "@babel/runtime" "^7.19.0"
     "@date-io/core" "^2.16.0"

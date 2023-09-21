@@ -424,3 +424,18 @@ export const officesSymbol = [{"id":14,"alias":"CD-C","name":"CD-C"},{"id":15,"a
 {"id":48,"alias":"PD-P","name":"PD-P"},{"id":49,"alias":"EN-DC","name":"EN-DC"},{"id":50,"alias":"EN-DP","name":"EN-DP"}]
 
 export const lockOptions = {2:'UNLOCK',1:'LOCK'}
+
+export const FORM_STATUS = {
+  1: "Form Edit",
+  2: "Individual/Vendor signature required",
+  3: "Completed Individual/Vendor signature",
+  4: "Losing HRA signature required",
+  5: "Completed losing HRA signature",
+  6: "Gaining HRA signature required",
+  7: "Completed gaining HRA signature",
+  8: "Logistics signature required",
+  9: "Completed Logistics signature",
+  10: "PBO signature required",
+  11: "Completed PBO signature",
+  12: "Form Rejected",
+}

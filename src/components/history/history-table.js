@@ -76,6 +76,12 @@ let cols_config = {
             }
             return ''
         },defaultSort: 'desc' },
+        { title: 'Certification Date', field: 'certification_date', editable: 'never', sorting: false, render: rowData => {
+            if(rowData.certification_date){
+              return moment(rowData.certification_date).format("MM/DD/YY")
+            }
+            return ''
+        } },
         { title: 'Updated By', field: 'updated_by_full_name', editable: 'never', sorting: false },
         { title: 'HRA Number', field: 'hra_num', editable: 'never', sorting: false, type: 'numeric' },
         { title: 'Employee ID', field: 'hra_employee_id', type: 'numeric', editable: 'never', sorting: false },

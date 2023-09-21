@@ -2,7 +2,7 @@ import React from 'react';
 import TextField from '@mui/material/TextField';
 import 'date-fns';
 import { LoadingCircle } from '../tools/tools';
-import MuiTable from '../material-table'
+import MuiTable from '../material-table/hra-mui-table'
 import { tableIcons } from '../material-table/config'
 import { Autocomplete } from '@mui/material';
 import { findIndex, find } from 'lodash'
@@ -125,73 +125,75 @@ function Hra({ history, userToken }) {
 	//Functions.
 	const materialTableSelect = () => {
 
-	let hras_cols_config = [
-		{ title: 'HRA Number', cellStyle: {
-			minWidth: 200,
-			maxWidth: 200
-		  },field: 'hra_num', editable: 'onAdd', type:'numeric', validate: (rowData) => {
-				if(rowData.hasOwnProperty('hra_num')){
-					if(!isNaN(rowData.hra_num)) {
-						if(rowData.hasOwnProperty('tableData')){
-							if(rowData.tableData.editing === "update"){
-								return true
-							}
-						}					
+	// let hras_cols_config = [
+	// 	{ title: 'HRA Number', cellStyle: {
+	// 		minWidth: 200,
+	// 		maxWidth: 200
+	// 	  },field: 'hra_num', editable: 'onAdd', type:'numeric', validate: (rowData) => {
+	// 			if(rowData.hasOwnProperty('hra_num')){
+	// 				if(!isNaN(rowData.hra_num)) {
+	// 					if(rowData.hasOwnProperty('tableData')){
+	// 						if(rowData.tableData.editing === "update"){
+	// 							return true
+	// 						}
+	// 					}					
 			
-						if(typeof rowData.hra_num == "number"){
-							console.log('isnumber')
-							if(rowData.hra_num.toString().length > 3){
-								return ({ isValid: false, helperText: 'HRA digits exceed 3.' })
-							}else if( findIndex(hras,h => h.hra_num == rowData.hra_num) != -1 ){
-								return ({ isValid: false, helperText: 'Duplicated HRA num.' })
-							}
+	// 					if(typeof rowData.hra_num == "number"){
+	// 						console.log('isnumber')
+	// 						if(rowData.hra_num.toString().length > 3){
+	// 							return ({ isValid: false, helperText: 'HRA digits exceed 3.' })
+	// 						}else if( findIndex(hras,h => h.hra_num == rowData.hra_num) != -1 ){
+	// 							return ({ isValid: false, helperText: 'Duplicated HRA num.' })
+	// 						}
 
-							return true
-						}
+	// 						return true
+	// 					}
 			
-						if(typeof rowData.hra_num === "string"){
-							return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
-						}
-					}
-				}
+	// 					if(typeof rowData.hra_num === "string"){
+	// 						return ({ isValid: false, helperText: 'HRA number needs to be numeric.' })
+	// 					}
+	// 				}
+	// 			}
 				
-				return ({ isValid: false, helperText: 'HRA number is required.' })
+	// 			return ({ isValid: false, helperText: 'HRA number is required.' })
 
-			}
-		},
-		{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric',
-			editComponent: props => (
-					<Autocomplete
-						value={props.value ? find(employees,function(employee){ return employee.id === props.value}) : null}
-						onChange={(e, nv) => { 
-							if(nv?.id){
-								props.onChange(nv.id) 
-								return;
-							}
-							props.onChange(nv)
-						}}
-						key={`combo-box-${uuid()}`}
-						options={employees}
-						getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
-						renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
-						style={{ width: 250 }}
-						renderInput={(params) => <TextField {...params} variant="standard" helperText={'Employee'}/>}
-					/>
-				)
-		},
-		{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
-		{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
-		{ title: 'Title', field: 'hra_title',editable: 'never' },
-		{ title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },
-		{ title: 'Work Phone', field: 'hra_work_phone',editable: 'never' },
-		{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'}
-	]
+	// 		}
+	// 	},
+	// 	{ title: 'Employee ID', field: 'hra_employee_id',type:'numeric',
+	// 		editComponent: props => (
+	// 				<Autocomplete
+	// 					value={props.value ? find(employees,function(employee){ return employee.id === props.value}) : null}
+	// 					onChange={(e, nv) => { 
+	// 						if(nv?.id){
+	// 							props.onChange(nv.id) 
+	// 							return;
+	// 						}
+	// 						props.onChange(nv)
+	// 					}}
+	// 					key={`combo-box-${uuid()}`}
+	// 					options={employees}
+	// 					getOptionLabel={(option) => option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}
+	// 					renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + (option.first_name ? option.first_name + ' ' : '') + option.last_name}</li>}
+	// 					style={{ width: 250 }}
+	// 					renderInput={(params) => <TextField {...params} variant="standard" helperText={'Employee'}/>}
+	// 				/>
+	// 			)
+	// 	},
+	// 	{ title: 'Employee First Name', field: 'hra_first_name',editable: 'never' },
+	// 	{ title: 'Employee Last name', field: 'hra_last_name',editable: 'never' },
+	// 	{ title: 'Title', field: 'hra_title',editable: 'never' },
+	// 	{ title: 'Office Symbol', field: 'hra_office_symbol_alias',editable: 'never' },
+	// 	{ title: 'Work Phone', field: 'hra_work_phone',editable: 'never' },
+	// 	{ title: 'Equipment Quantity', field: 'hra_equipment_count',editable: 'never'}
+	// ]
 
 	//if(editable) hras_cols_config.push({title:'Updated By',field:'updated_by_full_name',editable:'never' })
 
 	return(
 		<div style={{ maxWidth: '100%' }}>
 			<MuiTable
+			employees={employees}
+			hras={hras}
 			name={'HRA'}
 			componentName={'hra'}
 			addProps={{
@@ -201,7 +203,7 @@ function Hra({ history, userToken }) {
 			isLoading={loading}
 			exportButton={true}
 			icons={tableIcons}
-			columns={hras_cols_config}
+			//columns={hras_cols_config}
 			data={hras}
 			showHistory={true}
 			// localization={{
@@ -288,7 +290,7 @@ function Hra({ history, userToken }) {
 	getAllHrasApi(userToken).then((response) => response.data).then((data) => {
 		console.log(data)
 		//setLoading(false)
-		setHras(prev => prev)
+		setHras(data.data)
 		// this.setState({
 		// 	equipments: data.status != 400 ? data.values: data,
 		// 	setequipment: data

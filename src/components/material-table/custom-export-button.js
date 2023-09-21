@@ -15,7 +15,7 @@ export default function CustomExportButton({columns, data, table}) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  console.log(columns, data, table)
+  //console.log(columns, data, table)
   useEffect(() => {
     const preventScrolling = e => e.preventDefault()
   

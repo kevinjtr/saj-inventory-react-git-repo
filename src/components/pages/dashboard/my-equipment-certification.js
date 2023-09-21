@@ -38,7 +38,7 @@ export const MyEquipmentCertification = (props) => (
             color="textPrimary"
             variant="h4"
           >
-            {props.my_equipments_cert_porcentage}%
+            {props.my_equipments_cert_porcentage?.toFixed(1)}%
           </Typography>
         </Grid>
         <Grid item>

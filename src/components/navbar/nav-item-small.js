@@ -25,10 +25,13 @@ export const NavItem = (props) => {
       <Link to={href} style={{textDecoration:'none'}}>
         <Button
           title={title}
-          component="a"
+          //component="a"
           //startIcon={icon}
           disableRipple
           sx={{
+            '&:focus': {
+							outline: 'none',
+							},
             //backgroundColor: active && 'action.selected',
             borderRadius: 1,
             color: active ? 'success.light' : 'text.secondary',

@@ -43,9 +43,9 @@ const buttonClasses = {
     },
 }
 
-const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEquipments, userToken}) => {
+const UpdateStatusPopup = ({openPopup, index, setOpenPopup, rowData, equipments, doSetEquipments, userToken}) => {
     
-  console.log(rowData.status)
+  //console.log(rowData.status)
     const[message,setMessage] = useState(() => {
       if(rowData.status){
         if(rowData.status.includes("Other")){
@@ -93,15 +93,15 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
     
                 if(idx != -1){
                   equipments_tab_copy[idx] = eq_change
-                  console.log(equipments_tab_copy[idx])
+                  //console.log(equipments_tab_copy[idx])
                   equipments_copy = {...equipments_copy,[tab_number]: equipments_tab_copy}
                 }
               }
             }
             setSubmitButton(prev => ({...prev, send: false, active: false}))
-            //setEquipments(equipments_copy)
+            doSetEquipments(equipments_copy)
             toast.success('Action was completed')
-            setOpenPopup(false)
+            setOpenPopup(prev => ({...prev, [index]: false}))
           }        
     
         }).catch(function (error) {
@@ -185,7 +185,7 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
     }, [status]);
 
     React.useEffect(() => {
-      console.log(message)
+      //console.log(message)
       if(!submitButton.send){
         if(ValidateOtherInput()){
           setSubmitButton({...submitButton, active: true})  
@@ -200,9 +200,9 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
             <Dialog open={openPopup} fullWidth maxWidth="xs">
                 <DialogTitle>
                     <div style={{display:'flex'}}>
-                        <Typography variant="h6" component="div" style={{flexGrow:1,alignSelf:'center',textTransform:'uppercase',fontSize:'1rem'}}>update equipment status</Typography>
+                        <Typography variant="h6" component="div" style={{flexGrow:1,alignSelf:'center',textTransform:'uppercase',fontSize:'1rem'}}>{`update equipment ${rowData.bar_tag_num} status`}</Typography>
                         <IconButton
-          onClick={()=>setOpenPopup(false)}
+          onClick={()=>setOpenPopup(prev => ({...prev, [index]: false}))}
             sx={{
                 alignSelf:'center',
               display: {
@@ -266,4 +266,6 @@ const UpdateStatusPopup = ({openPopup,setOpenPopup, rowData, equipments, setEqui
 
 export default connect(
     'selectUserToken',
+    'selectEquipments',
+    'doSetEquipments',
     UpdateStatusPopup);

@@ -24,8 +24,7 @@ const HraDashboard = ({user}) => {
 	<Box sx={{textAlign:'center',fontSize:"32px"}}>
 	<FormControl variant="standard" sx={{fontSize: "32px", m: 1, minWidth: 400 }}>
         <Select
-		sx={{fontSize:"32px"}}
-		blurOnSelect    
+		sx={{fontSize:"32px"}}    
           value={selHra}
           onChange={(event) => setSelHra(event.target.value)}
           displayEmpty

@@ -573,7 +573,6 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                   }
                   props.onChange(nv)
                 }}
-                key={`combo-box-${uuid()}`}
                 options={equipments}
                 getOptionDisabled={(option) => selectedForm.equipment_group.map(x => x.bar_tag_num)?.includes(option.bar_tag_num)}
                 getOptionLabel={(option) => option.bar_tag_num + ' - ' + option.item_type}
@@ -679,7 +678,10 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 
 		const equipment_cols = [
       { title: 'Item Description', field: 'item_type',col_id:4  },
-			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', col_id:5, validate: (rowData) => {
+			{ title: 'Bar Tag', field: 'bar_tag_num', type: 'numeric', cellStyle: {
+        minWidth: 200,
+        maxWidth: 200
+      }, col_id:5, validate: (rowData) => {
 				if(rowData.hasOwnProperty('bar_tag_num')){
 					if(!isNaN(rowData.bar_tag_num)) {
 						if(typeof rowData.bar_tag_num === "number"){
@@ -726,7 +728,10 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
 			{title:'Acquisition Date',field:'acquisition_date',  type: 'date',col_id:1 },
 			{title:'Acquisition Price',field:'acquisition_price',type: 'numeric',col_id:7 },
 			{title:'Catalog Num',field:'catalog_num',col_id:8 },
-			{title:'Serial Num',field:'serial_num',col_id:9, validate: (rowData) => {
+			{title:'Serial Num',field:'serial_num',col_id:9, cellStyle: {
+        minWidth: 200,
+        maxWidth: 200
+      }, validate: (rowData) => {
 				if(rowData.hasOwnProperty('serial_num')){
           if(rowData.serial_num.toString().length > 0){
             return true
@@ -748,7 +753,6 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                   }
                   props.onChange(nv)
                 }}
-                key={`combo-box-${uuid()}`}
                 options={condition}
                 getOptionLabel={(option) => option.id + ' - ' + option.name}
                 renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.id + ' - ' + option.name}</li>}

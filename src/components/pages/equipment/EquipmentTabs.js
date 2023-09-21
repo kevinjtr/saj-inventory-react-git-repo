@@ -32,8 +32,8 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import AddIcon from '@mui/icons-material/Add';
 import CustomExportButton from '../../../components/material-table/custom-export-button'
 
-function Equipment(props) {
-  const {history, location, match, serverDown, userToken, filteredDataRows, doSetFilteredDataRows, doSearchEquipmentTab, initialLoad, loading, rights, editable, myHras, hras, employees, equipments, doSetEquipments, doGetAllEquipmentTabsInitialLoad} = props
+function Equipment({history, location, match, userToken}) {
+  
   //Constants Declarations.
   const search = getQueryStringParams(location.search)
   const PAGE_URL = `/${EQUIPMENT}`
@@ -45,6 +45,7 @@ function Equipment(props) {
   const ref4 = useRef(MaterialTable)
   const refs = useRef({ ref0, ref1, ref2, ref3, ref4 });
 
+  console.log(refs)
   const [filteredEquipments, setFilteredEquipments] = useState({
     0: [],
     1: [],
@@ -94,35 +95,35 @@ function Equipment(props) {
 	width: undefined,
 	height: undefined,
 	});
-  //const [initialLoad, setInitialLoad] = useState(true)
-  // const [loading, setLoading] = useState({
-  //   0: false,
-  //   1: false,
-  //   2: false,
-  //   3: false,
-  //   4: false,
-  // });
-  // const [equipments, setEquipments] = useState({
-  //     0: [],
-  //     1: [],
-  //     2: [],
-  //     3: [],
-  //     4: []
-  //   });
-  // const [editable,setEditable] = useState({
-  //   0:false,
-  //   1:false,
-  //   2:false,
-  //   3:false,
-  //   4:false,
-  // })
-  // const [rights, setRights] = useState({
-  //   0:{view: false, edit:false},
-  //   1:{view: false, edit:false},
-  //   2:{view: false, edit:false},
-  //   3:{view: false, edit:false},
-  //   4:{view: false, edit:false},
-  // })
+  const [initialLoad, setInitialLoad] = useState(true)
+  const [loading, setLoading] = useState({
+    0: false,
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+  });
+  const [equipments, setEquipments] = useState({
+      0: [],
+      1: [],
+      2: [],
+      3: [],
+      4: []
+    });
+  const [editable,setEditable] = useState({
+    0:false,
+    1:false,
+    2:false,
+    3:false,
+    4:false,
+  })
+  const [rights, setRights] = useState({
+    0:{view: false, edit:false},
+    1:{view: false, edit:false},
+    2:{view: false, edit:false},
+    3:{view: false, edit:false},
+    4:{view: false, edit:false},
+  })
   const [tabs, setTabs] = useState(0);
   const [switches, setSwitches] = useState({
       0: SWITCH_RESET,
@@ -131,11 +132,11 @@ function Equipment(props) {
       3: SWITCH_RESET,
       4: SWITCH_RESET,
     });
-  //const [hras, setHras] = useState([]);
-  //const [my_hras, setMyHras] = useState([]);
-	//onst [employees, setEmployees] = useState([]);
+  const [hras, setHras] = useState([]);
+  const [my_hras, setMyHras] = useState([]);
+	const [employees, setEmployees] = useState([]);
   let [snackBar,setSnackBar] = useState({open:false,message:'',severity:'warning'});
-  // const [serverDown, setServerDown] = useState(false);
+  const [serverDown, setServerDown] = useState(false);
   const [viewSwitch, setViewSwitch] = useState(() => {
     // getting stored value
     const saved = window.localStorage.getItem("view-switch");
@@ -292,12 +293,13 @@ function Equipment(props) {
 
               if(idx != -1){
                 equipments_tab_copy[idx] = eq_change
+                console.log(equipments_tab_copy[idx])
                 equipments_copy = {...equipments_copy,[tab_number]: equipments_tab_copy}
               }
             }
           }
 
-          doSetEquipments(equipments_copy)
+          setEquipments(equipments_copy)
           toast.success('Action was completed')
         }        
 
@@ -330,7 +332,7 @@ function Equipment(props) {
             }
           }
 
-          doSetEquipments(equipments_copy)
+          setEquipments(equipments_copy)
           toast.success('Action was completed')
         }
       
@@ -348,6 +350,7 @@ function Equipment(props) {
   await addEquipmentApi(rowData, userToken).then((response) => response.data).then((data) => {
     const {tabChanges, error} = data
     errorFound = error
+    console.log(data)
 
     if(error){
       toast.error('Could not complete action')
@@ -356,11 +359,12 @@ function Equipment(props) {
 
       for(const tab_number in tabChanges){
         for(const eq_change of tabChanges[tab_number]){
+            console.log(eq_change,tab_number)
             copy_equipments = {...copy_equipments,[tab_number]: [eq_change,...copy_equipments[tab_number]]}
         }
       }
 
-      doSetEquipments(copy_equipments)
+      setEquipments(copy_equipments)
 
       toast.success('Action was completed')
     }
@@ -375,6 +379,7 @@ function Equipment(props) {
   }
 
 	const handleSearchFieldsChange = (event) => {
+		console.log(event.target.value)
     //const tab = event.target.id.split('-')[1]
 
     if(event.target.value == ''){
@@ -410,7 +415,7 @@ function Equipment(props) {
   }
   
   const handleSearch = async (e=null,onLoad=false) => {
-    //setLoading({...loading, [tabs]: true})
+    setLoading({...loading, [tabs]: true})
     //setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
   
     let opts = {
@@ -427,87 +432,68 @@ function Equipment(props) {
       opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
     })
   
-    //console.log(fields_obj, opts)
+    equipmentSearchApi2({
+      'fields': fields_obj,
+      'options':opts,
+      'tab': equipmentTabs[tabs].id
+    }, userToken)
+    .then((response) => response.data).then((data) => {
+      console.log(data)
+      setLoading({...loading, [tabs]: false})
+      //setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
+      setEquipments({...equipments, [tabs]: data.status != 400 ? data.data[tabs] : []})
 
-    doSearchEquipmentTab({num: tabs, id: equipmentTabs[tabs].id})
-    // let opts = {
-    //   includes: {},
-    //   blanks: {}
-    // }
+    }).catch(function (error) {
+      setLoading({...loading, [tabs]: false})
+      //setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
+      setEquipments({...equipments, [tabs]: []})
   
-    // let fields_obj = {}
-  
-    // Object.keys(searchFields[tabs]).map(key => {
-    //   fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[tabs][key].value
-  
-    //   opts.includes[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].options : OPTIONS_DEFAULT
-    //   opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
-    // })
-  
-    // equipmentSearchApi2({
-    //   'fields': fields_obj,
-    //   'options':opts,
-    //   'tab': equipmentTabs[tabs].id
-    // }, userToken)
-    // .then((response) => response.data).then((data) => {
-    //   console.log(data)
-    //   //setLoading({...loading, [tabs]: false})
-    //   //setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
-    //   //doSetEquipments({...equipments, [tabs]: data.status != 400 ? data.data[tabs] : []})
-    //   //doSetFilteredDataRows({...filteredDataRows, [tabs]: data.data[tabs]})
-
-    // }).catch(function (error) {
-    //   //setLoading({...loading, [tabs]: false})
-    //   //setLoading({...loading, refresh: {...loading.refresh, [tabs]: false}})
-    //   //doSetEquipments({...equipments, [tabs]: []})
-    //   //doSetFilteredDataRows({...filteredDataRows, [tabs]: equipments[tabs]})
-    // });
+    });
   
   }
 
   const pageInitialize = () => {
-    //setInitialLoad(true)
+    setInitialLoad(true)
     //setLoading({...loading,init:true})
-    doGetAllEquipmentTabsInitialLoad()
-    // equipmentSearchApi2({
-    //   'fields': {},
-    //   'options':OPTS_RESET,
-    //   'tab': equipmentTabs[tabs].id,
-    //   'init': true
-    // }, userToken)
-    // .then((response) => response.data).then((data) => {
-    //   console.log(data)
+    equipmentSearchApi2({
+      'fields': {},
+      'options':OPTS_RESET,
+      'tab': equipmentTabs[tabs].id,
+      'init': true
+    }, userToken)
+    .then((response) => response.data).then((data) => {
+      console.log(data)
 
-    //   doSetEquipmentsInitialLoad(data)
-    //   // if(Object.keys(data.editable).length > 0){
-    //   //   setEditable(data.editable)
-    //   // }
+      if(Object.keys(data.editable).length > 0){
+        setEditable(data.editable)
+      }
 
-    //   // if(Object.keys(data.rights).length > 0){
-    //   //   setRights(data.rights)
-    //   // }
+      if(Object.keys(data.rights).length > 0){
+        setRights(data.rights)
+      }
 
-    //   // if(data.status == 200){
-    //   //   //setFilteredEquipments(data.data[tabs])
-    //   //   doSetEquipments(data.data)
-    //   //   setHras(data.hras)
-    //   //   setMyHras(data.my_hras)
-    //   //   setEmployees(data.employees)
-    //   // }
-    //   setInitialLoad(false)
-    //   //setLoading({...loading,init:false})
+      if(data.status == 200){
+        //setFilteredEquipments(data.data[tabs])
+        setEquipments(data.data)
+        setHras(data.hras)
+        setMyHras(data.my_hras)
+        setEmployees(data.employees)
+      }
+      setInitialLoad(false)
+      //setLoading({...loading,init:false})
 
-    // }).catch(function (error) {
-    //   setServerDown(true)
-    //   setInitialLoad(false)
-    //   //setLoading({...loading,init:false})
-    //   //doSetEquipments({...equipments, [tabs]: []})
-    // });
+    }).catch(function (error) {
+      setServerDown(true)
+      setInitialLoad(false)
+      //setLoading({...loading,init:false})
+      setEquipments({...equipments, [tabs]: []})
+    });
 
     //getHrasAndEquipments()
   }
   
   const handleSearchView = (e) => {
+    console.log(e.target.value)
     setSearchView({...searchView, [tabs]:  e.target.value})
   }
 
@@ -629,63 +615,52 @@ function Equipment(props) {
   //   )
   // }
 
-  //const { columns, setColumns, toggleSwitch, setToggleSwitch, hras_array } = props
-  const [toggleSwitch,setToggleSwitch] =  useState({
-    0: false,
-    1: false,
-    2: false,
-    3: false,
-    4: false,
-  });
-  const [openPopup,setOpenPopup] =  useState({
-    0: false,
-    1: false,
-    2: false,
-    3: false,
-    4: false,
-  });
-  const [selRowData, setSelRowData] = useState({
-    0: {},
-    1: {},
-    2: {},
-    3: {},
-    4: {},
-  });
-  // const [filteredDataRows, setFilteredDataRows] = useState({
-  //   0: [],
-  //   1: [],
-  //   2: [],
-  //   3: [],
-  //   4: [],
-  // });
+  const { columns, setColumns, toggleSwitch, setToggleSwitch, equipmentArray, loading, hras_array } = props
+    const [equipmentsByTab, setEquipmentsByTab] = useState(equipmentArray)
+    const tab_idx = tabs
+    const [openPopup,setOpenPopup] =  useState(false);
+    const [selRowData, setSelRowData] = useState({});
+    const [name, componentName, fetchKey] = ['Equipment', 'equipment','id']
+    const [showFilter, setShowFilter] = useState(false)
+    const [filteredDataRows, setFilteredDataRows] = useState([...equipmentsByTab]);
+    const handleSearchChangeDirect = ({ data, searchText }) => setFilteredDataRows(data)
 
-  const MaterialTableTabs = [0,1,2,3,4].map((t, i) => (
-        <TabPanel value={tabs} index={i}>
-                    <Box>
-        <UpdateStatusPopup index={i} openPopup={openPopup[i]} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData[i]} setSnackBar={setSnackBar}/>
-            {rights?.edit?.[tabs] ? 
+
+  const MaterialTableTab = [0,1,2,3,4].map((t) => {
+    
+
+    // <TabPanel value={tabs} index={0}>
+    //               <MaterialTableSelect ref={ref0} toggleSwitch={toggleSwitch0} setToggleSwitch={setToggleSwitch0} hras_array={hras} loading={loading[0]} equipmentArray={equipments[0]}/>
+    //             </TabPanel>
+    return(
+        
+        <Box sx={{ paddingTop:'25px' }}>
+        <UpdateStatusPopup openPopup={openPopup} setOpenPopup={setOpenPopup}  handleUpdate={handleUpdate} rowData={selRowData} setSnackBar={setSnackBar} equipments={{...equipments}} setEquipments={setEquipments}/>
+        {!viewSwitch ? <MapWrapper equipments={[...filteredDataRows]}/> : null}
+            {rights.edit[tabs] ? 
                 (<Grid container style={{paddingLeft:'20px', paddingTop:'10px', position:'absolute',zIndex:'200',width:'10%'}}>
                     <FormGroup>
                         <FormControlLabel
-                            control={<Switch color="primary" checked={toggleSwitch[i]} onChange={() => setToggleSwitch(prev => ({...prev, [i]: !prev[i] }))} name={`checkedView-${i}`} />}
-                            label={toggleSwitch[i] ? "Extended View" : "Normal View"}
+                            control={<Switch color="primary" checked={toggleSwitch} onChange={() => setToggleSwitch(prev => !prev)} name={`checkedView-${tab_idx}`} />}
+                            label={toggleSwitch ? "Extended View" : "Normal View"}
                         />
                     </FormGroup>
                 </Grid>) : null}
                 <EquipmentMuiTable
-      exportButton={true}
-      equipmentArray={equipments[i]}
+
+      equipmentArray={equipmentsByTab}
       employees={employees}
       condition={condition}
-      hras_array={i === 1 ? myHras : hras}
-      edit_rights={rights?.edit?.[i]}
-      extended_view={toggleSwitch[i]}
-      excess={i === 4}
+      hras_array={hras_array}
+      edit_rights={rights.edit[tab_idx]}
+      extended_view={toggleSwitch}
+      excess={tab_idx === 4}
       name={'Equipment'}
       componentName={'equipment'}
       showHistory={true}
-      isLoading={loading?.[i]}
-      ref={refs.current[`ref${i}`]}
+
+      isLoading={loading}
+      ref={ref}
       // components={{
       //   Action: (props, rowData) => {
       //     if (props.action.name === 'change-history') {
@@ -744,33 +719,33 @@ function Equipment(props) {
       //     return <MTableAction {...props} />;
       //   },
       // }}
-      onOrderChange={() => doSetFilteredDataRows({...filteredDataRows, [i]: refs.current[`ref${i}`].current?.state?.data})}
-      onFilterChange={() => doSetFilteredDataRows({...filteredDataRows, [i]: refs.current[`ref${i}`].current?.state?.data})}
+      onOrderChange={() => handleSearchChangeDirect(ref.current.state)}
+      onFilterChange={() => handleSearchChangeDirect(ref.current.state)}
       //onSearchChange={() => handleSearchChangeDirect(ref.current.state)}
-      actions={[[0,1,2].includes(i) && {
+      actions={[[0,1,2].includes(tab_idx) && {
         icon: AddCommentIcon,
         tooltip: 'Update Status',
         onClick: (event, rowData) => {
-          setSelRowData(prev => ({...prev, [i]: rowData}))
-          setOpenPopup(prev => ({...prev, [i]: true}))
+          setSelRowData({...rowData})
+          setOpenPopup(true)
         }
       }]}
     
       icons={tableIcons}
       //columns={[hra, status]}
-      data={equipments[i]}
+      data={equipmentsByTab}
       options={{
         //filtering: showFilter,
-        //search: false,
-      //     headerStyle: {
-      //     backgroundColor: "#969696",
-      //     color: "#FFF",
-      //     fontWeight: 'bold',
-      //     tableLayout: 'fixed'
-      // }
+        search: false,
+          headerStyle: {
+          backgroundColor: "#969696",
+          color: "#FFF",
+          fontWeight: 'bold',
+          tableLayout: 'fixed'
+      }
       }}
       title=""
-      {...(rights?.edit?.[tabs] && !initialLoad && {editable:{
+      {...(rights.edit[tabs] && !initialLoad && {editable:{
           onRowAddCancelled: rowData => console.log('Row adding cancelled'),
           
           onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
@@ -817,23 +792,22 @@ function Equipment(props) {
 
       }})}
      />
-         </Box>
-        </TabPanel>
-
-    ))
+    </Box>
+    )
+  })
 
   //will run once.
   useEffect(() => {
     pageInitialize();
   }, []);
   
-  // useEffect(() => {
-	// 	console.log(employees)
-	// }, [employees]);
+  useEffect(() => {
+		console.log(employees)
+	}, [employees]);
 
-  // useEffect(() => {
-	// 	console.log(hras)
-	// }, [hras]);
+  useEffect(() => {
+		console.log(hras)
+	}, [hras]);
 
   useEffect(() => {
 		if(tabs == 3 && equipments[tabs].length == 0){
@@ -875,10 +849,21 @@ const [toggleSwitch4,setToggleSwitch4] =  useState(false);
                     <Tab label={equipmentTabs[4].label?.toUpperCase()} hidden={!rights.view[3] || equipments[4].length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
                   </Tabs>
                 </AppBar>
-                <Box sx={{pt: 1.5}}>
-                  {!viewSwitch && <MapWrapper equipments={[...filteredDataRows[tabs]]}/>}
-                </Box>
-                {MaterialTableTabs}
+                <TabPanel value={tabs} index={0}>
+                  <MaterialTableSelect ref={ref0} toggleSwitch={toggleSwitch0} setToggleSwitch={setToggleSwitch0} hras_array={hras} loading={loading[0]} equipmentArray={equipments[0]}/>
+                </TabPanel>
+                <TabPanel value={tabs} index={1}>
+                  <MaterialTableSelect ref={ref1} toggleSwitch={toggleSwitch1} setToggleSwitch={setToggleSwitch1} hras_array={my_hras} loading={loading[1]} equipmentArray={equipments[1]}/>
+                </TabPanel>
+                <TabPanel value={tabs} index={2}>
+                  <MaterialTableSelect ref={ref2} toggleSwitch={toggleSwitch2} setToggleSwitch={setToggleSwitch2} hras_array={hras} loading={loading[2]} equipmentArray={equipments[2]}/>
+                </TabPanel>
+                <TabPanel value={tabs} index={3}>
+                  <MaterialTableSelect ref={ref3} toggleSwitch={toggleSwitch3} setToggleSwitch={setToggleSwitch3} hras_array={hras} loading={loading[3]} equipmentArray={equipments[3]}/>
+                </TabPanel>
+                <TabPanel value={tabs} index={4}>
+                  <MaterialTableSelect ref={ref4} toggleSwitch={toggleSwitch4} setToggleSwitch={setToggleSwitch4} hras_array={hras} loading={loading[4]} equipmentArray={equipments[4]}/>
+                </TabPanel>
               </div>
         ) : null : <div style={{textAlign:'center'}}>{LoadingCircle()}</div>}
       </Box>
@@ -890,17 +875,4 @@ const [toggleSwitch4,setToggleSwitch4] =  useState(false);
 
 export default connect(
   'selectUserToken',
-  'doSearchEquipmentTab',
-  'selectEquipments',
-  'doSetEquipments',
-  'selectInitialLoad',
-  'selectRights',
-  'selectLoading',
-  'selectEmployees',
-  'selectHras',
-  'selectMyHras',
-  'selectFilteredDataRows',
-  'selectServerDown',
-  'doSetFilteredDataRows',
-  'doGetAllEquipmentTabsInitialLoad',
   Equipment);

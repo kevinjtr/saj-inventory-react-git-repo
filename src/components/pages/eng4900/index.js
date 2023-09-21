@@ -5,8 +5,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import { MTableAction } from '@material-table/core'
 import { form4900Icons } from '../../material-table/config'
 import MuiTable from '../../material-table'
+import Eng4900MuiTable from '../../material-table/eng4900-mui-table'
 import { getQueryStringParams, LoadingCircle } from '../../tools/tools'
-import { SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT } from '../../config/constants'
+import { SEARCH_FIELD_OPTIONS, SEARCH_FIELD_BLANKS, BASIC_SEARCH, OPTIONS_DEFAULT, BLANKS_DEFAULT, FORM_STATUS } from '../../config/constants'
 import { filter as _filter } from 'lodash'
 import FormSignModal from './FormSignModal'
 import Eng4900Form from './Eng4900Form'
@@ -33,20 +34,6 @@ function Eng4900({ history, location, match, userToken }) {
 
   //Constants Declarations.
   const search = getQueryStringParams(location.search)
-  const FORM_STATUS = {
-    1: "Form Edit",
-    2: "Individual/Vendor signature required",
-    3: "Completed Individual/Vendor signature",
-    4: "Losing HRA signature required",
-    5: "Completed losing HRA signature",
-    6: "Gaining HRA signature required",
-    7: "Completed gaining HRA signature",
-    8: "Logistics signature required",
-    9: "Completed Logistics signature",
-    10: "PBO signature required",
-    11: "Completed PBO signature",
-    12: "Form Rejected",
-  }
   const formTabs = { 0: { id: 'my_forms', label: 'My Forms' }, 1: { id: 'hra_forms', label: 'HRA Forms' }, 2: { id: 'sign_forms', label: 'Sign Forms' }, 3: { id: 'completed_and_ipg_forms', label: 'Completed & IP Gaining HRA Forms' } }
   const SEARCH_FIELD_RESET = {
     id: { label: 'Form ID', value: '', width: null, options: OPTIONS_DEFAULT, blanks: BLANKS_DEFAULT },
@@ -496,63 +483,16 @@ function Eng4900({ history, location, match, userToken }) {
   }
 
   const materialTableMyForms = (tab_idx) => {
-
-    let columns = [
-      {
-        title: 'Status', field: 'status', customFilterAndSearch: (term, rowData, column) => {
-          if (rowData[column.field]) {
-            return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
-          }
-          return false
-        },editable: 'onUpdate', type: 'numeric', render: rowData => FORM_STATUS[rowData.status],
-        editComponent: ({ value, onChange, rowData }) => (
-          <Select
-            value={value}
-            onChange={(event) => {
-              onChange(event.target.value);
-            }}
-          >
-            {(rowData.status_options).map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        ),
-        validate: (rowData) => {
-          if (rowData.hasOwnProperty('status')) {
-            if (rowData.status) {
-              if (rowData.hasOwnProperty('tableData')) {
-
-                if (rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
-                  return ({ isValid: false, helperText: 'Please select a different Status.' })
-
-                //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
-                return true
-              }
-            }
-          }
-
-          return ({ isValid: false, helperText: 'Status selection is incorrect.' })
-
-        }
-      },
-      { title: 'Requested Action', field: "requested_action", editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable: 'never' },
-      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
-      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
-    ]
-
     return (
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
-        <MuiTable
+        <Eng4900MuiTable
+          tab_name={'my_hra_forms'}
           componentName={'eng4900'}
           showHistory={true}
           fetchKey={'form_id'}
           icons={form4900Icons}
-          columns={columns}
           data={eng4900s[tab_idx]}
+          index={tab_idx}
           localization={{
             body: {
               editTooltip: "Update Status",
@@ -608,68 +548,17 @@ function Eng4900({ history, location, match, userToken }) {
   }
 
   const materialTableHraForms = (tab_idx) => {
-
-    let columns = [
-      {
-        title: 'Status', customFilterAndSearch: (term, rowData, column) => {
-          if (rowData[column.field]) {
-            return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
-          }
-          return false
-        }, field: 'status', type: 'numeric', render: rowData => FORM_STATUS[rowData.status],
-        editComponent: ({ value, onChange, rowData }) => (
-          <Select
-            value={value}
-            onChange={(event) => {
-              onChange(event.target.value);
-            }}
-          >
-            {(rowData.status_options).map((option) => (
-              <MenuItem key={option.id} value={option.id}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        ),
-        validate: (rowData) => {
-          console.log(rowData)
-          if (rowData.hasOwnProperty('status')) {
-            if (rowData.status) {
-              if (rowData.hasOwnProperty('tableData')) {
-
-                if (rowData.tableData.editing == "delete" && rowData.status == 1) {
-                  return true
-                }
-
-                if (rowData.status === eng4900s[tab_idx][rowData.tableData.id].status)
-                  return ({ isValid: false, helperText: 'Please select a different Status.' })
-
-                //if(rowData.status > eng4900s[tab_idx][rowData.tableData.id].status)
-                return true
-              }
-            }
-          }
-
-          return ({ isValid: false, helperText: 'Status selection is incorrect.' })
-
-        }
-      },
-      { title: 'Requested Action', field: "requested_action", editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable: 'never' },
-      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
-      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
-    ]
-
     return (
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
-        <MuiTable
+        <Eng4900MuiTable
+          tab_name={'hra_forms'}
           componentName={'eng4900'}
           showHistory={true}
           fetchKey={'form_id'}
           icons={form4900Icons}
-          columns={columns}
+          //columns={columns}
           data={eng4900s[tab_idx]}
+          index={tab_idx}
           localization={{
             body: {
               editTooltip: "Update Status",
@@ -799,28 +688,14 @@ function Eng4900({ history, location, match, userToken }) {
 
   const materialTableSignForms = (tab_idx) => {
 
-    let columns = [
-      { title: 'Status', customFilterAndSearch: (term, rowData, column) => {
-        if (rowData[column.field]) {
-          return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
-        }
-        return false
-      }, field: 'status', editable: 'never', type: 'numeric', render: rowData => FORM_STATUS[rowData.status]},
-      { title: 'Requested Action', field: "requested_action", editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable: 'never' },
-      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
-      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
-    ]
-
     return (
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
-        <MuiTable
+        <Eng4900MuiTable
+          tab_name={'sign_forms'}
           componentName={'eng4900'}
           showHistory={true}
           fetchKey={'form_id'}
           icons={form4900Icons}
-          columns={columns}
           data={eng4900s[tab_idx]}
           localization={{
             body: {
@@ -916,45 +791,15 @@ function Eng4900({ history, location, match, userToken }) {
 
   const materialTableCompletedForms = (tab_idx) => {
 
-    let columns = [
-      {
-        title: 'Status', customFilterAndSearch: (term, rowData, column) => {
-          if (rowData[column.field]) {
-            return FORM_STATUS[rowData[column.field]].toString()?.toUpperCase().includes(term.toUpperCase())
-          }
-          return false
-        }, field: 'status', editable: 'never', type: 'numeric', render: rowData => FORM_STATUS[rowData.status]
-        , validate: (rowData) => {
-          if (rowData.hasOwnProperty('status')) {
-            if (rowData.status) {
-              if (rowData.hasOwnProperty('tableData')) {
-                if (rowData.status >= eng4900s[tab_idx][rowData.tableData.id].status) {
-                  return true
-                }
-              }
-            }
-          }
-
-          return ({ isValid: false, helperText: 'Status selection is incorrect.' })
-
-        }
-      },
-      { title: 'Requested Action', field: "requested_action", editable: 'never' },
-      { title: 'Form ID', field: 'form_id', editable: 'never' },
-      { title: 'Bar Tags', field: "bar_tags", editable: 'never' },
-      { title: 'Losing HRA', field: "losing_hra", editable: 'never' },
-      { title: 'Gaining HRA', field: "gaining_hra", editable: 'never' },
-    ]
-
     return (
       <div id={`mt-4900-${tab_idx}`} key={`mt-4900-${tab_idx}`} style={{ maxWidth: '100%', paddingTop: '25px' }}>
-        <MuiTable
+        <Eng4900MuiTable
+          tab_name={'completed_forms'}
           componentName={'eng4900'}
           //exportButton={true}
           showHistory={true}
           fetchKey={'form_id'}
           icons={form4900Icons}
-          columns={columns}
           data={eng4900s[tab_idx]}
           localization={{
             body: {

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as XLSX from 'xlsx'
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { filter } from 'lodash'
 import moment from 'moment'
 import { TextField, IconButton, InputAdornment, DatePicker } from '@mui/material';
@@ -315,20 +315,38 @@ export function convertToLabel(inputString) {
   
   export const CustomFilterTextField = (props) => {
     const [text, setText] = useState("");
-  
+    //const [showNulls, setShowNulls] = useState(false);
     const handleClearClick = () => {
-      props.onFilterChanged(props.columnDef.tableData.id, "");
+      props.onFilterChanged(props.columnDef.tableData.id, undefined);
       setText("");
     };
+
+    // const handleNullsClicks = () => {
+    //   setShowNulls(prev => !prev)
+    // }
+
+    // useEffect(() => {
+    //   if(showNulls){
+    //     props.onFilterChanged(props.columnDef.tableData.id, '%BLANKS%');
+    //   }else{
+    //     props.onFilterChanged(props.columnDef.tableData.id, undefined);
+    //   }
+
+    //   setText("");
+    // },[showNulls])
   
     return (
       <TextField
         variant="standard"
         value={text}
+        //value={!showNulls ? text : ''}
+        //disabled={showNulls}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <FilterListIcon />
+              {/* <IconButton onClick={handleNullsClicks}> */}
+                <FilterListIcon/>
+              {/* </IconButton> */}
             </InputAdornment>
           ),
           endAdornment: <IconButton title="Clear" fontSize="small" sx={{ visibility: text ? "visible" : "hidden" }} onClick={handleClearClick}><ClearIcon fontSize="small" /></IconButton>
@@ -338,7 +356,6 @@ export function convertToLabel(inputString) {
           setText(event.target.value);
           props.onFilterChanged(props.columnDef.tableData.id, event.target.value);
         }}
-  
       />
   
     );

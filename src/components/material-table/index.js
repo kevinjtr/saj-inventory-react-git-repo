@@ -36,7 +36,7 @@ import CustomExportButton from './custom-export-button'
 import { ThemeProvider } from '@mui/styles'
 import { createTheme } from '@mui/material';
 
-const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, exportButton, columns, options, components, Action, Toolbar, actions, componentName, ...rest }, innref) => {
+const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, exportButton, options, components, Action, Toolbar, actions, componentName, ...rest }, innref) => {
   const [showFilter, setShowFilter] = useState(false)
   const ref = innref ? innref : React.createRef(MaterialTable) 
   let all_actions = [{ name: 'filter', position: 'toolbar' }]
@@ -56,30 +56,30 @@ const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, expo
   return (
     <MaterialTable
       tableRef={ref}
-      columns={columns.map(col => {
-        if (col.type === 'numeric' && !col.customFilterAndSearch) {
-          col.customFilterAndSearch = (term, rowData, column) => {
-              if (rowData[column.field]) {
-                return rowData[column.field].toString()?.toUpperCase().includes(term?.toUpperCase())
-              }
-              return false
-            }
+      // columns={columns.map(col => {
+      //   if (col.type === 'numeric' && !col.customFilterAndSearch) {
+      //     col.customFilterAndSearch = (term, rowData, column) => {
+      //         if (rowData[column.field]) {
+      //           return rowData[column.field].toString()?.toUpperCase().includes(term?.toUpperCase())
+      //         }
+      //         return false
+      //       }
           
-        }
+      //   }
 
-        // if(col.filterComponent){
-        //   return col
-        // }
+      //   // if(col.filterComponent){
+      //   //   return col
+      //   // }
 
-        if (col.type == 'date') {
-          //col.filterComponent = (props) => <CustomDatePicker {...props} />
-          col.filtering = false
-        }else{
-          col.filterComponent = (props) => <CustomFilterTextField {...props}/>
-        }
+      //   if (col.type == 'date') {
+      //     //col.filterComponent = (props) => <CustomDatePicker {...props} />
+      //     col.filtering = false
+      //   }else{
+      //     col.filterComponent = (props) => <CustomFilterTextField {...props}/>
+      //   }
         
-        return col
-      })}
+      //   return col
+      // })}
 
       {...(all_actions && {
         actions: [
@@ -89,7 +89,7 @@ const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, expo
       components={{
         Action: (props, rowData) => {
           if (props.action.name === 'change-history') {
-            console.log(fetchKey)
+            //console.log(fetchKey)
             return (
               
               <ChangeHistoryButton id={fetchKey ? props.data[fetchKey] : props.data.id} componentName={componentName}/>
@@ -113,7 +113,8 @@ const MuiTable = React.forwardRef(({ name, addProps, fetchKey, showHistory, expo
                 if(showFilter)
                   ref?.current?.dataManager?.columns?.forEach((item) => {
                     if(item.type != 'date' && item?.tableData?.filterValue)
-                      ref.current?.onFilterChange(item?.tableData?.id, "");
+                      ref.current?.onFilterChange(item?.tableData?.id, undefined);
+                      //ref.current?.onFilterChange(item?.tableData?.id, "");
                   })
                 setShowFilter(prev => !prev)
               }}
