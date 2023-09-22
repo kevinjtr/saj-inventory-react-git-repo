@@ -147,16 +147,18 @@ class EquipmentMuiTable extends React.Component {
       {title:'Serial Num', hidden: false, field:'serial_num', cellStyle: {
         minWidth: 200,
         maxWidth: 200
-      }, validate: (rowData) => {
-        if(rowData.hasOwnProperty('serial_num')){
-                    if(rowData.serial_num?.toString().length < 3){
-                        return ({ isValid: false, helperText: 'Serial Num is too short.' })
-                    }
+      }, 
+      // validate: (rowData) => {
+      //   if(rowData.serial_num){
+      //     if(rowData.serial_num?.toString().length < 3){
+      //         return ({ isValid: false, helperText: 'Serial Num is too short.' })
+      //     }
 
-                    return true  
-        }
-        return ({ isValid: false, helperText: 'Serial Num is required.' })
-      },
+      //     return true  
+      //   }
+      //   return true
+      //   //return ({ isValid: false, helperText: 'Serial Num is required.' })
+      // },
        col_id:5.5, filterComponent: (props) => <CustomFilterTextField {...props} />,},
        { title: 'Employee', print_title: 'Employee ID', hidden: false, field: 'employee_id', type:'numeric', render: (rowData) => {
         return `${rowData.employee_first_name ? ` ${rowData.employee_first_name}`: ''}${rowData.employee_last_name ? ` ${rowData.employee_last_name}` : ''}`
