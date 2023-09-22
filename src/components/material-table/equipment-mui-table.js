@@ -6,6 +6,7 @@ import {
   Tooltip, Radio, RadioGroup, Grid, Link, Autocomplete, InputAdornment, DatePicker
 } from '@mui/material';
 import {
+  Refresh as RefreshIcon,
   List as ListIcon, LocationOn as LocationOnIcon, Search as SearchIcon, Computer as ComputerIcon,
   FilterList as FilterListIcon, Clear as ClearIcon, Event as EventIcon
 } from '@mui/icons-material';
@@ -521,10 +522,18 @@ class EquipmentMuiTable extends React.Component {
   }
 
   render() {
-    const { name, addProps, fetchKey, showHistory, exportButton, options, components, Action, Toolbar, actions, componentName, innref, ...rest } = this.props
+    const { name, tab_index, tab_id, doSearchEquipmentTab, addProps, fetchKey, showHistory, exportButton, options, components, Action, Toolbar, actions, componentName, innref, ...rest } = this.props
     const ref = innref ? innref : React.createRef(MaterialTable)
 
     let all_actions = [{ name: 'filter', position: 'toolbar' }]
+
+    //if(tab_index ){
+      all_actions = [
+        { icon: React.forwardRef((props, ref) => <RefreshIcon {...props} ref={ref} color={'primary'}/>), 
+        tooltip: 'Refresh Data',name: 'Refresh', position: 'toolbar', onClick: () => doSearchEquipmentTab({num: tab_index, id: tab_id})},
+        ...all_actions
+      ]
+    //}
 
     if (actions?.length > 0) {
       all_actions = [...all_actions, ...actions]

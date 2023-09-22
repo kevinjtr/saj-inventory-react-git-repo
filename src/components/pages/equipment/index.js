@@ -413,19 +413,19 @@ function Equipment(props) {
     //setLoading({...loading, [tabs]: true})
     //setLoading({...loading, refresh: {...loading.refresh, [tabs]: true}})
   
-    let opts = {
-      includes: {},
-      blanks: {}
-    }
+    // let opts = {
+    //   includes: {},
+    //   blanks: {}
+    // }
   
-    let fields_obj = {}
+    // let fields_obj = {}
   
-    Object.keys(searchFields[tabs]).map(key => {
-      fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[tabs][key].value
+    // Object.keys(searchFields[tabs]).map(key => {
+    //   fields_obj[key] = onLoad && search[key] != null ? search[key] : searchFields[tabs][key].value
   
-      opts.includes[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].options : OPTIONS_DEFAULT
-      opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
-    })
+    //   opts.includes[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].options : OPTIONS_DEFAULT
+    //   opts.blanks[key] = searchView[tabs] != BASIC_SEARCH ? searchFields[tabs][key].blanks : BLANKS_DEFAULT
+    // })
   
     //console.log(fields_obj, opts)
 
@@ -674,6 +674,9 @@ function Equipment(props) {
                 </Grid>) : null}
                 <EquipmentMuiTable
       exportButton={true}
+      tab_id={equipmentTabs[i].id}
+      tab_index={i}
+      doSearchEquipmentTab={doSearchEquipmentTab}
       equipmentArray={equipments[i]}
       employees={employees}
       condition={condition}
@@ -869,10 +872,10 @@ const [toggleSwitch4,setToggleSwitch4] =  useState(false);
                 <AppBar position="static" color="default">
                   <Tabs value={tabs} onChange={handleTabChange} aria-label="simple tabs example" textColor="primary" centered indicatorColor="primary"> 
                     <Tab label={equipmentTabs[0].label?.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
-                    <Tab label={equipmentTabs[1].label?.toUpperCase()} hidden={!rights.view[3]} icon={<ComputerIcon/>} {...a11yProps(1)} />
-                    <Tab label={equipmentTabs[2].label?.toUpperCase()} hidden={!rights.view[3] || equipments[2].length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
-                    <Tab label={equipmentTabs[3].label?.toUpperCase()} hidden={!rights.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
-                    <Tab label={equipmentTabs[4].label?.toUpperCase()} hidden={!rights.view[3] || equipments[4].length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
+                    <Tab label={equipmentTabs[1].label?.toUpperCase()} hidden={!rights?.view[3]} icon={<ComputerIcon/>} {...a11yProps(1)} />
+                    <Tab label={equipmentTabs[2].label?.toUpperCase()} hidden={!rights?.view[3] || equipments?.[2]?.length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
+                    <Tab label={equipmentTabs[3].label?.toUpperCase()} hidden={!rights?.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
+                    <Tab label={equipmentTabs[4].label?.toUpperCase()} hidden={!rights?.view[3] || equipments?.[4]?.length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
                   </Tabs>
                 </AppBar>
                 <Box sx={{pt: 1.5}}>
