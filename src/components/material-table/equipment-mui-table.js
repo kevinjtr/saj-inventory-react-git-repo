@@ -50,7 +50,7 @@ class EquipmentMuiTable extends React.Component {
         customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
             const option = `${this.props.edit_rights && rowData.hra_num ? `${rowData.hra_num} -`: ''}${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}`
-            return option.toString()?.toUpperCase().includes(term?.toUpperCase())
+            return option?.toString()?.toUpperCase().includes(term?.toUpperCase())
           }
           return false
         },  
@@ -107,7 +107,7 @@ class EquipmentMuiTable extends React.Component {
        col_id:4, filterComponent: (props) => <CustomFilterTextField {...props} />,  },
       { title: 'Bar Tag', hidden: false, field: 'bar_tag_num', type: 'numeric', customFilterAndSearch: (term, rowData, column) => {
         if(rowData[column.field]){
-          return rowData[column.field].toString().includes(term)
+          return rowData[column.field]?.toString().includes(term)
         }
         return false
       }, cellStyle: {
@@ -118,7 +118,7 @@ class EquipmentMuiTable extends React.Component {
           if(rowData.hasOwnProperty('bar_tag_num')){
               if(!isNaN(rowData.bar_tag_num)) {
                   if(typeof rowData.bar_tag_num === "number"){
-                      if(rowData.bar_tag_num.toString().length > 5){
+                      if(rowData.bar_tag_num?.toString().length > 5){
                           return ({ isValid: false, helperText: 'Bar Tag digits exceed 5.' })
                       }else{
                           const idx = findIndex(this.props.equipmentArray,e => e.bar_tag_num == rowData.bar_tag_num)
@@ -149,7 +149,7 @@ class EquipmentMuiTable extends React.Component {
         maxWidth: 200
       }, validate: (rowData) => {
         if(rowData.hasOwnProperty('serial_num')){
-                    if(rowData.serial_num.toString().length < 3){
+                    if(rowData.serial_num?.toString().length < 3){
                         return ({ isValid: false, helperText: 'Serial Num is too short.' })
                     }
 
@@ -164,7 +164,7 @@ class EquipmentMuiTable extends React.Component {
       customFilterAndSearch: (term, rowData, column) => {
         if(rowData[column.field]){
           const option = `${rowData.employee_first_name ? ` ${rowData.employee_first_name}`: ''}${rowData.employee_last_name ? ` ${rowData.employee_last_name}` : ''}`
-          return option.toString()?.toUpperCase().includes(term?.toUpperCase())
+          return option?.toString()?.toUpperCase().includes(term?.toUpperCase())
         }
         return false
       },
@@ -216,7 +216,7 @@ class EquipmentMuiTable extends React.Component {
         customFilterAndSearch: (term, rowData, column) => {
           if(rowData[column.field]){
             const option = `${this.props.edit_rights && rowData.hra_num ? `${rowData.hra_num} -`: ''}${rowData.hra_first_name ? ` ${rowData.hra_first_name}`: ''}${rowData.hra_last_name ? ` ${rowData.hra_last_name}` : ''}`
-            return option.toString()?.toUpperCase().includes(term?.toUpperCase())
+            return option?.toString()?.toUpperCase().includes(term?.toUpperCase())
           }
           return false
         },  
@@ -273,7 +273,7 @@ class EquipmentMuiTable extends React.Component {
        col_id:4, filterComponent: (props) => <CustomFilterTextField {...props} />,  },
       { title: 'Bar Tag', hidden: false, field: 'bar_tag_num', type: 'numeric', customFilterAndSearch: (term, rowData, column) => {
         if(rowData[column.field]){
-          return rowData[column.field].toString().includes(term)
+          return rowData[column.field]?.toString().includes(term)
         }
         return false
       }, cellStyle: {
@@ -284,7 +284,7 @@ class EquipmentMuiTable extends React.Component {
           if(rowData.hasOwnProperty('bar_tag_num')){
               if(!isNaN(rowData.bar_tag_num)) {
                   if(typeof rowData.bar_tag_num === "number"){
-                      if(rowData.bar_tag_num.toString().length > 5){
+                      if(rowData.bar_tag_num?.toString().length > 5){
                           return ({ isValid: false, helperText: 'Bar Tag digits exceed 5.' })
                       }else{
                           const idx = findIndex(this.props.equipmentArray,e => e.bar_tag_num == rowData.bar_tag_num)
@@ -315,7 +315,7 @@ class EquipmentMuiTable extends React.Component {
         maxWidth: 200
       }, validate: (rowData) => {
         if(rowData.hasOwnProperty('serial_num')){
-                    if(rowData.serial_num.toString().length < 3){
+                    if(rowData.serial_num?.toString().length < 3){
                         return ({ isValid: false, helperText: 'Serial Num is too short.' })
                     }
 
@@ -382,7 +382,7 @@ class EquipmentMuiTable extends React.Component {
     {title:'Acquisition Price', extended_col: true, hidden: false, field:'acquisition_price',type: 'numeric', 
     customFilterAndSearch: (term, rowData, column) => {
       if(rowData[column.field]){
-        return rowData[column.field].toString().includes(term)
+        return rowData[column.field]?.toString().includes(term)
       }
       return false
     },col_id:7, filterComponent: (props) => <CustomFilterTextField {...props} />},
@@ -424,7 +424,7 @@ class EquipmentMuiTable extends React.Component {
        col_id:4, filterComponent: (props) => <CustomFilterTextField {...props} />,  },
       { title: 'Bar Tag', hidden: false, field: 'bar_tag_num', type: 'numeric', customFilterAndSearch: (term, rowData, column) => {
         if(rowData[column.field]){
-          return rowData[column.field].toString().includes(term)
+          return rowData[column.field]?.toString().includes(term)
         }
         return false
       }, cellStyle: {
@@ -435,7 +435,7 @@ class EquipmentMuiTable extends React.Component {
           if(rowData.hasOwnProperty('bar_tag_num')){
               if(!isNaN(rowData.bar_tag_num)) {
                   if(typeof rowData.bar_tag_num === "number"){
-                      if(rowData.bar_tag_num.toString().length > 5){
+                      if(rowData.bar_tag_num?.toString().length > 5){
                           return ({ isValid: false, helperText: 'Bar Tag digits exceed 5.' })
                       }else{
                           const idx = findIndex(this.props.equipmentArray,e => e.bar_tag_num == rowData.bar_tag_num)
@@ -466,7 +466,7 @@ class EquipmentMuiTable extends React.Component {
         maxWidth: 200
       }, validate: (rowData) => {
         if(rowData.hasOwnProperty('serial_num')){
-                    if(rowData.serial_num.toString().length < 3){
+                    if(rowData.serial_num?.toString().length < 3){
                         return ({ isValid: false, helperText: 'Serial Num is too short.' })
                     }
 
@@ -483,7 +483,7 @@ class EquipmentMuiTable extends React.Component {
     {title:'Acquisition Price', extended_col: true, hidden: false, field:'acquisition_price',type: 'numeric', 
     customFilterAndSearch: (term, rowData, column) => {
       if(rowData[column.field]){
-        return rowData[column.field].toString().includes(term)
+        return rowData[column.field]?.toString().includes(term)
       }
       return false
     },col_id:7, filterComponent: (props) => <CustomFilterTextField {...props} />},
