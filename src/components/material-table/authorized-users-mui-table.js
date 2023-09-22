@@ -47,7 +47,10 @@ class AuthorizedUsersMuiTable extends React.Component {
               return rowData.full_name.toString()?.toUpperCase().includes(term.toUpperCase())
             }
             return false
-        }, render: rowData => rowData.full_name,
+        }, render: rowData => rowData.full_name, cellStyle: {
+          minWidth: 500,
+          //maxWidth: 200
+        },
         editComponent: props => (
             <Autocomplete
                 value={props.value ? find(this.props.names,function(o){ return o.registered_users_id === props.value}) : null}
@@ -84,47 +87,50 @@ class AuthorizedUsersMuiTable extends React.Component {
             }
     },
         { title: 'HRA Account', field: 'hra_num', col_id: 2.2, //filterComponent: (props) => <CustomFilterTextField {...props} />,
-        editComponent: props => {
-          console.log(props)
+          editComponent: props => {
+            console.log(props)
 
-          return (
-            <Autocomplete
-            ListboxProps={{
-              sx: { fontSize: 3 },
-            }}
-                  value={props.value ? find(this.props.hras,function(h){ return h.hra_num === props.value}) : null}
-                  onChange={(e, nv) => {
-                    if(nv?.hra_num){
-                      props.onChange(nv.hra_num) 
-                      return;
-                    }
-                    props.onChange(nv)
-                  }}
-                  options={this.props.hras}
-                  getOptionLabel={(option) =>  option.hra_num ? option.hra_num.toString(): ""}
-                  renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.hra_num ? option.hra_num.toString(): ""}</li>}
-                  style={{ width: 250 }}
-                  renderInput={(params) => <TextField {...params} helperText="HRA" variant="standard" />}
-              />)
-        },
-        validate: (rowData) => {
-            if(rowData.hasOwnProperty('hra_num')){
-                if(!isNaN(rowData.hra_num)) {
-                    if(typeof rowData.hra_num === "number"){
-                        if(rowData.hra_num.toString().length > 3){
-                            return ({ isValid: false, helperText: 'HRA Num digits exceed 3.' })
-                        }
+            return (
+              <Autocomplete
+              ListboxProps={{
+                sx: { fontSize: 3 },
+              }}
+                    value={props.value ? find(this.props.hras,function(h){ return h.hra_num === props.value}) : null}
+                    onChange={(e, nv) => {
+                      if(nv?.hra_num){
+                        props.onChange(nv.hra_num) 
+                        return;
+                      }
+                      props.onChange(nv)
+                    }}
+                    options={this.props.hras}
+                    getOptionLabel={(option) =>  option.hra_num ? option.hra_num.toString(): ""}
+                    renderOption={(props, option, state) => <li {...props} style={{fontSize: '1rem'}}>{option.hra_num ? option.hra_num.toString(): ""}</li>}
+                    style={{ width: 250 }}
+                    renderInput={(params) => <TextField {...params} helperText="HRA" variant="standard" />}
+                />)
+          },
+          validate: (rowData) => {
+              if(rowData.hasOwnProperty('hra_num')){
+                  if(!isNaN(rowData.hra_num)) {
+                      if(typeof rowData.hra_num === "number"){
+                          if(rowData.hra_num.toString().length > 3){
+                              return ({ isValid: false, helperText: 'HRA Num digits exceed 3.' })
+                          }
 
-                        return true
-                    }
-        
-                    if(typeof rowData.hra_num === "string"){
-                        return ({ isValid: false, helperText: 'HRA Num needs to be numeric.' })
-                    }
-                }
-            }
-            return ({ isValid: false, helperText: 'HRA Num is required.' })
-        }
+                          return true
+                      }
+          
+                      if(typeof rowData.hra_num === "string"){
+                          return ({ isValid: false, helperText: 'HRA Num needs to be numeric.' })
+                      }
+                  }
+              }
+              return ({ isValid: false, helperText: 'HRA Num is required.' })
+          },cellStyle: {
+            minWidth: 500,
+            //maxWidth: 200
+          },
         },
     ].map(c => {c.filterComponent = (props) => <CustomFilterTextField {...props} />; return c})
     };

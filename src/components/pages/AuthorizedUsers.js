@@ -101,8 +101,7 @@ function AuthorizedUsers({ userToken }) {
 
                         }}
                         title=""
-                        {...(editable && {
-                            editable: {
+                        editable={{ 
                                 onRowAdd: async (newData) => {
                                     const result = await handleTableAdd({ changes: { '0': { newData: newData, oldData: null } } })
                                     return (new Promise((resolve, reject) => {
@@ -119,7 +118,7 @@ function AuthorizedUsers({ userToken }) {
                                         }, 1000);
                                     }))
                                 },
-                                onRowAddCancelled: rowData => console.log('Row adding cancelled'),
+                                //onRowAddCancelled: rowData => console.log('Row adding cancelled'),
                                 onRowDelete: async (rowData) => {
                                     const errorResult = await handleTableDelete({changes:{'0':{rowData:rowData}}})
                                     return(new Promise((resolve, reject) => {
@@ -136,7 +135,7 @@ function AuthorizedUsers({ userToken }) {
                                     }))
                                     },
                             }
-                        })}
+                        }
                     />
                 </div>
             )

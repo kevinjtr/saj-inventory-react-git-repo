@@ -176,7 +176,7 @@ function AnnualInventory({history, userToken}) {
 					}
 				}),				
 			  ]}
-			{...(editable && {editable:{
+			editable={{
 				isEditable: rowData => rowData.locked === 2, // only name(a) rows would be editable
 				// onRowAddCancelled: rowData => console.log('Row adding cancelled'),
 				// onRowUpdateCancelled: rowData => console.log('Row editing cancelled'),
@@ -209,7 +209,7 @@ function AnnualInventory({history, userToken}) {
 						}, 1000);
 					})
 				},
-			}})}
+			}}
 			/>
 		</div>
 	)
