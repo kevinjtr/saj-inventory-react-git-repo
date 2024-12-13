@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Box, useMediaQuery } from '@mui/material/';
+import { Box, useMediaQuery, Alert } from '@mui/material/';
 import { styled } from '@mui/material/styles';
 import {DashboardNavbar} from './dashboard-navbar';
 import { DashboardSidebar } from './dashboard-sidebar';
 //import { useTheme } from '@mui/material/styles'
 import { connect } from 'redux-bundler-react';
+import { isOffHours } from '../tools/tools'
 
 const DashboardLayoutRoot = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -42,6 +43,12 @@ const DashboardLayout = (props) => {
   });
   const width = (forceMdUp && !smUp) || (mdUp && !lgUp) ? "72px" : lgUp ? "220px" : "0px"
 
+  const [showAlert, setShowAlert] = useState(false);
+
+	  useEffect(() => {
+		setShowAlert(isOffHours());
+	  }, []);
+
   React.useEffect(() => {
     window.dispatchEvent(new CustomEvent('resize'))
 }, [width]);
@@ -59,12 +66,22 @@ const DashboardLayout = (props) => {
             display: 'flex',
             flex: '1 1 auto',
             flexDirection: 'column',
-            width: '100%'
+            width: '100%',
           }}
         >
+          {(process.env.REACT_APP_SERVER === "aws" && showAlert && 
+        <Alert sx={{
+          zIndex: 1200,
+          position: 'absolute',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',}} severity="warning">
+          The servers are down. They are available M-F, 8am-5pm EST.
+        </Alert>
+      	)}
           {children}
         </Box>
       </DashboardLayoutRoot>
+      
       <DashboardNavbar lgUp={lgUp} mdUp={mdUp} toggleForceMdUp={() => setForceMdUp(prev => !prev)} onSidebarOpen={() => setSidebarOpen(true)} />
       <DashboardSidebar
         lgUp={lgUp} mdUp={mdUp} smUp={smUp}

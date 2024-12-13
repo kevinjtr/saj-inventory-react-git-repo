@@ -334,7 +334,7 @@ function FormSignModal({ openModal, setOpenModal, formData, eng4900s, setEng4900
                     {(Boolean(!formData.file_storage) && Boolean(formData.can_digitally_sign)) && <FormControlLabel value="sign" control={<Radio />} label="Digitally sign" />}
                     <FormControlLabel value="upload" control={<Radio />} label="Upload signed form" />
                 </RadioGroup>
-                {(Boolean(formData.file_storage) || !formData.can_digitally_sign) && <Typography sx={{color: 'warning.main', pb: 1}}>Note: {Boolean(formData.file_storage) && 'A PDF file was previosly uploaded.' }Digitally sign has been disabled.</Typography>}
+                {(Boolean(formData.file_storage) || !formData.can_digitally_sign) && <Typography sx={{color: 'warning.main', pb: 1}}>Note: {Boolean(formData.file_storage) && 'A PDF file was previosly uploaded. ' }Digitally sign has been disabled.</Typography>}
             </FormControl>
         )
     }

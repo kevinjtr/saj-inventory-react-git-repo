@@ -874,7 +874,7 @@ const [toggleSwitch4,setToggleSwitch4] =  useState(false);
                     <Tab label={equipmentTabs[0].label?.toUpperCase()} icon={<ComputerIcon/>} {...a11yProps(0)} />
                     <Tab label={equipmentTabs[1].label?.toUpperCase()} hidden={!rights?.view[3]} icon={<ComputerIcon/>} {...a11yProps(1)} />
                     <Tab label={equipmentTabs[2].label?.toUpperCase()} hidden={!rights?.view[3] || equipments?.[2]?.length == 0} icon={<ComputerIcon/>} {...a11yProps(2)}/>  
-                    <Tab label={equipmentTabs[3].label?.toUpperCase()} hidden={!rights?.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
+                    <Tab data-cy='all-equipments' label={equipmentTabs[3].label?.toUpperCase()} hidden={!rights?.view[3]} icon={<SearchIcon/>} {...a11yProps(3)} />
                     <Tab label={equipmentTabs[4].label?.toUpperCase()} hidden={!rights?.view[3] || equipments?.[4]?.length == 0} icon={<ComputerIcon/>} {...a11yProps(4)} />
                   </Tabs>
                 </AppBar>

@@ -1,4 +1,5 @@
 import {BrowserRouter, Switch ,Route, Redirect} from "react-router-dom";
+import { useEffect, useState } from "react";
 import {routes} from './config/routes'
 import axios from 'axios';
 import { connect } from 'redux-bundler-react';
@@ -10,7 +11,10 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import  DashboardLayout  from './navbar/dashboard-layout';
 import { AlertContextProvider } from "./context/AlertProvider";
 import { Toaster } from 'react-hot-toast';
+import { Alert } from '@mui/material';
+import { isOffHours } from './tools/tools'
 
+  
 function App(props) {
 	const {userIsLoggedIn, userIsLoggingOut, userAccess, userDarkMode} = props
 	const theme =  createTheme({
@@ -18,6 +22,12 @@ function App(props) {
 			mode: userDarkMode ? 'dark' : 'light',
 		},
 	  });
+	  const [showAlert, setShowAlert] = useState(false);
+
+	  useEffect(() => {
+		setShowAlert(isOffHours());
+	  }, []);
+	  
 
 	axios.defaults.baseURL = process.env.REACT_APP_API;
 
@@ -49,6 +59,11 @@ function App(props) {
 
 		return(
 			<>
+				{process.env.REACT_APP_SERVER === "aws" && showAlert &&  (
+				<Alert severity="warning">
+				The API servers are down after hours. The servers are available Monday to Friday, 8 AM to 5 PM EST.
+				</Alert>
+				)}
 				<LogInAppBarHeader/>
 				<div {...(userDarkMode && {style:{background:DARK_MODE_BACKGROUND_COLOR}})}className='content'>
 				<Switch>
@@ -61,7 +76,7 @@ function App(props) {
 				<Route render={() => <Redirect to={'/404'} />}/>
 				</Switch>
 				</div>
-				<div className="footer"><span style={{color:'rgb(50,50,50)'}}>Version {process.env.REACT_APP_VERSION}</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>
+				{process.env.REACT_APP_SERVER !== 'aws' && <div className="footer"><span style={{color:'rgb(50,50,50)'}}>Version {process.env.REACT_APP_VERSION}</span> &#8226; <span style={{color:'rgb(100,50,50)'}}>Controlled Unclassified Information</span></div>}
 			</>
 		)
 	}
@@ -77,7 +92,6 @@ function App(props) {
 			
 		/>
 		<ThemeProvider theme={theme}>
-		
 		<CssBaseline/>
 			<BrowserRouter basename={process.env.REACT_APP_BASENAME}>
 				<div className='flex-wrapper'>

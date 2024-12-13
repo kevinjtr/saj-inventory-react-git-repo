@@ -27,7 +27,7 @@ export const NavItem = (props) => {
       }}
       {...others}
     >
-      <Link to={href} style={{textDecoration:'none'}} onClick={onClose}>
+      <Link data-cy={href} to={href} style={{textDecoration:'none'}} onClick={onClose}>
         <NavItemButtonRoot
           title={title}
           //component="a"

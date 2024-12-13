@@ -361,7 +361,7 @@ function Hra({ history, userToken }) {
 	return (
 		<>
 			<div style={{textAlign: 'center',paddingBottom: 10 }}>
-				<h2 >HRA</h2>
+				<h2 >HRA Supervisor</h2>
 			</div>
 			<div style={{textAlign: 'center'}}>
 				{materialTableSelect()}

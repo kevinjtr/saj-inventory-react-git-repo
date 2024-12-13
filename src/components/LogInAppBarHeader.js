@@ -45,12 +45,15 @@ function Header({user, userIsLoggedIn, userAccess, userDarkMode, doToggleDarkMod
 				<img src={getsitelogo} style={{position:"absolute",transform:"rotate(-15deg)",opacity:"0.15",height:"125px",width:"auto",top:"-20px",left:"50px",zIndex:"1"}} />
 				
 				<Grid item sx={{display:"flex",flexDirection:"row",flexShrink:"0",zIndex:"2",position:"relative"}}>  
-					<div style={{display:"flex", flexDirection:"column", justifyContent:"center",backgroundColor:"rgba(204,218,255,0)",border:"1px solid rgba(204,218,255,0)",height:"30px",marginTop:"auto",marginBottom:"auto"}}>
-						<div style={{fontSize:"0.6rem", color:theme.palette.text.secondary, paddingLeft:"5px", fontWeight:"bold",textShadow:"0 0 2px #878787"}}>US Army Corps of Engineers</div>
-						<div style={{fontSize:"0.6rem", letterSpacing:"0.13rem", color:theme.palette.text.secondary, paddingLeft:"5px", fontWeight:"bold",textShadow:"0 0 2px #878787"}}>Jacksonville District</div>
-					</div>
+					{
+						process.env.REACT_APP_SERVER !== 'aws' && 
+						<div style={{display:"flex", flexDirection:"column", justifyContent:"center",backgroundColor:"rgba(204,218,255,0)",border:"1px solid rgba(204,218,255,0)",height:"30px",marginTop:"auto",marginBottom:"auto"}}>
+							<div style={{fontSize:"0.6rem", color:theme.palette.text.secondary, paddingLeft:"5px", fontWeight:"bold",textShadow:"0 0 2px #878787"}}>US Army Corps of Engineers</div>
+							<div style={{fontSize:"0.6rem", letterSpacing:"0.13rem", color:theme.palette.text.secondary, paddingLeft:"5px", fontWeight:"bold",textShadow:"0 0 2px #878787"}}>Jacksonville District</div>
+						</div>
+					}
 					<div style={{display:"flex", flexDirection:"column", justifyContent:"center",height:"30px",marginTop:"auto",marginBottom:"auto",marginLeft:"5px", alignContent:'center'}}>
-						<p style={{textTransform:"uppercase", letterSpacing:"0.15rem", fontSize:"1.5rem", color:theme.palette.text.secondary, fontWeight:"bold",textShadow:"0 0 1px #000",backgroundClip:'text'}}>Inventory Application</p>
+						<p style={{textTransform:"uppercase", letterSpacing:"0.15rem", fontSize:"1.5rem", color:theme.palette.text.secondary, fontWeight:"bold",textShadow:"0 0 1px #000",backgroundClip:'text'}}>{process.env.REACT_APP_SERVER === 'aws' && 'K. Alemany '}Inventory App</p>
 					</div>
                 </Grid>
 				</Grid>

@@ -15,7 +15,7 @@ const DashboardDrawerRoot = styled(Drawer)(({ theme }) => ({
 
 export const DashboardSidebar = (props) => {
   const { open, onClose, lgUp, mdUp, smUp, forceMdUp, width, userAccess } = props;
-
+console.log(process.env)
   const route_tabs = filter(routes_config, function(r){
     if(r.hasOwnProperty('alias')){
         if(Object.keys(userAccess).indexOf(r.alias) > -1){
@@ -108,7 +108,7 @@ export const DashboardSidebar = (props) => {
             fontSize=".7rem"
             sx={{paddingTop: .75, textAlign:"center",marginBottom:"75px"}}
           >
-            {(lgUp && !forceMdUp) || smUp ? "Controlled Unclassified Information" : "C.U.I."}
+            {process.env.REACT_APP_SERVER !== 'aws' && ((lgUp && !forceMdUp) || smUp ? "Controlled Unclassified Information" : "C.U.I.")}
           </Typography>
         </Box>
       </Box>

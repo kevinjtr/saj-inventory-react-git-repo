@@ -381,7 +381,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
               <Stack spacing={3} direction='row' sx={{py:2}}>
               {editEnabled ?
                   <StyledAutocomplete
-                    style={{ display:'inline-block' }}
+                    style={{ display:'inline-block', width: 300 }}
                     id="combo-box-losing"
                     options={hras.losing}
                     loading={loading.hra}
@@ -394,7 +394,6 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                       return <li {...props} style={{fontSize: '1rem'}}>{`${option.hra_num}${full_name && ` - ${full_name}`}`}</li>
                     }}
                     value={selectedForm.hra.losing.hra_num ? selectedForm.hra.losing : null}
-                    style={{ width: 300 }}
                     onChange={handleLosingHraChange}
                     renderInput={(params) => <TextField {...(!selectedForm.hra.losing.hra_num && {error:true, helperText:"Selection Required."})} {...params} label="Losing HRA" />}
                     />
@@ -458,7 +457,7 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                 <Stack spacing={3} direction='row' sx={{py:2}}>
                 {editEnabled ? 
                 <StyledAutocomplete
-                    style={{ display:'inline-block' }}
+                    style={{ display:'inline-block', width: 300  }}
                     id="combo-box-gaining"
                     options={selectedForm.requested_action == "Issue" ? hras.losing : hras.gaining}
                     getOptionDisabled={(option) => selectedForm.hasOwnProperty('gaining') ? selectedForm.hra.gaining.hra_num === option.hra_num : selectedForm.hra.losing.hra_num === option.hra_num}
@@ -473,7 +472,6 @@ function Eng4900Form({formData, formId, action, create4900, setCreate4900, setSe
                     }}
 
                     value={selectedForm.hra.gaining.hra_num ? selectedForm.hra.gaining : null}
-                    style={{ width: 300 }}
                     onChange={handleGainingHraChange}
                     renderInput={(params) => <TextField {...(!selectedForm.hra.gaining.hra_num && {error:true, helperText:"Selection Required."})} {...params} label="Gaining HRA" />}
                   />

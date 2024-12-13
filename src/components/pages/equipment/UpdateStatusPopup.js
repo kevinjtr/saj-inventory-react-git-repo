@@ -73,7 +73,7 @@ const UpdateStatusPopup = ({openPopup, index, setOpenPopup, rowData, equipments,
         const changes = {changes:{'0':{newData:{...rowData, status: new_status, status_date: new Date() }, oldData:rowData}}}
 
         let errorFound = true
-        setSubmitButton(prev => ({...prev, send: true}))
+        setSubmitButton(prev => ({...prev, send: true, active: false}))
 
         await updateEquipmentApi(changes, userToken)
         .then((response) => response.data).then((data) => {
@@ -81,7 +81,7 @@ const UpdateStatusPopup = ({openPopup, index, setOpenPopup, rowData, equipments,
           errorFound = error
     
           if(error){
-            setSubmitButton(prev => ({...prev, send: false, active: false}))
+            setSubmitButton(prev => ({...prev, send: false, active: true}))
             toast.error('Could not complete action')
           }else {
             let equipments_copy = {...equipments}
@@ -98,7 +98,8 @@ const UpdateStatusPopup = ({openPopup, index, setOpenPopup, rowData, equipments,
                 }
               }
             }
-            setSubmitButton(prev => ({...prev, send: false, active: false}))
+            setSubmitButton(prev => ({...prev, send: false, active: true}))
+            setStatus("")
             doSetEquipments(equipments_copy)
             toast.success('Action was completed')
             setOpenPopup(prev => ({...prev, [index]: false}))
@@ -106,7 +107,7 @@ const UpdateStatusPopup = ({openPopup, index, setOpenPopup, rowData, equipments,
     
         }).catch(function (error) {
           console.log(error)
-          setSubmitButton(prev => ({...prev, send: false, active: false}))
+          setSubmitButton(prev => ({...prev, send: false, active: true}))
           toast.error('Could not complete action')
         });
     
@@ -202,7 +203,11 @@ const UpdateStatusPopup = ({openPopup, index, setOpenPopup, rowData, equipments,
                     <div style={{display:'flex'}}>
                         <Typography variant="h6" component="div" style={{flexGrow:1,alignSelf:'center',textTransform:'uppercase',fontSize:'1rem'}}>{`update equipment ${rowData.bar_tag_num} status`}</Typography>
                         <IconButton
-          onClick={()=>setOpenPopup(prev => ({...prev, [index]: false}))}
+          onClick={()=>{
+            setOpenPopup(prev => ({...prev, [index]: false}));
+            setSubmitButton({...submitButton, send: false, active: false});
+            setStatus("");
+          }}
             sx={{
                 alignSelf:'center',
               display: {

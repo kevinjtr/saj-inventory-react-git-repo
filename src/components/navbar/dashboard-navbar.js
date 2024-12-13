@@ -157,7 +157,7 @@ export const DashboardNavbar = (props) => {
           </Avatar> */}
         </Toolbar>
       </AppBar>
-      {showUserDropdown && <UserDropdown showUserDropdown={showUserDropdown} showUserDropdown={showUserDropdown} setShowUserDropdown={setShowUserDropdown}/>}
+      {showUserDropdown && <UserDropdown showUserDropdown={showUserDropdown} setShowUserDropdown={setShowUserDropdown} />}
     </>
   );
 };

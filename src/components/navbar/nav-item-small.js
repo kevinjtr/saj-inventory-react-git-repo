@@ -22,7 +22,7 @@ export const NavItem = (props) => {
       }}
       {...others}
     >
-      <Link to={href} style={{textDecoration:'none'}}>
+      <Link data-cy={href} to={href} style={{textDecoration:'none'}}>
         <Button
           title={title}
           //component="a"

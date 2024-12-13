@@ -162,7 +162,7 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                         <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>Sign In</div>
 
                         <div className="login-cac-button-container">
-                            <Button onClick={onSmartcardButtonSubmit} className="login-cac-button" type='submit' color='primary' variant="contained" disabled={userIsLoggingIn} fullWidth>
+                            <Button data-cy="login-button" onClick={onSmartcardButtonSubmit} className="login-cac-button" type='submit' color='primary' variant="contained" disabled={userIsLoggingIn} fullWidth>
                                 <div className='login-cac-button-icon-container' style={{display:'flex',flexDirection:'column',justifyContent:'center'}}>
                                     <div className="cac-icon-outline" style={userIsLoggingIn ? {border:'2px solid rgba(255,255,255,0.2)'}:{}}>
                                         <PersonIcon style={{fontSize:'14px'}}/>
@@ -178,8 +178,8 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
                                     <div className='login-cac-button-text-row1'>Loading</div>
                                         ) : (
                                         <>
-                                    <div className='login-cac-button-text-row1'>Smart Card</div>
-                                    <div className='login-cac-button-text-row2'>Access</div>
+                                    <div className='login-cac-button-text-row1'>Login as</div>
+                                    <div className='login-cac-button-text-row2'>Test User</div>
                                         </>
                                     )}
                                 </div>
@@ -212,14 +212,14 @@ function SignInOut  ({doLogin, userIsLoggedIn, history, userIsLoggingIn, userLog
 } */}
 
 
-                        <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
-                        <StyledButton onClick={handleNewAccountClick}>Create New Account</StyledButton>
+                        {/* <div style={{fontWeight:'bold',marginBottom:'5px',marginTop:'20px'}}>New User</div>
+                        <StyledButton onClick={handleNewAccountClick}>Create New Account</StyledButton> */}
                     </div>   
                     }
 
-                    {selectedTab === 2 && 
+                    {/* {selectedTab === 2 && 
                         <Signup hideNewAccountForm={hideNewAccountForm} handleLoading={handleLoading} setSelectedTab={setSelectedTab}/>
-                    }
+                    } */}
                 </div>
             </div>
          <br/>

@@ -102,7 +102,7 @@ export const downloadExcel = (columns, arrayOfObjects, name="exported_doc", igno
 }
 
 export const downloadEquipmentPdf=(columns, equipment_array, table={})=>{
-    const { viewType } = table
+    const { tab_id, viewType } = table
     /* Create new jsPDF() object */
     const doc = new jsPDF({orientation:"landscape"})
     //Title can go here
@@ -219,10 +219,13 @@ export const downloadEquipmentPdf=(columns, equipment_array, table={})=>{
         return;
     }
 
+    let printColumns = columns.filter(col => 
+      col.field !== "updated_by_full_name" && col.field !== "employee_id" && (tab_id !== 'my_equipment' || col.field !== 'hra_num')
+    )
+
     /* Generate autoTable with custom column widths */
     doc.autoTable({
-        columns:columns.map(col=>{
-          console.log(col)
+        columns:printColumns.map(col=>{
           if(col.print_title){
             return {...col, title: col.print_title, dataKey:col.field}
           }
@@ -230,7 +233,15 @@ export const downloadEquipmentPdf=(columns, equipment_array, table={})=>{
         }
           
           ),
-        body:equipment_array,
+        body:equipment_array.map(eq => {
+          for(const key of Object.keys(eq)){
+            if(key.includes('date') && eq[key]){
+              eq[key] = moment(eq[key]).format('MM-DD-YY HH:mm:ss')
+            }
+          }
+
+          return eq
+        }),
         styles: {fontSize: 9}
     }
     )
@@ -250,7 +261,15 @@ export const downloadPdf = (columns, dataArray, viewType) => {
         doc.text("Generated on " + generateReportDate('footer'),240,200)
         doc.autoTable({
         columns: filter(cols,(col) => !col.dataKey.includes('updated_by')),
-        body:data,
+        body:data.map(obj => {
+          for(const key of Object.keys(obj)){
+            if(key.includes('date') && obj[key]){
+              obj[key] = moment(obj[key]).format('MM-DD-YY HH:mm:ss')
+            }
+          }
+
+          return obj
+        }),
         styles: { fontSize: 9 }
         })
     
@@ -359,4 +378,22 @@ export function convertToLabel(inputString) {
       />
   
     );
+  };
+
+  export const isOffHours = () => {
+    const now = new Date();
+    const options = { timeZone: 'America/New_York', hour12: false };
+    
+    // Get current time in EST
+    const estTime = new Intl.DateTimeFormat('en-US', options).format(now);
+    
+    const currentHour = now.getUTCHours() - 4; // EST is UTC-4
+    const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
+    
+    // Off hours are before 8 AM or after 5 PM EST, or any time on weekends
+    const isWeekend = currentDay === 0 || currentDay === 6;
+    const isBefore9AM = currentHour < 8;
+    const isAfter5PM = currentHour >= 17;
+    
+    return isWeekend || isBefore9AM || isAfter5PM;
   };
